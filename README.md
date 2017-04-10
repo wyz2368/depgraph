@@ -12,7 +12,7 @@ They represent an attacker and defender seeking control over a computer network.
 4. Select the repo you just chose -> Next
 5. Import using the New Project Wizard -> Finish
 6. Java Project -> Next
-    * JavaSE-1.7 -> depgraph (title of your choice) -> Finish
+    * Java SE 8 [1.8.0_121] -> depgraph (title of your choice) -> Finish
 7. Configure the build path:
     * link source: depgraph/src
     * add extrernal jars:
