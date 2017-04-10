@@ -341,7 +341,7 @@ public class ValuePropagationvsDefender extends Defender{
 				}
 				else
 				{
-					dCandidateMap.replace(node, curValue + tempValue * stateProb);
+					dCandidateMap.put(node, curValue + tempValue * stateProb);
 				}
 				dIdx++;
 			}
