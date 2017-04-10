@@ -3,6 +3,8 @@
 This is a library for running simulations of dependency graphs, which are similar to attack graphs.
 They represent an attacker and defender seeking control over a computer network.
 
+The code was written by Thanh Nguyen with help from Mason Wright.
+
 ## Eclipse build
 
 1. File -> Import -> Git -> Projects form Git
