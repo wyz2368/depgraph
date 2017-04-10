@@ -1,0 +1,1272 @@
+{
+  "nodes": [
+    {
+      "id": 1,
+      "topoPosition": 0,
+      "nodeType": "NONTARGET",
+      "actType": "AND",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.1738834695987527,
+      "posActiveProb": 0.9374680489337053,
+      "posInactiveProb": 0.09215385238433607,
+      "aActivationCost": -0.45648881772350147,
+      "aActivationProb": 0.9357330731974652
+    },
+    {
+      "id": 2,
+      "topoPosition": 1,
+      "nodeType": "NONTARGET",
+      "actType": "AND",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.38885568338193305,
+      "posActiveProb": 0.8014982265125424,
+      "posInactiveProb": 0.10489856239853124,
+      "aActivationCost": -0.326519824682254,
+      "aActivationProb": 0.870235310322772
+    },
+    {
+      "id": 3,
+      "topoPosition": 7,
+      "nodeType": "NONTARGET",
+      "actType": "AND",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.33809704191988,
+      "posActiveProb": 0.896141260034605,
+      "posInactiveProb": 0.17055424251474022,
+      "aActivationCost": -0.12439595494608176,
+      "aActivationProb": 0.9827825910041567
+    },
+    {
+      "id": 4,
+      "topoPosition": 2,
+      "nodeType": "NONTARGET",
+      "actType": "AND",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.42496432736016654,
+      "posActiveProb": 0.9433871518547593,
+      "posInactiveProb": 0.16745559175837724,
+      "aActivationCost": -0.48469193374125163,
+      "aActivationProb": 0.838352801454648
+    },
+    {
+      "id": 5,
+      "topoPosition": 3,
+      "nodeType": "NONTARGET",
+      "actType": "AND",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.30876730977189204,
+      "posActiveProb": 0.9959309597930269,
+      "posInactiveProb": 0.1599089191885483,
+      "aActivationCost": -0.2058746363761208,
+      "aActivationProb": 0.9298976364902399
+    },
+    {
+      "id": 6,
+      "topoPosition": 12,
+      "nodeType": "NONTARGET",
+      "actType": "AND",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.25709306699517553,
+      "posActiveProb": 0.9401837557533465,
+      "posInactiveProb": 0.12213884585827098,
+      "aActivationCost": -0.11377155997229878,
+      "aActivationProb": 0.9995924254847499
+    },
+    {
+      "id": 7,
+      "topoPosition": 4,
+      "nodeType": "NONTARGET",
+      "actType": "AND",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.4562864811242674,
+      "posActiveProb": 0.9463386902390643,
+      "posInactiveProb": 0.15685459234149965,
+      "aActivationCost": -0.37296896570252047,
+      "aActivationProb": 0.9741190473856942
+    },
+    {
+      "id": 8,
+      "topoPosition": 5,
+      "nodeType": "NONTARGET",
+      "actType": "AND",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.47835961749183376,
+      "posActiveProb": 0.9901166124829848,
+      "posInactiveProb": 0.06980526912518795,
+      "aActivationCost": -0.40282056824248863,
+      "aActivationProb": 0.9521185712482481
+    },
+    {
+      "id": 9,
+      "topoPosition": 6,
+      "nodeType": "NONTARGET",
+      "actType": "OR",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.42750207795861994,
+      "posActiveProb": 0.8963653862476246,
+      "posInactiveProb": 0.012979188488730253,
+      "aActivationCost": 0.0,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 10,
+      "topoPosition": 8,
+      "nodeType": "NONTARGET",
+      "actType": "AND",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.18185013660927424,
+      "posActiveProb": 0.996767473629495,
+      "posInactiveProb": 0.06330858169117573,
+      "aActivationCost": -0.3814915621328824,
+      "aActivationProb": 0.9991945925567486
+    },
+    {
+      "id": 11,
+      "topoPosition": 9,
+      "nodeType": "NONTARGET",
+      "actType": "OR",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.3223653481532903,
+      "posActiveProb": 0.8156719908082346,
+      "posInactiveProb": 0.15618988567522596,
+      "aActivationCost": 0.0,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 12,
+      "topoPosition": 16,
+      "nodeType": "NONTARGET",
+      "actType": "OR",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.4878179363942402,
+      "posActiveProb": 0.9161831727748361,
+      "posInactiveProb": 0.05431084863880149,
+      "aActivationCost": 0.0,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 13,
+      "topoPosition": 13,
+      "nodeType": "NONTARGET",
+      "actType": "OR",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.3808113060324332,
+      "posActiveProb": 0.9585183235437603,
+      "posInactiveProb": 0.0898586757321306,
+      "aActivationCost": 0.0,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 14,
+      "topoPosition": 11,
+      "nodeType": "NONTARGET",
+      "actType": "OR",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.3943158600115814,
+      "posActiveProb": 0.9811400431622809,
+      "posInactiveProb": 0.12699015950326406,
+      "aActivationCost": 0.0,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 15,
+      "topoPosition": 10,
+      "nodeType": "NONTARGET",
+      "actType": "OR",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.27299021946433893,
+      "posActiveProb": 0.996012038193417,
+      "posInactiveProb": 0.18454766288259739,
+      "aActivationCost": 0.0,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 16,
+      "topoPosition": 15,
+      "nodeType": "NONTARGET",
+      "actType": "OR",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.22965206929068085,
+      "posActiveProb": 0.8444146660775592,
+      "posInactiveProb": 0.14246744421176644,
+      "aActivationCost": 0.0,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 17,
+      "topoPosition": 20,
+      "nodeType": "NONTARGET",
+      "actType": "AND",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.34183172460881933,
+      "posActiveProb": 0.9957770289517522,
+      "posInactiveProb": 0.11274752034222608,
+      "aActivationCost": -0.22651322576556376,
+      "aActivationProb": 0.9515942529391597
+    },
+    {
+      "id": 18,
+      "topoPosition": 18,
+      "nodeType": "NONTARGET",
+      "actType": "AND",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.17970862005639548,
+      "posActiveProb": 0.9209588408202978,
+      "posInactiveProb": 0.02455037557018862,
+      "aActivationCost": -0.14447005591899104,
+      "aActivationProb": 0.8004087406744617
+    },
+    {
+      "id": 19,
+      "topoPosition": 21,
+      "nodeType": "NONTARGET",
+      "actType": "AND",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.31419147234337297,
+      "posActiveProb": 0.8365880000998708,
+      "posInactiveProb": 0.09579912839599523,
+      "aActivationCost": -0.3315372125001562,
+      "aActivationProb": 0.8233874169355667
+    },
+    {
+      "id": 20,
+      "topoPosition": 23,
+      "nodeType": "NONTARGET",
+      "actType": "OR",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.2584786618498879,
+      "posActiveProb": 0.8127267901227505,
+      "posInactiveProb": 0.09998803005865607,
+      "aActivationCost": 0.0,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 21,
+      "topoPosition": 14,
+      "nodeType": "NONTARGET",
+      "actType": "OR",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.3013425122169826,
+      "posActiveProb": 0.8275578244218681,
+      "posInactiveProb": 0.16188244452776385,
+      "aActivationCost": 0.0,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 22,
+      "topoPosition": 22,
+      "nodeType": "NONTARGET",
+      "actType": "OR",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.23480292828273763,
+      "posActiveProb": 0.9742976656948494,
+      "posInactiveProb": 0.11797798301972723,
+      "aActivationCost": 0.0,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 23,
+      "topoPosition": 19,
+      "nodeType": "NONTARGET",
+      "actType": "AND",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.10839871884568374,
+      "posActiveProb": 0.9147560114972302,
+      "posInactiveProb": 0.15892399464393817,
+      "aActivationCost": -0.3333152875170068,
+      "aActivationProb": 0.9543078573771416
+    },
+    {
+      "id": 24,
+      "topoPosition": 17,
+      "nodeType": "NONTARGET",
+      "actType": "AND",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.13073667966193014,
+      "posActiveProb": 0.8456513843044382,
+      "posInactiveProb": 0.006551047544794697,
+      "aActivationCost": -0.36410780692777334,
+      "aActivationProb": 0.862430408869238
+    },
+    {
+      "id": 25,
+      "topoPosition": 26,
+      "nodeType": "NONTARGET",
+      "actType": "OR",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.4715954008751477,
+      "posActiveProb": 0.8787425023809878,
+      "posInactiveProb": 0.19905531853059721,
+      "aActivationCost": 0.0,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 26,
+      "topoPosition": 25,
+      "nodeType": "NONTARGET",
+      "actType": "AND",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.1236989119884095,
+      "posActiveProb": 0.8870402262449099,
+      "posInactiveProb": 0.08497862330003705,
+      "aActivationCost": -0.27952820960441205,
+      "aActivationProb": 0.9767248089259657
+    },
+    {
+      "id": 27,
+      "topoPosition": 24,
+      "nodeType": "NONTARGET",
+      "actType": "OR",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.24008666299102624,
+      "posActiveProb": 0.880219263440272,
+      "posInactiveProb": 0.08173629390894765,
+      "aActivationCost": 0.0,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 28,
+      "topoPosition": 27,
+      "nodeType": "NONTARGET",
+      "actType": "AND",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -0.16920548396229718,
+      "posActiveProb": 0.8883946840575607,
+      "posInactiveProb": 0.11603074035443979,
+      "aActivationCost": -0.22426582875097506,
+      "aActivationProb": 0.890641590151013
+    },
+    {
+      "id": 29,
+      "topoPosition": 29,
+      "nodeType": "TARGET",
+      "actType": "AND",
+      "state": "INACTIVE",
+      "aReward": 7.3262312080001495,
+      "dPenalty": -5.573052284434635,
+      "dCost": -0.24112189585744392,
+      "posActiveProb": 0.8863449095209901,
+      "posInactiveProb": 0.01002689134100483,
+      "aActivationCost": -0.12645058735684378,
+      "aActivationProb": 0.8481516500158053
+    },
+    {
+      "id": 30,
+      "topoPosition": 28,
+      "nodeType": "TARGET",
+      "actType": "OR",
+      "state": "INACTIVE",
+      "aReward": 3.83857864382841,
+      "dPenalty": -6.784746687257697,
+      "dCost": -0.13346522030254226,
+      "posActiveProb": 0.9864388195580711,
+      "posInactiveProb": 0.08808385717716588,
+      "aActivationCost": 0.0,
+      "aActivationProb": 0.0
+    }
+  ],
+  "edges": [
+    {
+      "id": 1,
+      "srcID": 5,
+      "desID": 17,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.19666887087949292,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 2,
+      "srcID": 8,
+      "desID": 24,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.3499546952429977,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 3,
+      "srcID": 1,
+      "desID": 15,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.43255643297870333,
+      "aActivationProb": 0.7965871959697163
+    },
+    {
+      "id": 4,
+      "srcID": 16,
+      "desID": 24,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.22267344144948054,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 5,
+      "srcID": 21,
+      "desID": 30,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.3352850125476823,
+      "aActivationProb": 0.601112772700239
+    },
+    {
+      "id": 6,
+      "srcID": 20,
+      "desID": 26,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.16801070345483496,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 7,
+      "srcID": 8,
+      "desID": 22,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.15249331142217953,
+      "aActivationProb": 0.6471731005369212
+    },
+    {
+      "id": 8,
+      "srcID": 27,
+      "desID": 30,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.3794325075596111,
+      "aActivationProb": 0.6873939535414448
+    },
+    {
+      "id": 9,
+      "srcID": 10,
+      "desID": 21,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.2575170067823169,
+      "aActivationProb": 0.6528894073796978
+    },
+    {
+      "id": 10,
+      "srcID": 11,
+      "desID": 27,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.23487726224755426,
+      "aActivationProb": 0.7723130893080924
+    },
+    {
+      "id": 11,
+      "srcID": 5,
+      "desID": 11,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.407083178457521,
+      "aActivationProb": 0.610564663332102
+    },
+    {
+      "id": 12,
+      "srcID": 10,
+      "desID": 23,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.3060100504494459,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 13,
+      "srcID": 18,
+      "desID": 19,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.29635258074907034,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 14,
+      "srcID": 7,
+      "desID": 17,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.1774093759810545,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 15,
+      "srcID": 12,
+      "desID": 23,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.12971732711847972,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 16,
+      "srcID": 10,
+      "desID": 19,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.4728588398195298,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 17,
+      "srcID": 4,
+      "desID": 22,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.410866554827103,
+      "aActivationProb": 0.6468797056742446
+    },
+    {
+      "id": 18,
+      "srcID": 12,
+      "desID": 28,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.21659957238840744,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 19,
+      "srcID": 19,
+      "desID": 20,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.21092078614010729,
+      "aActivationProb": 0.7515060453716412
+    },
+    {
+      "id": 20,
+      "srcID": 17,
+      "desID": 25,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.15238275030836013,
+      "aActivationProb": 0.6493260197439156
+    },
+    {
+      "id": 21,
+      "srcID": 14,
+      "desID": 28,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.479725653989621,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 22,
+      "srcID": 2,
+      "desID": 13,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.1985267138763213,
+      "aActivationProb": 0.7358833486634637
+    },
+    {
+      "id": 23,
+      "srcID": 9,
+      "desID": 14,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.10064975501415772,
+      "aActivationProb": 0.7802363182189113
+    },
+    {
+      "id": 24,
+      "srcID": 15,
+      "desID": 19,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.45602281540511475,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 25,
+      "srcID": 11,
+      "desID": 12,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.32837735779282645,
+      "aActivationProb": 0.6975716072659996
+    },
+    {
+      "id": 26,
+      "srcID": 26,
+      "desID": 28,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.3498282408760544,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 27,
+      "srcID": 12,
+      "desID": 22,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.37156051792200395,
+      "aActivationProb": 0.7720325938492995
+    },
+    {
+      "id": 28,
+      "srcID": 2,
+      "desID": 12,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.37467453177333104,
+      "aActivationProb": 0.7871964416958238
+    },
+    {
+      "id": 29,
+      "srcID": 1,
+      "desID": 12,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.187311931158058,
+      "aActivationProb": 0.6266207491394299
+    },
+    {
+      "id": 30,
+      "srcID": 10,
+      "desID": 28,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.32800957227390953,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 31,
+      "srcID": 4,
+      "desID": 23,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.3190139382464138,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 32,
+      "srcID": 1,
+      "desID": 20,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.4837890084090367,
+      "aActivationProb": 0.6779132428594907
+    },
+    {
+      "id": 33,
+      "srcID": 1,
+      "desID": 9,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.406429913096625,
+      "aActivationProb": 0.7944382095395456
+    },
+    {
+      "id": 34,
+      "srcID": 2,
+      "desID": 3,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.4891350650574645,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 35,
+      "srcID": 10,
+      "desID": 24,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.2675230871832124,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 36,
+      "srcID": 8,
+      "desID": 28,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.22067289316334007,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 37,
+      "srcID": 9,
+      "desID": 30,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.2576816152062447,
+      "aActivationProb": 0.77110317188191
+    },
+    {
+      "id": 38,
+      "srcID": 9,
+      "desID": 23,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.476773804439942,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 39,
+      "srcID": 1,
+      "desID": 13,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.13003048282219887,
+      "aActivationProb": 0.6575349415468347
+    },
+    {
+      "id": 40,
+      "srcID": 10,
+      "desID": 18,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.13491669004290402,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 41,
+      "srcID": 13,
+      "desID": 27,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.16222784876121824,
+      "aActivationProb": 0.7779159436802433
+    },
+    {
+      "id": 42,
+      "srcID": 17,
+      "desID": 30,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.25256661001198044,
+      "aActivationProb": 0.6791095553973427
+    },
+    {
+      "id": 43,
+      "srcID": 16,
+      "desID": 19,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.4957927035611228,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 44,
+      "srcID": 1,
+      "desID": 21,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.2887292076005982,
+      "aActivationProb": 0.7337561666985388
+    },
+    {
+      "id": 45,
+      "srcID": 3,
+      "desID": 6,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.13098149465944842,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 46,
+      "srcID": 11,
+      "desID": 17,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.33172725436966494,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 47,
+      "srcID": 24,
+      "desID": 26,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.10729403679531711,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 48,
+      "srcID": 11,
+      "desID": 22,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.31481593908636585,
+      "aActivationProb": 0.7822497584976448
+    },
+    {
+      "id": 49,
+      "srcID": 2,
+      "desID": 24,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.167806896964564,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 50,
+      "srcID": 14,
+      "desID": 26,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.263375814161458,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 51,
+      "srcID": 5,
+      "desID": 18,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.4333890482646908,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 52,
+      "srcID": 12,
+      "desID": 29,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.4002953789188618,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 53,
+      "srcID": 6,
+      "desID": 24,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.3048888076283096,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 54,
+      "srcID": 20,
+      "desID": 25,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.24094051620059745,
+      "aActivationProb": 0.6084085841072756
+    },
+    {
+      "id": 55,
+      "srcID": 9,
+      "desID": 17,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.2019237781150424,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 56,
+      "srcID": 2,
+      "desID": 26,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.122688460815721,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 57,
+      "srcID": 16,
+      "desID": 18,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.11855680598308567,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 58,
+      "srcID": 13,
+      "desID": 25,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.14518364687773772,
+      "aActivationProb": 0.7424513885382857
+    },
+    {
+      "id": 59,
+      "srcID": 5,
+      "desID": 26,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.3865710509362123,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 60,
+      "srcID": 14,
+      "desID": 16,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.34534115171265334,
+      "aActivationProb": 0.7445301263732259
+    },
+    {
+      "id": 61,
+      "srcID": 1,
+      "desID": 24,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.39947761693423817,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 62,
+      "srcID": 2,
+      "desID": 22,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.12704904286779473,
+      "aActivationProb": 0.7265920694794552
+    },
+    {
+      "id": 63,
+      "srcID": 25,
+      "desID": 30,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.42168033556520756,
+      "aActivationProb": 0.6527183413918407
+    },
+    {
+      "id": 64,
+      "srcID": 2,
+      "desID": 6,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.3166426084007673,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 65,
+      "srcID": 3,
+      "desID": 13,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.3272339799547039,
+      "aActivationProb": 0.6647661561096072
+    },
+    {
+      "id": 66,
+      "srcID": 12,
+      "desID": 17,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.10020509022051627,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 67,
+      "srcID": 23,
+      "desID": 25,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.4193076232829204,
+      "aActivationProb": 0.7218102696265475
+    },
+    {
+      "id": 68,
+      "srcID": 1,
+      "desID": 10,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.37022271217197955,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 69,
+      "srcID": 15,
+      "desID": 16,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.24655416389092116,
+      "aActivationProb": 0.7041638820243041
+    },
+    {
+      "id": 70,
+      "srcID": 28,
+      "desID": 29,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.3653084281496435,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 71,
+      "srcID": 7,
+      "desID": 14,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.453687552334869,
+      "aActivationProb": 0.7640687565174672
+    },
+    {
+      "id": 72,
+      "srcID": 5,
+      "desID": 19,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.1701587602525012,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 73,
+      "srcID": 15,
+      "desID": 21,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.30650023359456435,
+      "aActivationProb": 0.6577485715742273
+    },
+    {
+      "id": 74,
+      "srcID": 9,
+      "desID": 18,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.2770267774219084,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 75,
+      "srcID": 8,
+      "desID": 30,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.34326957173819295,
+      "aActivationProb": 0.7780523785356718
+    },
+    {
+      "id": 76,
+      "srcID": 7,
+      "desID": 15,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.4876230253372394,
+      "aActivationProb": 0.7510547779667801
+    },
+    {
+      "id": 77,
+      "srcID": 17,
+      "desID": 22,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.18345510872853465,
+      "aActivationProb": 0.7097793117257502
+    },
+    {
+      "id": 78,
+      "srcID": 11,
+      "desID": 28,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.39716879079840595,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 79,
+      "srcID": 7,
+      "desID": 21,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.1528732366650125,
+      "aActivationProb": 0.7832047827174302
+    },
+    {
+      "id": 80,
+      "srcID": 27,
+      "desID": 29,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.1387774820486496,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 81,
+      "srcID": 21,
+      "desID": 25,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.21102463544066055,
+      "aActivationProb": 0.7415095352925682
+    },
+    {
+      "id": 82,
+      "srcID": 16,
+      "desID": 28,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.38186452103630486,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 83,
+      "srcID": 13,
+      "desID": 17,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.3280433679388355,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 84,
+      "srcID": 2,
+      "desID": 10,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.3248659529827595,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 85,
+      "srcID": 6,
+      "desID": 26,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.34040760108548795,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 86,
+      "srcID": 7,
+      "desID": 26,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.12529584164502133,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 87,
+      "srcID": 5,
+      "desID": 29,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.2945566273734828,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 88,
+      "srcID": 21,
+      "desID": 29,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.41943730672335067,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 89,
+      "srcID": 19,
+      "desID": 30,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.3896910610846061,
+      "aActivationProb": 0.6667403734482567
+    },
+    {
+      "id": 90,
+      "srcID": 6,
+      "desID": 12,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.24355956323149597,
+      "aActivationProb": 0.7908383003630385
+    },
+    {
+      "id": 91,
+      "srcID": 22,
+      "desID": 28,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.12004410296180056,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 92,
+      "srcID": 21,
+      "desID": 28,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.45362903714751673,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 93,
+      "srcID": 24,
+      "desID": 27,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.3063595629767762,
+      "aActivationProb": 0.6757245236227022
+    },
+    {
+      "id": 94,
+      "srcID": 4,
+      "desID": 15,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.13062833493884574,
+      "aActivationProb": 0.6130020947585515
+    },
+    {
+      "id": 95,
+      "srcID": 4,
+      "desID": 29,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.2321434205628477,
+      "aActivationProb": 0.0
+    },
+    {
+      "id": 96,
+      "srcID": 11,
+      "desID": 20,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.18248914932758398,
+      "aActivationProb": 0.7238723566113066
+    },
+    {
+      "id": 97,
+      "srcID": 5,
+      "desID": 30,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.3859327193949911,
+      "aActivationProb": 0.7896894679390353
+    },
+    {
+      "id": 98,
+      "srcID": 26,
+      "desID": 30,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.36219535287635357,
+      "aActivationProb": 0.7089507764441473
+    },
+    {
+      "id": 99,
+      "srcID": 22,
+      "desID": 27,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.36151718101185715,
+      "aActivationProb": 0.7525313713719075
+    },
+    {
+      "id": 100,
+      "srcID": 8,
+      "desID": 13,
+      "edgeType": "NORMAL",
+      "aActivationCost": -0.48040527557299423,
+      "aActivationProb": 0.6199024980053296
+    }
+  ],
+  "targets": [
+    {
+      "id": 29
+    },
+    {
+      "id": 30
+    }
+  ],
+  "minCut": [
+    {
+      "id": 1
+    },
+    {
+      "id": 17
+    },
+    {
+      "id": 19
+    },
+    {
+      "id": 4
+    },
+    {
+      "id": 5
+    },
+    {
+      "id": 21
+    },
+    {
+      "id": 8
+    },
+    {
+      "id": 25
+    },
+    {
+      "id": 26
+    },
+    {
+      "id": 27
+    },
+    {
+      "id": 12
+    },
+    {
+      "id": 28
+    }
+  ]
+}
