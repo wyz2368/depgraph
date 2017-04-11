@@ -232,7 +232,7 @@ public class RandomWalkvsDefender extends Defender{
 			if(entry.getValue() > this.thres)
 				revisedBelief.addState(entry.getKey(), entry.getValue());
 		}
-		newBelief.clear();
+//		newBelief.clear();
 		//Re-normalize again
 		sumProb = 0.0;
 		for(Entry<GameState, Double> entry : revisedBelief.getGameStateMap().entrySet())

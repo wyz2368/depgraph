@@ -118,12 +118,18 @@ public class ValuePropagationAttacker extends Attacker{
 	public List<AttackerAction> sampleAction(DependencyGraph depGraph,
 			int curTimeStep, int numTimeStep, RandomGenerator rng,
 			int numSample, boolean isReplacement) {
-		// TODO Auto-generated method stub
+		// Find candidate
 		AttackCandidate attackCandidate = selectCandidate(depGraph, curTimeStep, numTimeStep);
+		// Compute candidate value
+//		double[] candidateValue = computeCandidateValue(depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
+//				, this.propagationParam);
+//		double[] candidateValue = computeCandidateValueTime(depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
+//				, this.propagationParam);
 		double[] candidateValue = computeCandidateValueTopoBest(depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
 				, this.propagationParam);
 		int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
 		
+		// Compute number of candidates to select
 		int numSelectCandidate = 0;
 		if(totalNumCandidate < this.minNumSelectCandidate)
 			numSelectCandidate = totalNumCandidate;
@@ -133,9 +139,16 @@ public class ValuePropagationAttacker extends Attacker{
 			numSelectCandidate = Math.min(this.maxNumSelectCandidate, numSelectCandidate);
 		}
 		if(numSelectCandidate == 0) // if there is no candidate
-			return new ArrayList<AttackerAction>();
-		// Sample nodes
+		{
+			List<AttackerAction> attActionList = new ArrayList<AttackerAction>();
+			attActionList.add(new AttackerAction());
+			return attActionList;
+		}
+		
+		// Compute probability to choose each node
 		double[] probabilities = computecandidateProb(totalNumCandidate, candidateValue, this.qrParam);
+		
+		// Sampling
 		int[] nodeIndexes = new int[totalNumCandidate];
 		for(int i = 0; i < totalNumCandidate; i++)
 			nodeIndexes[i] = i;

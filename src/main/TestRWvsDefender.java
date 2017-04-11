@@ -14,6 +14,7 @@ import agent.Defender;
 import agent.GoalOnlyDefender;
 import agent.RandomWalkAttacker;
 import agent.RandomWalkvsDefender;
+import agent.ValuePropagationAttacker;
 
 public class TestRWvsDefender {
 
@@ -69,13 +70,20 @@ public class TestRWvsDefender {
 		
 		int maxNumRes = 10;
 		int minNumRes = 2;
-		double numResRatio = 0.9;
+		double numResRatio = 0.7;
 		
-		int numTimeStep = 6;
-		int numSim = 100;
+		int maxNumSelectCandidate = 10;
+		int minNumSelectCandidate = 2;
+		double numSelectCandidateRatio = 0.7;
+		
+		int numTimeStep = 10;
+		int numSim = 1;
 		
 		RandomWalkvsDefender rwDefender = new RandomWalkvsDefender(logisParam, discFact, thres, qrParam, numRWSample);
 		Attacker rwAttacker = new RandomWalkAttacker(numRWSample, qrParam, discFact);
+		Attacker vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate
+				, minNumSelectCandidate, numSelectCandidateRatio
+				, qrParam, discFact);
 		GameSimulation gameSimRWvsRW = new GameSimulation(depGraph, rwAttacker, rwDefender, rnd, numTimeStep, discFact);
 		double defPayoffRWvsRW = 0.0;
 		double attPayoffRWvsRW = 0.0;
@@ -109,6 +117,23 @@ public class TestRWvsDefender {
 		defPayoffRWvsGO /= numSim;
 		attPayoffRWvsGO /= numSim;
 		
+		
+		GameSimulation gameSimVPvsRW = new GameSimulation(depGraph, vpAttacker, rwDefender, rnd, numTimeStep, discFact);
+		double defPayoffVPvsRW = 0.0;
+		double attPayoffVPvsRW = 0.0;
+		for(int i = 0; i < numSim; i++)
+		{
+			System.out.println("Simulation " + i);
+			gameSimVPvsRW.runSimulation();
+			gameSimVPvsRW.printPayoff();
+			defPayoffVPvsRW += gameSimVPvsRW.getSimulationResult().getDefPayoff();
+			attPayoffVPvsRW += gameSimVPvsRW.getSimulationResult().getAttPayoff();
+			gameSimVPvsRW.reset();
+//			System.out.println();
+		}
+		defPayoffVPvsRW /= numSim;
+		attPayoffVPvsRW /= numSim;
+		
 		System.out.println("Final result: ");
 		System.out.println("Defender random walk payoff: " + defPayoffRWvsRW);
 		System.out.println("Attacker random walk payoff: " + attPayoffRWvsRW);
@@ -118,8 +143,8 @@ public class TestRWvsDefender {
 		System.out.println("Attacker random walk payoff: " + attPayoffRWvsGO);
 		System.out.println();
 		
-		System.out.println("Defender goal node payoff: " + defPayoffRWvsGO);
-		System.out.println("Attacker random walk payoff: " + attPayoffRWvsGO);
+		System.out.println("Defender random walk payoff: " + defPayoffVPvsRW);
+		System.out.println("Attacker value propagation payoff: " + attPayoffVPvsRW);
 		System.out.println();
 
 	}

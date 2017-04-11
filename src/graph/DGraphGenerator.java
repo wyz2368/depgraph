@@ -1,7 +1,6 @@
 package graph;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -130,15 +129,24 @@ public class DGraphGenerator {
 	{
 		double aReward = rand.nextUniform(aRewardLB, aRewardUB, true);
 		double dPenalty = rand.nextUniform(dPenaltyLB, dPenaltyUB, true);
-		
-		double aCost = rand.nextUniform(aCostLB, aCostUB, true);
-		double dCost = rand.nextUniform(dCostLB, dCostUB, true);
-		
 		node.setAReward(aReward);
 		node.setDPenalty(dPenalty);
 		
-		node.setACost(aCost);
-		node.setDCost(dCost);
+		if(node.getType() == NODE_TYPE.TARGET)
+		{
+			double aCost = 2 * rand.nextUniform(aCostLB, aCostUB, true);
+			double dCost = 2 * rand.nextUniform(dCostLB, dCostUB, true);
+			node.setACost(aCost);
+			node.setDCost(dCost);
+		}
+		else
+		{
+			double aCost = rand.nextUniform(aCostLB, aCostUB, true);
+			double dCost = rand.nextUniform(dCostLB, dCostUB, true);
+			node.setACost(aCost);
+			node.setDCost(dCost);
+		}
+		
 	}
 	public static void genEdgePayoffRandom(DependencyGraph depGraph, Edge edge, RandomDataGenerator rand
 			, double aCostLB, double aCostUB)

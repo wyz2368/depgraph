@@ -32,7 +32,7 @@ public class GameState{
 		System.out.println("--------------------------------------------------------------------");
 		System.out.println("Active Nodes");
 		for(Node node : this.enabledNodeSet)
-			System.out.print(node.getId() + "\t");
+			System.out.println(node.getId() + "\t" + node.getType());
 		System.out.println();
 		System.out.println("--------------------------------------------------------------------");
 	}

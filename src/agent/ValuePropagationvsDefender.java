@@ -229,7 +229,7 @@ public class ValuePropagationvsDefender extends Defender{
 //		System.out.println(newBelief.getGameStateMap().size());
 //		System.out.println(revisedBelief.getGameStateMap().size());
 //		System.out.println("End testing belief size");
-		newBelief.clear();
+//		newBelief.clear();
 		// Revision
 		sumProb = 0.0;
 		for(Entry<GameState, Double> entry : revisedBelief.getGameStateMap().entrySet())
@@ -330,7 +330,7 @@ public class ValuePropagationvsDefender extends Defender{
 						}
 					}
 				}
-				else
+				else // active targets
 				{
 					tempValue += curDCandidateValue[dIdx];
 				}
@@ -341,7 +341,7 @@ public class ValuePropagationvsDefender extends Defender{
 				}
 				else
 				{
-					dCandidateMap.put(node, curValue + tempValue * stateProb);
+					dCandidateMap.replace(node, curValue + tempValue * stateProb);
 				}
 				dIdx++;
 			}
@@ -409,7 +409,8 @@ public class ValuePropagationvsDefender extends Defender{
 		double[] dCandidateValue = new double[dCandidateList.size()];
 		for(int i = 0; i < dCandidateList.size(); i++)
 			dCandidateValue[i] = 0.0; // initialize value of candidate nodes for the defender
-
+		
+		// Compute values for each node in the graph
 		List<Node> targetList = new ArrayList<Node>(depGraph.getTargetSet()); // list of targets
 		Node[] topoOrder = new Node[depGraph.vertexSet().size()]; // topological order of nodes in the graph
 
@@ -425,7 +426,6 @@ public class ValuePropagationvsDefender extends Defender{
 			{
 				for(int k = 0; k < depGraph.vertexSet().size(); k++)
 				{
-//					r[i][j][k] = 0.0;
 					r[i][j][k] = Double.POSITIVE_INFINITY;
 				}
 			}
@@ -448,41 +448,11 @@ public class ValuePropagationvsDefender extends Defender{
 					Node postNode = edge.gettarget();
 					if(postNode.getState() != NODE_STATE.ACTIVE)
 					{
-						
 						for(int i = 0; i < targetList.size(); i++)
 						{
+							if(targetList.get(i).getState() != NODE_STATE.ACTIVE)
 							for(int j = 1; j <= numTimeStep - curTimeStep; j++)
 							{
-//								double r_hat = 0.0;
-//								if(postNode.getActivationType() == NODE_ACTIVATION_TYPE.OR)
-//								{
-//									// Check active nodes
-//									double prob = 1.0;
-//									for(Edge postEdge : depGraph.incomingEdgesOf(postNode))
-//									{
-//										Node srcNode = postEdge.getsource();
-//										if(srcNode.getState() == NODE_STATE.ACTIVE)
-//											prob *= (1 - postEdge.getActProb());
-//									}
-//									prob = 1 - prob;
-//									double newProb = 1.0;
-//									for(Edge postEdge : depGraph.incomingEdgesOf(postNode))
-//									{
-//										Node srcNode = postEdge.getsource();
-//										if(srcNode.getId() != node.getId() && srcNode.getState() == NODE_STATE.ACTIVE)
-//											newProb *= (1 - postEdge.getActProb());
-//									}
-//									newProb = 1 - newProb;
-//									
-//									double reducedProb = prob - newProb;
-//									
-//									r_hat = r[i][j - 1][postNode.getId() - 1] * reducedProb; 
-//								}
-//								else
-//								{
-//									r_hat = r[i][j - 1][postNode.getId() - 1] * postNode.getActProb();
-//								}
-								
 								double r_hat = 0.0;
 								if(postNode.getActivationType() == NODE_ACTIVATION_TYPE.OR)
 								{
@@ -491,15 +461,7 @@ public class ValuePropagationvsDefender extends Defender{
 								else
 								{
 									r_hat = r[i][j - 1][postNode.getId() - 1] * postNode.getActProb();
-//									int degree = depGraph.inDegreeOf(postNode);
-//									for(Edge postEdge : depGraph.incomingEdgesOf(postNode))
-//									{
-//										if(postEdge.getsource().getState() == NODE_STATE.ACTIVE)
-//											degree--;
-//									}
-//									r_hat = r_hat / Math.pow(degree, propagationParam);
 								}
-//								r[i][j][node.getId() - 1] += discountFactor * r_hat;
 								if(r[i][j][node.getId() - 1] > discountFactor * r_hat)
 									r[i][j][node.getId() - 1] = discountFactor * r_hat;
 							}
@@ -509,8 +471,6 @@ public class ValuePropagationvsDefender extends Defender{
 			}
 		
 		}
-		
-		/*****************************************************************************************/
 		// Sum of value for candidates
 		double[] rSum = new double[depGraph.vertexSet().size()];
 		for(int i = 0; i < depGraph.vertexSet().size(); i++)
@@ -523,13 +483,14 @@ public class ValuePropagationvsDefender extends Defender{
 				for(int k = 0; k < depGraph.vertexSet().size(); k++)
 					if(rSum[k] > r[i][j][k])
 						rSum[k] = r[i][j][k];
-//					rSum[k] += r[i][j][k];
 			}
 		}
+		
+		/*****************************************************************************************/
 		int idx = 0;
 		for(Node node : dCandidateList)
 		{
-//			dCandidateValue[idx] += node.getDCost();
+			dCandidateValue[idx] += node.getDCost();
 			if(node.getState() != NODE_STATE.ACTIVE) // not active targets, then belonging to attack candidate set
 			{
 				if(node.getActivationType() == NODE_ACTIVATION_TYPE.OR) // OR nodes, then belong to attack edge set
@@ -552,7 +513,7 @@ public class ValuePropagationvsDefender extends Defender{
 			}
 			else // if this is active target
 			{
-				System.out.println("Active targets");
+//				System.out.println("Active targets");
 				dCandidateValue[idx] -= node.getDPenalty();
 				if(rSum[node.getId() - 1] != Double.POSITIVE_INFINITY)
 					dCandidateValue[idx] -= rSum[node.getId() - 1];

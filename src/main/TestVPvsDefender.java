@@ -11,9 +11,10 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 
 import agent.Attacker;
 import agent.Defender;
+import agent.GoalOnlyDefender;
 //import agent.GoalOnlyDefender;
 import agent.ValuePropagationAttacker;
-import agent.ValuePropagationvsDefender;
+import agent.ValuePropagationvsDefender_Alternative;
 
 public class TestVPvsDefender {
 
@@ -22,11 +23,11 @@ public class TestVPvsDefender {
 		int numNode = 50;
 		int numEdge = 150;
 		int numTarget = 10;
-		double nodeActTypeRatio = 0.3;
-		double aRewardLB = 1.0;
+		double nodeActTypeRatio = 0.5;
+		double aRewardLB = 2.0;
 		double aRewardUB = 10.0;
 		double dPenaltyLB = -10.0;
-		double dPenaltyUB = -1.0;
+		double dPenaltyUB = -2.0;
 		double aNodeCostLB = -0.5;
 		double aNodeCostUB = -0.1;
 		double aEdgeCostLB = -0.5;
@@ -71,32 +72,36 @@ public class TestVPvsDefender {
 		int minNumRes = 2;
 		double numResRatio = 0.7;
 		double logisParam = 5.0;
-		double thres = 1e-2;
+		double thres = 1e-3;
 		
 		int numTimeStep = 6;
-		int numSim = 10;
-//		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
-		Defender valuePropagationvsDefender = new ValuePropagationvsDefender(maxNumRes, minNumRes, numResRatio
+		int numSim = 1000;
+		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
+		
+		Defender valuePropagationvsDefender = new ValuePropagationvsDefender_Alternative(maxNumRes, minNumRes, numResRatio
 				, logisParam, discFact, thres
 				, qrParam, maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
+//		Defender valuePropagationvsDefender = new ValuePropagationvsDefender(maxNumRes, minNumRes, numResRatio
+//				, logisParam, discFact, thres
+//				, qrParam, maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
+		
 		Attacker vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate, minNumSelectCandidate
 				, numSelectCandidateRatio, qrParam, discFact);
-		
-//		
-//		GameSimulation gameSimVPvsGO = new GameSimulation(depGraph, vpAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
-//		double defPayoffVPvsGO = 0.0;
-//		double attPayoffVPvsGO = 0.0;
-//		for(int i = 0; i < numSim; i++)
-//		{
-//			System.out.println("Simulation " + i);
-//			gameSimVPvsGO.runSimulation();
-//			gameSimVPvsGO.printPayoff();
-//			defPayoffVPvsGO += gameSimVPvsGO.getSimulationResult().getDefPayoff();
-//			attPayoffVPvsGO += gameSimVPvsGO.getSimulationResult().getAttPayoff();
-//			gameSimVPvsGO.reset();
-//		}
-//		defPayoffVPvsGO /= numSim;
-//		attPayoffVPvsGO /= numSim;
+				
+		GameSimulation gameSimVPvsGO = new GameSimulation(depGraph, vpAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
+		double defPayoffVPvsGO = 0.0;
+		double attPayoffVPvsGO = 0.0;
+		for(int i = 0; i < numSim; i++)
+		{
+			System.out.println("Simulation " + i);
+			gameSimVPvsGO.runSimulation();
+			gameSimVPvsGO.printPayoff();
+			defPayoffVPvsGO += gameSimVPvsGO.getSimulationResult().getDefPayoff();
+			attPayoffVPvsGO += gameSimVPvsGO.getSimulationResult().getAttPayoff();
+			gameSimVPvsGO.reset();
+		}
+		defPayoffVPvsGO /= numSim;
+		attPayoffVPvsGO /= numSim;
 		
 		GameSimulation gameSimVPvsVP = new GameSimulation(depGraph, vpAttacker, valuePropagationvsDefender, rnd, numTimeStep, discFact);
 		double defPayoffVPvsVP = 0.0;
@@ -117,9 +122,9 @@ public class TestVPvsDefender {
 		System.out.println("Attacker value propagation payoff: " + attPayoffVPvsVP);
 		System.out.println();
 		
-//		System.out.println("Defender goal node payoff: " + defPayoffVPvsGO);
-//		System.out.println("Attacker value propagation payoff: " + attPayoffVPvsGO);
-//		System.out.println();
+		System.out.println("Defender goal node payoff: " + defPayoffVPvsGO);
+		System.out.println("Attacker value propagation payoff: " + attPayoffVPvsGO);
+		System.out.println();
 	}
 
 }
