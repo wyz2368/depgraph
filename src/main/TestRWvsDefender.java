@@ -117,6 +117,10 @@ public class TestRWvsDefender {
 		System.out.println("Defender goal node payoff: " + defPayoffRWvsGO);
 		System.out.println("Attacker random walk payoff: " + attPayoffRWvsGO);
 		System.out.println();
+		
+		System.out.println("Defender goal node payoff: " + defPayoffRWvsGO);
+		System.out.println("Attacker random walk payoff: " + attPayoffRWvsGO);
+		System.out.println();
 
 	}
 
