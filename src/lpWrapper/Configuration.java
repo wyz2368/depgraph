@@ -42,7 +42,7 @@ public class Configuration {
 
 		String line = in.readLine();
 		while (line != null) {
-			line.trim();		
+			line = line.trim();		
 			if (line.length() > 0 && ! line.startsWith("#")) {
 				// not a comment
 				String[] list = line.split("=");
@@ -91,7 +91,7 @@ public class Configuration {
 
 		String line = in.readLine();
 		while (line != null) {
-			line.trim();
+			line = line.trim();
 			if (line.length() > 0 && ! line.startsWith("#")) {
 				// not a comment
 				String[] list = line.split("=");
