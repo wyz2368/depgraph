@@ -3,6 +3,7 @@ package graph;
 public interface INode{	
 	public enum NODE_TYPE {NONTARGET, TARGET;
 		
+	@Override
 	public String toString(){
 		switch(this){
 		case TARGET: return "TARGET";
@@ -10,9 +11,10 @@ public interface INode{
 		default: return "";
 		}	
 	}
-	};
+	}
 	public enum NODE_ACTIVATION_TYPE {AND, OR;
 	
+	@Override
 	public String toString(){
 		switch(this){
 		case AND: return "AND";
@@ -20,10 +22,11 @@ public interface INode{
 		default: return "";
 		}	
 	}
-	};
+	}
 	
 	public enum NODE_STATE {ACTIVE, INACTIVE;
 	
+	@Override
 	public String toString(){
 		switch(this){
 		case ACTIVE: return "ACTIVE";
@@ -31,7 +34,7 @@ public interface INode{
 		default: return "";
 		}	
 	}
-	};
+	}
 	public int getId() ;
 	public void setID(int id);
 	
@@ -66,10 +69,5 @@ public interface INode{
 	public void setPosActiveProb(double posActiveProb);
 	
 	public double getPosInactiveProb();
-	public void setPosInactiveProb(double posInactiveProbe);
-	
-	public int hashCode();
-	public boolean equals(Object obj);
-	
-	public String toString();
+	public void setPosInactiveProb(double posInactiveProbe);	
 }

@@ -155,14 +155,14 @@ public class Node implements INode {
 	
 	@Override
 	public String toString() {
-		return type.toString()+(new Integer(id)).toString();
+		return this.type.toString()+(new Integer(this.id)).toString();
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + id;
+		result = prime * result + this.id;
 		return result;
 	}
 
@@ -175,7 +175,7 @@ public class Node implements INode {
 		if (getClass() != obj.getClass())
 			return false;
 		Node other = (Node) obj;
-		if (id != other.id)
+		if (this.id != other.id)
 			return false;
 		return true;
 	}

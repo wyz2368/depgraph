@@ -22,7 +22,7 @@ public class TestTopologicalOrder {
 		System.out.println("Topological order: ");
 		while(topoOrderIter.hasNext())
 		{
-			Node node = (Node) topoOrderIter.next();
+			Node node = topoOrderIter.next();
 			System.out.println(node.getId());
 		}
 	}

@@ -230,6 +230,9 @@ public class DagGenerator {
     		if(i > 0) // Now add edges
     		{
     			int numEdge = rand.nextInt(numEdgeLB, numEdgeUB);
+    			if (preLayerNodeList == null) {
+    				throw new IllegalStateException();
+    			}
     			numEdge = Math.min(numEdge, curLayerNodeList.size() * preLayerNodeList.size());
     			int curNumEdge = 0;
     			boolean[][] isAdded = new boolean[preLayerNodeList.size()][curLayerNodeList.size()];
@@ -255,6 +258,9 @@ public class DagGenerator {
     			preLayerNodeList.clear();
     		preLayerNodeList = curLayerNodeList;
     	}
+		if (preLayerNodeList == null) {
+			throw new IllegalStateException();
+		}
     	preLayerNodeList.clear();
     	return dag;
     }

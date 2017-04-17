@@ -8,7 +8,6 @@ import graph.Node;
 import graph.INode.NODE_STATE;
 import model.DefenderAction;
 import model.DefenderBelief;
-import model.DefenderObservation;
 import model.DependencyGraph;
 import model.GameState;
 
@@ -48,10 +47,6 @@ public class TestDefenderAgent {
 		double minPosInactiveProb = 0.0;
 		double maxPosInactiveProb = 0.2;
 		
-		int maxNumSelectCandidate = 10;
-		double numSelectCandidateRatio = 0.7;
-		
-		double qrParam = 1.0;
 		double discFact = 0.9;
 		
 		int maxNumRes = 5;
@@ -85,7 +80,7 @@ public class TestDefenderAgent {
 			if(node.getState() == NODE_STATE.ACTIVE)
 				gameState.addEnabledNode(node);
 		}
-		DefenderObservation defObservation = GameOracle.generateDefObservation(depGraph, gameState, rnd);
+		GameOracle.generateDefObservation(depGraph, gameState, rnd);
 		DefenderBelief defBelief = new DefenderBelief();
 		defBelief.addState(gameState, 0.7);
 		

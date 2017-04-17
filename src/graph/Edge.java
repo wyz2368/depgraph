@@ -7,13 +7,14 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 
 public class Edge extends DefaultWeightedEdge{
 	public enum EDGE_TYPE {NORMAL, VIRTUAL;
+	@Override
 	public String toString(){
 		switch(this){
 		case NORMAL: return "NORMAL";
 		case VIRTUAL: return "VIRTUAL";
 		default: return "";
 		}	
-	}};
+	}}
 	private static final long serialVersionUID = 1L;
 
 	private int id = -1;
@@ -42,14 +43,14 @@ public class Edge extends DefaultWeightedEdge{
 	}
 	
 	public int getId() {
-		return id;
+		return this.id;
 	}
 	public void setId(int id) {
 		this.id = id;
 	}
 	
 	public EDGE_TYPE getType() {
-		return type;
+		return this.type;
 	}
 	public void setType(EDGE_TYPE type) {
 		this.type = type;
@@ -84,16 +85,15 @@ public class Edge extends DefaultWeightedEdge{
 	@Override
 	public String toString() {
 		if ( this.type == EDGE_TYPE.NORMAL ) {
-			return ""+id;
-		} else {
-			return ""+id+"(V)";
+			return "" + this.id;
 		}
+		return "" + this.id + "(V)";
 	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + id;
+		result = prime * result + this.id;
 		return result;
 	}
 	@Override
@@ -105,7 +105,7 @@ public class Edge extends DefaultWeightedEdge{
 		if (getClass() != obj.getClass())
 			return false;
 		Edge other = (Edge) obj;
-		if (id != other.id)
+		if (this.id != other.id)
 			return false;
 		return true;
 	}

@@ -12,12 +12,8 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 import agent.Attacker;
 import agent.Defender;
 import agent.GoalOnlyDefender;
-import agent.MinCutDefender;
 import agent.RandomWalkAttacker;
 import agent.UniformAttacker;
-import agent.UniformDefender;
-import agent.ValuePropagationAttacker;
-import agent.ValuePropagationvsDefender;
 
 public class TestGameSimulation {
 
@@ -76,7 +72,6 @@ public class TestGameSimulation {
 		int minNumRes = 2;
 		double numResRatio = 0.7;
 		double logisParam = 5.0;
-		double thres = 1e-3;
 		
 		int numTimeStep = 6;
 		int numSim = 100;

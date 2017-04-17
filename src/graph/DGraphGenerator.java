@@ -41,7 +41,7 @@ public class DGraphGenerator {
 		{
 			setNodeTypeRandom(depGraph, node, rand, nodeActTypeRatio);
 			genNodePayoffRandom(node, rand, aRewardLB, aRewardUB, dPenaltyLB, dPenaltyUB, aNodeCostLB, aNodeCostUB, dCostLB, dCostUB);
-			genActivationProbRandom(depGraph, node, rand, aNodeActProbLB, aNodeActProbUB);
+			genActivationProbRandom(node, rand, aNodeActProbLB, aNodeActProbUB);
 			if(node.getType() != NODE_TYPE.TARGET)
 			{
 				node.setAReward(0.0);
@@ -57,9 +57,9 @@ public class DGraphGenerator {
 		}
 		for(Edge edge : depGraph.edgeSet())
 		{
-			genEdgePayoffRandom(depGraph, edge, rand, aEdgeCostLB, aEdgeCostUB);
+			genEdgePayoffRandom(edge, rand, aEdgeCostLB, aEdgeCostUB);
 			if(edge.gettarget().getActivationType() == NODE_ACTIVATION_TYPE.OR)
-				genActivationProbRandom(depGraph, edge, rand, aEdgeActProbLB, aEdgeActProbUB);
+				genActivationProbRandom(edge, rand, aEdgeActProbLB, aEdgeActProbUB);
 		}
 	}
 	public static GameState randomizeInitialGraphState(DependencyGraph depGraph, RandomDataGenerator rand, double pivot)
@@ -149,20 +149,20 @@ public class DGraphGenerator {
 		}
 		
 	}
-	public static void genEdgePayoffRandom(DependencyGraph depGraph, Edge edge, RandomDataGenerator rand
+	public static void genEdgePayoffRandom(Edge edge, RandomDataGenerator rand
 			, double aCostLB, double aCostUB)
 	{
 		double aCost = rand.nextUniform(aCostLB, aCostUB, true);
 		edge.setACost(aCost);
 	}
 	
-	public static void genActivationProbRandom(DependencyGraph depGraph, Node node, RandomDataGenerator rand
+	public static void genActivationProbRandom(Node node, RandomDataGenerator rand
 			, double aActProbLB, double aActProbUB)
 	{
 		double aActProb = rand.nextUniform(aActProbLB, aActProbUB, true);
 		node.setActProb(aActProb);
 	}
-	public static void genActivationProbRandom(DependencyGraph depGraph, Edge edge, RandomDataGenerator rand
+	public static void genActivationProbRandom(Edge edge, RandomDataGenerator rand
 			, double aActProbLB, double aActProbUB)
 	{
 		double aActProb = rand.nextUniform(aActProbLB, aActProbUB, true);
@@ -174,7 +174,7 @@ public class DGraphGenerator {
 		int pos = 0;
 		while(topoOrderIter.hasNext())
 		{
-			Node node = (Node) topoOrderIter.next();
+			Node node = topoOrderIter.next();
 			node.setTopoPosition(pos++);
 		}
 	}
