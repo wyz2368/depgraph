@@ -1,6 +1,5 @@
 package agent;
 
-
 import game.GameOracle;
 import graph.Edge;
 import graph.Node;
@@ -136,15 +135,9 @@ public class RandomWalkvsDefender extends Defender{
 				attCandidateList.add(attCandidate);
 			}
 			DefenderAction defAction = new DefenderAction();
-<<<<<<< HEAD
-			double[] attProb = computecandidateProb(this.numRWSample, attValue, this.qrParam); // attack probability
-			double dValue = greedyCandidate(depGraph, // greedy defense with respect to each possible game state
-					rwTuplesList, attCandidateList, attProb
-=======
 			double[] attProb = RandomWalkAttacker.computecandidateProb(this.numRWSample, attValue, this.qrParam); // attack probability
-			double dValue = greedyCandidate(depGraph, rwAttacker // greedy defense with respect to each possible game state
+			double dValue = greedyCandidate(depGraph // greedy defense with respect to each possible game state
 					, rwTuplesList, attCandidateList, attProb
->>>>>>> 1a593272b83306625e9587bc1e5e7d2ba03f128e
 					, defAction // this is outcome
 					, curTimeStep, numTimeStep
 					, this.discFact);

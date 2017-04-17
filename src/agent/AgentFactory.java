@@ -112,8 +112,6 @@ public class AgentFactory {
 						, defenderParams.get(DEFENDER_PARAM.qrParam.toString())
 						, defenderParams.get(DEFENDER_PARAM.numRWSample.toString()));
 			}
-			else
-				return null;
+			return null;
 	 }
-	 
 }

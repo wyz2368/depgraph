@@ -23,18 +23,13 @@ public abstract class Defender {
 		case vsUNIFORM: return "vUN";
 		default: return "";
 		}	
-<<<<<<< HEAD
 	}}
-	public enum DEFENDER_PARAM{maxNumRes, minNumRes, numResRatio, maxNumAttCandidate, numAttCandidateRatio, logisParam, bThres;
-	@Override
-=======
-	}};
 	public enum DEFENDER_PARAM{maxNumRes, minNumRes, numResRatio
 		, maxNumAttCandidate, minNumAttCandidate, numAttCandidateRatio
 		, logisParam, bThres
 		, qrParam
 		, numRWSample;
->>>>>>> 1a593272b83306625e9587bc1e5e7d2ba03f128e
+	@Override
 	public String toString(){
 	switch(this){
 	case maxNumRes: return "maxNumRes";

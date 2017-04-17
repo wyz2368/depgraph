@@ -26,7 +26,7 @@ public class RootOnlyDefender extends Defender{
 		this.minNumRes = (int)minNumRes;
 		this.numResRatio = numResRatio;
 	}
-	public DefenderAction sampleAction(DependencyGraph dependencyGraph, List<Node> dCandidateNodeList, int numNodetoProtect,
+	public static DefenderAction sampleAction(List<Node> dCandidateNodeList, int numNodetoProtect,
 			AbstractIntegerDistribution rnd)
 	{
 		DefenderAction action = new DefenderAction();
@@ -65,7 +65,7 @@ public class RootOnlyDefender extends Defender{
 			return new DefenderAction();
 		// Sample nodes
 		UniformIntegerDistribution rnd = new UniformIntegerDistribution(rng, 0, dCandidateNodeList.size() - 1);
-		return sampleAction(depGraph, dCandidateNodeList, numNodetoProtect, rnd);	
+		return sampleAction(dCandidateNodeList, numNodetoProtect, rnd);	
 	}
 	@Override
 	public DefenderBelief updateBelief(DependencyGraph depGraph,

@@ -65,10 +65,6 @@ public class UniformvsDefender extends Defender{
 		this.minNumSelectACandidate = minNumSelectACandidate;
 		this.numSelectACandidateRatio = numSelectACandidateRatio;
 	}
-<<<<<<< HEAD
-	
-	@Override
-=======
 	@Override
 	public DefenderAction sampleAction(DependencyGraph depGraph,
 			int curTimeStep, int numTimeStep
@@ -121,9 +117,9 @@ public class UniformvsDefender extends Defender{
 			nodeIndexes[i] = i;
 		EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
 
-		return sampleAction(depGraph, dCandidateNodeList, numNodetoProtect, rnd);
+		return sampleAction(dCandidateNodeList, numNodetoProtect, rnd);
 	}
->>>>>>> 1a593272b83306625e9587bc1e5e7d2ba03f128e
+	@Override
 	public DefenderBelief updateBelief(DependencyGraph depGraph
 			, DefenderBelief dBelief
 			, DefenderAction dAction
@@ -282,7 +278,7 @@ public class UniformvsDefender extends Defender{
 		return dValueMap;
 	}
 	
-	public Map<Node, Double> computeCandidateValueTopo(DependencyGraph depGraph
+	public static Map<Node, Double> computeCandidateValueTopo(DependencyGraph depGraph
 			, List<AttackerAction> attActionList
 			, int curTimeStep, int numTimeStep, double discountFactor)
 	{
@@ -409,7 +405,7 @@ public class UniformvsDefender extends Defender{
 		return dValueMap;
 	}
 	
-	public DefenderAction sampleAction(DependencyGraph dependencyGraph, List<Node> dCandidateNodeList, int numNodetoProtect,
+	public static DefenderAction sampleAction(List<Node> dCandidateNodeList, int numNodetoProtect,
 			AbstractIntegerDistribution rnd)
 	{
 		DefenderAction action = new DefenderAction();
