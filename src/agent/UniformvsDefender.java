@@ -52,7 +52,7 @@ public class UniformvsDefender extends Defender{
 	public UniformvsDefender(double logisParam, double discFact, double thres
 			, int maxNumRes, int minNumRes, double numResRatio
 			, int maxNumSelectACandidate, int minNumSelectACandidate, double numSelectACandidateRatio){
-		super(DEFENDER_TYPE.vsUNIFORM);
+		super(DefenderType.vsUNIFORM);
 		this.logisParam = logisParam;
 		this.discFact = discFact;
 		this.thres = thres;

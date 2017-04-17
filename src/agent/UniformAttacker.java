@@ -23,7 +23,7 @@ public class UniformAttacker extends Attacker{
 	int minNumSelectCandidate;
 	double numSelectCandidateRatio;
 	public UniformAttacker(double  maxNumSelectCandidate, double minNumSelectCandidate, double numSelectCandidateRatio) {
-		super(ATTACKER_TYPE.UNIFORM);
+		super(AttackerType.UNIFORM);
 		this.maxNumSelectCandidate = (int)maxNumSelectCandidate;
 		this.minNumSelectCandidate = (int)minNumSelectCandidate;
 		this.numSelectCandidateRatio = numSelectCandidateRatio;

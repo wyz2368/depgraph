@@ -9,51 +9,53 @@ import model.DependencyGraph;
 import org.apache.commons.math3.random.RandomGenerator;
 
 public abstract class Defender {
-	public enum DEFENDER_TYPE {UNIFORM, MINCUT, GOAL_ONLY, ROOT_ONLY
+	public enum DefenderType {
+		UNIFORM, MINCUT, GOAL_ONLY, ROOT_ONLY
 		, vsVALUE_PROPAGATION, vsRANDOM_WALK, vsUNIFORM;
-	@Override
-	public String toString(){
-		switch(this){
-		case UNIFORM: return "UN";
-		case MINCUT: return "MC";
-		case GOAL_ONLY: return "GO";
-		case ROOT_ONLY: return "RO";
-		case vsVALUE_PROPAGATION: return "vVP";
-		case vsRANDOM_WALK: return "vRW";
-		case vsUNIFORM: return "vUN";
-		default: return "";
-		}	
-	}}
-	public enum DEFENDER_PARAM{maxNumRes, minNumRes, numResRatio
+		@Override
+		public String toString() {
+			switch(this) {
+			case UNIFORM: return "UN";
+			case MINCUT: return "MC";
+			case GOAL_ONLY: return "GO";
+			case ROOT_ONLY: return "RO";
+			case vsVALUE_PROPAGATION: return "vVP";
+			case vsRANDOM_WALK: return "vRW";
+			case vsUNIFORM: return "vUN";
+			default: return "";
+			}	
+		}
+	}
+	public enum DefenderParam {
+		maxNumRes, minNumRes, numResRatio
 		, maxNumAttCandidate, minNumAttCandidate, numAttCandidateRatio
 		, logisParam, bThres
 		, qrParam
 		, numRWSample;
-	@Override
-	public String toString(){
-	switch(this){
-	case maxNumRes: return "maxNumRes";
-	case minNumRes: return "minNumRes";
-	case numResRatio: return "numResRatio";
-	case maxNumAttCandidate: return "maxNumAttCandidate";
-	case numAttCandidateRatio: return "numAttCandidateRatio";
-	case minNumAttCandidate: return "minNumAttCandidate";
-	case logisParam: return "logisParam";
-	case bThres: return "bThres";
-	case qrParam: return "qrParam";
-	case numRWSample: return "numRWSample";
-	default: return "";
-	}	
-	}}
+		@Override
+		public String toString() {
+			switch(this) {
+			case maxNumRes: return "maxNumRes";
+			case minNumRes: return "minNumRes";
+			case numResRatio: return "numResRatio";
+			case maxNumAttCandidate: return "maxNumAttCandidate";
+			case numAttCandidateRatio: return "numAttCandidateRatio";
+			case minNumAttCandidate: return "minNumAttCandidate";
+			case logisParam: return "logisParam";
+			case bThres: return "bThres";
+			case qrParam: return "qrParam";
+			case numRWSample: return "numRWSample";
+			default: return "";
+			}	
+		}
+	}
 
-	DEFENDER_TYPE dType;
-	public Defender(DEFENDER_TYPE dType)
-	{
-		this.dType = dType;
+	private DefenderType dType;
+	public Defender(final DefenderType dTypeCur) {
+		this.dType = dTypeCur;
 	}
 	
-	public DEFENDER_TYPE getDType()
-	{
+	public DefenderType getDType() {
 		return this.dType;
 	}
 	

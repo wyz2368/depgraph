@@ -29,7 +29,7 @@ public class ValuePropagationAttacker extends Attacker{
 	public ValuePropagationAttacker(double maxNumSelectCandidate, double minNumSelectCandidate, double numSelectCandidateRatio
 			, double qrParam, double discFact)
 	{
-		super(ATTACKER_TYPE.VALUE_PROPAGATION);
+		super(AttackerType.VALUE_PROPAGATION);
 		this.maxNumSelectCandidate =(int) maxNumSelectCandidate;
 		this.minNumSelectCandidate = (int) minNumSelectCandidate;
 		this.numSelectCandidateRatio = numSelectCandidateRatio;

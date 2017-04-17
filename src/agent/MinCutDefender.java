@@ -21,7 +21,7 @@ public class MinCutDefender extends Defender{
 	double numResRatio;
 	public MinCutDefender(double maxNumRes, double minNumRes, double numResRatio)
 	{
-		super(DEFENDER_TYPE.MINCUT);
+		super(DefenderType.MINCUT);
 		this.maxNumRes = (int)maxNumRes;
 		this.minNumRes = (int)minNumRes;
 		this.numResRatio = numResRatio;

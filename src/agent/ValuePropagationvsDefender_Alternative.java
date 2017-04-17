@@ -60,7 +60,7 @@ public class ValuePropagationvsDefender_Alternative extends Defender{
 	public ValuePropagationvsDefender_Alternative(int maxNumRes, int minNumRes, double numResRatio
 			, double logisParam, double discFact, double thres
 			, double qrParam, int maxNumAttCandidate, int minNumAttCandidate, double numAttCandidateRatio) {
-		super(DEFENDER_TYPE.vsVALUE_PROPAGATION);
+		super(DefenderType.vsVALUE_PROPAGATION);
 		
 		this.maxNumRes = maxNumRes;
 		this.minNumRes = minNumRes;

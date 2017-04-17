@@ -41,7 +41,7 @@ public class RandomWalkAttacker extends Attacker {
 	double discFact;
 	int numRWSample = 200;
 	public RandomWalkAttacker(double numRWSample, double qrParam, double discFact){
-		super(ATTACKER_TYPE.RANDOM_WALK);
+		super(AttackerType.RANDOM_WALK);
 		this.numRWSample = (int)numRWSample;
 		this.qrParam = qrParam;
 		this.discFact = discFact;

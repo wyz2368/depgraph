@@ -19,7 +19,7 @@ public class UniformDefender extends Defender{
 	double numResRatio;
 	public UniformDefender(double maxNumRes, double minNumRes, double numResRatio)
 	{
-		super(DEFENDER_TYPE.UNIFORM);
+		super(DefenderType.UNIFORM);
 		this.maxNumRes = (int)maxNumRes;
 		this.minNumRes = (int)minNumRes;
 		this.numResRatio = numResRatio;

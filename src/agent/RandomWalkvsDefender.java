@@ -75,7 +75,7 @@ public class RandomWalkvsDefender extends Defender{
 			, double thres
 			, double qrParam
 			, double numRWSample) {
-		super(DEFENDER_TYPE.vsRANDOM_WALK);
+		super(DefenderType.vsRANDOM_WALK);
 		this.logisParam = logisParam;
 		this.discFact = discFact;
 		this.thres = thres;

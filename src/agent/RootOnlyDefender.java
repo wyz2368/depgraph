@@ -21,7 +21,7 @@ public class RootOnlyDefender extends Defender{
 	double numResRatio;
 	public RootOnlyDefender(double maxNumRes, double minNumRes, double numResRatio)
 	{
-		super(DEFENDER_TYPE.ROOT_ONLY);
+		super(DefenderType.ROOT_ONLY);
 		this.maxNumRes = (int)maxNumRes;
 		this.minNumRes = (int)minNumRes;
 		this.numResRatio = numResRatio;
