@@ -23,33 +23,31 @@ import model.SecurityAlert;
 
 
 public final class GameOracle {
-	static final int MAX_ITER = 200;
-	
-	/*****************************************************************************************
+	private static final int MAX_ITER = 200;
+	/**
 	 * 
-	 * @param pastState: past game state
-	 * @param attAction: attacker action
-	 * @param defAction: defender action
-	 * @param rnd: random data generator
-	 * @return: new game state
-	 *****************************************************************************************/
-	public static GameState generateStateSample(GameState pastState
-			, AttackerAction attAction, DefenderAction defAction
-			, RandomDataGenerator rnd) {
+	 * @param pastState past game state.
+	 * @param attAction attacker action
+	 * @param defAction defender action
+	 * @param rnd random data generator
+	 * @return new game state
+	 */
+	public static GameState generateStateSample(final GameState pastState
+			, final AttackerAction attAction, final DefenderAction defAction
+			, final RandomDataGenerator rnd) {
 		List<GameState> stateSampleList = generateStateSample(pastState
 				, attAction, defAction
 				,  rnd, 1, false);
 		return stateSampleList.get(0);
 	}
-	
-	/*****************************************************************************************
+	/**
 	 * 
-	 * @param depGraph: dependency graph with node states included
-	 * @param gameState: current game state
-	 * @param rnd: random data generator
+	 * @param depGraph dependency graph with node states included
+	 * @param gameState current game state
+	 * @param rnd random data generator
 	 * @return observation of the defender
-	 *****************************************************************************************/
-	public static DefenderObservation generateDefObservation(DependencyGraph depGraph, GameState gameState, RandomDataGenerator rnd) {
+	 */
+	public static DefenderObservation generateDefObservation(final DependencyGraph depGraph, final GameState gameState, final RandomDataGenerator rnd) {
 		DefenderObservation defObservation = new DefenderObservation();
 		boolean[] isActive = new boolean[depGraph.vertexSet().size()];
 		for (int i = 0; i < depGraph.vertexSet().size(); i++) {
@@ -82,14 +80,14 @@ public final class GameOracle {
 		}
 		return defObservation;
 	}
-	
-	/*****************************************************************************************
+
+	/**
 	 * 
-	 * @param gameState: current game state
-	 * @param dObservation: observation resulted from gameState
+	 * @param gameState current game state
+	 * @param dObservation observation resulted from gameState
 	 * @return probability of the observation
-	 *****************************************************************************************/
-	public static double computeObservationProb(GameState gameState, DefenderObservation dObservation)
+	 */
+	public static double computeObservationProb(final GameState gameState, final DefenderObservation dObservation)
 	{
 		double prob = 1.0;
 		for (SecurityAlert alert : dObservation.getAlertSet()) {
@@ -111,19 +109,18 @@ public final class GameOracle {
 		}
 		return prob;
 	}
-	
-	/*****************************************************************************************
+
+	/**
 	 * 
-	 * @param depGraph: dependency graphs with node states included
-	 * @param dAction: action of the defender
-	 * @param aAction: action of the attacker
-	 * @param pastState: previous game state
-	 * @param newState: new game state
+	 * @param dAction action of the defender
+	 * @param aAction action of the attacker
+	 * @param pastState previous game state
+	 * @param newState new game state
 	 * @return probability of the new  game state state
-	 *****************************************************************************************/
+	 */
 	public static double computeStateTransitionProb(
-		    DefenderAction dAction, AttackerAction aAction
-			, GameState pastState, GameState newState) {
+			final DefenderAction dAction, final AttackerAction aAction
+			, final GameState pastState, final GameState newState) {
 		for (Node node : pastState.getEnabledNodeSet()) { // active nodes in past state will remain active if not disable
 			if (!dAction.contain(node) && !newState.contain(node)) {
 				return 0.0;
@@ -161,19 +158,19 @@ public final class GameOracle {
 		return prob;
 	}
 	
-	/*****************************************************************************************
+	/**
 	 * 
-	 * @param pastState: game state in the previous time step
-	 * @param attAction: action of the attacker
-	 * @param defAction: action of the defender
-	 * @param rnd: random data generator
-	 * @param numStateSample: number of new game states to sample
-	 * @param isReplacement: randomization with replacement or not
+	 * @param pastState game state in the previous time step
+	 * @param attAction action of the attacker
+	 * @param defAction action of the defender
+	 * @param rnd random data generator
+	 * @param numStateSample number of new game states to sample
+	 * @param isReplacement randomization with replacement or not
 	 * @return List of new game state samples
-	 *****************************************************************************************/
-	public static List<GameState> generateStateSample(GameState pastState
-			, AttackerAction attAction, DefenderAction defAction
-			, RandomDataGenerator rnd, int numStateSample, boolean isReplacement) {
+	 */
+	public static List<GameState> generateStateSample(final GameState pastState
+			, final AttackerAction attAction, final DefenderAction defAction
+			, final RandomDataGenerator rnd, final int numStateSample, final boolean isReplacement) {
 		Map<Node, Double> enableProbMap = new HashMap<Node, Double>(); // probability each node is active
 		// Check if the defender disables any previously active nodes
 		for (Node node : pastState.getEnabledNodeSet()) {

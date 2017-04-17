@@ -1,36 +1,37 @@
 package game;
 
-public class GameSimulationSpec {
-	int numTimeStep; // total number of time steps
-	int numSim; // number of simulation per game configuration
+public final class GameSimulationSpec {
+	private int numTimeStep; // total number of time steps
+	private int numSim; // number of simulation per game configuration
 	
 	// For graph generation
-	int graphID;
-	int numNode; // number of nodes 
-	int numEdge; // number of edges
-	int numTarget; // minimum number of targets
-//	double aRewardLB;
-//	double aRewardUB;
-//	double dPenaltyLB;
-//	double dPenaltyUB;
+	private int graphID;
+	private int numNode; // number of nodes 
+	private int numEdge; // number of edges
+	private int numTarget; // minimum number of targets
+	
+	private double discFact; // for computing payoff
+
+//	private double aRewardLB;
+//	private double aRewardUB;
+//	private double dPenaltyLB;
+//	private double dPenaltyUB;
 //	
-//	int totalNumAlert; // total number of security alerts
-//	int minNumAlert; // minimum number of alerts for each node
-//	int maxNumAlert; // maximum number of alerts for each node
+//	private int totalNumAlert; // total number of security alerts
+//	private int minNumAlert; // minimum number of alerts for each node
+//	private int maxNumAlert; // maximum number of alerts for each node
 	
 	// For strategy generation
 	// Note: should we use uniform distribution to generate number of nodes to enable or disable each time step???
-//	double fixPoissonParam; // used if fixed mean is used
-//	double adaptPoissonRatio; // used if mean is chosen according to the number of available nodes
-//	double qrParam; // for attacker 
-//	double logisParam; // for defender
-	double discFact; // for computing payoff
+//	private double fixPoissonParam; // used if fixed mean is used
+//	private double adaptPoissonRatio; // used if mean is chosen according to the number of available nodes
+//	private double qrParam; // for attacker 
+//	private double logisParam; // for defender
 	
 	
 	
-	public GameSimulationSpec(int numTimeStep, int numSim, int graphID, int numNode, int numEdge, int numTarget
-			, double discFact)
-	{
+	public GameSimulationSpec(final int numTimeStep, final int numSim, final int graphID, final int numNode, final int numEdge, final int numTarget
+			, final double discFact) {
 		this.numTimeStep = numTimeStep;
 		this.numSim = numSim;
 		this.graphID = graphID;
@@ -50,28 +51,22 @@ public class GameSimulationSpec {
 //		this.logisParam = logisParam;
 		this.discFact = discFact;
 	}
-	public int getNumTimeStep()
-	{
+	public int getNumTimeStep() {
 		return this.numTimeStep;
 	}
-	public int getNumSim()
-	{
+	public int getNumSim() {
 		return this.numSim;
 	}
-	public int getGraphID()
-	{
+	public int getGraphID() {
 		return this.graphID;
 	}
-	public int getNumNode()
-	{
+	public int getNumNode() {
 		return this.numNode;
 	}
-	public int getNumEdge()
-	{
+	public int getNumEdge() {
 		return this.numEdge;
 	}
-	public int getNumTarget()
-	{
+	public int getNumTarget() {
 		return this.numTarget;
 	}
 //	public double getARewardLB()
@@ -118,8 +113,7 @@ public class GameSimulationSpec {
 //	{
 //		return this.logisParam;
 //	}
-	public double getDiscFact()
-	{
+	public double getDiscFact() {
 		return this.discFact;
 	}
 }

@@ -35,8 +35,8 @@ public final class GameSimulation {
 	//Outcome
 	private GameSimulationResult simResult;
 	
-	public GameSimulation(DependencyGraph depGraph, Attacker attacker, Defender defender, RandomDataGenerator rng,
-			int numTimeStep, double discFact) {
+	public GameSimulation(final DependencyGraph depGraph, final Attacker attacker, final Defender defender, final RandomDataGenerator rng,
+			final int numTimeStep, final double discFact) {
 		this.depGraph = depGraph;
 		this.numTimeStep = numTimeStep;
 		this.discFact = discFact;
@@ -52,18 +52,19 @@ public final class GameSimulation {
 	public void setRandomSeed(final long seed) {
 		this.rng.reSeed(seed);
 	}
-	public void setDefender(final Defender defender) {
-		this.defender = defender;
+	public void setDefender(final Defender aDefender) {
+		this.defender = aDefender;
 	}
-	public void setAttacker(final Attacker attacker) {
-		this.attacker = attacker;
+	public void setAttacker(final Attacker aAttacker) {
+		this.attacker = aAttacker;
 	}
 	
 	public void runSimulation() {
 		// Get initial state
 		for (Node node : this.depGraph.vertexSet()) {
-			if(node.getState() == NodeState.ACTIVE)
+			if (node.getState() == NodeState.ACTIVE) {
 				this.simResult.addEnabledNodetoInitialState(node);
+			}
 		}
 		// Start simulation
 		DefenderObservation dObservation = new DefenderObservation();
@@ -72,8 +73,7 @@ public final class GameSimulation {
 		DefenderBelief dBelief = new DefenderBelief(); 
 		dBelief.addState(gameState, 1.0); // initial belief of the defender
 		long start, end;
-		for(int t = 0; t <= this.numTimeStep; t++)
-		{
+		for (int t = 0; t <= this.numTimeStep; t++) {
 			System.out.println("Time step: " + t);
 			start = System.currentTimeMillis();
 			System.out.println("Sample attacker action...");
@@ -132,15 +132,15 @@ public final class GameSimulation {
 				defPayoff += Math.pow(this.discFact, timeStep) * node.getDPenalty();
 				attPayoff += Math.pow(this.discFact, timeStep) * node.getAReward();
 			}
-			if(timeStep <= this.numTimeStep) {
+			if (timeStep <= this.numTimeStep) {
 				for (Node node : defAction.getAction()) {
 					defPayoff += node.getDCost();
 				}
 				for (Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet()) {
 					Node node = entry.getKey();
-					if(node.getActivationType() == NodeActivationType.AND)
+					if (node.getActivationType() == NodeActivationType.AND) {
 						attPayoff += Math.pow(this.discFact, timeStep) * node.getACost();
-					else {
+					} else {
 						Set<Edge> edgeSet = entry.getValue();
 						for (Edge edge : edgeSet) {
 							attPayoff += Math.pow(this.discFact, timeStep) * edge.getACost();

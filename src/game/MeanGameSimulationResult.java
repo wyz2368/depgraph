@@ -1,20 +1,18 @@
 package game;
 
-public class MeanGameSimulationResult {
-	double meanDefPayoff = 0.0;
-	double meanAttPayoff = 0.0; 
-	int numSimulation = 0;
-	public void updateMeanSimulationResult(GameSimulationResult newSimulationResult){
+public final class MeanGameSimulationResult {
+	private double meanDefPayoff = 0.0;
+	private double meanAttPayoff = 0.0; 
+	private int numSimulation = 0;
+	public void updateMeanSimulationResult(final GameSimulationResult newSimulationResult){
 		this.meanDefPayoff += newSimulationResult.getDefPayoff();
 		this.meanAttPayoff += newSimulationResult.getAttPayoff();
 		this.numSimulation++;
 	}
-	public double getMeanDefPayoff()
-	{
+	public double getMeanDefPayoff() {
 		return this.meanDefPayoff / this.numSimulation;
 	}
-	public double getMeanAttPayoff()
-	{
+	public double getMeanAttPayoff() {
 		return this.meanAttPayoff / this.numSimulation;
 	}
 }
