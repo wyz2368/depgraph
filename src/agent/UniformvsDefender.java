@@ -25,20 +25,20 @@ import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
 
-public class UniformvsDefender extends Defender{
-	int maxNumRes;
-	int minNumRes;
-	double numResRatio;
-	double logisParam; // Logistic parameter to randomize defense strategies
-	double discFact; // reward discount factor
-	double thres; // to remove game state from belief
+public final class UniformvsDefender extends Defender{
+	private int maxNumRes;
+	private int minNumRes;
+	private double numResRatio;
+	private double logisParam; // Logistic parameter to randomize defense strategies
+	private double discFact; // reward discount factor
+	private double thres; // to remove game state from belief
 	
-	int maxNumSelectACandidate;
-	int minNumSelectACandidate;
-	double numSelectACandidateRatio;
+	private int maxNumSelectACandidate;
+	private int minNumSelectACandidate;
+	private double numSelectACandidateRatio;
 	
-	int numStateSample = 50; // number of states to sample
-	int numAttActionSample = 50; // number of attack actions to sample
+	private int numStateSample = 50; // number of states to sample
+	private int numAttActionSample = 50; // number of attack actions to sample
 	public UniformvsDefender(double logisParam, double discFact, double thres
 			, int maxNumRes, int minNumRes, double numResRatio
 			, int maxNumSelectACandidate, int minNumSelectACandidate, double numSelectACandidateRatio
