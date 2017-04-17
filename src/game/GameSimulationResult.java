@@ -63,13 +63,20 @@ public class GameSimulationResult {
 	{
 		return this.attPayoff;
 	}
+	
+	/**
+	 * @param folderName  
+	 */
 	public void printResult(String folderName)
 	{
-		
+		// do nothing
 	}
+	/**
+	 * @param folderName  
+	 */
 	public void printPayoff(String folderName)
 	{
-		
+		// do nothing
 	}
 	public void printPayoff()
 	{

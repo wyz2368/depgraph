@@ -11,7 +11,7 @@ public class DefenderObservation {
 	}
 	public boolean addAlert(SecurityAlert alert)
 	{
-		return alertSet.add(alert);
+		return this.alertSet.add(alert);
 	}
 	public Set<SecurityAlert> getAlertSet()
 	{
@@ -29,7 +29,7 @@ public class DefenderObservation {
 		// TODO Auto-generated method stub
 		System.out.println("--------------------------------------------------------------------");
 		System.out.println("Defender observation: ");
-		for(SecurityAlert alert : alertSet)
+		for(SecurityAlert alert : this.alertSet)
 		{
 			System.out.print("Node: " + alert.getNode().getId() + "\t" + "Alert: " + alert.getAlert());
 		}

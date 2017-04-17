@@ -29,9 +29,7 @@ public class GameSimulationSpec {
 	
 	
 	public GameSimulationSpec(int numTimeStep, int numSim, int graphID, int numNode, int numEdge, int numTarget
-			, double aRewardLB, double aRewardUB, double dPenaltyLB, double dPenaltyUB
-			, int totalNumAlert, int minNumAlert, int maxNumAlert
-			, double fixPoissonParam, double adaptPoissonRatio, double qrParam, double logisParam, double discFact)
+			, double discFact)
 	{
 		this.numTimeStep = numTimeStep;
 		this.numSim = numSim;

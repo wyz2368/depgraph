@@ -5,9 +5,9 @@ public class MeanGameSimulationResult {
 	double meanAttPayoff = 0.0; 
 	int numSimulation = 0;
 	public void updateMeanSimulationResult(GameSimulationResult newSimulationResult){
-		meanDefPayoff += newSimulationResult.getDefPayoff();
-		meanAttPayoff += newSimulationResult.getAttPayoff();
-		numSimulation++;
+		this.meanDefPayoff += newSimulationResult.getDefPayoff();
+		this.meanAttPayoff += newSimulationResult.getAttPayoff();
+		this.numSimulation++;
 	}
 	public double getMeanDefPayoff()
 	{

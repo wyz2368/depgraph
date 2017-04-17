@@ -18,7 +18,7 @@ public class GameState{
 	}
 	public Set<Node> getEnabledNodeSet()
 	{
-		return enabledNodeSet;
+		return this.enabledNodeSet;
 	}
 	public boolean contain(Node node)
 	{
@@ -71,7 +71,7 @@ public class GameState{
 		if (getClass() != obj.getClass())
 			return false;
 		GameState other = (GameState) obj;
-		if(!id.equals(other.id))
+		if(!this.id.equals(other.id))
 			return false;
 		return true;
 	}
@@ -88,7 +88,7 @@ public class GameState{
 		for(int i = 0; i < maxNodeID; i++)
 			idChar[i] = '0';
 		
-		if(!enabledNodeSet.isEmpty())
+		if(!this.enabledNodeSet.isEmpty())
 			for(Node node : this.enabledNodeSet)
 			{
 				idChar[node.getId() - 1] = '1';

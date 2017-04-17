@@ -131,8 +131,8 @@ public class GameOracle {
 	 * @param newState: new game state
 	 * @return probability of the new  game state state
 	 *****************************************************************************************/
-	public static double computeStateTransitionProb(DependencyGraph depGraph
-			, DefenderAction dAction, AttackerAction aAction
+	public static double computeStateTransitionProb(
+		    DefenderAction dAction, AttackerAction aAction
 			, GameState pastState, GameState newState)
 	{
 		for(Node node : pastState.getEnabledNodeSet()) // active nodes in past state will remain active if not disable
@@ -245,7 +245,7 @@ public class GameOracle {
 			}
 			return new ArrayList<GameState>(gameStateSet); // return the new set of samples
 		}
-		else // not check if this is correctly coded, temporarily ignored :D
+		 // not check if this is correctly coded, temporarily ignored :D
 		{
 			List<GameState> gameStateList = new ArrayList<GameState>();
 			for(int i = 0; i < numStateSample; i++)

@@ -18,7 +18,7 @@ public class AttackerAction {
 	}
 	public boolean containNode(Node node)
 	{
-		return action.containsKey(node);
+		return this.action.containsKey(node);
 	}
 	public AttackerAction(Map<Node, Set<Edge>> action)
 	{
@@ -43,7 +43,7 @@ public class AttackerAction {
 //		{
 //			entry.getValue().clear();
 //		}
-		action.clear();
+		this.action.clear();
 	}
 	public void print()
 	{

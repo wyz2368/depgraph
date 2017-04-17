@@ -24,7 +24,7 @@ public class DefenderBelief {
 	}
 	public void clear()
 	{
-		for(Entry<GameState, Double> entry : gameStateMap.entrySet())
+		for(Entry<GameState, Double> entry : this.gameStateMap.entrySet())
 		{
 			entry.getKey().clear();
 		}
@@ -32,7 +32,7 @@ public class DefenderBelief {
 	}
 	public void print()
 	{
-		for(Entry<GameState, Double> entry : gameStateMap.entrySet())
+		for(Entry<GameState, Double> entry : this.gameStateMap.entrySet())
 		{
 			entry.getKey().print();
 			System.out.println("State Prob:" + entry.getValue());

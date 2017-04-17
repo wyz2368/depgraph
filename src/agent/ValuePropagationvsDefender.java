@@ -197,8 +197,8 @@ public class ValuePropagationvsDefender extends Defender{
 						observationProb = observationProbMap.get(newGameState);
 					}
 					double addedProb = observationProb * curStateProb 
-							* GameOracle.computeStateTransitionProb(depGraph
-									, dAction, attAction
+							* GameOracle.computeStateTransitionProb(
+									dAction, attAction
 									, gameState, newGameState);
 					
 					newBelief.addState(newGameState, curProb + addedProb);

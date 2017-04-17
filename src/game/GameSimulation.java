@@ -52,7 +52,7 @@ public class GameSimulation {
 	}
 	public void setRandomSeed(long seed)
 	{
-		rng.reSeed(seed);
+		this.rng.reSeed(seed);
 	}
 	public void setDefender(Defender defender)
 	{
@@ -97,20 +97,20 @@ public class GameSimulation {
 			
 			System.out.println("Sample game state...");
 			start = System.currentTimeMillis();
-			gameState = GameOracle.generateStateSample(gameState, attAction, defAction, rng); // new game state
+			gameState = GameOracle.generateStateSample(gameState, attAction, defAction, this.rng); // new game state
 			end = System.currentTimeMillis();
 			System.out.println("Elapsed time: " + (end - start) / 1000.0);
 //			gameState.print();
 			
 			System.out.println("Sample observation...");
 			start = System.currentTimeMillis();
-			dObservation = GameOracle.generateDefObservation(this.depGraph, gameState, rng); // observation based on game state
+			dObservation = GameOracle.generateDefObservation(this.depGraph, gameState, this.rng); // observation based on game state
 			end = System.currentTimeMillis();
 			System.out.println("Elapsed time: " + (end - start) / 1000.0);
 			
 			System.out.println("Update defender belief...");
 			start = System.currentTimeMillis();
-			dBelief = this.defender.updateBelief(this.depGraph, dBelief, defAction, dObservation, t, this.numTimeStep, rng.getRandomGenerator());
+			dBelief = this.defender.updateBelief(this.depGraph, dBelief, defAction, dObservation, t, this.numTimeStep, this.rng.getRandomGenerator());
 			end = System.currentTimeMillis();
 			System.out.println("Elapsed time: " + (end - start) / 1000.0);
 			
@@ -171,7 +171,7 @@ public class GameSimulation {
 	}
 	public void saveResult()
 	{
-		
+		// do nothing
 	}
 	public void printPayoff()
 	{
@@ -179,7 +179,7 @@ public class GameSimulation {
 	}
 	public void end()
 	{
-		
+		// do nothing
 	}
 	public void reset()
 	{

@@ -35,7 +35,7 @@ public class GameSample {
 	}
 	public GameState getGameState()
 	{
-		return gameState;
+		return this.gameState;
 	}
 	public DefenderObservation getDefObservation()
 	{
@@ -47,7 +47,7 @@ public class GameSample {
 	}
 	public AttackerAction getAttAction()
 	{
-		return attAction;
+		return this.attAction;
 	}
 	public void clear()
 	{

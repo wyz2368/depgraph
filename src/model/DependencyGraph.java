@@ -103,6 +103,6 @@ public class DependencyGraph extends DirectedAcyclicGraph<Node, Edge>{
 		System.out.println("--------------------------------------------------------------------");
 	}
 	public void clear(){
-		targetSet.clear();
+		this.targetSet.clear();
 	}
 }

@@ -29,7 +29,7 @@ public class DefenderAction {
 	}
 	public boolean contain(Node node)
 	{
-		return action.contains(node);
+		return this.action.contains(node);
 	}
 	public void clear()
 	{
