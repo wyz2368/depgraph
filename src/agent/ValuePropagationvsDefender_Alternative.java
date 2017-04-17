@@ -44,6 +44,19 @@ public class ValuePropagationvsDefender_Alternative extends Defender{
 	int numStateSample = 50;
 	int numAttActionSample = 50;
 	
+	/*****************************************************************************************
+	 * 
+	 * @param maxNumRes
+	 * @param minNumRes
+	 * @param numResRatio
+	 * @param logisParam
+	 * @param discFact
+	 * @param thres
+	 * @param qrParam
+	 * @param maxNumAttCandidate
+	 * @param minNumAttCandidate
+	 * @param numAttCandidateRatio
+	 *****************************************************************************************/
 	public ValuePropagationvsDefender_Alternative(int maxNumRes, int minNumRes, double numResRatio
 			, double logisParam, double discFact, double thres
 			, double qrParam, int maxNumAttCandidate, int minNumAttCandidate, double numAttCandidateRatio) {
@@ -62,6 +75,22 @@ public class ValuePropagationvsDefender_Alternative extends Defender{
 		this.numAttCandidateRatio = numAttCandidateRatio;
 		// TODO Auto-generated constructor stub
 	}
+	
+	/*****************************************************************************************
+	 * 
+	 * @param maxNumRes
+	 * @param minNumRes
+	 * @param numResRatio
+	 * @param logisParam
+	 * @param discFact
+	 * @param thres
+	 * @param qrParam
+	 * @param maxNumAttCandidate
+	 * @param minNumAttCandidate
+	 * @param numAttCandidateRatio
+	 * @param numStateSample
+	 * @param numAttActionSample
+	 *****************************************************************************************/
 	public ValuePropagationvsDefender_Alternative(int maxNumRes, int minNumRes, double numResRatio
 			, double logisParam, double discFact, double thres
 			, double qrParam, int maxNumAttCandidate, int minNumAttCandidate, double numAttCandidateRatio
@@ -402,6 +431,11 @@ public class ValuePropagationvsDefender_Alternative extends Defender{
 					curDValue += addedDValue;
 				dValueMap.put(node, curDValue);
 			}
+		}
+		for(Entry<Node, Double> entry : dValueMap.entrySet())
+		{
+			double value = entry.getValue();
+			entry.setValue(value / attActionList.size());
 		}
 		
 		for(Node target : depGraph.getTargetSet())

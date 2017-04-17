@@ -13,7 +13,7 @@ public abstract class Attacker {
 	@Override
 	public String toString(){
 		switch(this){
-		case UNIFORM: return "U";
+		case UNIFORM: return "UN";
 		case VALUE_PROPAGATION: return "VP";
 		case RANDOM_WALK: return "RW";
 		default: return "";

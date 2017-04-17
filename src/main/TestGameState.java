@@ -59,23 +59,28 @@ public class TestGameState {
 		GameState gameState1 = new GameState();
 		for(Node node : depGraph.vertexSet())
 			gameState1.addEnabledNode(node);
+		gameState1.createID();
 		
 		GameState gameState2 = new GameState();
 		for(Node node : depGraph.vertexSet())
 		if(node.getType() == NODE_TYPE.TARGET)
 			gameState2.addEnabledNode(node);
+		gameState2.createID();
+		
+		System.out.println(gameState1.getID() + "\t" + gameState1.getEnabledNodeSet().size());
+		System.out.println(gameState2.getID() + "\t" + gameState2.getEnabledNodeSet().size());
 		
 		boolean isEqual = gameState2.equals(gameState1);
 		if(isEqual)
-			System.out.println("Correct");
-		else
 			System.out.println("Wrong");
+		else
+			System.out.println("Correct");
 		
 		DefenderBelief dBelief = new DefenderBelief();
 		dBelief.addState(gameState1, 1.0);
 		Double value = dBelief.getProbability(gameState2);
 		if(value == null)
-			System.out.println("Mistake");
+			System.out.println("Correct");
 	}
 
 }

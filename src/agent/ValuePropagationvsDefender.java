@@ -29,20 +29,20 @@ import model.DependencyGraph;
 import model.GameState;
 
 public class ValuePropagationvsDefender extends Defender{
-	public ValuePropagationvsDefender(int maxNumRes, int minNumRes, double numResRatio
+	public ValuePropagationvsDefender(double maxNumRes, double minNumRes, double numResRatio
 			, double logisParam, double discFact, double thres
-			, double qrParam, int maxNumAttCandidate, int minNumAttCandidate, double numAttCandidateRatio) {
+			, double qrParam, double maxNumAttCandidate, double minNumAttCandidate, double numAttCandidateRatio) {
 		super(DEFENDER_TYPE.vsVALUE_PROPAGATION);
-		this.maxNumRes = maxNumRes;
-		this.minNumRes = minNumRes;
+		this.maxNumRes = (int)maxNumRes;
+		this.minNumRes = (int)minNumRes;
 		this.numResRatio = numResRatio;
 		this.logisParam = logisParam;
 		this.discFact = discFact;
 		this.thres = thres;
 		
 		this.qrParam = qrParam;
-		this.maxNumAttCandidate = maxNumAttCandidate;
-		this.minNumAttCandidate = minNumAttCandidate;
+		this.maxNumAttCandidate = (int)maxNumAttCandidate;
+		this.minNumAttCandidate = (int)minNumAttCandidate;
 		this.numAttCandidateRatio = numAttCandidateRatio;
 		// TODO Auto-generated constructor stub
 	}

@@ -9,14 +9,14 @@ public class GameSimulationSpec {
 	int numNode; // number of nodes 
 	int numEdge; // number of edges
 	int numTarget; // minimum number of targets
-	double aRewardLB;
-	double aRewardUB;
-	double dPenaltyLB;
-	double dPenaltyUB;
-	
-	int totalNumAlert; // total number of security alerts
-	int minNumAlert; // minimum number of alerts for each node
-	int maxNumAlert; // maximum number of alerts for each node
+//	double aRewardLB;
+//	double aRewardUB;
+//	double dPenaltyLB;
+//	double dPenaltyUB;
+//	
+//	int totalNumAlert; // total number of security alerts
+//	int minNumAlert; // minimum number of alerts for each node
+//	int maxNumAlert; // maximum number of alerts for each node
 	
 	// For strategy generation
 	// Note: should we use uniform distribution to generate number of nodes to enable or disable each time step???
@@ -39,13 +39,13 @@ public class GameSimulationSpec {
 		this.numNode = numNode;
 		this.numEdge = numEdge;
 		this.numTarget = numTarget;
-		this.aRewardLB = aRewardLB;
-		this.aRewardUB = aRewardUB;
-		this.dPenaltyLB = dPenaltyLB;
-		this.dPenaltyUB = dPenaltyUB;
-		this.totalNumAlert = totalNumAlert;
-		this.minNumAlert = minNumAlert;
-		this.maxNumAlert = maxNumAlert;
+//		this.aRewardLB = aRewardLB;
+//		this.aRewardUB = aRewardUB;
+//		this.dPenaltyLB = dPenaltyLB;
+//		this.dPenaltyUB = dPenaltyUB;
+//		this.totalNumAlert = totalNumAlert;
+//		this.minNumAlert = minNumAlert;
+//		this.maxNumAlert = maxNumAlert;
 //		this.fixPoissonParam = fixPoissonParam;
 //		this.adaptPoissonRatio = adaptPoissonRatio;
 //		this.qrParam = qrParam;
@@ -76,34 +76,34 @@ public class GameSimulationSpec {
 	{
 		return this.numTarget;
 	}
-	public double getARewardLB()
-	{
-		return this.aRewardLB;
-	}
-	public double getARewardUB()
-	{
-		return this.aRewardUB;
-	}
-	public double getDPenaltyLB()
-	{
-		return this.dPenaltyLB;
-	}
-	public double getDPenaltyUB()
-	{
-		return this.dPenaltyUB;
-	}
-	public int getTotalNumAlert()
-	{
-		return this.totalNumAlert;
-	}
-	public int getMinNumAlert()
-	{
-		return this.minNumAlert;
-	}
-	public int getMaxNumAlert()
-	{
-		return this.maxNumAlert;
-	}
+//	public double getARewardLB()
+//	{
+//		return this.aRewardLB;
+//	}
+//	public double getARewardUB()
+//	{
+//		return this.aRewardUB;
+//	}
+//	public double getDPenaltyLB()
+//	{
+//		return this.dPenaltyLB;
+//	}
+//	public double getDPenaltyUB()
+//	{
+//		return this.dPenaltyUB;
+//	}
+//	public int getTotalNumAlert()
+//	{
+//		return this.totalNumAlert;
+//	}
+//	public int getMinNumAlert()
+//	{
+//		return this.minNumAlert;
+//	}
+//	public int getMaxNumAlert()
+//	{
+//		return this.maxNumAlert;
+//	}
 //	public double getFixPoissonParam()
 //	{
 //		return this.fixPoissonParam;

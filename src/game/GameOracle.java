@@ -23,7 +23,16 @@ import model.SecurityAlert;
 
 
 public class GameOracle {
-	static final int MAX_ITER = 100;
+	static final int MAX_ITER = 200;
+	
+	/*****************************************************************************************
+	 * 
+	 * @param pastState: past game state
+	 * @param attAction: attacker action
+	 * @param defAction: defender action
+	 * @param rnd: random data generator
+	 * @return: new game state
+	 *****************************************************************************************/
 	public static GameState generateStateSample(GameState pastState
 			, AttackerAction attAction, DefenderAction defAction
 			, RandomDataGenerator rnd)
@@ -33,6 +42,7 @@ public class GameOracle {
 				,  rnd, 1, false);
 		return stateSampleList.get(0);
 	}
+	
 	/*****************************************************************************************
 	 * 
 	 * @param depGraph: dependency graph with node states included
@@ -80,6 +90,7 @@ public class GameOracle {
 		}
 		return defObservation;
 	}
+	
 	/*****************************************************************************************
 	 * 
 	 * @param gameState: current game state
@@ -110,6 +121,7 @@ public class GameOracle {
 		}
 		return prob;
 	}
+	
 	/*****************************************************************************************
 	 * 
 	 * @param depGraph: dependency graphs with node states included
@@ -160,6 +172,7 @@ public class GameOracle {
 		
 		return prob;
 	}
+	
 	/*****************************************************************************************
 	 * 
 	 * @param pastState: game state in the previous time step
@@ -223,6 +236,7 @@ public class GameOracle {
 					if(pivot <= enableProb) // Check if this node will become active
 						gameState.addEnabledNode(node);
 				}
+				gameState.createID();
 				boolean isAdd = gameStateSet.add(gameState); // check if this is a new state
 				if(isAdd)
 					i++;
@@ -245,6 +259,7 @@ public class GameOracle {
 					if(pivot <= enableProb)
 						gameState.addEnabledNode(node);
 				}
+				gameState.createID();
 				gameStateList.add(gameState);
 			}
 			return gameStateList;

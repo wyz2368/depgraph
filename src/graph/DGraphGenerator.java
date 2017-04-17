@@ -19,7 +19,7 @@ public class DGraphGenerator {
 	static double probLB = 0.8;
 	static double negProbUB = 0.1;
 	static double eProbLB = 0.9900;
-	
+	// Number simulations per observation such that: 1-2 mins
 	// All leaf nodes are targets, all costs, reward, penalty are within [0,1]
 	public static void genGraph(DependencyGraph dag, RandomDataGenerator rand
 			, int numTarget, double nodeActTypeRatio
@@ -36,6 +36,7 @@ public class DGraphGenerator {
 		DependencyGraph depGraph = dag;
 		setTopologicalOrder(depGraph);
 		selectTargetRandom(depGraph, rand, numTarget);
+		setRootSet(depGraph);
 		for(Node node : depGraph.vertexSet())
 		{
 			setNodeTypeRandom(depGraph, node, rand, nodeActTypeRatio);
@@ -175,6 +176,14 @@ public class DGraphGenerator {
 		{
 			Node node = (Node) topoOrderIter.next();
 			node.setTopoPosition(pos++);
+		}
+	}
+	public static void setRootSet(DependencyGraph depGraph)
+	{
+		for(Node node : depGraph.vertexSet())
+		{
+			if(depGraph.inDegreeOf(node) == 0)
+				depGraph.addRoot(node);
 		}
 	}
 	public static void findMinCut(DependencyGraph depGraph)

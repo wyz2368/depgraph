@@ -23,8 +23,8 @@ public class TestGameSimulation {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		int numNode = 50;
-		int numEdge = 150;
+		int numNode = 100;
+		int numEdge = 300;
 		int numTarget = 10;
 		double nodeActTypeRatio = 0.3;
 		double aRewardLB = 1.0;
@@ -70,20 +70,20 @@ public class TestGameSimulation {
 		
 		double qrParam = 5.0;
 		double discFact = 0.9;
-		int numRWSample = 300;
+		int numRWSample = 200;
 		
 		int maxNumRes = 10;
 		int minNumRes = 2;
 		double numResRatio = 0.7;
 		double logisParam = 5.0;
-		double thres = 1e-2;
+		double thres = 1e-3;
 		
 		int numTimeStep = 6;
-		int numSim = 1000;
+		int numSim = 100;
 		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
-		Defender valuePropagationvsDefender = new ValuePropagationvsDefender(maxNumRes, minNumRes, numResRatio
-				, logisParam, discFact, thres
-				, qrParam, maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
+//		Defender valuePropagationvsDefender = new ValuePropagationvsDefender(maxNumRes, minNumRes, numResRatio
+//				, logisParam, discFact, thres
+//				, qrParam, maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
 //		Defender uniformDefender = new UniformDefender(maxNumRes, minNumRes, numResRatio);
 //		Defender mincutDefender = new MinCutDefender(maxNumRes, minNumRes, numResRatio);
 		
@@ -104,23 +104,23 @@ public class TestGameSimulation {
 		defPayoffRWvsGO /= numSim;
 		attPayoffRWvsGO /= numSim;
 		
-		Attacker vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate, minNumSelectCandidate
-				, numSelectCandidateRatio, qrParam, discFact);
-		GameSimulation gameSimVPvsGO = new GameSimulation(depGraph, vpAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
-		double defPayoffVPvsGO = 0.0;
-		double attPayoffVPvsGO = 0.0;
-		for(int i = 0; i < numSim; i++)
-		{
-			System.out.println("Simulation " + i);
-			gameSimVPvsGO.runSimulation();
-			gameSimVPvsGO.printPayoff();
-			defPayoffVPvsGO += gameSimVPvsGO.getSimulationResult().getDefPayoff();
-			attPayoffVPvsGO += gameSimVPvsGO.getSimulationResult().getAttPayoff();
-			gameSimVPvsGO.reset();
-//			System.out.println();
-		}
-		defPayoffVPvsGO /= numSim;
-		attPayoffVPvsGO /= numSim;
+//		Attacker vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate, minNumSelectCandidate
+//				, numSelectCandidateRatio, qrParam, discFact);
+//		GameSimulation gameSimVPvsGO = new GameSimulation(depGraph, vpAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
+//		double defPayoffVPvsGO = 0.0;
+//		double attPayoffVPvsGO = 0.0;
+//		for(int i = 0; i < numSim; i++)
+//		{
+//			System.out.println("Simulation " + i);
+//			gameSimVPvsGO.runSimulation();
+//			gameSimVPvsGO.printPayoff();
+//			defPayoffVPvsGO += gameSimVPvsGO.getSimulationResult().getDefPayoff();
+//			attPayoffVPvsGO += gameSimVPvsGO.getSimulationResult().getAttPayoff();
+//			gameSimVPvsGO.reset();
+////			System.out.println();
+//		}
+//		defPayoffVPvsGO /= numSim;
+//		attPayoffVPvsGO /= numSim;
 		
 		Attacker uniformAttacker = new UniformAttacker(maxNumSelectCandidate, minNumSelectCandidate
 				, numSelectCandidateRatio);
@@ -214,9 +214,9 @@ public class TestGameSimulation {
 //		System.out.println("Attacker value propagation payoff: " + attPayoffVPvsVP);
 //		System.out.println();
 		
-		System.out.println("Defender goal node payoff: " + defPayoffVPvsGO);
-		System.out.println("Attacker value propagation payoff: " + attPayoffVPvsGO);
-		System.out.println();
+//		System.out.println("Defender goal node payoff: " + defPayoffVPvsGO);
+//		System.out.println("Attacker value propagation payoff: " + attPayoffVPvsGO);
+//		System.out.println();
 		
 		System.out.println("Defender goal node payoff: " + defPayoffUvsGO);
 		System.out.println("Attacker uniform payoff: " + attPayoffUvsGO);

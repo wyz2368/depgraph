@@ -20,8 +20,8 @@ public class TestVPvsDefender {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		int numNode = 50;
-		int numEdge = 150;
+		int numNode = 100;
+		int numEdge = 300;
 		int numTarget = 10;
 		double nodeActTypeRatio = 0.5;
 		double aRewardLB = 2.0;
@@ -75,7 +75,7 @@ public class TestVPvsDefender {
 		double thres = 1e-3;
 		
 		int numTimeStep = 6;
-		int numSim = 1000;
+		int numSim = 10;
 		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
 		
 		Defender valuePropagationvsDefender = new ValuePropagationvsDefender_Alternative(maxNumRes, minNumRes, numResRatio
@@ -88,9 +88,11 @@ public class TestVPvsDefender {
 		Attacker vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate, minNumSelectCandidate
 				, numSelectCandidateRatio, qrParam, discFact);
 				
+		long start = System.currentTimeMillis();
 		GameSimulation gameSimVPvsGO = new GameSimulation(depGraph, vpAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
 		double defPayoffVPvsGO = 0.0;
 		double attPayoffVPvsGO = 0.0;
+		double timeVPvsGO = 0.0;
 		for(int i = 0; i < numSim; i++)
 		{
 			System.out.println("Simulation " + i);
@@ -100,12 +102,16 @@ public class TestVPvsDefender {
 			attPayoffVPvsGO += gameSimVPvsGO.getSimulationResult().getAttPayoff();
 			gameSimVPvsGO.reset();
 		}
+		long end = System.currentTimeMillis();
 		defPayoffVPvsGO /= numSim;
 		attPayoffVPvsGO /= numSim;
+		timeVPvsGO = (end - start) / 1000.0 / numSim;
 		
+		start = System.currentTimeMillis();
 		GameSimulation gameSimVPvsVP = new GameSimulation(depGraph, vpAttacker, valuePropagationvsDefender, rnd, numTimeStep, discFact);
 		double defPayoffVPvsVP = 0.0;
 		double attPayoffVPvsVP = 0.0;
+		double timeVPvsVP = 0.0;
 		for(int i = 0; i < numSim; i++)
 		{
 			System.out.println("Simulation " + i);
@@ -115,15 +121,19 @@ public class TestVPvsDefender {
 			attPayoffVPvsVP += gameSimVPvsVP.getSimulationResult().getAttPayoff();
 			gameSimVPvsVP.reset();
 		}
+		end = System.currentTimeMillis();
 		defPayoffVPvsVP /= numSim;
 		attPayoffVPvsVP /= numSim;
+		timeVPvsVP = (end - start) / 1000.0 / numSim;
 		
 		System.out.println("Defender value propagation payoff: " + defPayoffVPvsVP);
 		System.out.println("Attacker value propagation payoff: " + attPayoffVPvsVP);
+		System.out.println("Runtime per simulation: " + timeVPvsVP);
 		System.out.println();
 		
 		System.out.println("Defender goal node payoff: " + defPayoffVPvsGO);
 		System.out.println("Attacker value propagation payoff: " + attPayoffVPvsGO);
+		System.out.println("Runtime per simulation: " + timeVPvsGO);
 		System.out.println();
 	}
 
