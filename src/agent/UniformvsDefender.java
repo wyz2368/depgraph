@@ -39,19 +39,19 @@ public final class UniformvsDefender extends Defender{
 	
 	private int numStateSample = 50; // number of states to sample
 	private int numAttActionSample = 50; // number of attack actions to sample
-	public UniformvsDefender(double logisParam, double discFact, double thres
-			, int maxNumRes, int minNumRes, double numResRatio
-			, int maxNumSelectACandidate, int minNumSelectACandidate, double numSelectACandidateRatio
-			, int numStateSample, int numAttActionSample){
+	public UniformvsDefender(final double logisParam, final double discFact, final double thres
+			, final int maxNumRes, final int minNumRes, final double numResRatio
+			, final int maxNumSelectACandidate, final int minNumSelectACandidate, final double numSelectACandidateRatio
+			, final int numStateSample, final int numAttActionSample){
 		this(logisParam, discFact, thres
 				, maxNumRes, minNumRes, numResRatio
 				, maxNumSelectACandidate, minNumSelectACandidate, numSelectACandidateRatio);
 		this.numStateSample = numStateSample;
 		this.numAttActionSample = numAttActionSample;
 	}
-	public UniformvsDefender(double logisParam, double discFact, double thres
-			, int maxNumRes, int minNumRes, double numResRatio
-			, int maxNumSelectACandidate, int minNumSelectACandidate, double numSelectACandidateRatio){
+	public UniformvsDefender(final double logisParam, final double discFact, final double thres
+			, final int maxNumRes, final int minNumRes, final double numResRatio
+			, final int maxNumSelectACandidate, final int minNumSelectACandidate, final double numSelectACandidateRatio){
 		super(DefenderType.vsUNIFORM);
 		this.logisParam = logisParam;
 		this.discFact = discFact;
@@ -66,11 +66,10 @@ public final class UniformvsDefender extends Defender{
 		this.numSelectACandidateRatio = numSelectACandidateRatio;
 	}
 	@Override
-	public DefenderAction sampleAction(DependencyGraph depGraph,
-			int curTimeStep, int numTimeStep
-			, DefenderBelief dBelief
-			, RandomGenerator rng) {
-		// TODO Auto-generated method stub
+	public DefenderAction sampleAction(final DependencyGraph depGraph,
+			final int curTimeStep, final int numTimeStep
+			, final DefenderBelief dBelief
+			, final RandomGenerator rng) {
 		Map<Node, Double> dValueMap = computeCandidateValueTopo(depGraph, dBelief, curTimeStep, numTimeStep
 				, this.discFact, rng);
 		List<Node> dCandidateNodeList = new ArrayList<Node>();
@@ -78,8 +77,7 @@ public final class UniformvsDefender extends Defender{
 		
 		// Get candidate list with values for sampling
 		int idx = 0;
-		for(Entry<Node, Double> entry : dValueMap.entrySet())
-		{
+		for (Entry<Node, Double> entry : dValueMap.entrySet()) {
 			dCandidateNodeList.add(entry.getKey());
 			candidateValue[idx] = entry.getValue();
 			idx++;
@@ -93,48 +91,52 @@ public final class UniformvsDefender extends Defender{
 
 		// Only keep candidates with high probability
 		int numGoodCandidate = 0;
-		for(int i = 0; i < totalNumCandidate; i++)
-			if(probabilities[i] >= this.thres)
+		for (int i = 0; i < totalNumCandidate; i++) {
+			if (probabilities[i] >= this.thres) {
 				numGoodCandidate++;
+			}
+		}
 		// Compute number of candidates to select
 		int numNodetoProtect = 0;
-		if(dCandidateNodeList.size() < this.minNumRes)
+		if (dCandidateNodeList.size() < this.minNumRes) {
 			numNodetoProtect = dCandidateNodeList.size();
-		else 
-		{
-			numNodetoProtect = Math.max(this.minNumRes, (int)(this.numResRatio * dCandidateNodeList.size()));
+		} else {
+			numNodetoProtect = Math.max(this.minNumRes, (int) (this.numResRatio * dCandidateNodeList.size()));
 			numNodetoProtect = Math.min(this.maxNumRes, numNodetoProtect);
 		}
-		if(numNodetoProtect > numGoodCandidate)
+		if (numNodetoProtect > numGoodCandidate) {
 			numNodetoProtect = numGoodCandidate;
+		}
 		
-		if(numNodetoProtect == 0) // if there is no candidate
+		if (numNodetoProtect == 0) { // if there is no candidate
 			return new DefenderAction();
+		}
 		
 		// Sampling
 		int[] nodeIndexes = new int[dCandidateNodeList.size()];
-		for(int i = 0; i < dCandidateNodeList.size(); i++)
+		for (int i = 0; i < dCandidateNodeList.size(); i++) {
 			nodeIndexes[i] = i;
+		}
 		EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
 
 		return sampleAction(dCandidateNodeList, numNodetoProtect, rnd);
 	}
 	@Override
-	public DefenderBelief updateBelief(DependencyGraph depGraph
-			, DefenderBelief dBelief
-			, DefenderAction dAction
-			, DefenderObservation dObservation
-			, int curTimeStep, int numTimeStep
-			, RandomGenerator rng) {
+	public DefenderBelief updateBelief(final DependencyGraph depGraph
+			, final DefenderBelief dBelief
+			, final DefenderAction dAction
+			, final DefenderObservation dObservation
+			, final int curTimeStep, final int numTimeStep
+			, final RandomGenerator rng) {
 		
 		RandomDataGenerator rnd = new RandomDataGenerator(rng);
 		
 		// Used for storing true game state of the game
 		GameState savedGameState = new GameState();
-		for(Node node : depGraph.vertexSet())
-		{
-			if(node.getState() == NodeState.ACTIVE)
+		for (Node node : depGraph.vertexSet()) {
+			if (node.getState() == NodeState.ACTIVE) {
 				savedGameState.addEnabledNode(node);
+			}
 		}
 		
 		DefenderBelief newBelief = new DefenderBelief(); // new belief of the defender
@@ -142,35 +144,30 @@ public final class UniformvsDefender extends Defender{
 		
 		Attacker attacker = new UniformAttacker(this.maxNumSelectACandidate, this.minNumSelectACandidate, this.numSelectACandidateRatio);
 		
-		for(Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) // iterate over current belief of the defender
-		{
+		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) { // iterate over current belief of the defender
 			GameState gameState = entry.getKey(); // one of possible game state
 			Double curStateProb = entry.getValue(); // probability of the game state
 		
 			depGraph.setState(gameState); // for each possible state
 			
 			List<AttackerAction> attActionList = attacker.sampleAction(depGraph, curTimeStep, numTimeStep
-					, rng, this.numAttActionSample, false); // Sample attacker actions
+				, rng, this.numAttActionSample, false); // Sample attacker actions
 			
-			for(int attActionSample = 0; attActionSample < this.numAttActionSample; attActionSample++)
-			{// Iterate over all samples of attack actions
+			for (int attActionSample = 0; attActionSample < this.numAttActionSample; attActionSample++) {
+				// Iterate over all samples of attack actions
 				AttackerAction attAction = attActionList.get(attActionSample); // current sample of attack action
 				List<GameState> gameStateList = GameOracle.generateStateSample(gameState, attAction, dAction
-						, rnd, this.numStateSample, true); // s' <- s, a, d, // Sample new game states
+					, rnd, this.numStateSample, true); // s' <- s, a, d, // Sample new game states
 				int curNumStateSample = gameStateList.size();
-				for(int stateSample = 0; stateSample < curNumStateSample; stateSample++)
-				{
+				for (int stateSample = 0; stateSample < curNumStateSample; stateSample++) {
 					GameState newGameState = gameStateList.get(stateSample);
 					Double curProb = newBelief.getProbability(newGameState); // check if this new game state is already generated
 					double observationProb = 0.0;
-					if(curProb == null) // new game state
-					{
+					if (curProb == null) { // new game state
 						observationProb = GameOracle.computeObservationProb(newGameState, dObservation);
 						observationProbMap.put(newGameState, observationProb);
 						curProb = 0.0;
-					}
-					else // already generated
-					{
+					} else { // already generated
 						observationProb = observationProbMap.get(newGameState);
 					}
 					double addedProb = observationProb * curStateProb 
@@ -181,7 +178,6 @@ public final class UniformvsDefender extends Defender{
 					newBelief.addState(newGameState, curProb + addedProb);
 				}
 			}
-			
 		}
 		
 		// Restore game state
@@ -189,55 +185,49 @@ public final class UniformvsDefender extends Defender{
 		
 		// Normalization
 		double sumProb = 0.0;
-		for(Entry<GameState, Double> entry : newBelief.getGameStateMap().entrySet())
-		{
+		for (Entry<GameState, Double> entry : newBelief.getGameStateMap().entrySet()) {
 			sumProb += entry.getValue();
 		}
-		for(Entry<GameState, Double> entry : newBelief.getGameStateMap().entrySet())
-		{
+		for (Entry<GameState, Double> entry : newBelief.getGameStateMap().entrySet()) {
 			entry.setValue(entry.getValue() / sumProb); 
 		}
 		
 		// Belief revision
 		DefenderBelief revisedBelief = new DefenderBelief();
-		for(Entry<GameState, Double> entry : newBelief.getGameStateMap().entrySet())
-		{
-			if(entry.getValue() > this.thres)
+		for (Entry<GameState, Double> entry : newBelief.getGameStateMap().entrySet()) {
+			if (entry.getValue() > this.thres) {
 				revisedBelief.addState(entry.getKey(), entry.getValue());
+			}
 		}
 		//Re-normalize again
 		sumProb = 0.0;
-		for(Entry<GameState, Double> entry : revisedBelief.getGameStateMap().entrySet())
-		{
+		for (Entry<GameState, Double> entry : revisedBelief.getGameStateMap().entrySet()) {
 			sumProb += entry.getValue();
 		}
-		for(Entry<GameState, Double> entry : revisedBelief.getGameStateMap().entrySet())
-		{
+		for (Entry<GameState, Double> entry : revisedBelief.getGameStateMap().entrySet()) {
 			entry.setValue(entry.getValue() / sumProb); 
 		}
 		System.out.println("Belief size: " + revisedBelief.getGameStateMap().size());
 		return revisedBelief;
 	}
 	
-	public Map<Node, Double> computeCandidateValueTopo(DependencyGraph depGraph
-			, DefenderBelief dBelief
-			, int curTimeStep, int numTimeStep, double discountFactor
-			, RandomGenerator rng)
-	{
+	public Map<Node, Double> computeCandidateValueTopo(final DependencyGraph depGraph
+			, final DefenderBelief dBelief
+			, final int curTimeStep, final int numTimeStep, final double discountFactor
+			, final RandomGenerator rng) {
 		Map<Node, Double> dValueMap = new HashMap<Node, Double>();
 		
 		Attacker attacker = new UniformAttacker(this.maxNumSelectACandidate, this.minNumSelectACandidate, this.numSelectACandidateRatio);
 		
 		// Used for storing true game state of the game
 		GameState savedGameState = new GameState();
-		for(Node node : depGraph.vertexSet())
-		{
-			if(node.getState() == NodeState.ACTIVE)
+		for (Node node : depGraph.vertexSet()) {
+			if (node.getState() == NodeState.ACTIVE) {
 				savedGameState.addEnabledNode(node);
+			}
 		}
 //		System.out.println("Start defender belief:........");
-		for(Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) // iterate over current belief of the defender
-		{
+		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) { // iterate over current belief of the defender
 			GameState gameState = entry.getKey();
 //			gameState.print();
 //			System.out.println("Prob: " + entry.getValue());
@@ -245,43 +235,38 @@ public final class UniformvsDefender extends Defender{
 			
 			depGraph.setState(gameState); // for each possible state
 			List<AttackerAction> attActionList = attacker.sampleAction(depGraph, curTimeStep, numTimeStep
-					, rng, this.numAttActionSample, false); // Sample attacker actions
+				, rng, this.numAttActionSample, false); // Sample attacker actions
 			Map<Node, Double> curDValueMap = computeCandidateValueTopo(depGraph, attActionList
 					, curTimeStep, numTimeStep, discountFactor);
-			for(Entry<Node, Double> dEntry : curDValueMap.entrySet())
-			{
+			for (Entry<Node, Double> dEntry : curDValueMap.entrySet()) {
 				Node node = dEntry.getKey();
 				Double value = dEntry.getValue();
 				
 				Double curDValue = dValueMap.get(node);
-				if(curDValue == null)
-				{
+				if (curDValue == null) {
 					curDValue = value * curStateProb;
-				}
-				else
-				{
+				} else {
 					curDValue += value * curStateProb;
 				}
 				dValueMap.put(node, curDValue);
 			}
 		}
 //		System.out.println("End defender belief:........");
-		for(Entry<Node, Double> entry : dValueMap.entrySet())
-		{
+		for (Entry<Node, Double> entry : dValueMap.entrySet()) {
 			Node node = entry.getKey();
 			Double value = entry.getValue();
-			if(value == Double.POSITIVE_INFINITY)
+			if (value == Double.POSITIVE_INFINITY) {
 				value = 0.0;
+			}
 			entry.setValue((-value + node.getDCost()) * Math.pow(discountFactor, curTimeStep - 1));
 		}
 		depGraph.setState(savedGameState);
 		return dValueMap;
 	}
 	
-	public static Map<Node, Double> computeCandidateValueTopo(DependencyGraph depGraph
-			, List<AttackerAction> attActionList
-			, int curTimeStep, int numTimeStep, double discountFactor)
-	{
+	public static Map<Node, Double> computeCandidateValueTopo(final DependencyGraph depGraph
+		, final List<AttackerAction> attActionList
+		, final int curTimeStep, final int numTimeStep, final double discountFactor) {
 //		System.out.println("Defender compute candidate value");
 		Map<Node, Double> dValueMap = new HashMap<Node, Double>();
 		
@@ -289,56 +274,45 @@ public final class UniformvsDefender extends Defender{
 		List<Node> targetList = new ArrayList<Node>(depGraph.getTargetSet()); // list of targets
 		Node[] topoOrder = new Node[depGraph.vertexSet().size()]; // topological order of nodes in the graph
 
-		for(Node node : depGraph.vertexSet())
-		{
+		for (Node node : depGraph.vertexSet()) {
 			topoOrder[node.getTopoPosition()] = node;
 		}
 		
 		double[][][] r = new double[targetList.size()][numTimeStep - curTimeStep + 1][depGraph.vertexSet().size()];
-		for(int i = 0; i < targetList.size(); i++)
-		{
-			for(int j = 0; j <= numTimeStep - curTimeStep; j++)
-			{
-				for(int k = 0; k < depGraph.vertexSet().size(); k++)
-				{
+		for (int i = 0; i < targetList.size(); i++) {
+			for (int j = 0; j <= numTimeStep - curTimeStep; j++) {
+				for (int k = 0; k < depGraph.vertexSet().size(); k++) {
 					r[i][j][k] = Double.POSITIVE_INFINITY;
 				}
 			}
 		}
-		for(int i = 0; i < targetList.size(); i++)
-		{
+		for (int i = 0; i < targetList.size(); i++) {
 			Node node = targetList.get(i);
-			if(node.getState() != NodeState.ACTIVE) // for non-active targets only
+			if (node.getState() != NodeState.ACTIVE) { // for non-active targets only
 				r[i][0][node.getId() - 1] = node.getDPenalty();
+			}
 		}
-		for(int k = depGraph.vertexSet().size() - 1; k >= 0; k--) // starting propagate values for the defender 
-		{
+		for (int k = depGraph.vertexSet().size() - 1; k >= 0; k--) { // starting propagate values for the defender 
 			Node node = topoOrder[k];
 
 			Set<Edge> edgeSet = depGraph.outgoingEdgesOf(node);
-			if(edgeSet != null && !edgeSet.isEmpty()) // if non-leaf
-			{
-				for(Edge edge : edgeSet)
-				{
+			if (edgeSet != null && !edgeSet.isEmpty()) { // if non -leaf
+				for (Edge edge : edgeSet) {
 					Node postNode = edge.gettarget();
-					if(postNode.getState() != NodeState.ACTIVE)
-					{
-						for(int i = 0; i < targetList.size(); i++)
-						{
-							if(targetList.get(i).getState() != NodeState.ACTIVE)
-							for(int j = 1; j <= numTimeStep - curTimeStep; j++)
-							{
-								double r_hat = 0.0;
-								if(postNode.getActivationType() == NodeActivationType.OR)
-								{
-									r_hat = r[i][j - 1][postNode.getId() - 1] * edge.getActProb(); 
+					if (postNode.getState() != NodeState.ACTIVE) {
+						for (int i = 0; i < targetList.size(); i++) {
+							if (targetList.get(i).getState() != NodeState.ACTIVE) {
+								for (int j = 1; j <= numTimeStep - curTimeStep; j++) {
+									double rHat = 0.0;
+									if (postNode.getActivationType() == NodeActivationType.OR) {
+										rHat = r[i][j - 1][postNode.getId() - 1] * edge.getActProb(); 
+									} else {
+										rHat = r[i][j - 1][postNode.getId() - 1] * postNode.getActProb();
+									}
+									if (r[i][j][node.getId() - 1] > discountFactor * rHat) {
+										r[i][j][node.getId() - 1] = discountFactor * rHat;
+									}
 								}
-								else
-								{
-									r_hat = r[i][j - 1][postNode.getId() - 1] * postNode.getActProb();
-								}
-								if(r[i][j][node.getId() - 1] > discountFactor * r_hat)
-									r[i][j][node.getId() - 1] = discountFactor * r_hat;
 							}
 						}
 					}
@@ -348,77 +322,75 @@ public final class UniformvsDefender extends Defender{
 		}
 		// Sum of value for candidates
 		double[] rSum = new double[depGraph.vertexSet().size()];
-		for(int i = 0; i < depGraph.vertexSet().size(); i++)
+		for (int i = 0; i < depGraph.vertexSet().size(); i++) {
 			rSum[i] = Double.POSITIVE_INFINITY;
-		for(int i = 0; i < targetList.size(); i++)
-		{
-			if(targetList.get(i).getState() != NodeState.ACTIVE)
-			for(int j = 0; j <= numTimeStep - curTimeStep; j++)
-			{
-				for(int k = 0; k < depGraph.vertexSet().size(); k++)
-					if(rSum[k] > r[i][j][k])
-						rSum[k] = r[i][j][k];
+		}
+		for (int i = 0; i < targetList.size(); i++) {
+			if (targetList.get(i).getState() != NodeState.ACTIVE) {
+				for (int j = 0; j <= numTimeStep - curTimeStep; j++) {
+					for (int k = 0; k < depGraph.vertexSet().size(); k++) {
+						if (rSum[k] > r[i][j][k]) {
+							rSum[k] = r[i][j][k];
+						}
+					}
+				}
 			}
 		}
 		
 		/*****************************************************************************************/
-		for(AttackerAction attAction : attActionList)
-		{
+		for (AttackerAction attAction : attActionList) {
 //			attAction.print();
-			for(Entry<Node, Set<Edge>> attEntry : attAction.getAction().entrySet())
-			{
+			for (Entry<Node, Set<Edge>> attEntry : attAction.getAction().entrySet()) {
 				Node node = attEntry.getKey();
 				Set<Edge> edgeSet = attEntry.getValue();
 				
 				double addedDValue = rSum[node.getId() - 1];
 				double actProb = 1.0;
-				if(node.getActivationType() == NodeActivationType.OR)
-				{ 
-					for(Edge edge : edgeSet)
+				if (node.getActivationType() == NodeActivationType.OR) {
+					for (Edge edge : edgeSet) {
 						actProb *= (1 - edge.getActProb());
+					}
 					actProb = 1 - actProb;
-				}
-				else
+				} else {
 					actProb *= node.getActProb();
+				}
 				addedDValue *= actProb;
 				
 				Double curDValue = dValueMap.get(node);
-				if(curDValue == null) // if this is new
+				if (curDValue == null) { // if this is new
 					curDValue = addedDValue;
-				else
+				} else {
 					curDValue += addedDValue;
+				}
 				dValueMap.put(node, curDValue);
 			}
 		}
 		
-		for(Node target : depGraph.getTargetSet())
-		{
-			if(target.getState() == NodeState.ACTIVE)
-			{
+		for (Node target : depGraph.getTargetSet()) {
+			if (target.getState() == NodeState.ACTIVE) {
 //				System.out.println("This is active target...........");
 				double dValue = target.getDPenalty();
-				if(rSum[target.getId() - 1] != Double.POSITIVE_INFINITY)
+				if (rSum[target.getId() - 1] != Double.POSITIVE_INFINITY) {
 					dValue += rSum[target.getId() - 1];
+				}
 				dValueMap.put(target, dValue);
 			}
 		}
 		return dValueMap;
 	}
 	
-	public static DefenderAction sampleAction(List<Node> dCandidateNodeList, int numNodetoProtect,
-			AbstractIntegerDistribution rnd)
-	{
+	public static DefenderAction sampleAction(final List<Node> dCandidateNodeList, final int numNodetoProtect,
+		final AbstractIntegerDistribution rnd) {
 		DefenderAction action = new DefenderAction();
 		
 		boolean[] isChosen = new boolean[dCandidateNodeList.size()];
-		for(int i = 0; i < dCandidateNodeList.size(); i++)
+		for (int i = 0; i < dCandidateNodeList.size(); i++) {
 			isChosen[i] = false;
+		}
 		int count = 0;
-		while(count < numNodetoProtect)
-		{
+		while (count < numNodetoProtect) {
 			int idx = rnd.sample();
-			if(!isChosen[idx])
-			{
+			if (!isChosen[idx]) {
 				action.addNodetoProtect(dCandidateNodeList.get(idx));
 				isChosen[idx] = true;
 				count++;
@@ -428,41 +400,40 @@ public final class UniformvsDefender extends Defender{
 		return action;
 	}
 	
-	public static double[] computecandidateProb(int totalNumCandidate, double[] candidateValue, double logisParam)
-	{
+	public static double[] computecandidateProb(final int totalNumCandidate, final double[] candidateValue, final double logisParam) {
 		//Normalize candidate value
 		double minValue = Double.POSITIVE_INFINITY;
 		double maxValue = Double.NEGATIVE_INFINITY;
-		for(int i = 0; i < totalNumCandidate; i++)
-		{
-			if(minValue > candidateValue[i])
+		for (int i = 0; i < totalNumCandidate; i++) {
+			if (minValue > candidateValue[i]) {
 				minValue = candidateValue[i];
-			if(maxValue < candidateValue[i])
+			}
+			if (maxValue < candidateValue[i]) {
 				maxValue = candidateValue[i];
+			}
 		}
-		if(maxValue > minValue)
-		{
-			for(int i = 0; i < totalNumCandidate; i++)
+		if (maxValue > minValue) {
+			for (int i = 0; i < totalNumCandidate; i++) {
 				candidateValue[i] = (candidateValue[i] - minValue) / (maxValue - minValue);
-		}
-		else 
-		{
-			for(int i = 0; i < totalNumCandidate; i++)
+			}
+		} else {
+			for (int i = 0; i < totalNumCandidate; i++) {
 				candidateValue[i] = 0.0;
+			}
 		}
 		
 		// Compute probability
 		double[] probabilities = new double[totalNumCandidate];
 		int[] nodeList = new int[totalNumCandidate];
 		double sumProb = 0.0;
-		for(int i = 0; i < totalNumCandidate; i++)
-		{
+		for (int i = 0; i < totalNumCandidate; i++) {
 			nodeList[i] = i;
 			probabilities[i] = Math.exp(logisParam * candidateValue[i]);
 			sumProb += probabilities[i];
 		}
-		for(int i = 0; i < totalNumCandidate; i++)
+		for (int i = 0; i < totalNumCandidate; i++) {
 			probabilities[i] /= sumProb;
+		}
 		
 		return probabilities;
 	}
