@@ -128,7 +128,7 @@ public class ValuePropagationvsDefender extends Defender{
 			nodeIndexes[i] = i;
 		EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
 
-		return sampleAction(depGraph, dCandidateNodeList, numNodetoProtect, rnd);
+		return sampleAction(dCandidateNodeList, numNodetoProtect, rnd);
 	}
 
 	/*****************************************************************************************
@@ -142,6 +142,7 @@ public class ValuePropagationvsDefender extends Defender{
 	 * @param rng: random generator
 	 * @return type of DefenderBelief: new belief of the defender
 	 *****************************************************************************************/
+	@Override
 	public DefenderBelief updateBelief(DependencyGraph depGraph, DefenderBelief dBelief
 			, DefenderAction dAction, DefenderObservation dObservation
 			, int curTimeStep, int numTimeStep
@@ -265,7 +266,7 @@ public class ValuePropagationvsDefender extends Defender{
 	public Map<Node, Double> computeCandidateValueTopo(DependencyGraph depGraph
 			, DefenderBelief dBelief
 			, int curTimeStep, int numTimeStep, double discountFactor
-			, double propagationParam)
+			, double propagationParamCur)
 	{
 		Map<Node, Double> dCandidateMap = new HashMap<Node, Double>();
 		
@@ -282,10 +283,10 @@ public class ValuePropagationvsDefender extends Defender{
 			double stateProb = entry.getValue();
 			depGraph.setState(curGameState);
 			
-			AttackCandidate curAttCandidate = ValuePropagationAttacker.selectCandidate(depGraph, curTimeStep, numTimeStep);
+			AttackCandidate curAttCandidate = ValuePropagationAttacker.selectCandidate(depGraph);
 			
 			double[] curACandidateProb = ValuePropagationAttacker.computecandidateProb(depGraph, curAttCandidate
-					, curTimeStep, numTimeStep, this.qrParam, discountFactor, propagationParam
+					, curTimeStep, numTimeStep, this.qrParam, discountFactor, propagationParamCur
 					, this.maxNumAttCandidate, this.minNumAttCandidate, this.numAttCandidateRatio);
 //			for(int i = 0; i < curACandidateProb.length; i++)
 //				System.out.println(curACandidateProb[i]);
@@ -294,7 +295,7 @@ public class ValuePropagationvsDefender extends Defender{
 			double[] curDCandidateValue = computeCandidateValueTopo(depGraph
 					, curAttCandidate, curDefCandidate
 					, curTimeStep, numTimeStep
-					, discountFactor, propagationParam);
+					, discountFactor);
 //			for(int i = 0; i < curDCandidateValue.length; i++)
 //				System.out.println(curDCandidateValue[i]);
 			
@@ -398,10 +399,10 @@ public class ValuePropagationvsDefender extends Defender{
 	 * @param propagationParam: for propagating value over AND nodes
 	 * @return value for each candidate of the defender
 	 *****************************************************************************************/
-	public double[] computeCandidateValueTopo(DependencyGraph depGraph
+	public static double[] computeCandidateValueTopo(DependencyGraph depGraph
 			, AttackCandidate attackCandidate, DefenderCandidate dCandidate
 			, int curTimeStep, int numTimeStep, double discountFactor
-			, double propagationParam)
+			)
 	{
 		
 		List<Node> dCandidateList = new ArrayList<Node>(dCandidate.getNodeCandidateSet());
@@ -570,7 +571,7 @@ public class ValuePropagationvsDefender extends Defender{
 		
 		return probabilities;
 	}
-	public DefenderAction sampleAction(DependencyGraph dependencyGraph, List<Node> dCandidateNodeList, int numNodetoProtect,
+	public static DefenderAction sampleAction(List<Node> dCandidateNodeList, int numNodetoProtect,
 			AbstractIntegerDistribution rnd)
 	{
 		DefenderAction action = new DefenderAction();

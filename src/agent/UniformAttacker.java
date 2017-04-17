@@ -40,7 +40,7 @@ public class UniformAttacker extends Attacker{
 	public AttackerAction sampleAction(DependencyGraph graph, int curTimeStep, int numTimeStep, RandomGenerator rng)
 	{
 		// Select candidate for the attakcer
-		AttackCandidate attackCandidate = selectCandidate(graph, curTimeStep, numTimeStep); 
+		AttackCandidate attackCandidate = selectCandidate(graph); 
 		
 		// Sample number of nodes
 		int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
@@ -65,7 +65,7 @@ public class UniformAttacker extends Attacker{
 	 * @param numTimeStep: total number of time step
 	 * @return type of AttackCandidate: candidate set for the attacker
 	 *****************************************************************************************/
-	static AttackCandidate selectCandidate(DependencyGraph depGraph, int curTimeStep, int numTimeStep)
+	static AttackCandidate selectCandidate(DependencyGraph depGraph)
 	{
 		AttackCandidate aCandidate = new AttackCandidate();
 		
@@ -200,7 +200,7 @@ public class UniformAttacker extends Attacker{
 			}
 			return new ArrayList<AttackerAction>(attActionSet);
 		}
-		else // this is currently used, correct
+		 // this is currently used, correct
 		{
 			List<AttackerAction> attActionList = new ArrayList<AttackerAction>();
 			for(int i = 0; i < numSample; i++)

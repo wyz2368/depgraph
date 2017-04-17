@@ -49,6 +49,7 @@ public class UniformvsDefender extends Defender{
 		this.numSelectACandidateRatio = numSelectACandidateRatio;
 	}
 	
+	@Override
 	public DefenderBelief updateBelief(DependencyGraph depGraph
 			, DefenderBelief dBelief
 			, DefenderAction dAction
@@ -73,7 +74,7 @@ public class UniformvsDefender extends Defender{
 		
 		for(Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) // iterate over current belief of the defender
 		{
-			GameState gameState = (GameState) entry.getKey(); // one of possible game state
+			GameState gameState = entry.getKey(); // one of possible game state
 			Double curStateProb = entry.getValue(); // probability of the game state
 		
 			depGraph.setState(gameState); // for each possible state

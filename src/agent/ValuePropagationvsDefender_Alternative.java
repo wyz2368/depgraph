@@ -81,7 +81,7 @@ public class ValuePropagationvsDefender_Alternative extends Defender{
 			, RandomGenerator rng) {
 		// TODO Auto-generated method stub
 		Map<Node, Double> dValueMap = computeCandidateValueTopo(depGraph, dBelief, curTimeStep, numTimeStep
-				, this.discFact, this.propagationParam, rng);
+				, this.discFact, rng);
 		List<Node> dCandidateNodeList = new ArrayList<Node>();
 		double[] candidateValue = new double[dValueMap.size()];
 		
@@ -126,7 +126,7 @@ public class ValuePropagationvsDefender_Alternative extends Defender{
 			nodeIndexes[i] = i;
 		EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
 
-		return sampleAction(depGraph, dCandidateNodeList, numNodetoProtect, rnd);
+		return sampleAction(dCandidateNodeList, numNodetoProtect, rnd);
 	}
 	@Override
 	public DefenderBelief updateBelief(DependencyGraph depGraph,
@@ -151,7 +151,7 @@ public class ValuePropagationvsDefender_Alternative extends Defender{
 		
 		for(Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) // iterate over current belief of the defender
 		{
-			GameState gameState = (GameState) entry.getKey(); // one of possible game state
+			GameState gameState = entry.getKey(); // one of possible game state
 			Double curStateProb = entry.getValue(); // probability of the game state
 		
 			depGraph.setState(gameState); // for each possible state
@@ -233,7 +233,6 @@ public class ValuePropagationvsDefender_Alternative extends Defender{
 	public Map<Node, Double> computeCandidateValueTopo(DependencyGraph depGraph
 			, DefenderBelief dBelief
 			, int curTimeStep, int numTimeStep, double discountFactor
-			, double propagationParam
 			, RandomGenerator rng)
 	{
 		Map<Node, Double> dValueMap = new HashMap<Node, Double>();
@@ -260,7 +259,7 @@ public class ValuePropagationvsDefender_Alternative extends Defender{
 			List<AttackerAction> attActionList = attacker.sampleAction(depGraph, curTimeStep, numTimeStep
 					, rng, this.numAttActionSample, false); // Sample attacker actions
 			Map<Node, Double> curDValueMap = computeCandidateValueTopo(depGraph, attActionList
-					, curTimeStep, numTimeStep, discountFactor, propagationParam);
+					, curTimeStep, numTimeStep, discountFactor);
 			for(Entry<Node, Double> dEntry : curDValueMap.entrySet())
 			{
 				Node node = dEntry.getKey();
@@ -291,10 +290,10 @@ public class ValuePropagationvsDefender_Alternative extends Defender{
 		return dValueMap;
 	}
 	
-	public Map<Node, Double> computeCandidateValueTopo(DependencyGraph depGraph
+	public static Map<Node, Double> computeCandidateValueTopo(DependencyGraph depGraph
 			, List<AttackerAction> attActionList
 			, int curTimeStep, int numTimeStep, double discountFactor
-			, double propagationParam)
+			)
 	{
 //		System.out.println("Defender compute candidate value");
 		Map<Node, Double> dValueMap = new HashMap<Node, Double>();
@@ -419,7 +418,7 @@ public class ValuePropagationvsDefender_Alternative extends Defender{
 		return dValueMap;
 	}
 	
-	public DefenderAction sampleAction(DependencyGraph dependencyGraph, List<Node> dCandidateNodeList, int numNodetoProtect,
+	public static DefenderAction sampleAction(List<Node> dCandidateNodeList, int numNodetoProtect,
 			AbstractIntegerDistribution rnd)
 	{
 		DefenderAction action = new DefenderAction();

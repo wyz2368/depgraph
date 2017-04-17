@@ -11,6 +11,7 @@ import org.apache.commons.math3.random.RandomGenerator;
 public abstract class Defender {
 	public enum DEFENDER_TYPE {UNIFORM, MINCUT, GOAL_ONLY
 		, vsVALUE_PROPAGATION, vsRANDOM_WALK, vsUNIFORM;
+	@Override
 	public String toString(){
 		switch(this){
 		case UNIFORM: return "U";
@@ -21,8 +22,9 @@ public abstract class Defender {
 		case vsUNIFORM: return "vU";
 		default: return "";
 		}	
-	}};
+	}}
 	public enum DEFENDER_PARAM{maxNumRes, minNumRes, numResRatio, maxNumAttCandidate, numAttCandidateRatio, logisParam, bThres;
+	@Override
 	public String toString(){
 	switch(this){
 	case maxNumRes: return "maxNumRes";
@@ -34,7 +36,7 @@ public abstract class Defender {
 	case bThres: return "bThres";
 	default: return "";
 	}	
-	}};
+	}}
 
 	DEFENDER_TYPE dType;
 	public Defender(DEFENDER_TYPE dType)

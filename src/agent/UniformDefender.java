@@ -25,7 +25,7 @@ public class UniformDefender extends Defender{
 		this.numResRatio = numResRatio;
 	}
 
-	public DefenderAction sampleAction(DependencyGraph dependencyGraph, List<Node> dCandidateNodeList, int numNodetoProtect,
+	public static DefenderAction sampleAction(List<Node> dCandidateNodeList, int numNodetoProtect,
 			AbstractIntegerDistribution rnd)
 	{
 		DefenderAction action = new DefenderAction();
@@ -64,7 +64,7 @@ public class UniformDefender extends Defender{
 			return new DefenderAction();
 		// Sample nodes
 		UniformIntegerDistribution rnd = new UniformIntegerDistribution(rng, 0, dCandidateNodeList.size() - 1);
-		return sampleAction(depGraph, dCandidateNodeList, numNodetoProtect, rnd);	
+		return sampleAction(dCandidateNodeList, numNodetoProtect, rnd);	
 	}
 
 	@Override

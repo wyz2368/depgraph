@@ -62,7 +62,7 @@ public class GoalOnlyDefender extends Defender{
 		
 		return probabilities;
 	}
-	public DefenderAction sampleAction(DependencyGraph dependencyGraph, List<Node> dCandidateNodeList, int numNodetoProtect,
+	public static DefenderAction sampleAction(List<Node> dCandidateNodeList, int numNodetoProtect,
 			AbstractIntegerDistribution rnd)
 	{
 		DefenderAction action = new DefenderAction();
@@ -85,7 +85,7 @@ public class GoalOnlyDefender extends Defender{
 		return action;
 	}
 	
-	public double[] computeCandidateValue(DependencyGraph depGraph, List<Node> dCandidateNodeList
+	public static double[] computeCandidateValue(List<Node> dCandidateNodeList
 			, double discountFactor, int curTimeStep)
 	{
 		double[] candidateValue = new double[dCandidateNodeList.size()];
@@ -98,7 +98,7 @@ public class GoalOnlyDefender extends Defender{
 	public DefenderAction sampleAction(DependencyGraph depGraph,
 			int curTimeStep, int numTimeStep, DefenderBelief dBelief, RandomGenerator rng) {
 		List<Node> dCandidateNodeList = new ArrayList<Node>(depGraph.getTargetSet());
-		double[] candidateValue = computeCandidateValue(depGraph, dCandidateNodeList, this.discFact, curTimeStep);
+		double[] candidateValue = computeCandidateValue(dCandidateNodeList, this.discFact, curTimeStep);
 		double[] probabilities = computecandidateProb(dCandidateNodeList.size(), candidateValue);
 		
 		int[] nodeIndexes = new int[dCandidateNodeList.size()];
@@ -118,7 +118,7 @@ public class GoalOnlyDefender extends Defender{
 			return new DefenderAction();
 		// Sample nodes
 //		System.out.println(numNodetoProtect);
-		return sampleAction(depGraph, dCandidateNodeList, numNodetoProtect, rnd);	
+		return sampleAction(dCandidateNodeList, numNodetoProtect, rnd);	
 	}
 	@Override
 	public DefenderBelief updateBelief(DependencyGraph depGraph,

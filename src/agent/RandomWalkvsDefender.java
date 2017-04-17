@@ -96,7 +96,7 @@ public class RandomWalkvsDefender extends Defender{
 			double[] attValue = new double[this.numRWSample]; // values of corresponding action of the attacker
 			for(int i = 0; i < this.numRWSample; i++)
 			{
-				RandomWalkTuple[] rwTuples = rwAttacker.randomWalk(depGraph, curTimeStep, numTimeStep, rng); // sample random walk
+				RandomWalkTuple[] rwTuples = rwAttacker.randomWalk(depGraph, curTimeStep, rng); // sample random walk
 				AttackCandidate attCandidate = new AttackCandidate();
 				attValue[i] = RandomWalkAttacker.greedyCandidate(depGraph // greedy attack
 						, rwTuples, attCandidate
@@ -106,8 +106,8 @@ public class RandomWalkvsDefender extends Defender{
 			}
 			DefenderAction defAction = new DefenderAction();
 			double[] attProb = computecandidateProb(this.numRWSample, attValue, this.qrParam); // attack probability
-			double dValue = greedyCandidate(depGraph, rwAttacker // greedy defense with respect to each possible game state
-					, rwTuplesList, attCandidateList, attProb
+			double dValue = greedyCandidate(depGraph, // greedy defense with respect to each possible game state
+					rwTuplesList, attCandidateList, attProb
 					, defAction // this is outcome
 					, curTimeStep, numTimeStep
 					, this.discFact);
@@ -171,7 +171,7 @@ public class RandomWalkvsDefender extends Defender{
 		
 		for(Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) // iterate over current belief of the defender
 		{
-			GameState gameState = (GameState) entry.getKey(); // one of possible game state
+			GameState gameState = entry.getKey(); // one of possible game state
 			Double curStateProb = entry.getValue(); // probability of the game state
 		
 			depGraph.setState(gameState); // for each possible state
@@ -262,8 +262,7 @@ public class RandomWalkvsDefender extends Defender{
 	 * @param discFact: reward discount factor
 	 * @return
 	 *****************************************************************************************/
-	public double greedyCandidate(DependencyGraph depGraph // depGraph has current game state the defender is examining
-			, RandomWalkAttacker rwAttacker
+	public static double greedyCandidate(DependencyGraph depGraph // depGraph has current game state the defender is examining
 			, List<RandomWalkTuple[]> rwTuplesList
 			, List<AttackCandidate> attCandidateList
 			, double[] attProb
@@ -365,6 +364,9 @@ public class RandomWalkvsDefender extends Defender{
 				double curValue = 0.0;
 				if(!isChosen[candidateIdx]) // if not chosen yet, start examining
 				{
+					if (isInQueue == null) {
+						throw new IllegalStateException();
+					}
 					boolean[][] isInCurrentQueue = isInQueue.clone(); // used to examine new node
 					idx = 0;
 					for(RandomWalkTuple[] rwTuples : rwTuplesList) // iterate over tuples

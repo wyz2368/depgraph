@@ -24,11 +24,11 @@ public abstract class AMIProblem {
 	protected int numRows, numCols;
 
 	public int getNumRows() {
-		return numRows;
+		return this.numRows;
 	}
 
 	public int getNumCols() {
-		return numCols;
+		return this.numCols;
 	}
 
 	protected abstract void setProblemType();
@@ -174,26 +174,23 @@ public abstract class AMIProblem {
 		return this.runTime;
 	}
 
-	public void redirectOutput(OutputStream stream) {
-		// dummy....
-		return;
-	}
+	public abstract void redirectOutput(OutputStream stream);
 
 	public enum STATUS_TYPE {
 		OPTIMAL, INFEASIBLE, UNBOUNDED, UNKNOWN, FEASIBLE	
-	};
+	}
 	
 	public enum BOUNDS_TYPE {
 		LOWER, UPPER, DOUBLE, FIXED, FREE
-	};
+	}
 
 	public enum VARIABLE_TYPE {
 		CONTINUOUS, INTEGER
-	};
+	}
 
 	public enum PROBLEM_TYPE {
 		LP, MIP
-	};
+	}
 
 	public enum OBJECTIVE_TYPE {
 		MIN, MAX

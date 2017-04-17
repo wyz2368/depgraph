@@ -10,6 +10,7 @@ import org.apache.commons.math3.random.RandomGenerator;
 
 public abstract class Attacker {
 	public enum ATTACKER_TYPE {UNIFORM, VALUE_PROPAGATION, RANDOM_WALK;
+	@Override
 	public String toString(){
 		switch(this){
 		case UNIFORM: return "U";
@@ -17,10 +18,11 @@ public abstract class Attacker {
 		case RANDOM_WALK: return "RW";
 		default: return "";
 		}	
-	}};
+	}}
 	public enum ATTACKER_PARAM{maxNumSelectCandidate, minNumSelectCandidate
 		, numSelectCandidateRatio
 		, qrParam, numRWSample;
+		@Override
 		public String toString(){
 		switch(this){
 		case maxNumSelectCandidate: return "maxNumSelectCandidate";
@@ -30,7 +32,7 @@ public abstract class Attacker {
 		case numRWSample: return "numRWSample";
 		default: return "";
 		}	
-	}};
+	}}
 	private ATTACKER_TYPE attType;
 
 	public Attacker(ATTACKER_TYPE attType){

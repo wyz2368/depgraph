@@ -62,7 +62,7 @@ public class RandomWalkAttacker extends Attacker {
 		AttackCandidate[] candidates = new AttackCandidate[this.numRWSample];
 		for(int i = 0; i < this.numRWSample; i++)
 		{
-			RandomWalkTuple[] rwSample = randomWalk(depGraph, curTimeStep, numTimeStep, rng);
+			RandomWalkTuple[] rwSample = randomWalk(depGraph, curTimeStep, rng);
 			AttackCandidate attCandidate = new AttackCandidate();
 			candidateValues[i] = greedyCandidate(depGraph, rwSample, attCandidate, numTimeStep, this.discFact);
 //			System.out.println(candidateValues[i]);
@@ -101,7 +101,7 @@ public class RandomWalkAttacker extends Attacker {
 	 * @return random walk tuple for all nodes
 	 *****************************************************************************************/
 	public RandomWalkTuple[] randomWalk(DependencyGraph depGraph,
-			int curTimeStep, int numTimeStep, RandomGenerator rng){
+			int curTimeStep, RandomGenerator rng){
 		RandomWalkTuple[] rwTuples = new RandomWalkTuple[depGraph.vertexSet().size()];
 		/*****************************************************************************************/
 		// Get topological order, starting from zero
@@ -122,14 +122,12 @@ public class RandomWalkAttacker extends Attacker {
 			{
 				tAct = curTimeStep - 1;
 				pAct = 1.0;
-				preAct = null;
 			}
 			/*****************************************************************************************/
 			else if(depGraph.inDegreeOf(node) == 0) // root nodes
 			{
 				tAct = curTimeStep;
 				pAct = node.getActProb();
-				preAct = null;
 			}
 			/*****************************************************************************************/
 			else if(node.getActivationType() == NODE_ACTIVATION_TYPE.AND) // inactive and non-root and AND-type
@@ -453,7 +451,7 @@ public class RandomWalkAttacker extends Attacker {
 			}
 			return new ArrayList<AttackerAction>(attActionSet);
 		}
-		else // this is currently used, correct
+		// this is currently used, correct
 		{
 			List<AttackerAction> attActionList = new ArrayList<AttackerAction>();
 			for(int i = 0; i < numSample; i++)

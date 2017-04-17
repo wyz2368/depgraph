@@ -47,7 +47,7 @@ public class ValuePropagationAttacker extends Attacker{
 	public AttackerAction sampleAction(DependencyGraph depGraph, int curTimeStep, int numTimeStep, RandomGenerator rng)
 	{	
 		// Find candidate
-		AttackCandidate attackCandidate = selectCandidate(depGraph, curTimeStep, numTimeStep);
+		AttackCandidate attackCandidate = selectCandidate(depGraph);
 		// Compute candidate value
 //		double[] candidateValue = computeCandidateValue(depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
 //				, this.propagationParam);
@@ -119,7 +119,7 @@ public class ValuePropagationAttacker extends Attacker{
 			int curTimeStep, int numTimeStep, RandomGenerator rng,
 			int numSample, boolean isReplacement) {
 		// Find candidate
-		AttackCandidate attackCandidate = selectCandidate(depGraph, curTimeStep, numTimeStep);
+		AttackCandidate attackCandidate = selectCandidate(depGraph);
 		// Compute candidate value
 //		double[] candidateValue = computeCandidateValue(depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
 //				, this.propagationParam);
@@ -166,7 +166,7 @@ public class ValuePropagationAttacker extends Attacker{
 			}
 			return new ArrayList<AttackerAction>(attActionSet);
 		}
-		else // this is currently used, correct
+		// this is currently used, correct
 		{
 			List<AttackerAction> attActionList = new ArrayList<AttackerAction>();
 			for(int i = 0; i < numSample; i++)
@@ -596,7 +596,7 @@ public class ValuePropagationAttacker extends Attacker{
 	 * @param numTimeStep: total number of time step
 	 * @return type of AttackCandidate: candidate set for the attacker
 	 *****************************************************************************************/
-	public static AttackCandidate selectCandidate(DependencyGraph depGraph, int curTimeStep, int numTimeStep)
+	public static AttackCandidate selectCandidate(DependencyGraph depGraph)
 	{
 		AttackCandidate aCandidate = new AttackCandidate();
 		
