@@ -20,24 +20,23 @@ import model.GameState;
 import agent.Attacker;
 import agent.Defender;
 
-public class GameSimulation {
-	int numTimeStep;
-	DependencyGraph depGraph;
+public final class GameSimulation {
+	private int numTimeStep;
+	private DependencyGraph depGraph;
 	
-	Attacker attacker;
-	Defender defender;
+	private Attacker attacker;
+	private Defender defender;
 //	GameOracle gameOracle;
 	
-	double discFact = 1.0;
+	private double discFact = 1.0;
 	
-	RandomDataGenerator rng;
+	private RandomDataGenerator rng;
 	
 	//Outcome
-	GameSimulationResult simResult;
+	private GameSimulationResult simResult;
 	
 	public GameSimulation(DependencyGraph depGraph, Attacker attacker, Defender defender, RandomDataGenerator rng,
-			int numTimeStep, double discFact)
-	{
+			int numTimeStep, double discFact) {
 		this.depGraph = depGraph;
 		this.numTimeStep = numTimeStep;
 		this.discFact = discFact;
@@ -50,24 +49,19 @@ public class GameSimulation {
 		//Outcome
 		this.simResult = new GameSimulationResult();
 	}
-	public void setRandomSeed(long seed)
-	{
+	public void setRandomSeed(final long seed) {
 		this.rng.reSeed(seed);
 	}
-	public void setDefender(Defender defender)
-	{
+	public void setDefender(final Defender defender) {
 		this.defender = defender;
 	}
-	public void setAttacker(Attacker attacker)
-	{
+	public void setAttacker(final Attacker attacker) {
 		this.attacker = attacker;
 	}
 	
-	public void runSimulation()
-	{
+	public void runSimulation() {
 		// Get initial state
-		for(Node node : this.depGraph.vertexSet())
-		{
+		for (Node node : this.depGraph.vertexSet()) {
 			if(node.getState() == NODE_STATE.ACTIVE)
 				this.simResult.addEnabledNodetoInitialState(node);
 		}
@@ -126,35 +120,29 @@ public class GameSimulation {
 		}
 		this.computePayoff();
 	}
-	public void computePayoff()
-	{
+	public void computePayoff() {
 		double defPayoff = 0.0;
 		double attPayoff = 0.0;
-		for(GameSample gameSample : this.simResult.getGameSampleList())
-		{
+		for (GameSample gameSample : this.simResult.getGameSampleList()) {
 			int timeStep = gameSample.getTimeStep();
 			GameState gameState = gameSample.getGameState();
 			DefenderAction defAction = gameSample.getDefAction();
 			AttackerAction attAction = gameSample.getAttAction();
-			for(Node node : gameState.getEnabledNodeSet())
-			{
+			for (Node node : gameState.getEnabledNodeSet()) {
 				defPayoff += Math.pow(this.discFact, timeStep) * node.getDPenalty();
 				attPayoff += Math.pow(this.discFact, timeStep) * node.getAReward();
 			}
-			if(timeStep <= this.numTimeStep)
-			{
-				for(Node node : defAction.getAction())
+			if(timeStep <= this.numTimeStep) {
+				for (Node node : defAction.getAction()) {
 					defPayoff += node.getDCost();
-				for(Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet())
-				{
+				}
+				for (Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet()) {
 					Node node = entry.getKey();
 					if(node.getActivationType() == NODE_ACTIVATION_TYPE.AND)
 						attPayoff += Math.pow(this.discFact, timeStep) * node.getACost();
-					else
-					{
+					else {
 						Set<Edge> edgeSet = entry.getValue();
-						for(Edge edge : edgeSet)
-						{
+						for (Edge edge : edgeSet) {
 							attPayoff += Math.pow(this.discFact, timeStep) * edge.getACost();
 						}
 					}
@@ -165,27 +153,23 @@ public class GameSimulation {
 		this.simResult.setAttPayoff(attPayoff);
 		this.simResult.setDefPayoff(defPayoff);
 	}
-	public GameSimulationResult getSimulationResult()
-	{
+	public GameSimulationResult getSimulationResult() {
 		return this.simResult;
 	}
-	public void saveResult()
-	{
+	public void saveResult() {
 		// do nothing
 	}
-	public void printPayoff()
-	{
+	public void printPayoff() {
 		this.simResult.printPayoff();
 	}
-	public void end()
-	{
+	public void end() {
 		// do nothing
 	}
-	public void reset()
-	{
+	public void reset() {
 		//Reset node states
-		for(Node node : this.depGraph.vertexSet())
+		for (Node node : this.depGraph.vertexSet()) {
 			node.setState(NODE_STATE.INACTIVE);
+		}
 		this.simResult.clear();
 	}
 }

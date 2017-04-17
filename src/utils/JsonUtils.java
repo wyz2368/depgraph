@@ -20,7 +20,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-public class JsonUtils {
+public final class JsonUtils {
 	/**
 	 * Name of the file with default parameters.
 	 */
@@ -147,7 +147,7 @@ public class JsonUtils {
     }
 
     public static String getObservationString(final MeanGameSimulationResult simResult, final String attackerStrategyString
-            ,final String defenderStrategyString, final GameSimulationSpec simSpec) {
+            , final String defenderStrategyString, final GameSimulationSpec simSpec) {
         assert simResult != null
             && attackerStrategyString != null
             && defenderStrategyString != null
@@ -253,7 +253,7 @@ public class JsonUtils {
         return result;
      }
     
-    public static final String linesAsString(final String fileName) {
+    public static String linesAsString(final String fileName) {
         assert fileName != null;
         final StringBuilder builder = new StringBuilder();
         try {
