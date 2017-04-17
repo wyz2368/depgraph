@@ -1,4 +1,4 @@
-package agent;
+	package agent;
 
 import graph.Edge;
 import graph.INode.NODE_ACTIVATION_TYPE;

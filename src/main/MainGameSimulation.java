@@ -48,10 +48,12 @@ public class MainGameSimulation {
         final GameSimulationSpec simSpec = JsonUtils.getSimSpecOrDefaults(simspecFolderName);
         
         // Load graph
-        String filePathName = graphFolderName + File.separator + simSpec.getNumNode() + "N" + simSpec.getNumEdge() + "E" 
-        		+ simSpec.getNumTarget() + "T" + simSpec.getTotalNumAlert() + "TA" + simSpec.getMinNumAlert() + "MIA" 
-        		+ simSpec.getMaxNumAlert() + "MAA" + simSpec.getARewardLB() + "ARL" + simSpec.getARewardUB() + "ARU"
-        		+ simSpec.getDPenaltyLB() + "DPL" + simSpec.getDPenaltyUB() + "DPU" + simSpec.getGraphID() + JsonUtils.JSON_SUFFIX;
+//        String filePathName = graphFolderName + File.separator + simSpec.getNumNode() + "N" + simSpec.getNumEdge() + "E" 
+//        		+ simSpec.getNumTarget() + "T" + simSpec.getTotalNumAlert() + "TA" + simSpec.getMinNumAlert() + "MIA" 
+//        		+ simSpec.getMaxNumAlert() + "MAA" + simSpec.getARewardLB() + "ARL" + simSpec.getARewardUB() + "ARU"
+//        		+ simSpec.getDPenaltyLB() + "DPL" + simSpec.getDPenaltyUB() + "DPU" + simSpec.getGraphID() + JsonUtils.JSON_SUFFIX;
+        String filePathName = graphFolderName + File.separator + "RandomGraph" + simSpec.getNumNode() + "N" + simSpec.getNumEdge() + "E" 
+        		+ simSpec.getNumTarget() + "T" + simSpec.getGraphID() + JsonUtils.JSON_SUFFIX;
         DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
         		
         // Load players

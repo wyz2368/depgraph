@@ -9,20 +9,25 @@ import model.DependencyGraph;
 import org.apache.commons.math3.random.RandomGenerator;
 
 public abstract class Defender {
-	public enum DEFENDER_TYPE {UNIFORM, MINCUT, GOAL_ONLY
+	public enum DEFENDER_TYPE {UNIFORM, MINCUT, GOAL_ONLY, ROOT_ONLY
 		, vsVALUE_PROPAGATION, vsRANDOM_WALK, vsUNIFORM;
 	public String toString(){
 		switch(this){
-		case UNIFORM: return "U";
+		case UNIFORM: return "UN";
 		case MINCUT: return "MC";
 		case GOAL_ONLY: return "GO";
+		case ROOT_ONLY: return "RO";
 		case vsVALUE_PROPAGATION: return "vVP";
 		case vsRANDOM_WALK: return "vRW";
-		case vsUNIFORM: return "vU";
+		case vsUNIFORM: return "vUN";
 		default: return "";
 		}	
 	}};
-	public enum DEFENDER_PARAM{maxNumRes, minNumRes, numResRatio, maxNumAttCandidate, numAttCandidateRatio, logisParam, bThres;
+	public enum DEFENDER_PARAM{maxNumRes, minNumRes, numResRatio
+		, maxNumAttCandidate, minNumAttCandidate, numAttCandidateRatio
+		, logisParam, bThres
+		, qrParam
+		, numRWSample;
 	public String toString(){
 	switch(this){
 	case maxNumRes: return "maxNumRes";
@@ -30,8 +35,11 @@ public abstract class Defender {
 	case numResRatio: return "numResRatio";
 	case maxNumAttCandidate: return "maxNumAttCandidate";
 	case numAttCandidateRatio: return "numAttCandidateRatio";
+	case minNumAttCandidate: return "minNumAttCandidate";
 	case logisParam: return "logisParam";
 	case bThres: return "bThres";
+	case qrParam: return "qrParam";
+	case numRWSample: return "numRWSample";
 	default: return "";
 	}	
 	}};

@@ -12,7 +12,7 @@ public abstract class Attacker {
 	public enum ATTACKER_TYPE {UNIFORM, VALUE_PROPAGATION, RANDOM_WALK;
 	public String toString(){
 		switch(this){
-		case UNIFORM: return "U";
+		case UNIFORM: return "UN";
 		case VALUE_PROPAGATION: return "VP";
 		case RANDOM_WALK: return "RW";
 		default: return "";

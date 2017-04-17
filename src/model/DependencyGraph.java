@@ -14,11 +14,13 @@ public class DependencyGraph extends DirectedAcyclicGraph<Node, Edge>{
 	private static final long serialVersionUID = 1L; // I dont know what this is for :)))
 	private Set<Node> targetSet;
 	private Set<Node> minCut;
+	private Set<Node> rootSet;
 	
 	public DependencyGraph(){
 		super(Edge.class);
 		this.targetSet = new HashSet<Node>();
 		this.minCut = new HashSet<Node>();
+		this.rootSet = new HashSet<Node>();
 	}
 	
 	public boolean addTarget(Node node)
@@ -41,6 +43,19 @@ public class DependencyGraph extends DirectedAcyclicGraph<Node, Edge>{
 	public void addMinCut(Node node)
 	{
 		this.minCut.add(node);
+	}
+	
+	public Set<Node> getRootSet()
+	{
+		return this.rootSet;
+	}
+	public boolean addRoot(Node node)
+	{
+		return this.rootSet.add(node);
+	}
+	public void setRootSet(Set<Node> rootSet)
+	{
+		this.rootSet = rootSet;
 	}
 	public void resetState()
 	{

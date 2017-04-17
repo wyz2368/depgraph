@@ -1,27 +1,20 @@
 {
   "assignment": {
     "attacker": [
-      "SWRAND:fixPoissonParam_4.0_adaptPoissonRatio_0.3_qrParam_5.0"
+      "UNIFORM:maxNumSelectCandidate_5.0_minNumSelectCandidate_2.0_numSelectCandidateRatio_0.7_qrParam_5.0"
     ],
     "defender": [
-      "SWRAND:fixPoissonParam_4.0_adaptPoissonRatio_0.3_bThres_0.05_logisParam_5.0"
+      "GOAL_ONLY:maxNumRes_5.0_minNumRes_2.0_numResRatio_0.7_logisParam_5.0"
     ]
   },
   "configuration": {
-    "numSim": 10000,
+    "numSim": 100,
     "numTimeStep": 10,
     "graphID": 1,
-    "numNode": 100,
-    "numEdge": 500,
-    "numTarget": 10,
-    "totalNumAlert": 20,
-    "minNumAlert": 2,
-    "maxNumAlert": 5,
-    "discFact": 0.9,
-    "aRewardLB": 1,
-    "aRewardUB": 10,
-    "dPenaltyLB": -10,
-    "dPenaltyUB": -1
+    "numNode": 30,
+    "numEdge": 100,
+    "numTarget": 2,
+    "discFact": 0.9
   },
   "role_counts": {
     "attacker": 1,

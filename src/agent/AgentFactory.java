@@ -78,6 +78,40 @@ public class AgentFactory {
 						, defenderParams.get(DEFENDER_PARAM.numResRatio.toString())
 						, defenderParams.get(DEFENDER_PARAM.logisParam.toString()), discFact);
 			}
+			else if(defType == DEFENDER_TYPE.vsVALUE_PROPAGATION)
+			{
+				assert defenderParams.containsKey(DEFENDER_PARAM.maxNumRes.toString())
+				&& defenderParams.containsKey(DEFENDER_PARAM.minNumRes.toString())
+				&& defenderParams.containsKey(DEFENDER_PARAM.numResRatio.toString())
+				&& defenderParams.containsKey(DEFENDER_PARAM.logisParam.toString())
+				&& defenderParams.containsKey(DEFENDER_PARAM.bThres.toString())
+				&& defenderParams.containsKey(DEFENDER_PARAM.qrParam.toString())
+				&& defenderParams.containsKey(DEFENDER_PARAM.maxNumAttCandidate.toString())
+				&& defenderParams.containsKey(DEFENDER_PARAM.minNumAttCandidate.toString())
+				&& defenderParams.containsKey(DEFENDER_PARAM.numAttCandidateRatio.toString());
+				return new ValuePropagationvsDefender(defenderParams.get(DEFENDER_PARAM.maxNumRes.toString())
+						, defenderParams.get(DEFENDER_PARAM.minNumRes.toString())
+						, defenderParams.get(DEFENDER_PARAM.numResRatio.toString())
+						, defenderParams.get(DEFENDER_PARAM.logisParam.toString())
+						, discFact
+						, defenderParams.get(DEFENDER_PARAM.bThres.toString())
+						, defenderParams.get(DEFENDER_PARAM.qrParam.toString())
+						, defenderParams.get(DEFENDER_PARAM.maxNumAttCandidate.toString())
+						, defenderParams.get(DEFENDER_PARAM.minNumAttCandidate.toString())
+						, defenderParams.get(DEFENDER_PARAM.numAttCandidateRatio.toString()));
+			}
+			else if(defType == DEFENDER_TYPE.vsRANDOM_WALK)
+			{
+				assert defenderParams.containsKey(DEFENDER_PARAM.logisParam.toString())
+				&& defenderParams.containsKey(DEFENDER_PARAM.bThres.toString())
+				&& defenderParams.containsKey(DEFENDER_PARAM.qrParam.toString())
+				&& defenderParams.containsKey(DEFENDER_PARAM.numRWSample.toString());
+				return new RandomWalkvsDefender(defenderParams.get(DEFENDER_PARAM.logisParam.toString())
+						, discFact
+						, defenderParams.get(DEFENDER_PARAM.bThres.toString())
+						, defenderParams.get(DEFENDER_PARAM.qrParam.toString())
+						, defenderParams.get(DEFENDER_PARAM.numRWSample.toString()));
+			}
 			else
 				return null;
 	 }

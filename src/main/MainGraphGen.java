@@ -22,9 +22,9 @@ public class MainGraphGen {
         }
 		String graphFolderName = args[0];
 		
-		int numNode = 30;
-		int numEdge = 100;
-		int numTarget = 2;
+		int numNode = 100;
+		int numEdge = 300;
+		int numTarget = 10;
 		double nodeActTypeRatio = 0.3;
 		double aRewardLB = 1.0;
 		double aRewardUB = 10.0;

@@ -34,32 +34,58 @@ public class RandomWalkvsDefender extends Defender{
 	double thres; // to remove game state from belief
 	
 	double qrParam; // for the attacker
-	int numRWSample = 100; // number of random walks for the attacker
+	int numRWSample = 200; // number of random walks for the attacker
 	
 	// number of samples to update the defender's belief.
 	int numStateSample = 50; // number of states to sample
 	int numAttActionSample = 50; // number of attack actions to sample
 	
-	public RandomWalkvsDefender(double logisParam, double discFact, double thres
-			, double qrParam, int numRWSample
-			, int numStateSample, int numAttActionSample) {
+	/*****************************************************************************************
+	 * Initialization 
+	 * @param logisParam: defense parameter for randomizing defenses
+	 * @param discFact: reward discount factor
+	 * @param thres: threshold used to limit defender's belief
+	 * @param qrParam: attack parameter for randomizing attacks
+	 * @param numRWSample: number of random walk samples
+	 * @param numStateSample: number of game state samples
+	 * @param numAttActionSample: number of attack action samples
+	 *****************************************************************************************/
+	public RandomWalkvsDefender(double logisParam
+			, double discFact
+			, double thres
+			, double qrParam
+			, int numRWSample
+			, int numStateSample
+			, int numAttActionSample) {
 		this(logisParam, discFact, thres
 				, qrParam, numRWSample);
 		this.numStateSample = numStateSample;
 		this.numAttActionSample = numAttActionSample;
-		// TODO Auto-generated constructor stub
 	}
-	public RandomWalkvsDefender(double logisParam, double discFact, double thres
-			, double qrParam, int numRWSample) {
+	
+	/*****************************************************************************************
+	 * Initialization
+	 * @param logisParam: defense parameter for randomizing defenses
+	 * @param discFact: reward discount factor
+	 * @param thres: threshold used to limit defender's belief
+	 * @param qrParam: attack parameter for randomizing attacks
+	 * @param numRWSample: number of random walk samples
+	 *****************************************************************************************/
+	public RandomWalkvsDefender(double logisParam
+			, double discFact
+			, double thres
+			, double qrParam
+			, double numRWSample) {
 		super(DEFENDER_TYPE.vsRANDOM_WALK);
 		this.logisParam = logisParam;
 		this.discFact = discFact;
 		this.thres = thres;
 		this.qrParam = qrParam;
-		this.numRWSample = numRWSample;
+		this.numRWSample = (int)numRWSample;
 	}
+	
 	/*****************************************************************************************
-	 * 
+	 * Sampling defense actions
 	 * @param depGraph: dependency graph with true game state
 	 * @param curTimeStep: current time step of the game
 	 * @param numTimeStep: total number of time steps
@@ -68,8 +94,11 @@ public class RandomWalkvsDefender extends Defender{
 	 * @return: action for the defender
 	 *****************************************************************************************/
 	@Override
-	public DefenderAction sampleAction(DependencyGraph depGraph,
-			int curTimeStep, int numTimeStep, DefenderBelief dBelief, RandomGenerator rng) {
+	public DefenderAction sampleAction(DependencyGraph depGraph
+			, int curTimeStep, int numTimeStep
+			, DefenderBelief dBelief
+			, RandomGenerator rng) {
+		
 		// True game state
 		GameState savedGameState = new GameState();
 		for(Node node : depGraph.vertexSet())
@@ -79,17 +108,19 @@ public class RandomWalkvsDefender extends Defender{
 		}
 		
 		// Compute value of each candidate action for the defender
+		// Each candidate action corresponds to a possible game state
 		double[] candidateValues = new double[dBelief.getGameStateMap().size()];
 		DefenderAction[] candidates = new DefenderAction[dBelief.getGameStateMap().size()];
 		
+		// Assumption about the attacker
 		RandomWalkAttacker rwAttacker = new RandomWalkAttacker(this.numRWSample, curTimeStep, numTimeStep);
 		
 		int idx = 0;
 		for(Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) // iterate over all possible game states
 		{
-			GameState gameState = entry.getKey();
-			Double gameStateProb = entry.getValue();
-			depGraph.setState(gameState);
+			GameState gameState = entry.getKey(); // a possible game state
+			Double gameStateProb = entry.getValue(); // corresponding state probability
+			depGraph.setState(gameState); // temporarily set game state to the graph
 			
 			List<RandomWalkTuple[]> rwTuplesList = new ArrayList<RandomWalkTuple[]>(); // list of all random walk tuples sampled
 			List<AttackCandidate> attCandidateList = new ArrayList<AttackCandidate>(); // corresponding list of attack candidates
@@ -99,13 +130,13 @@ public class RandomWalkvsDefender extends Defender{
 				RandomWalkTuple[] rwTuples = rwAttacker.randomWalk(depGraph, curTimeStep, numTimeStep, rng); // sample random walk
 				AttackCandidate attCandidate = new AttackCandidate();
 				attValue[i] = RandomWalkAttacker.greedyCandidate(depGraph // greedy attack
-						, rwTuples, attCandidate
+						, rwTuples, attCandidate // attCandidate is an outcome as well
 						, numTimeStep, this.discFact); 
 				rwTuplesList.add(rwTuples);
 				attCandidateList.add(attCandidate);
 			}
 			DefenderAction defAction = new DefenderAction();
-			double[] attProb = computecandidateProb(this.numRWSample, attValue, this.qrParam); // attack probability
+			double[] attProb = RandomWalkAttacker.computecandidateProb(this.numRWSample, attValue, this.qrParam); // attack probability
 			double dValue = greedyCandidate(depGraph, rwAttacker // greedy defense with respect to each possible game state
 					, rwTuplesList, attCandidateList, attProb
 					, defAction // this is outcome
@@ -116,28 +147,26 @@ public class RandomWalkvsDefender extends Defender{
 			candidates[idx] = defAction;
 			idx++;
 		}
+		
 		// set back to the true game state
 		depGraph.setState(savedGameState);
 		
 		// probability for each possible candidate action for the defender
-		
 		double[] probabilities = computecandidateProb(dBelief.getGameStateMap().size(), candidateValues, this.logisParam);
-		if(dBelief.getGameStateMap().size() == 0)
-			System.out.println("Belief is empty???");
 		
 		// Start sampling
 		int[] nodeIndexes = new int[dBelief.getGameStateMap().size()];
 		for(int i = 0; i < dBelief.getGameStateMap().size(); i++)
 			nodeIndexes[i] = i;
 		EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
-		
 		int sampleIdx = rnd.sample();
-//		candidates[sampleIdx].print();
+		
 		return candidates[sampleIdx];
 	}
+	
 	@Override
 	/*****************************************************************************************
-	 * 
+	 * Update defender's belief 
 	 * @param depGraph: dependency graph with true game state
 	 * @param dBelief: belief of the defender over states
 	 * @param dAction: action of the defender
@@ -177,7 +206,7 @@ public class RandomWalkvsDefender extends Defender{
 			depGraph.setState(gameState); // for each possible state
 			
 			List<AttackerAction> attActionList = attacker.sampleAction(depGraph, curTimeStep, numTimeStep
-					, rng, this.numAttActionSample, false); // Sample attacker actions
+					, rng, this.numAttActionSample, false); // sample attacker actions
 			
 			for(int attActionSample = 0; attActionSample < this.numAttActionSample; attActionSample++)
 			{// Iterate over all samples of attack actions
@@ -197,18 +226,15 @@ public class RandomWalkvsDefender extends Defender{
 						curProb = 0.0;
 					}
 					else // already generated
-					{
 						observationProb = observationProbMap.get(newGameState);
-					}
+					
 					double addedProb = observationProb * curStateProb 
 							* GameOracle.computeStateTransitionProb(depGraph
 									, dAction, attAction
 									, gameState, newGameState);
-					
 					newBelief.addState(newGameState, curProb + addedProb);
 				}
 			}
-			
 		}
 		
 		// Restore game state
@@ -232,7 +258,6 @@ public class RandomWalkvsDefender extends Defender{
 			if(entry.getValue() > this.thres)
 				revisedBelief.addState(entry.getKey(), entry.getValue());
 		}
-//		newBelief.clear();
 		//Re-normalize again
 		sumProb = 0.0;
 		for(Entry<GameState, Double> entry : revisedBelief.getGameStateMap().entrySet())
@@ -243,16 +268,11 @@ public class RandomWalkvsDefender extends Defender{
 		{
 			entry.setValue(entry.getValue() / sumProb); 
 		}
-//		System.out.println("Revised  belief size: " + revisedBelief.getGameStateMap().size());
-//		for(Entry<GameState, Double> entry : revisedBelief.getGameStateMap().entrySet())
-//		{
-//			System.out.println(entry.getValue());
-//		}
 		return revisedBelief;
 	}
 	
 	/*****************************************************************************************
-	 * Note: defCandidate: outcome of greedy, need to be pre-initialized*
+	 * Note: defAction: outcome of greedy, need to be pre-initialized*
 	 * @param depGraph: dependency graph with game state which is being examined by the defender
 	 * @param rwAttacker: random walk attacker
 	 * @param rwTuplesList: list of random walk tuples 
@@ -296,9 +316,8 @@ public class RandomWalkvsDefender extends Defender{
 		for(int i = 0; i < defCandidateListAll.size(); i++)
 			isChosen[i] = false;
 		if(attCandidateList.isEmpty())
-		{
 			System.out.println("Attacker candidate is empty");
-		}
+		
 		boolean[][] isInQueue = new boolean[attCandidateList.size()][depGraph.vertexSet().size()];
 		// Initialize queue, this queue is used for checking if any node is still in the queue of activating
 		// when the defender starts disabling nodes
@@ -324,6 +343,8 @@ public class RandomWalkvsDefender extends Defender{
 			for(int i = 0; i < depGraph.vertexSet().size(); i++)
 			{
 				Node node = topoOrder[i];
+				if(node.getState() == NODE_STATE.ACTIVE)
+					isInQueue[idx][node.getId() - 1] = true;
 				if(!isInQueue[idx][node.getId() - 1] && depGraph.inDegreeOf(node) > 0) // if not set in queue yet and not root node
 				{
 					if(node.getActivationType() == NODE_ACTIVATION_TYPE.OR) // if OR node
@@ -350,7 +371,7 @@ public class RandomWalkvsDefender extends Defender{
 			}
 		}
 		
-		// Start greedy process
+		// Start greedy process----------------------------------------------------------------------------
 		boolean isStop = false;
 		while(!isStop) // only stop when no new candidate node can increase the defender's utility
 		{
@@ -420,7 +441,6 @@ public class RandomWalkvsDefender extends Defender{
 						idx++;
 					}
 					double tempValue = curValue + dCandidateNode.getDCost() * Math.pow(discFact, curTimeStep - 1);
-//					System.out.println("Temp value: " + tempValue);
 					if(maxValue < tempValue)
 					{
 						maxValue = tempValue;
@@ -443,6 +463,14 @@ public class RandomWalkvsDefender extends Defender{
 		
 		return value;
 	}
+	
+	/*****************************************************************************************
+	 * Compute defense probability
+	 * @param totalNumCandidate: total number of candidate actions
+	 * @param candidateValue: array of candidate values
+	 * @param logisParam: defense parameter for randomization
+	 * @return defense probability for every candidate action
+	 *****************************************************************************************/
 	public static double[] computecandidateProb(int totalNumCandidate, double[] candidateValue, double logisParam)
 	{
 		//Normalize candidate value

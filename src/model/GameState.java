@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class GameState{
+	String id;
 	Set<Node> enabledNodeSet;
 	public GameState()
 	{
@@ -36,12 +37,30 @@ public class GameState{
 		System.out.println();
 		System.out.println("--------------------------------------------------------------------");
 	}
+//	@Override
+//	public int hashCode() {
+//		final int prime = 31;
+//		int result = 1;
+//		result = prime * result;
+//		return result;
+//	}
+//	@Override
+//	public boolean equals(Object obj) {
+//		if (this == obj)
+//			return true;
+//		if (obj == null)
+//			return false;
+//		if (getClass() != obj.getClass())
+//			return false;
+//		GameState other = (GameState) obj;
+//		for(Node node : other.getEnabledNodeSet())
+//			if(!this.enabledNodeSet.contains(node))
+//				return false;
+//		return true;
+//	}
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result;
-		return result;
+		return this.id.hashCode();
 	}
 	@Override
 	public boolean equals(Object obj) {
@@ -52,9 +71,32 @@ public class GameState{
 		if (getClass() != obj.getClass())
 			return false;
 		GameState other = (GameState) obj;
-		for(Node node : other.getEnabledNodeSet())
-			if(!this.enabledNodeSet.contains(node))
-				return false;
+		if(!id.equals(other.id))
+			return false;
 		return true;
+	}
+	
+	public void createID()
+	{
+		int maxNodeID = 1;
+		for(Node node : this.enabledNodeSet)
+		{
+			if(maxNodeID < node.getId())
+				maxNodeID = node.getId();
+		}
+		char[] idChar = new char[maxNodeID];
+		for(int i = 0; i < maxNodeID; i++)
+			idChar[i] = '0';
+		
+		if(!enabledNodeSet.isEmpty())
+			for(Node node : this.enabledNodeSet)
+			{
+				idChar[node.getId() - 1] = '1';
+			}
+		this.id = new String(idChar);	
+	}
+	public String getID()
+	{
+		return this.id;
 	}
 }
