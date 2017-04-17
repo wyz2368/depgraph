@@ -21,7 +21,6 @@ public final class DefenderObservation {
 		this.alertSet.clear();
 	}
 	public void print() {
-		// TODO Auto-generated method stub
 		System.out.println("--------------------------------------------------------------------");
 		System.out.println("Defender observation: ");
 		for (SecurityAlert alert : this.alertSet) {

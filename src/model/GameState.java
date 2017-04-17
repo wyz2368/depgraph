@@ -24,7 +24,6 @@ public final class GameState {
 		this.enabledNodeSet.clear();
 	}
 	public void print() {
-		// TODO Auto-generated method stub
 		System.out.println("--------------------------------------------------------------------");
 		System.out.println("Active Nodes");
 		for (Node node : this.enabledNodeSet) {

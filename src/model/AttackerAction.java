@@ -2,7 +2,7 @@ package model;
 
 import graph.Edge;
 import graph.Node;
-import graph.INode.NODE_ACTIVATION_TYPE;
+import graph.INode.NodeActivationType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +45,7 @@ public final class AttackerAction {
 			System.out.println("Activating node: " + entry.getKey().getId() 
 					+ "\t Node type: " + entry.getKey().getType().toString()
 					+ "\t Activation Type: " + entry.getKey().getActivationType().toString());
-			if (entry.getKey().getActivationType() == NODE_ACTIVATION_TYPE.OR) {
+			if (entry.getKey().getActivationType() == NodeActivationType.OR) {
 				System.out.println("Via edge: ");
 				for (Edge edge : entry.getValue()) {
 					System.out.println(edge.getsource().getId() + "(" + edge.getsource().getState().toString() 

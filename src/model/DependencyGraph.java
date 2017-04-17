@@ -1,7 +1,7 @@
 package model;
 
 import graph.Edge;
-import graph.INode.NODE_STATE;
+import graph.INode.NodeState;
 import graph.Node;
 
 import java.util.HashSet;
@@ -51,19 +51,19 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge>{
 	}
 	public void resetState() {
 		for (Node node : this.vertexSet()) {
-			node.setState(NODE_STATE.INACTIVE);
+			node.setState(NodeState.INACTIVE);
 		}
 	}
 	public void setState(final GameState gameState) {
 		this.resetState();
 		for (Node node : gameState.getEnabledNodeSet()) {
-			node.setState(NODE_STATE.ACTIVE);
+			node.setState(NodeState.ACTIVE);
 		}
 	}
 	public GameState getGameState() {
 		GameState gameState = new GameState();
 		for (Node node : this.vertexSet()) {
-			if (node.getState() == NODE_STATE.ACTIVE) {
+			if (node.getState() == NodeState.ACTIVE) {
 				gameState.addEnabledNode(node);
 			}
 		}

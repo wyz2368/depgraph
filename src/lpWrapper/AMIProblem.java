@@ -59,16 +59,16 @@ public abstract class AMIProblem {
 
 	protected abstract void initialize();
 
-	protected abstract void setProblemName(String name);
+	protected abstract void setProblemName(final String name);
 
-	protected abstract void setObjectiveCoef(int index, double value);
+	protected abstract void setObjectiveCoef(final int index, final double value);
 
-	protected abstract void setProblemType(PROBLEM_TYPE problemType,
-			OBJECTIVE_TYPE objectiveType);
+	protected abstract void setProblemType(final PROBLEM_TYPE problemType,
+			final OBJECTIVE_TYPE objectiveType);
 
-	public abstract void addAndSetColumn(String name, BOUNDS_TYPE boundType,
-			double lowerBound, double upperBound, VARIABLE_TYPE varType,
-			double objCoeff);
+	public abstract void addAndSetColumn(final String name, final BOUNDS_TYPE boundType,
+			final double lowerBound, final double upperBound, final VARIABLE_TYPE varType,
+			final double objCoeff);
 
 	/**
 	 * 
@@ -98,7 +98,7 @@ public abstract class AMIProblem {
 			List<Integer> indices, List<Double> values) throws RuntimeException;
 
 	/**
-	 * Doesn't add a new row
+	 * Doesn't add a new row.
 	 */
 	public abstract void setMatRow(int rowNo, List<Integer> indices,
 			List<Double> values) throws RuntimeException;
@@ -126,7 +126,7 @@ public abstract class AMIProblem {
 	}
 
 	/**
-	 * cleans the data structures
+	 * cleans the data structures.
 	 */
 	public abstract void end();
 

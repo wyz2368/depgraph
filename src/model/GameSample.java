@@ -56,7 +56,6 @@ public final class GameSample {
 		}
 	}
 	public void print() {
-		// TODO Auto-generated method stub
 		System.out.println("-------------------------------------TIME STEP " + this.timeStep + "-------------------------------------------");
 		this.defAction.print();
 		this.attAction.print();

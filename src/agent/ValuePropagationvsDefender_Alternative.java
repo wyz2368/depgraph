@@ -3,8 +3,8 @@ package agent;
 import game.GameOracle;
 import graph.Edge;
 import graph.Node;
-import graph.INode.NODE_ACTIVATION_TYPE;
-import graph.INode.NODE_STATE;
+import graph.INode.NodeActivationType;
+import graph.INode.NodeState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -168,7 +168,7 @@ public class ValuePropagationvsDefender_Alternative extends Defender{
 		GameState savedGameState = new GameState();
 		for(Node node : depGraph.vertexSet())
 		{
-			if(node.getState() == NODE_STATE.ACTIVE)
+			if(node.getState() == NodeState.ACTIVE)
 				savedGameState.addEnabledNode(node);
 		}
 		
@@ -273,7 +273,7 @@ public class ValuePropagationvsDefender_Alternative extends Defender{
 		GameState savedGameState = new GameState();
 		for(Node node : depGraph.vertexSet())
 		{
-			if(node.getState() == NODE_STATE.ACTIVE)
+			if(node.getState() == NodeState.ACTIVE)
 				savedGameState.addEnabledNode(node);
 		}
 		System.out.println("Start defender belief:........");
@@ -350,7 +350,7 @@ public class ValuePropagationvsDefender_Alternative extends Defender{
 		for(int i = 0; i < targetList.size(); i++)
 		{
 			Node node = targetList.get(i);
-			if(node.getState() != NODE_STATE.ACTIVE) // for non-active targets only
+			if(node.getState() != NodeState.ACTIVE) // for non-active targets only
 				r[i][0][node.getId() - 1] = node.getDPenalty();
 		}
 		for(int k = depGraph.vertexSet().size() - 1; k >= 0; k--) // starting propagate values for the defender 
@@ -363,15 +363,15 @@ public class ValuePropagationvsDefender_Alternative extends Defender{
 				for(Edge edge : edgeSet)
 				{
 					Node postNode = edge.gettarget();
-					if(postNode.getState() != NODE_STATE.ACTIVE)
+					if(postNode.getState() != NodeState.ACTIVE)
 					{
 						for(int i = 0; i < targetList.size(); i++)
 						{
-							if(targetList.get(i).getState() != NODE_STATE.ACTIVE)
+							if(targetList.get(i).getState() != NodeState.ACTIVE)
 							for(int j = 1; j <= numTimeStep - curTimeStep; j++)
 							{
 								double r_hat = 0.0;
-								if(postNode.getActivationType() == NODE_ACTIVATION_TYPE.OR)
+								if(postNode.getActivationType() == NodeActivationType.OR)
 								{
 									r_hat = r[i][j - 1][postNode.getId() - 1] * edge.getActProb(); 
 								}
@@ -394,7 +394,7 @@ public class ValuePropagationvsDefender_Alternative extends Defender{
 			rSum[i] = Double.POSITIVE_INFINITY;
 		for(int i = 0; i < targetList.size(); i++)
 		{
-			if(targetList.get(i).getState() != NODE_STATE.ACTIVE)
+			if(targetList.get(i).getState() != NodeState.ACTIVE)
 			for(int j = 0; j <= numTimeStep - curTimeStep; j++)
 			{
 				for(int k = 0; k < depGraph.vertexSet().size(); k++)
@@ -414,7 +414,7 @@ public class ValuePropagationvsDefender_Alternative extends Defender{
 				
 				double addedDValue = rSum[node.getId() - 1];
 				double actProb = 1.0;
-				if(node.getActivationType() == NODE_ACTIVATION_TYPE.OR)
+				if(node.getActivationType() == NodeActivationType.OR)
 				{ 
 					for(Edge edge : edgeSet)
 						actProb *= (1 - edge.getActProb());
@@ -440,7 +440,7 @@ public class ValuePropagationvsDefender_Alternative extends Defender{
 		
 		for(Node target : depGraph.getTargetSet())
 		{
-			if(target.getState() == NODE_STATE.ACTIVE)
+			if(target.getState() == NodeState.ACTIVE)
 			{
 //				System.out.println("This is active target...........");
 				double dValue = target.getDPenalty();

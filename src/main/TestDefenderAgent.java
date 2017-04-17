@@ -5,7 +5,7 @@ import graph.DGraphGenerator;
 import graph.DagGenerator;
 import graph.Edge;
 import graph.Node;
-import graph.INode.NODE_STATE;
+import graph.INode.NodeState;
 import model.DefenderAction;
 import model.DefenderBelief;
 import model.DependencyGraph;
@@ -75,7 +75,7 @@ public final class TestDefenderAgent {
 		
 		GameState gameState = new GameState();
 		for (Node node : depGraph.vertexSet()) {
-			if (node.getState() == NODE_STATE.ACTIVE) {
+			if (node.getState() == NodeState.ACTIVE) {
 				gameState.addEnabledNode(node);
 			}
 		}

@@ -2,8 +2,8 @@ package agent;
 
 import graph.Edge;
 import graph.Node;
-import graph.INode.NODE_ACTIVATION_TYPE;
-import graph.INode.NODE_STATE;
+import graph.INode.NodeActivationType;
+import graph.INode.NodeState;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -73,7 +73,7 @@ public class UniformAttacker extends Attacker{
 		boolean isAllTargetActive = true;
 		for(Node target : depGraph.getTargetSet())
 		{
-			if(target.getState() != NODE_STATE.ACTIVE)
+			if(target.getState() != NodeState.ACTIVE)
 			{
 				isAllTargetActive = false;
 				break;
@@ -83,14 +83,14 @@ public class UniformAttacker extends Attacker{
 		if(!isAllTargetActive)
 		for(Node node : depGraph.vertexSet())
 		{
-			if(node.getState() == NODE_STATE.INACTIVE) // only check inactive nodes
+			if(node.getState() == NodeState.INACTIVE) // only check inactive nodes
 			{
 				boolean isCandidate = false;
-				if(node.getActivationType() == NODE_ACTIVATION_TYPE.AND){// if this node is AND type
+				if(node.getActivationType() == NodeActivationType.AND){// if this node is AND type
 					isCandidate = true;
 					for(Edge inEdge : depGraph.incomingEdgesOf(node))
 					{
-						if(inEdge.getsource().getState() == NODE_STATE.INACTIVE)
+						if(inEdge.getsource().getState() == NodeState.INACTIVE)
 						{
 							isCandidate = false;
 							break;
@@ -101,7 +101,7 @@ public class UniformAttacker extends Attacker{
 				{
 					for(Edge inEdge : depGraph.incomingEdgesOf(node))
 					{
-						if(inEdge.getsource().getState() != NODE_STATE.INACTIVE)
+						if(inEdge.getsource().getState() != NodeState.INACTIVE)
 						{
 							isCandidate = true;
 							break;
@@ -111,7 +111,7 @@ public class UniformAttacker extends Attacker{
 				
 				if(isCandidate) // if this node is a candidate
 				{
-					if(node.getActivationType() == NODE_ACTIVATION_TYPE.AND) // if AND node, then add node to the candidate set
+					if(node.getActivationType() == NodeActivationType.AND) // if AND node, then add node to the candidate set
 					{
 						aCandidate.addNodeCandidate(node);
 					}
@@ -119,7 +119,7 @@ public class UniformAttacker extends Attacker{
 					{
 						for(Edge inEdge : depGraph.incomingEdgesOf(node))
 						{
-							if(inEdge.getsource().getState() == NODE_STATE.ACTIVE)
+							if(inEdge.getsource().getState() == NodeState.ACTIVE)
 								aCandidate.addEdgeCandidate(inEdge);
 						}
 					}

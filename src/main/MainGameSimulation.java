@@ -75,7 +75,6 @@ public final class MainGameSimulation {
 		MeanGameSimulationResult meanGameSimResult = new MeanGameSimulationResult();
 		Attacker attacker = AgentFactory.createAttacker(attackerName, attackerParams, simSpec.getDiscFact());
 		Defender defender = AgentFactory.createDefender(defenderName, defenderParams, simSpec.getDiscFact());
-		// TODO Auto-generated method stub
 		RandomDataGenerator rng = new RandomDataGenerator();
 		GameSimulation gameSim = new GameSimulation(depGraph, attacker, defender, rng
 				, simSpec.getNumTimeStep(), simSpec.getDiscFact());

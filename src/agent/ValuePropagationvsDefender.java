@@ -2,10 +2,10 @@ package agent;
 
 import game.GameOracle;
 import graph.Edge;
-import graph.INode.NODE_TYPE;
+import graph.INode.NodeType;
 import graph.Node;
-import graph.INode.NODE_ACTIVATION_TYPE;
-import graph.INode.NODE_STATE;
+import graph.INode.NodeActivationType;
+import graph.INode.NodeState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -154,7 +154,7 @@ public class ValuePropagationvsDefender extends Defender{
 		GameState savedGameState = new GameState();
 		for(Node node : depGraph.vertexSet())
 		{
-			if(node.getState() == NODE_STATE.ACTIVE)
+			if(node.getState() == NodeState.ACTIVE)
 				savedGameState.addEnabledNode(node);
 		}
 		
@@ -273,7 +273,7 @@ public class ValuePropagationvsDefender extends Defender{
 		GameState savedGameState = new GameState();
 		for(Node node : depGraph.vertexSet())
 		{
-			if(node.getState() == NODE_STATE.ACTIVE)
+			if(node.getState() == NodeState.ACTIVE)
 				savedGameState.addEnabledNode(node);
 		}
 
@@ -307,9 +307,9 @@ public class ValuePropagationvsDefender extends Defender{
 			{
 				double tempValue = 0.0;
 				double tempAttProb = 1.0;
-				if(node.getType() != NODE_TYPE.TARGET || node.getState() != NODE_STATE.ACTIVE)
+				if(node.getType() != NodeType.TARGET || node.getState() != NodeState.ACTIVE)
 				{
-					if(node.getActivationType() == NODE_ACTIVATION_TYPE.AND)
+					if(node.getActivationType() == NodeActivationType.AND)
 					{
 						int idx = curNodeACandidateList.indexOf(node);
 						tempAttProb = curACandidateProb[idx + curEdgeACandidateList.size()];
@@ -380,7 +380,7 @@ public class ValuePropagationvsDefender extends Defender{
 //				System.out.println("Candidate has targets");
 		}
 		for(Node node : gameState.getEnabledNodeSet()) // active target nodes
-			if(node.getType() == NODE_TYPE.TARGET)
+			if(node.getType() == NodeType.TARGET)
 			{
 				dCandidate.addNodeCandidate(node);
 //				System.out.println("Candidate has active target");
@@ -434,7 +434,7 @@ public class ValuePropagationvsDefender extends Defender{
 		for(int i = 0; i < targetList.size(); i++)
 		{
 			Node node = targetList.get(i);
-			if(node.getState() != NODE_STATE.ACTIVE) // for non-active targets only
+			if(node.getState() != NodeState.ACTIVE) // for non-active targets only
 				r[i][0][node.getId() - 1] = node.getDPenalty();
 		}
 		for(int k = depGraph.vertexSet().size() - 1; k >= 0; k--) // starting propagate values for the defender 
@@ -447,15 +447,15 @@ public class ValuePropagationvsDefender extends Defender{
 				for(Edge edge : edgeSet)
 				{
 					Node postNode = edge.gettarget();
-					if(postNode.getState() != NODE_STATE.ACTIVE)
+					if(postNode.getState() != NodeState.ACTIVE)
 					{
 						for(int i = 0; i < targetList.size(); i++)
 						{
-							if(targetList.get(i).getState() != NODE_STATE.ACTIVE)
+							if(targetList.get(i).getState() != NodeState.ACTIVE)
 							for(int j = 1; j <= numTimeStep - curTimeStep; j++)
 							{
 								double r_hat = 0.0;
-								if(postNode.getActivationType() == NODE_ACTIVATION_TYPE.OR)
+								if(postNode.getActivationType() == NodeActivationType.OR)
 								{
 									r_hat = r[i][j - 1][postNode.getId() - 1] * edge.getActProb(); 
 								}
@@ -478,7 +478,7 @@ public class ValuePropagationvsDefender extends Defender{
 			rSum[i] = Double.POSITIVE_INFINITY;
 		for(int i = 0; i < targetList.size(); i++)
 		{
-			if(targetList.get(i).getState() != NODE_STATE.ACTIVE)
+			if(targetList.get(i).getState() != NodeState.ACTIVE)
 			for(int j = 0; j <= numTimeStep - curTimeStep; j++)
 			{
 				for(int k = 0; k < depGraph.vertexSet().size(); k++)
@@ -492,9 +492,9 @@ public class ValuePropagationvsDefender extends Defender{
 		for(Node node : dCandidateList)
 		{
 			dCandidateValue[idx] += node.getDCost();
-			if(node.getState() != NODE_STATE.ACTIVE) // not active targets, then belonging to attack candidate set
+			if(node.getState() != NodeState.ACTIVE) // not active targets, then belonging to attack candidate set
 			{
-				if(node.getActivationType() == NODE_ACTIVATION_TYPE.OR) // OR nodes, then belong to attack edge set
+				if(node.getActivationType() == NodeActivationType.OR) // OR nodes, then belong to attack edge set
 				{
 					double prob = 1.0;
 					for(Edge edge : attackCandidate.getEdgeCandidateSet())

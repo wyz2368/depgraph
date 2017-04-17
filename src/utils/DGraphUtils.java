@@ -1,11 +1,11 @@
 package utils;
 
 import graph.Edge;
-import graph.INode.NODE_ACTIVATION_TYPE;
+import graph.INode.NodeActivationType;
 import graph.Node;
-import graph.Edge.EDGE_TYPE;
-import graph.INode.NODE_STATE;
-import graph.INode.NODE_TYPE;
+import graph.Edge.EdgeType;
+import graph.INode.NodeState;
+import graph.INode.NodeType;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -65,9 +65,9 @@ public class DGraphUtils {
         	JsonObject nodeObject = nodeDataJson.get(i).getAsJsonObject();
         	int nID = nodeObject.get(id).getAsInt();
         	int nTopoPosition = nodeObject.get(topoPosition).getAsInt();
-        	NODE_TYPE nType = NODE_TYPE.valueOf(nodeObject.get(nodeType).getAsString());
-        	NODE_ACTIVATION_TYPE nActType = NODE_ACTIVATION_TYPE.valueOf(nodeObject.get(actType).getAsString());
-        	NODE_STATE nState = NODE_STATE.valueOf(nodeObject.get(state).getAsString());
+        	NodeType nType = NodeType.valueOf(nodeObject.get(nodeType).getAsString());
+        	NodeActivationType nActType = NodeActivationType.valueOf(nodeObject.get(actType).getAsString());
+        	NodeState nState = NodeState.valueOf(nodeObject.get(state).getAsString());
         	double nAReward = nodeObject.get(aReward).getAsDouble();
         	double nDPenalty = nodeObject.get(dPenalty).getAsDouble();
         	double nDCost = nodeObject.get(dCost).getAsDouble();
@@ -97,7 +97,7 @@ public class DGraphUtils {
         	int edgeID = edgeObject.get(id).getAsInt();
         	int srcEdgeID = edgeObject.get(srcID).getAsInt();
         	int desEdgeID = edgeObject.get(desID).getAsInt();
-        	EDGE_TYPE type = EDGE_TYPE.valueOf(edgeObject.get(edgeType).getAsString());
+        	EdgeType type = EdgeType.valueOf(edgeObject.get(edgeType).getAsString());
         	double aCost = edgeObject.get(aActivationCost).getAsDouble();
         	double aProb = edgeObject.get(aActivationProb).getAsDouble();
         	Edge edge = depGraph.addEdge(nodeArray[srcEdgeID - 1], nodeArray[desEdgeID - 1]);

@@ -1,73 +1,76 @@
 package graph;
 
 public interface INode{	
-	public enum NODE_TYPE {NONTARGET, TARGET;
+	enum NodeType { 
+		NONTARGET, TARGET;
 		
-	@Override
-	public String toString(){
-		switch(this){
-		case TARGET: return "TARGET";
-		case NONTARGET: return "NONTARGET";
-		default: return "";
-		}	
+		@Override
+		public String toString() {
+			switch(this) {
+			case TARGET: return "TARGET";
+			case NONTARGET: return "NONTARGET";
+			default: return "";
+			}	
+		}
 	}
+	enum NodeActivationType {
+		AND, OR;
+	
+		@Override
+		public String toString() {
+			switch(this) {
+			case AND: return "AND";
+			case OR: return "OR";
+			default: return "";
+			}	
+		}
 	}
-	public enum NODE_ACTIVATION_TYPE {AND, OR;
 	
-	@Override
-	public String toString(){
-		switch(this){
-		case AND: return "AND";
-		case OR: return "OR";
-		default: return "";
-		}	
+	public enum NodeState {
+		ACTIVE, INACTIVE;
+	
+		@Override
+		public String toString() {
+			switch(this) {
+			case ACTIVE: return "ACTIVE";
+			case INACTIVE: return "INACTIVE"; 
+			default: return "";
+			}	
+		}
 	}
-	}
+	int getId();
+	void setID(int id);
 	
-	public enum NODE_STATE {ACTIVE, INACTIVE;
+	NodeState getState();
+	void setState(NodeState s);
 	
-	@Override
-	public String toString(){
-		switch(this){
-		case ACTIVE: return "ACTIVE";
-		case INACTIVE: return "INACTIVE"; 
-		default: return "";
-		}	
-	}
-	}
-	public int getId() ;
-	public void setID(int id);
+	NodeType getType();
+	void setType(NodeType t);
 	
-	public NODE_STATE getState();
-	public void setState(NODE_STATE s);
+	NodeActivationType getActivationType();
+	void setActivationType(NodeActivationType eT);
 	
-	public NODE_TYPE getType();
-	public void setType(NODE_TYPE t);
+	double getAReward();
+	void setAReward(double aReward);
 	
-	public NODE_ACTIVATION_TYPE getActivationType();
-	public void setActivationType(NODE_ACTIVATION_TYPE eT);
+	double getDPenalty();
+	void setDPenalty(double dPenalty);
 	
-	public double getAReward();
-	public void setAReward(double aReward);
+	double getDCost();
+	void setDCost(double dCost);
 	
-	public double getDPenalty();
-	public void setDPenalty(double dPenalty);
+	double getACost();
+	void setACost(double aCost);
 	
-	public double getDCost();
-	public void setDCost(double dCost);
+	double getActProb();
+	void setActProb(double actProb);
 	
-	public double getACost();
-	public void setACost(double aCost);
+	int getTopoPosition();
+	void setTopoPosition(int position);
 	
-	public double getActProb();
-	public void setActProb(double actProb);
+	double getPosActiveProb();
+	void setPosActiveProb(double posActiveProb);
 	
-	public int getTopoPosition();
-	public void setTopoPosition(int position);
-	
-	public double getPosActiveProb();
-	public void setPosActiveProb(double posActiveProb);
-	
-	public double getPosInactiveProb();
-	public void setPosInactiveProb(double posInactiveProbe);	
+	double getPosInactiveProb();
+	void setPosInactiveProb(double posInactiveProbe);	
 }

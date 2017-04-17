@@ -1,9 +1,9 @@
 	package agent;
 
 import graph.Edge;
-import graph.INode.NODE_ACTIVATION_TYPE;
+import graph.INode.NodeActivationType;
 import graph.Node;
-import graph.INode.NODE_STATE;
+import graph.INode.NodeState;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -242,7 +242,7 @@ public class ValuePropagationAttacker extends Attacker{
 		List<Node> targetList = new ArrayList<Node>(); // list of inactive targets
 		for(Node target : depGraph.getTargetSet())
 		{
-			if(target.getState() != NODE_STATE.ACTIVE)
+			if(target.getState() != NodeState.ACTIVE)
 				targetList.add(target);
 		}
 		if(targetList.isEmpty()) // if all targets are already enabled
@@ -279,12 +279,12 @@ public class ValuePropagationAttacker extends Attacker{
 			for(Edge edge : edgeSet) // searching over incoming edges of the current node
 			{
 				Node srcNode = edge.getsource();
-				if(srcNode.getState() != NODE_STATE.ACTIVE) // only consider inactive nodes
+				if(srcNode.getState() != NodeState.ACTIVE) // only consider inactive nodes
 				{
 					double r_hat = 0.0;
 					for(int i = 0; i < targetList.size(); i++)
 					{
-						if(node.getActivationType() == NODE_ACTIVATION_TYPE.AND) // marginal increment for AND nodes
+						if(node.getActivationType() == NodeActivationType.AND) // marginal increment for AND nodes
 						{
 							r_hat = r[i][node.getId() - 1] * node.getActProb();
 							r_hat += node.getACost();
@@ -359,7 +359,7 @@ public class ValuePropagationAttacker extends Attacker{
 		List<Node> targetList = new ArrayList<Node>(); // list of inactive targets
 		for(Node target : depGraph.getTargetSet())
 		{
-			if(target.getState() != NODE_STATE.ACTIVE)
+			if(target.getState() != NodeState.ACTIVE)
 				targetList.add(target);
 		}
 		if(targetList.isEmpty()) // if all targets are already enabled
@@ -391,7 +391,7 @@ public class ValuePropagationAttacker extends Attacker{
 		for(int k = depGraph.vertexSet().size() - 1; k >= 0; k--)
 		{
 			Node node = topoOrder[k];
-			if(node.getState() != NODE_STATE.ACTIVE)
+			if(node.getState() != NodeState.ACTIVE)
 			{
 				Set<Edge> edgeSet = depGraph.outgoingEdgesOf(node);
 				if(edgeSet != null && !edgeSet.isEmpty()) // if non-leaf
@@ -399,7 +399,7 @@ public class ValuePropagationAttacker extends Attacker{
 					for(Edge edge : edgeSet)
 					{
 						Node postNode = edge.gettarget();
-						if(postNode.getState() != NODE_STATE.ACTIVE)
+						if(postNode.getState() != NodeState.ACTIVE)
 						{
 							
 							for(int i = 0; i < targetList.size(); i++)
@@ -407,7 +407,7 @@ public class ValuePropagationAttacker extends Attacker{
 								for(int j = 1; j <= numTimeStep - curTimeStep; j++)
 								{
 									double r_hat = 0.0;
-									if(postNode.getActivationType() == NODE_ACTIVATION_TYPE.OR)
+									if(postNode.getActivationType() == NodeActivationType.OR)
 									{
 										r_hat = r[i][j - 1][postNode.getId() - 1] * edge.getActProb(); 
 										r_hat += edge.getACost();
@@ -419,7 +419,7 @@ public class ValuePropagationAttacker extends Attacker{
 										int degree = depGraph.inDegreeOf(postNode);
 										for(Edge postEdge : depGraph.incomingEdgesOf(postNode))
 										{
-											if(postEdge.getsource().getState() == NODE_STATE.ACTIVE)
+											if(postEdge.getsource().getState() == NodeState.ACTIVE)
 												degree--;
 										}
 										r_hat = r_hat / Math.pow(degree, propagationParam);
@@ -481,7 +481,7 @@ public class ValuePropagationAttacker extends Attacker{
 		List<Node> targetList = new ArrayList<Node>(); // list of inactive targets
 		for(Node target : depGraph.getTargetSet())
 		{
-			if(target.getState() != NODE_STATE.ACTIVE)
+			if(target.getState() != NodeState.ACTIVE)
 				targetList.add(target);
 		}
 		if(targetList.isEmpty()) // if all targets are already enabled
@@ -513,7 +513,7 @@ public class ValuePropagationAttacker extends Attacker{
 		for(int k = depGraph.vertexSet().size() - 1; k >= 0; k--)
 		{
 			Node node = topoOrder[k];
-			if(node.getState() != NODE_STATE.ACTIVE)
+			if(node.getState() != NodeState.ACTIVE)
 			{
 				Set<Edge> edgeSet = depGraph.outgoingEdgesOf(node);
 				if(edgeSet != null && !edgeSet.isEmpty()) // if non-leaf
@@ -521,7 +521,7 @@ public class ValuePropagationAttacker extends Attacker{
 					for(Edge edge : edgeSet)
 					{
 						Node postNode = edge.gettarget();
-						if(postNode.getState() != NODE_STATE.ACTIVE)
+						if(postNode.getState() != NodeState.ACTIVE)
 						{
 							
 							for(int i = 0; i < targetList.size(); i++)
@@ -529,7 +529,7 @@ public class ValuePropagationAttacker extends Attacker{
 								for(int j = 1; j <= numTimeStep - curTimeStep; j++)
 								{
 									double r_hat = 0.0;
-									if(postNode.getActivationType() == NODE_ACTIVATION_TYPE.OR)
+									if(postNode.getActivationType() == NodeActivationType.OR)
 									{
 										r_hat = r[i][j - 1][postNode.getId() - 1] * edge.getActProb(); 
 										r_hat += edge.getACost();
@@ -541,7 +541,7 @@ public class ValuePropagationAttacker extends Attacker{
 										int degree = depGraph.inDegreeOf(postNode);
 										for(Edge postEdge : depGraph.incomingEdgesOf(postNode))
 										{
-											if(postEdge.getsource().getState() == NODE_STATE.ACTIVE)
+											if(postEdge.getsource().getState() == NodeState.ACTIVE)
 												degree--;
 										}
 										r_hat = r_hat / Math.pow(degree, propagationParam);
@@ -604,7 +604,7 @@ public class ValuePropagationAttacker extends Attacker{
 		boolean isAllTargetActive = true;
 		for(Node target : depGraph.getTargetSet())
 		{
-			if(target.getState() != NODE_STATE.ACTIVE)
+			if(target.getState() != NodeState.ACTIVE)
 			{
 				isAllTargetActive = false;
 				break;
@@ -614,14 +614,14 @@ public class ValuePropagationAttacker extends Attacker{
 		if(!isAllTargetActive)
 		for(Node node : depGraph.vertexSet())
 		{
-			if(node.getState() == NODE_STATE.INACTIVE) // only check inactive nodes
+			if(node.getState() == NodeState.INACTIVE) // only check inactive nodes
 			{
 				boolean isCandidate = false;
-				if(node.getActivationType() == NODE_ACTIVATION_TYPE.AND){// if this node is AND type
+				if(node.getActivationType() == NodeActivationType.AND){// if this node is AND type
 					isCandidate = true;
 					for(Edge inEdge : depGraph.incomingEdgesOf(node))
 					{
-						if(inEdge.getsource().getState() == NODE_STATE.INACTIVE)
+						if(inEdge.getsource().getState() == NodeState.INACTIVE)
 						{
 							isCandidate = false;
 							break;
@@ -632,7 +632,7 @@ public class ValuePropagationAttacker extends Attacker{
 				{
 					for(Edge inEdge : depGraph.incomingEdgesOf(node))
 					{
-						if(inEdge.getsource().getState() != NODE_STATE.INACTIVE)
+						if(inEdge.getsource().getState() != NodeState.INACTIVE)
 						{
 							isCandidate = true;
 							break;
@@ -642,7 +642,7 @@ public class ValuePropagationAttacker extends Attacker{
 				
 				if(isCandidate) // if this node is a candidate
 				{
-					if(node.getActivationType() == NODE_ACTIVATION_TYPE.AND) // if AND node, then add node to the candidate set
+					if(node.getActivationType() == NodeActivationType.AND) // if AND node, then add node to the candidate set
 					{
 						aCandidate.addNodeCandidate(node);
 					}
@@ -650,7 +650,7 @@ public class ValuePropagationAttacker extends Attacker{
 					{
 						for(Edge inEdge : depGraph.incomingEdgesOf(node))
 						{
-							if(inEdge.getsource().getState() == NODE_STATE.ACTIVE)
+							if(inEdge.getsource().getState() == NodeState.ACTIVE)
 								aCandidate.addEdgeCandidate(inEdge);
 						}
 					}

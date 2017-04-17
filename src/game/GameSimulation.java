@@ -2,8 +2,8 @@ package game;
 
 import graph.Edge;
 import graph.Node;
-import graph.INode.NODE_ACTIVATION_TYPE;
-import graph.INode.NODE_STATE;
+import graph.INode.NodeActivationType;
+import graph.INode.NodeState;
 
 import java.util.Map.Entry;
 import java.util.Set;
@@ -62,7 +62,7 @@ public final class GameSimulation {
 	public void runSimulation() {
 		// Get initial state
 		for (Node node : this.depGraph.vertexSet()) {
-			if(node.getState() == NODE_STATE.ACTIVE)
+			if(node.getState() == NodeState.ACTIVE)
 				this.simResult.addEnabledNodetoInitialState(node);
 		}
 		// Start simulation
@@ -138,7 +138,7 @@ public final class GameSimulation {
 				}
 				for (Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet()) {
 					Node node = entry.getKey();
-					if(node.getActivationType() == NODE_ACTIVATION_TYPE.AND)
+					if(node.getActivationType() == NodeActivationType.AND)
 						attPayoff += Math.pow(this.discFact, timeStep) * node.getACost();
 					else {
 						Set<Edge> edgeSet = entry.getValue();
@@ -168,7 +168,7 @@ public final class GameSimulation {
 	public void reset() {
 		//Reset node states
 		for (Node node : this.depGraph.vertexSet()) {
-			node.setState(NODE_STATE.INACTIVE);
+			node.setState(NodeState.INACTIVE);
 		}
 		this.simResult.clear();
 	}

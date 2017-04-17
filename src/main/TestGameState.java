@@ -3,7 +3,7 @@ package main;
 import graph.DGraphGenerator;
 import graph.DagGenerator;
 import graph.Edge;
-import graph.INode.NODE_TYPE;
+import graph.INode.NodeType;
 import graph.Node;
 import model.DefenderBelief;
 import model.DependencyGraph;
@@ -63,7 +63,7 @@ public final class TestGameState {
 		
 		GameState gameState2 = new GameState();
 		for (Node node : depGraph.vertexSet()) {
-			if (node.getType() == NODE_TYPE.TARGET) {
+			if (node.getType() == NodeType.TARGET) {
 				gameState2.addEnabledNode(node);
 			}
 		}

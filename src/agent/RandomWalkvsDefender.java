@@ -3,8 +3,8 @@ package agent;
 import game.GameOracle;
 import graph.Edge;
 import graph.Node;
-import graph.INode.NODE_ACTIVATION_TYPE;
-import graph.INode.NODE_STATE;
+import graph.INode.NodeActivationType;
+import graph.INode.NodeState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -102,7 +102,7 @@ public class RandomWalkvsDefender extends Defender{
 		GameState savedGameState = new GameState();
 		for(Node node : depGraph.vertexSet())
 		{
-			if(node.getState() == NODE_STATE.ACTIVE)
+			if(node.getState() == NodeState.ACTIVE)
 				savedGameState.addEnabledNode(node);
 		}
 		
@@ -188,7 +188,7 @@ public class RandomWalkvsDefender extends Defender{
 		GameState savedGameState = new GameState();
 		for(Node node : depGraph.vertexSet())
 		{
-			if(node.getState() == NODE_STATE.ACTIVE)
+			if(node.getState() == NodeState.ACTIVE)
 				savedGameState.addEnabledNode(node);
 		}
 		
@@ -305,7 +305,7 @@ public class RandomWalkvsDefender extends Defender{
 		}
 		for(Node target : depGraph.getTargetSet()) // active targets
 		{
-			if(target.getState() == NODE_STATE.ACTIVE)
+			if(target.getState() == NodeState.ACTIVE)
 				defCandidateAll.addNodeCandidate(target);
 		}
 		
@@ -341,11 +341,11 @@ public class RandomWalkvsDefender extends Defender{
 			for(int i = 0; i < depGraph.vertexSet().size(); i++)
 			{
 				Node node = topoOrder[i];
-				if(node.getState() == NODE_STATE.ACTIVE)
+				if(node.getState() == NodeState.ACTIVE)
 					isInQueue[idx][node.getId() - 1] = true;
 				if(!isInQueue[idx][node.getId() - 1] && depGraph.inDegreeOf(node) > 0) // if not set in queue yet and not root node
 				{
-					if(node.getActivationType() == NODE_ACTIVATION_TYPE.OR) // if OR node
+					if(node.getActivationType() == NodeActivationType.OR) // if OR node
 					{
 						Node preNode = rwTuplesList.get(idx)[node.getId() - 1].getPreAct().get(0).getsource();
 						if(isInQueue[idx][preNode.getId() - 1])
@@ -402,7 +402,7 @@ public class RandomWalkvsDefender extends Defender{
 								Node postNode = postEdge.gettarget();
 								if(isInCurrentQueue[idx][postNode.getId() - 1]) // if this postNode is in the current queue
 								{
-									if(postNode.getActivationType() == NODE_ACTIVATION_TYPE.OR)
+									if(postNode.getActivationType() == NodeActivationType.OR)
 									{
 										Node preNode = rwTuples[postNode.getId() - 1].getPreAct().get(0).getsource();
 										if(!isInCurrentQueue[idx][preNode.getId() - 1])

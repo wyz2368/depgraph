@@ -2,7 +2,7 @@ package game;
 
 import graph.Edge;
 import graph.Node;
-import graph.INode.NODE_ACTIVATION_TYPE;
+import graph.INode.NodeActivationType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -142,7 +142,7 @@ public final class GameOracle {
 			List<Edge> edgeList = new ArrayList<Edge>(entry.getValue());
 			if (!dAction.getAction().contains(node)) { // if the defender doesn't disable this node
 				double enableProb = 1.0;
-				if (node.getActivationType() == NODE_ACTIVATION_TYPE.AND) {
+				if (node.getActivationType() == NodeActivationType.AND) {
 					enableProb = node.getActProb();
 				} else {
 					for (int i = 0; i < edgeList.size(); i++) {
@@ -188,7 +188,7 @@ public final class GameOracle {
 			assert !pastState.contain(node); // if node is already enabled, the attacker should not enable it again
 			if (!defAction.getAction().contains(node)) { // if the defender is not protecting this node
 				double enableProb = 1.0;
-				if (node.getActivationType() == NODE_ACTIVATION_TYPE.AND) {
+				if (node.getActivationType() == NodeActivationType.AND) {
 					enableProb = node.getActProb();
 				} else {
 					Set<Edge> edgeSet = entry.getValue();

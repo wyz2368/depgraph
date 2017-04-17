@@ -1,8 +1,8 @@
 package agent;
 
 import graph.Edge;
-import graph.INode.NODE_ACTIVATION_TYPE;
-import graph.INode.NODE_STATE;
+import graph.INode.NodeActivationType;
+import graph.INode.NodeState;
 import graph.Node;
 
 import java.util.ArrayList;
@@ -118,7 +118,7 @@ public class RandomWalkAttacker extends Attacker {
 			double pAct = 0.0;
 			List<Edge> preAct = null;
 			/*****************************************************************************************/
-			if(node.getState() == NODE_STATE.ACTIVE) // active nodes
+			if(node.getState() == NodeState.ACTIVE) // active nodes
 			{
 				tAct = curTimeStep - 1;
 				pAct = 1.0;
@@ -130,7 +130,7 @@ public class RandomWalkAttacker extends Attacker {
 				pAct = node.getActProb();
 			}
 			/*****************************************************************************************/
-			else if(node.getActivationType() == NODE_ACTIVATION_TYPE.AND) // inactive and non-root and AND-type
+			else if(node.getActivationType() == NodeActivationType.AND) // inactive and non-root and AND-type
 			{
 				preAct = new ArrayList<Edge>();
 				for(Edge edge : depGraph.incomingEdgesOf(node))
@@ -159,7 +159,7 @@ public class RandomWalkAttacker extends Attacker {
 				{
 					Node curNode = sequenceList.remove(0);
 					RandomWalkTuple rwTuple = rwTuples[curNode.getId() - 1];
-					if(curNode.getActivationType() == NODE_ACTIVATION_TYPE.AND) // OR node
+					if(curNode.getActivationType() == NodeActivationType.AND) // OR node
 					{
 						pAct *= curNode.getActProb();
 						if(rwTuple.getPreAct() != null)
@@ -254,7 +254,7 @@ public class RandomWalkAttacker extends Attacker {
 			for(Node target : targetList)
 			{
 				RandomWalkTuple rwTuple = rwTuples[target.getId() - 1];
-				if(target.getState() != NODE_STATE.ACTIVE && !isChosen[targetIdx] && rwTuple.getTAct() <= numTimeStep)
+				if(target.getState() != NodeState.ACTIVE && !isChosen[targetIdx] && rwTuple.getTAct() <= numTimeStep)
 				{
 					/*****************************************************************************************/
 					// Value of target
@@ -267,7 +267,7 @@ public class RandomWalkAttacker extends Attacker {
 						/*****************************************************************************************/
 						// Cost of activating the target
 						isInCurSequence[target.getId() - 1] = true;
-						if(target.getActivationType() == NODE_ACTIVATION_TYPE.AND)
+						if(target.getActivationType() == NodeActivationType.AND)
 							curValue += rwTuple.getPAct() / target.getActProb()  
 								* target.getACost() * Math.pow(discFact, rwTuple.getTAct() - 1);
 						else
@@ -283,7 +283,7 @@ public class RandomWalkAttacker extends Attacker {
 						{
 							for(Edge edge : rwTuple.getPreAct())
 							{
-								if(edge.getsource().getState() != NODE_STATE.ACTIVE)
+								if(edge.getsource().getState() != NodeState.ACTIVE)
 									sequence.add(edge.getsource());
 							}
 						}
@@ -294,7 +294,7 @@ public class RandomWalkAttacker extends Attacker {
 							if(!isInCurSequence[curNode.getId() - 1])
 							{
 								isInCurSequence[curNode.getId() - 1] = true;
-								if(curNode.getActivationType() == NODE_ACTIVATION_TYPE.AND)
+								if(curNode.getActivationType() == NodeActivationType.AND)
 								{
 									curValue += curRwTuple.getPAct() / curNode.getActProb()  
 											* curNode.getACost() * Math.pow(discFact, curRwTuple.getTAct() - 1);
@@ -303,7 +303,7 @@ public class RandomWalkAttacker extends Attacker {
 									{
 										Node preNode = edge.getsource();
 										if(!isInCurSequence[preNode.getId() - 1] 
-												&& preNode.getState() != NODE_STATE.ACTIVE)
+												&& preNode.getState() != NodeState.ACTIVE)
 										{
 											isInCurSequence[preNode.getId() - 1] = true;
 											sequence.add(preNode);
@@ -318,7 +318,7 @@ public class RandomWalkAttacker extends Attacker {
 										curValue += curRwTuple.getPAct() / chosenEdge.getActProb() 
 												* chosenEdge.getACost() * Math.pow(discFact, curRwTuple.getTAct() - 1);
 										if(!isInCurSequence[chosenEdge.getsource().getId() - 1]
-												&& chosenEdge.getsource().getState() != NODE_STATE.ACTIVE)
+												&& chosenEdge.getsource().getState() != NodeState.ACTIVE)
 										{
 											isInCurSequence[chosenEdge.getsource().getId() - 1] = true;
 											sequence.add(chosenEdge.getsource());
@@ -357,14 +357,14 @@ public class RandomWalkAttacker extends Attacker {
 		{
 			for(Node node : depGraph.vertexSet())
 			{
-				if(isInSequence[node.getId() - 1] && node.getState() != NODE_STATE.ACTIVE)
+				if(isInSequence[node.getId() - 1] && node.getState() != NodeState.ACTIVE)
 				{
-					if(node.getActivationType() == NODE_ACTIVATION_TYPE.AND)
+					if(node.getActivationType() == NodeActivationType.AND)
 					{
 						boolean isCandidate = true;
 						for(Edge edge : depGraph.incomingEdgesOf(node))
 						{
-							if(edge.getsource().getState() != NODE_STATE.ACTIVE)
+							if(edge.getsource().getState() != NodeState.ACTIVE)
 							{
 								isCandidate = false;
 								break;
@@ -379,7 +379,7 @@ public class RandomWalkAttacker extends Attacker {
 					{
 						RandomWalkTuple rwTuple = rwTuples[node.getId() - 1];
 						Edge edge = rwTuple.getPreAct().get(0);
-						if(edge.getsource().getState() == NODE_STATE.ACTIVE)
+						if(edge.getsource().getState() == NodeState.ACTIVE)
 						{
 							attCandidate.addEdgeCandidate(edge);
 						}
