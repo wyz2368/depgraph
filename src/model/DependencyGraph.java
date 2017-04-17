@@ -79,7 +79,7 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge>{
 		}
 		System.out.println("--------------------------------------------------------------------");
 		System.out.println("Target set: ");
-		for(Node target : this.targetSet) {
+		for (Node target : this.targetSet) {
 			System.out.print(target.getId() + "\t");
 		}
 		System.out.println();

@@ -18,7 +18,7 @@ import utils.DGraphUtils;
 import utils.EncodingUtils;
 import utils.JsonUtils;
 
-public class MainGameSimulation {
+public final class MainGameSimulation {
 
 	public static void main(final String[] args) {
         if (args == null || args.length != 2) {
@@ -34,11 +34,9 @@ public class MainGameSimulation {
         System.out.println("time taken in millis: " + millis);
     }
 	 /**
-     * @param folderName the local path to the folder
+     * @param simspecFolderName the local path to the folder
      * containing simulation_spec.json
-     * @param obsCount how many observation files
-     * to produce, each using simSpec.numSims
-     * runs.
+     * @param graphFolderName path to graph folder
      */
     public static void runSimulationsAndPrint(final String simspecFolderName, final String graphFolderName) {
         if (simspecFolderName == null) {
@@ -70,10 +68,10 @@ public class MainGameSimulation {
             JsonUtils.printObservationToFile(simspecFolderName, obsString);
 
     }
-	private static MeanGameSimulationResult runSimulations(DependencyGraph depGraph,
-			GameSimulationSpec simSpec, String attackerName,
-			Map<String, Double> attackerParams, String defenderName,
-			Map<String, Double> defenderParams, int numSim) {
+	private static MeanGameSimulationResult runSimulations(final DependencyGraph depGraph,
+			final GameSimulationSpec simSpec, final String attackerName,
+			final Map<String, Double> attackerParams, final String defenderName,
+			final Map<String, Double> defenderParams, final int numSim) {
 		MeanGameSimulationResult meanGameSimResult = new MeanGameSimulationResult();
 		Attacker attacker = AgentFactory.createAttacker(attackerName, attackerParams, simSpec.getDiscFact());
 		Defender defender = AgentFactory.createDefender(defenderName, defenderParams, simSpec.getDiscFact());
@@ -82,10 +80,10 @@ public class MainGameSimulation {
 		GameSimulation gameSim = new GameSimulation(depGraph, attacker, defender, rng
 				, simSpec.getNumTimeStep(), simSpec.getDiscFact());
 		
-		for(int i = 0; i < numSim; i++)
-		{
-			if(i % 1000 == 0)
+		for (int i = 0; i < numSim; i++) {
+			if (i % 1000 == 0) {
 				System.out.println("Simulation: " + i);
+			}
 			gameSim.runSimulation();
 			meanGameSimResult.updateMeanSimulationResult(gameSim.getSimulationResult());
 			gameSim.reset();

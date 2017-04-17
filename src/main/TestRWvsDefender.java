@@ -16,32 +16,31 @@ import agent.RandomWalkAttacker;
 import agent.RandomWalkvsDefender;
 import agent.ValuePropagationAttacker;
 
-public class TestRWvsDefender {
+public final class TestRWvsDefender {
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		int numNode = 50;
-		int numEdge = 150;
-		int numTarget = 10;
-		double nodeActTypeRatio = 0.3;
-		double aRewardLB = 1.0;
-		double aRewardUB = 10.0;
-		double dPenaltyLB = -10.0;
-		double dPenaltyUB = -1.0;
-		double aNodeCostLB = -0.5;
-		double aNodeCostUB = -0.1;
-		double aEdgeCostLB = -0.5;
-		double aEdgeCostUB = -0.1;
-		double dCostLB = -0.5;
-		double dCostUB = -0.1;
-		double aNodeActProbLB = 0.8;
-		double aNodeActProbUB = 1.0;
-		double aEdgeActProbLB = 0.6;
-		double aEdgeActProbUB = 0.8;
-		double minPosActiveProb = 0.8;
-		double maxPosActiveProb = 1.0;
-		double minPosInactiveProb = 0.0;
-		double maxPosInactiveProb = 0.2;
+	public static void main(final String[] args) {
+		final int numNode = 50;
+		final int numEdge = 150;
+		final int numTarget = 10;
+		final double nodeActTypeRatio = 0.3;
+		final double aRewardLB = 1.0;
+		final double aRewardUB = 10.0;
+		final double dPenaltyLB = -10.0;
+		final double dPenaltyUB = -1.0;
+		final double aNodeCostLB = -0.5;
+		final double aNodeCostUB = -0.1;
+		final double aEdgeCostLB = -0.5;
+		final double aEdgeCostUB = -0.1;
+		final double dCostLB = -0.5;
+		final double dCostUB = -0.1;
+		final double aNodeActProbLB = 0.8;
+		final double aNodeActProbUB = 1.0;
+		final double aEdgeActProbLB = 0.6;
+		final double aEdgeActProbUB = 0.8;
+		final double minPosActiveProb = 0.8;
+		final double maxPosActiveProb = 1.0;
+		final double minPosInactiveProb = 0.0;
+		final double maxPosInactiveProb = 0.2;
 		
 		Node.resetCounter();
 		Edge.resetCounter();
@@ -61,23 +60,23 @@ public class TestRWvsDefender {
 				, minPosInactiveProb, maxPosInactiveProb);
 		DGraphGenerator.findMinCut(depGraph);
 		
-		double qrParam = 5.0;
-		double discFact = 0.9;
-		int numRWSample = 200;
+		final double qrParam = 5.0;
+		final double discFact = 0.9;
+		final int numRWSample = 200;
 		
-		double logisParam = 5.0;
-		double thres = 5 * 1e-3;
+		final double logisParam = 5.0;
+		final double thres = 5 * 1e-3;
 		
-		int maxNumRes = 10;
-		int minNumRes = 2;
-		double numResRatio = 0.7;
+		final int maxNumRes = 10;
+		final int minNumRes = 2;
+		final double numResRatio = 0.7;
 		
-		int maxNumSelectCandidate = 10;
-		int minNumSelectCandidate = 2;
-		double numSelectCandidateRatio = 0.7;
+		final int maxNumSelectCandidate = 10;
+		final int minNumSelectCandidate = 2;
+		final double numSelectCandidateRatio = 0.7;
 		
-		int numTimeStep = 6;
-		int numSim = 10;
+		final int numTimeStep = 6;
+		final int numSim = 10;
 		
 		RandomWalkvsDefender rwDefender = new RandomWalkvsDefender(logisParam, discFact, thres, qrParam, numRWSample);
 		Attacker rwAttacker = new RandomWalkAttacker(numRWSample, qrParam, discFact);
@@ -90,8 +89,7 @@ public class TestRWvsDefender {
 		double defPayoffRWvsRW = 0.0;
 		double attPayoffRWvsRW = 0.0;
 		double timeRWvsRW = 0.0;
-		for(int i = 0; i < numSim; i++)
-		{
+		for (int i = 0; i < numSim; i++) {
 			System.out.println("Simulation " + i);
 			gameSimRWvsRW.runSimulation();
 			gameSimRWvsRW.printPayoff();
@@ -112,8 +110,7 @@ public class TestRWvsDefender {
 		double defPayoffRWvsGO = 0.0;
 		double attPayoffRWvsGO = 0.0;
 		double timeRWvsGO = 0.0;
-		for(int i = 0; i < numSim; i++)
-		{
+		for (int i = 0; i < numSim; i++) {
 			System.out.println("Simulation " + i);
 			gameSimRWvsGO.runSimulation();
 			gameSimRWvsGO.printPayoff();
@@ -132,8 +129,7 @@ public class TestRWvsDefender {
 		double defPayoffVPvsRW = 0.0;
 		double attPayoffVPvsRW = 0.0;
 		double timeVPvsRW = 0.9;
-		for(int i = 0; i < numSim; i++)
-		{
+		for (int i = 0; i < numSim; i++) {
 			System.out.println("Simulation " + i);
 			gameSimVPvsRW.runSimulation();
 			gameSimVPvsRW.printPayoff();
@@ -162,7 +158,5 @@ public class TestRWvsDefender {
 		System.out.println("Attacker value propagation payoff: " + attPayoffVPvsRW);
 		System.out.println("Runtime per simulation: " + timeVPvsRW);
 		System.out.println();
-
 	}
-
 }

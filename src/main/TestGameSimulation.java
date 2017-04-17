@@ -15,9 +15,9 @@ import agent.GoalOnlyDefender;
 import agent.RandomWalkAttacker;
 import agent.UniformAttacker;
 
-public class TestGameSimulation {
+public final class TestGameSimulation {
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		// TODO Auto-generated method stub
 		int numNode = 100;
 		int numEdge = 300;
@@ -86,8 +86,7 @@ public class TestGameSimulation {
 		GameSimulation gameSimRWvsGO = new GameSimulation(depGraph, rwAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
 		double defPayoffRWvsGO = 0.0;
 		double attPayoffRWvsGO = 0.0;
-		for(int i = 0; i < numSim; i++)
-		{
+		for (int i = 0; i < numSim; i++) {
 			System.out.println("Simulation " + i);
 			gameSimRWvsGO.runSimulation();
 			gameSimRWvsGO.printPayoff();
@@ -226,8 +225,6 @@ public class TestGameSimulation {
 //		System.out.println();
 //		System.out.println("Defender uniform payoff: " + defPayoffUvsU);
 //		System.out.println("Attacker uniform payoff: " + attPayoffUvsU);
-//		System.out.println();
-		
+//		System.out.println();	
 	}
-
 }
