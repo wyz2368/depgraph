@@ -1,64 +1,59 @@
 package model;
 // The initial state is not saved since it is empty by default
-public class GameSample {
-	int timeStep;
+public final class GameSample {
+	private final int timeStep;
 	
-	DefenderAction defAction; // current defender action
-	AttackerAction attAction; // current attacker action         
-	GameState gameState; // next game state
-	DefenderObservation defObservation; // next defender observation
+	private final DefenderAction defAction; // current defender action
+	private final AttackerAction attAction; // current attacker action         
+	private final GameState gameState; // next game state
+	private final DefenderObservation defObservation; // next defender observation
 	
-	public GameSample()
-	{
+	public GameSample() {
 		this(0);
 	}
-	public GameSample(int timeStep)
-	{
-		this.timeStep = timeStep;
+	public GameSample(final int aTimeStep) {
+		this.timeStep = aTimeStep;
 		this.gameState = new GameState();
 		this.defObservation = new DefenderObservation();
 		this.defAction = new DefenderAction();
 		this.attAction = new AttackerAction();
 	}
 	public GameSample(int timeStep, GameState gameState, DefenderObservation defObservation
-			, DefenderAction defAction, AttackerAction attAction)
-	{
+			, DefenderAction defAction, AttackerAction attAction) {
 		this.timeStep = timeStep;
 		this.gameState = gameState;
 		this.defObservation = defObservation;
 		this.defAction = defAction;
 		this.attAction = attAction;
 	}
-	public int getTimeStep()
-	{
+	public int getTimeStep() {
 		return this.timeStep;
 	}
-	public GameState getGameState()
-	{
+	public GameState getGameState() {
 		return this.gameState;
 	}
-	public DefenderObservation getDefObservation()
-	{
+	public DefenderObservation getDefObservation() {
 		return this.defObservation;
 	}
-	public DefenderAction getDefAction()
-	{
+	public DefenderAction getDefAction() {
 		return this.defAction;
 	}
-	public AttackerAction getAttAction()
-	{
+	public AttackerAction getAttAction() {
 		return this.attAction;
 	}
-	public void clear()
-	{
-		if(!this.gameState.getEnabledNodeSet().isEmpty())
+	public void clear() {
+		if (!this.gameState.getEnabledNodeSet().isEmpty()) {
 			this.gameState.clear();
-		if(!this.defObservation.getAlertSet().isEmpty())
+		}
+		if (!this.defObservation.getAlertSet().isEmpty()) {
 			this.defObservation.clear();
-		if(!this.defAction.getAction().isEmpty())
+		}
+		if (!this.defAction.getAction().isEmpty()) {
 			this.defAction.clear();
-		if(!this.attAction.getAction().isEmpty())
+		}
+		if (!this.attAction.getAction().isEmpty()) {
 			this.attAction.clear();
+		}
 	}
 	public void print() {
 		// TODO Auto-generated method stub

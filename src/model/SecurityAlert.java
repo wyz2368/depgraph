@@ -2,21 +2,18 @@ package model;
 
 import graph.Node;
 
-public class SecurityAlert{
-	Node node;
-	boolean isActive;
-	public SecurityAlert(Node node, boolean isActive)
-	{
-		this.node = node;
-		this.isActive = isActive;
+public final class SecurityAlert{
+	private final Node node;
+	private final boolean isActive;
+	public SecurityAlert(final Node aNode, final boolean aIsActive) {
+		this.node = aNode;
+		this.isActive = aIsActive;
 	}
 	
-	public boolean getAlert()
-	{
+	public boolean getAlert() {
 		return this.isActive;
 	}
-	public Node getNode()
-	{
+	public Node getNode() {
 		return this.node;
 	}
 }

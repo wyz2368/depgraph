@@ -5,42 +5,34 @@ import graph.Node;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DefenderAction {
-	Set<Node> action;
-	public DefenderAction()
-	{
+public final class DefenderAction {
+	private final Set<Node> action;
+	public DefenderAction() {
 		this.action = new HashSet<Node>();
 	}
-	public DefenderAction(Set<Node> action)
-	{
-		this.action = action;
+	public DefenderAction(final Set<Node> curAction) {
+		this.action = curAction;
 	}
-	public void setAction(Set<Node> action)
-	{
-		this.action = action;
+	public void setAction(final Set<Node> curAction) {
+		this.action.clear();
+		this.action.addAll(curAction);
 	}
-	public Set<Node> getAction()
-	{
+	public Set<Node> getAction() {
 		return this.action;
 	}
-	public boolean addNodetoProtect(Node node)
-	{
+	public boolean addNodetoProtect(final Node node) {
 		return this.action.add(node);
 	}
-	public boolean contain(Node node)
-	{
+	public boolean contain(final Node node) {
 		return this.action.contains(node);
 	}
-	public void clear()
-	{
+	public void clear() {
 		this.action.clear();
 	}
-	public void print()
-	{
+	public void print() {
 		System.out.println("--------------------------------------------------------------------");
 		System.out.println("Defender Action...");
-		for(Node node : this.action)
-		{
+		for (Node node : this.action) {
 			System.out.println("Protect node: " + node.getId() + "\t Node type" + node.getType() + "\t Activation Type: " + node.getActivationType().toString());
 		}
 		System.out.println("--------------------------------------------------------------------");
