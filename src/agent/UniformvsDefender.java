@@ -43,25 +43,6 @@ public final class UniformvsDefender extends Defender {
 	
 	public UniformvsDefender(final double logisParam, final double discFact, final double thres
 		, final int maxNumRes, final int minNumRes, final double numResRatio
-		, final int maxNumSelectACandidate, final int minNumSelectACandidate, final double numSelectACandidateRatio
-		, final int numStateSample, final int numAttActionSample) {
-		this(logisParam, discFact, thres
-			, maxNumRes, minNumRes, numResRatio
-			, maxNumSelectACandidate, minNumSelectACandidate, numSelectACandidateRatio);
-		if (discFact <= 0.0 || discFact > 1.0 || thres < 0.0 || thres > 1.0
-			|| numStateSample < 1 || numAttActionSample < 1
-			|| minNumRes < 1 || maxNumRes < minNumRes || numResRatio < 0.0 || numResRatio > 1.0
-			|| minNumSelectACandidate < 1 || maxNumSelectACandidate < minNumSelectACandidate
-			|| numSelectACandidateRatio < 0.0 || numSelectACandidateRatio > 1.0
-		) {
-			throw new IllegalArgumentException();
-		}
-		this.numStateSample = numStateSample;
-		this.numAttActionSample = numAttActionSample;
-	}
-	
-	public UniformvsDefender(final double logisParam, final double discFact, final double thres
-		, final int maxNumRes, final int minNumRes, final double numResRatio
 		, final int maxNumSelectACandidate, final int minNumSelectACandidate, final double numSelectACandidateRatio) {
 		super(DefenderType.vsUNIFORM);
 		if (discFact <= 0.0 || discFact > 1.0 || thres < 0.0 || thres > 1.0

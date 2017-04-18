@@ -74,32 +74,6 @@ public final class ValuePropagationVsDefenderALT extends Defender {
 		this.minNumAttCandidate = minNumAttCandidate;
 		this.numAttCandidateRatio = numAttCandidateRatio;
 	}
-	
-	/*****************************************************************************************
-	 * 
-	 * @param maxNumRes
-	 * @param minNumRes
-	 * @param numResRatio
-	 * @param logisParam
-	 * @param discFact
-	 * @param thres
-	 * @param qrParam
-	 * @param maxNumAttCandidate
-	 * @param minNumAttCandidate
-	 * @param numAttCandidateRatio
-	 * @param numStateSample
-	 * @param numAttActionSample
-	 *****************************************************************************************/
-	public ValuePropagationVsDefenderALT(final int maxNumRes, final int minNumRes, final double numResRatio
-		, final double logisParam, final double discFact, final double thres
-		, final double qrParam, final int maxNumAttCandidate, final int minNumAttCandidate, final double numAttCandidateRatio
-		, final int numStateSample, final int numAttActionSample) {
-		this(maxNumRes, minNumRes, numResRatio
-			, logisParam, discFact, thres
-			, qrParam, maxNumAttCandidate, minNumAttCandidate, numAttCandidateRatio);
-		this.numStateSample = numStateSample;
-		this.numAttActionSample = numAttActionSample;
-	}
 
 	@Override
 	public DefenderAction sampleAction(final DependencyGraph depGraph,
