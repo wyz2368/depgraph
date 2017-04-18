@@ -206,7 +206,7 @@ public final class RandomWalkvsDefender extends Defender {
 					, rng, this.numAttActionSample, false); // sample attacker actions
 			
 			for (int attActionSample = 0; attActionSample < this.numAttActionSample; attActionSample++) {
-			    // Iterate over all samples of attack actions
+				// Iterate over all samples of attack actions
 				AttackerAction attAction = attActionList.get(attActionSample); // current sample of attack action
 				List<GameState> gameStateList = GameOracle.generateStateSample(gameState, attAction, dAction
 						, rnd, this.numStateSample, true); // s' <- s, a, d, // Sample new game states
