@@ -28,7 +28,7 @@ import model.DefenderObservation;
 import model.DependencyGraph;
 import model.GameState;
 
-public class ValuePropagationvsDefender extends Defender{
+public final class ValuePropagationvsDefender extends Defender {
 	public ValuePropagationvsDefender(double maxNumRes, double minNumRes, double numResRatio
 			, double logisParam, double discFact, double thres
 			, double qrParam, double maxNumAttCandidate, double minNumAttCandidate, double numAttCandidateRatio) {

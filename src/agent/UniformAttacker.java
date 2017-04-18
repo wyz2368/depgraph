@@ -18,10 +18,11 @@ import org.apache.commons.math3.distribution.AbstractIntegerDistribution;
 import org.apache.commons.math3.distribution.UniformIntegerDistribution;
 import org.apache.commons.math3.random.RandomGenerator;
 
-public final class UniformAttacker extends Attacker{
+public final class UniformAttacker extends Attacker {
 	private int maxNumSelectCandidate;
 	private int minNumSelectCandidate;
 	private double numSelectCandidateRatio;
+	
 	public UniformAttacker(final double maxNumSelectCandidate, final double minNumSelectCandidate, final double numSelectCandidateRatio) {
 		super(AttackerType.UNIFORM);
 		this.maxNumSelectCandidate = (int) maxNumSelectCandidate;
@@ -58,11 +59,12 @@ public final class UniformAttacker extends Attacker{
 		UniformIntegerDistribution rnd = new UniformIntegerDistribution(rng, 0, totalNumCandidate - 1);
 		return sampleAction(graph, attackCandidate, numSelectCandidate, rnd);
 	}
+	
 	/*****************************************************************************************
 	 * @param depGraph dependency graph
 	 * @return type of AttackCandidate: candidate set for the attacker
 	 *****************************************************************************************/
-	static AttackCandidate selectCandidate(DependencyGraph depGraph) {
+	static AttackCandidate selectCandidate(final DependencyGraph depGraph) {
 		AttackCandidate aCandidate = new AttackCandidate();
 		
 		// Check if all targets are already active, then the attacker doesn't need to do anything
@@ -112,6 +114,7 @@ public final class UniformAttacker extends Attacker{
 		}
 		return aCandidate;
 	}
+	
 	/*****************************************************************************************
 	 * @param depGraph dependency graph
 	 * @param attackCandidate candidate set
@@ -120,7 +123,7 @@ public final class UniformAttacker extends Attacker{
 	 * @return type of AttackerAction: an action for the attacker
 	 *****************************************************************************************/
 	public static AttackerAction sampleAction(final DependencyGraph depGraph, final AttackCandidate attackCandidate, final int numSelectCandidate
-			, final AbstractIntegerDistribution rnd) {
+		, final AbstractIntegerDistribution rnd) {
 		AttackerAction action = new AttackerAction();
 		List<Edge> edgeCandidateList = new ArrayList<Edge>(attackCandidate.getEdgeCandidateSet());
 		List<Node> nodeCandidateList = new ArrayList<Node>(attackCandidate.getNodeCandidateSet());

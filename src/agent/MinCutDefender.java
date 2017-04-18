@@ -14,7 +14,7 @@ import org.apache.commons.math3.distribution.AbstractIntegerDistribution;
 import org.apache.commons.math3.distribution.UniformIntegerDistribution;
 import org.apache.commons.math3.random.RandomGenerator;
 
-public final class MinCutDefender extends Defender{
+public final class MinCutDefender extends Defender {
 	private int maxNumRes;
 	private int minNumRes;
 	private double numResRatio;

@@ -13,7 +13,7 @@ import org.apache.commons.math3.distribution.AbstractIntegerDistribution;
 import org.apache.commons.math3.distribution.UniformIntegerDistribution;
 import org.apache.commons.math3.random.RandomGenerator;
 
-public final class UniformDefender extends Defender{
+public final class UniformDefender extends Defender {
 	private int maxNumRes;
 	private int minNumRes;
 	private double numResRatio;
@@ -66,9 +66,9 @@ public final class UniformDefender extends Defender{
 
 	@Override
 	public DefenderBelief updateBelief(final DependencyGraph depGraph,
-			final DefenderBelief currentBelief, final DefenderAction dAction,
-			final DefenderObservation dObservation, final int curTimeStep, final int numTimeStep,
-			final RandomGenerator rng) {
+		final DefenderBelief currentBelief, final DefenderAction dAction,
+		final DefenderObservation dObservation, final int curTimeStep, final int numTimeStep,
+		final RandomGenerator rng) {
 		return null;
 	}
 }

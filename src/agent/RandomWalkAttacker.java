@@ -39,7 +39,9 @@ public final class RandomWalkAttacker extends Attacker {
 	}
 	private double qrParam;
 	private double discFact;
-	private int numRWSample = 200;
+	private static final int DEFAULT_NUM_RW_SAMPLE = 200;
+	private int numRWSample = DEFAULT_NUM_RW_SAMPLE;
+	
 	public RandomWalkAttacker(final double numRWSample, final double qrParam, final double discFact) {
 		super(AttackerType.RANDOM_WALK);
 		this.numRWSample = (int) numRWSample;
@@ -55,7 +57,7 @@ public final class RandomWalkAttacker extends Attacker {
 	 * @return type of Attacker Action: an attack action
 	 */
 	public AttackerAction sampleAction(final DependencyGraph depGraph,
-			final int curTimeStep, final int numTimeStep, final RandomGenerator rng) {
+		final int curTimeStep, final int numTimeStep, final RandomGenerator rng) {
 		// Compute the candidate values, each candidate is a set
 		double[] candidateValues = new double[this.numRWSample];
 		AttackCandidate[] candidates = new AttackCandidate[this.numRWSample];
@@ -90,6 +92,7 @@ public final class RandomWalkAttacker extends Attacker {
 		
 		return attAction;
 	}
+	
 	/**
 	 * @param depGraph dependency graph
 	 * @param curTimeStep current time step
@@ -200,11 +203,12 @@ public final class RandomWalkAttacker extends Attacker {
 		}
 		return rwTuples;
 	}
+	
 	/*
 	attCandidate: outcome of greedy, initialized already*
 	*****************************************************************************************/
 	static double greedyCandidate(final DependencyGraph depGraph, final RandomWalkTuple[] rwTuples
-			, final AttackCandidate attCandidate, final int numTimeStep, final double discFact) {
+		, final AttackCandidate attCandidate, final int numTimeStep, final double discFact) {
 		Set<Node> greedyTargetSet = new HashSet<Node>();
 		List<Node> targetList = new ArrayList<Node>(depGraph.getTargetSet());
 		boolean[] isChosen = new boolean[targetList.size()];
@@ -226,7 +230,7 @@ public final class RandomWalkAttacker extends Attacker {
 			int targetIdx = 0; // for searching over target list
 			int chosenIdx = -1; // target index which is chosen
 			
-			for(Node target : targetList) {
+			for (Node target : targetList) {
 				RandomWalkTuple rwTuple = rwTuples[target.getId() - 1];
 				if (target.getState() != NodeState.ACTIVE && !isChosen[targetIdx] && rwTuple.getTAct() <= numTimeStep) {
 					/*****************************************************************************************/
@@ -345,14 +349,14 @@ public final class RandomWalkAttacker extends Attacker {
 		}
 		return value;
 	}
+	
 	/*****************************************************************************************
 	 * @param totalNumCandidate total number of candidates
 	 * @param candidateValue corresponding candidate values
 	 * @param qrParam
 	 * @return QR distribution over candidates
 	 *****************************************************************************************/
-	static double[] computecandidateProb(final int totalNumCandidate, final double[] candidateValue, final double qrParam)
-	{
+	static double[] computecandidateProb(final int totalNumCandidate, final double[] candidateValue, final double qrParam) {
 		//Normalize candidate value
 		double minValue = Double.POSITIVE_INFINITY;
 		double maxValue = Double.NEGATIVE_INFINITY;
@@ -389,10 +393,11 @@ public final class RandomWalkAttacker extends Attacker {
 		
 		return probabilities;
 	}
+	
 	@Override
 	public List<AttackerAction> sampleAction(final DependencyGraph depGraph,
-			final int curTimeStep, final int numTimeStep, final RandomGenerator rng,
-			final int numSample, final boolean isReplacement) {
+		final int curTimeStep, final int numTimeStep, final RandomGenerator rng,
+		final int numSample, final boolean isReplacement) {
 		if (isReplacement) { // this is currently not used, need to check if the isAdded works properly
 			Set<AttackerAction> attActionSet = new HashSet<AttackerAction>();
 			int i = 0;

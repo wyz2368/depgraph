@@ -25,7 +25,7 @@ import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
 
-public class ValuePropagationvsDefender_Alternative extends Defender{
+public final class ValuePropagationvsDefender_Alternative extends Defender {
 	int maxNumRes;
 	int minNumRes;
 	double numResRatio;

@@ -25,7 +25,7 @@ import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
 
-public final class UniformvsDefender extends Defender{
+public final class UniformvsDefender extends Defender {
 	private int maxNumRes;
 	private int minNumRes;
 	private double numResRatio;
@@ -37,21 +37,24 @@ public final class UniformvsDefender extends Defender{
 	private int minNumSelectACandidate;
 	private double numSelectACandidateRatio;
 	
-	private int numStateSample = 50; // number of states to sample
-	private int numAttActionSample = 50; // number of attack actions to sample
+	private static final int DEFAULT_NUM_STATE_SAMPLE = 50;
+	private int numStateSample = DEFAULT_NUM_STATE_SAMPLE; // number of states to sample
+	private int numAttActionSample = DEFAULT_NUM_STATE_SAMPLE; // number of attack actions to sample
+	
 	public UniformvsDefender(final double logisParam, final double discFact, final double thres
-			, final int maxNumRes, final int minNumRes, final double numResRatio
-			, final int maxNumSelectACandidate, final int minNumSelectACandidate, final double numSelectACandidateRatio
-			, final int numStateSample, final int numAttActionSample){
+		, final int maxNumRes, final int minNumRes, final double numResRatio
+		, final int maxNumSelectACandidate, final int minNumSelectACandidate, final double numSelectACandidateRatio
+		, final int numStateSample, final int numAttActionSample) {
 		this(logisParam, discFact, thres
 				, maxNumRes, minNumRes, numResRatio
 				, maxNumSelectACandidate, minNumSelectACandidate, numSelectACandidateRatio);
 		this.numStateSample = numStateSample;
 		this.numAttActionSample = numAttActionSample;
 	}
+	
 	public UniformvsDefender(final double logisParam, final double discFact, final double thres
-			, final int maxNumRes, final int minNumRes, final double numResRatio
-			, final int maxNumSelectACandidate, final int minNumSelectACandidate, final double numSelectACandidateRatio){
+		, final int maxNumRes, final int minNumRes, final double numResRatio
+		, final int maxNumSelectACandidate, final int minNumSelectACandidate, final double numSelectACandidateRatio) {
 		super(DefenderType.vsUNIFORM);
 		this.logisParam = logisParam;
 		this.discFact = discFact;
@@ -65,11 +68,12 @@ public final class UniformvsDefender extends Defender{
 		this.minNumSelectACandidate = minNumSelectACandidate;
 		this.numSelectACandidateRatio = numSelectACandidateRatio;
 	}
+	
 	@Override
 	public DefenderAction sampleAction(final DependencyGraph depGraph,
-			final int curTimeStep, final int numTimeStep
-			, final DefenderBelief dBelief
-			, final RandomGenerator rng) {
+		final int curTimeStep, final int numTimeStep
+		, final DefenderBelief dBelief
+		, final RandomGenerator rng) {
 		Map<Node, Double> dValueMap = computeCandidateValueTopo(depGraph, dBelief, curTimeStep, numTimeStep
 				, this.discFact, rng);
 		List<Node> dCandidateNodeList = new ArrayList<Node>();
@@ -84,7 +88,6 @@ public final class UniformvsDefender extends Defender{
 		}
 		
 		int totalNumCandidate = dValueMap.size();
-		
 		
 		// Compute probability to choose each node
 		double[] probabilities = computecandidateProb(totalNumCandidate, candidateValue, this.logisParam);
@@ -121,13 +124,14 @@ public final class UniformvsDefender extends Defender{
 
 		return sampleAction(dCandidateNodeList, numNodetoProtect, rnd);
 	}
+	
 	@Override
 	public DefenderBelief updateBelief(final DependencyGraph depGraph
-			, final DefenderBelief dBelief
-			, final DefenderAction dAction
-			, final DefenderObservation dObservation
-			, final int curTimeStep, final int numTimeStep
-			, final RandomGenerator rng) {
+		, final DefenderBelief dBelief
+		, final DefenderAction dAction
+		, final DefenderObservation dObservation
+		, final int curTimeStep, final int numTimeStep
+		, final RandomGenerator rng) {
 		
 		RandomDataGenerator rnd = new RandomDataGenerator(rng);
 		
@@ -212,9 +216,9 @@ public final class UniformvsDefender extends Defender{
 	}
 	
 	public Map<Node, Double> computeCandidateValueTopo(final DependencyGraph depGraph
-			, final DefenderBelief dBelief
-			, final int curTimeStep, final int numTimeStep, final double discountFactor
-			, final RandomGenerator rng) {
+		, final DefenderBelief dBelief
+		, final int curTimeStep, final int numTimeStep, final double discountFactor
+		, final RandomGenerator rng) {
 		Map<Node, Double> dValueMap = new HashMap<Node, Double>();
 		
 		Attacker attacker = new UniformAttacker(this.maxNumSelectACandidate, this.minNumSelectACandidate, this.numSelectACandidateRatio);

@@ -13,7 +13,7 @@ import org.apache.commons.math3.distribution.AbstractIntegerDistribution;
 import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 import org.apache.commons.math3.random.RandomGenerator;
 
-public final class GoalOnlyDefender extends Defender{
+public final class GoalOnlyDefender extends Defender {
 	private int maxNumRes;
 	private int minNumRes;
 	private double numResRatio;

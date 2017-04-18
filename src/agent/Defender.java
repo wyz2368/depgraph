@@ -26,6 +26,7 @@ public abstract class Defender {
 			}	
 		}
 	}
+	
 	public enum DefenderParam {
 		maxNumRes, minNumRes, numResRatio
 		, maxNumAttCandidate, minNumAttCandidate, numAttCandidateRatio
@@ -51,18 +52,20 @@ public abstract class Defender {
 	}
 
 	private DefenderType dType;
+	
 	public Defender(final DefenderType dTypeCur) {
 		this.dType = dTypeCur;
 	}
 	
-	public DefenderType getDType() {
+	public final DefenderType getDType() {
 		return this.dType;
 	}
 	
 	public abstract DefenderAction sampleAction(DependencyGraph depGraph, int curTimeStep, int numTimeStep
-			, DefenderBelief dBelief, RandomGenerator rng);
+		, DefenderBelief dBelief, RandomGenerator rng);
+	
 	public abstract DefenderBelief updateBelief(DependencyGraph depGraph,
-			DefenderBelief currentBelief, DefenderAction dAction,
-			DefenderObservation dObservation, int curTimeStep, int numTimeStep,
-			RandomGenerator rng);
+		DefenderBelief currentBelief, DefenderAction dAction,
+		DefenderObservation dObservation, int curTimeStep, int numTimeStep,
+		RandomGenerator rng);
 }

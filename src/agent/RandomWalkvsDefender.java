@@ -27,17 +27,19 @@ import org.apache.commons.math3.random.RandomGenerator;
 
 import agent.RandomWalkAttacker.RandomWalkTuple;
 
-public final class RandomWalkvsDefender extends Defender{
+public final class RandomWalkvsDefender extends Defender {
 	private double logisParam; // Logistic parameter to randomize defense strategies
 	private double discFact; // reward discount factor
 	private double thres; // to remove game state from belief
 	
 	private double qrParam; // for the attacker
-	private int numRWSample = 200; // number of random walks for the attacker
+	private static final int DEFAULT_NUM_RW_SAMPLE = 200;
+	private int numRWSample = DEFAULT_NUM_RW_SAMPLE; // number of random walks for the attacker
 	
 	// number of samples to update the defender's belief.
-	private int numStateSample = 50; // number of states to sample
-	private int numAttActionSample = 50; // number of attack actions to sample
+	private static final int DEFAULT_NUM_STATE_SAMPLE = 50;
+	private int numStateSample = DEFAULT_NUM_STATE_SAMPLE; // number of states to sample
+	private int numAttActionSample = DEFAULT_NUM_STATE_SAMPLE; // number of attack actions to sample
 	
 	/*****************************************************************************************
 	 * Initialization.

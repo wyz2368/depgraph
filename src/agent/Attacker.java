@@ -1,6 +1,5 @@
 package agent;
 
-
 import java.util.List;
 
 import model.AttackerAction;
@@ -21,6 +20,7 @@ public abstract class Attacker {
 			}
 		}
 	}
+	
 	public enum AttackerParam {
 		maxNumSelectCandidate, minNumSelectCandidate
 		, numSelectCandidateRatio
@@ -37,17 +37,19 @@ public abstract class Attacker {
 			}	
 		}
 	}
+	
 	private AttackerType attType;
 
 	public Attacker(final AttackerType aAttType) {
 		this.attType = aAttType;
 	}
 
-	public AttackerType getAType() {
+	public final AttackerType getAType() {
 		return this.attType;
 	}
 
 	public abstract AttackerAction sampleAction(DependencyGraph depGraph, int curTimeStep, int numTimeStep, RandomGenerator rng);
+	
 	public abstract List<AttackerAction> sampleAction(DependencyGraph depGraph, int curTimeStep, int numTimeStep
-			, RandomGenerator rng, int numSample, boolean isReplacement);
+		, RandomGenerator rng, int numSample, boolean isReplacement);
 }

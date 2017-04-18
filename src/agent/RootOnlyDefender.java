@@ -14,7 +14,7 @@ import org.apache.commons.math3.distribution.AbstractIntegerDistribution;
 import org.apache.commons.math3.distribution.UniformIntegerDistribution;
 import org.apache.commons.math3.random.RandomGenerator;
 
-public final class RootOnlyDefender extends Defender{
+public final class RootOnlyDefender extends Defender {
 	private int maxNumRes;
 	private int minNumRes;
 	private double numResRatio;
