@@ -38,7 +38,8 @@ public final class GameSimulation {
 	public GameSimulation(final DependencyGraph depGraph, final Attacker attacker,
 		final Defender defender, final RandomDataGenerator rng,
 		final int numTimeStep, final double discFact) {
-		if (depGraph == null || attacker == null || defender == null || rng == null || numTimeStep < 1 || discFact <= 0.0 || discFact > 1.0) {
+		if (depGraph == null || attacker == null || defender == null
+			|| rng == null || numTimeStep < 1 || discFact <= 0.0 || discFact > 1.0) {
 			throw new IllegalArgumentException();
 		}
 		this.depGraph = depGraph;
@@ -171,16 +172,16 @@ public final class GameSimulation {
 		return this.simResult;
 	}
 
-	public void saveResult() {
-		// do nothing
+	public static void saveResult() {
+		throw new UnsupportedOperationException();
 	}
 	
 	public void printPayoff() {
 		this.simResult.printPayoff();
 	}
 	
-	public void end() {
-		// do nothing
+	public static void end() {
+		throw new UnsupportedOperationException();
 	}
 	
 	public void reset() {

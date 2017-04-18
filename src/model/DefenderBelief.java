@@ -26,13 +26,6 @@ public final class DefenderBelief {
 		return this.gameStateMap;
 	}
 	
-	public void clear() {
-		for (Entry<GameState, Double> entry : this.gameStateMap.entrySet()) {
-			entry.getKey().clear();
-		}
-		this.gameStateMap.clear();
-	}
-	
 	public void print() {
 		for (Entry<GameState, Double> entry : this.gameStateMap.entrySet()) {
 			entry.getKey().print();

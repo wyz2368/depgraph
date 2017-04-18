@@ -12,21 +12,6 @@ public final class DefenderAction {
 		this.action = new HashSet<Node>();
 	}
 	
-	public DefenderAction(final Set<Node> curAction) {
-		if (curAction == null) {
-			throw new IllegalArgumentException();
-		}
-		this.action = curAction;
-	}
-	
-	public void setAction(final Set<Node> curAction) {
-		if (curAction == null) {
-			throw new IllegalArgumentException();
-		}
-		this.action.clear();
-		this.action.addAll(curAction);
-	}
-	
 	public Set<Node> getAction() {
 		return this.action;
 	}

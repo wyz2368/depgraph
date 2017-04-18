@@ -349,11 +349,11 @@ public final class ValuePropagationVsDefender extends Defender {
 	}
 	
 	/*****************************************************************************************
-	 * 
-	 * @param gameState: game state
-	 * @param attCandidate: attack candidate
-	 * @return defender candidate
-	 *****************************************************************************************/
+	* 
+	* @param gameState: game state
+	* @param attCandidate: attack candidate
+	* @return defender candidate
+	*****************************************************************************************/
 	private static DefenderCandidate selectDCandidate(final GameState gameState, final AttackCandidate attCandidate) {
 		if (gameState == null || attCandidate == null) {
 			throw new IllegalArgumentException();

@@ -31,31 +31,6 @@ public final class Node implements INode {
 			, 0.0, 0.0
 			, 0.0);
 	}
-
-	public Node(final NodeType type, final NodeActivationType eType
-		, final double aReward, final double dPenalty
-		, final double dCost, final double aCost
-		, final double posActiveProb, final double posInactiveProb
-		, final double actProb) {
-		if (
-			type == null || eType == null
-			|| !isProb(posActiveProb) || !isProb(posInactiveProb)
-			|| !isProb(actProb)
-		) {
-			throw new IllegalArgumentException();
-		}
-		this.id = counter;
-		counter++;
-		this.type = type; 
-		this.eType = eType;
-		this.aReward = aReward;
-		this.dPenalty = dPenalty;
-		this.dCost = dCost;
-		this.aCost = aCost;
-		this.posActiveProb = posActiveProb;
-		this.posInactiveProb = posInactiveProb;
-		this.actProb = actProb;
-	}
 	
 	public Node(final int id, final NodeType type, final NodeActivationType eType
 		, final double aReward, final double dPenalty
@@ -70,6 +45,31 @@ public final class Node implements INode {
 			throw new IllegalArgumentException();
 		}
 		this.id = id;
+		this.type = type; 
+		this.eType = eType;
+		this.aReward = aReward;
+		this.dPenalty = dPenalty;
+		this.dCost = dCost;
+		this.aCost = aCost;
+		this.posActiveProb = posActiveProb;
+		this.posInactiveProb = posInactiveProb;
+		this.actProb = actProb;
+	}
+	
+	private Node(final NodeType type, final NodeActivationType eType
+		, final double aReward, final double dPenalty
+		, final double dCost, final double aCost
+		, final double posActiveProb, final double posInactiveProb
+		, final double actProb) {
+		if (
+			type == null || eType == null
+			|| !isProb(posActiveProb) || !isProb(posInactiveProb)
+			|| !isProb(actProb)
+		) {
+			throw new IllegalArgumentException();
+		}
+		this.id = counter;
+		counter++;
 		this.type = type; 
 		this.eType = eType;
 		this.aReward = aReward;

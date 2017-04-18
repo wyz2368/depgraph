@@ -36,9 +36,4 @@ public final class AttackCandidate {
 	public Set<Edge> getEdgeCandidateSet() {
 		return this.edgeCandidateSet;
 	}
-	
-	public void clear() {
-		this.nodeCandidateSet.clear();
-		this.edgeCandidateSet.clear();
-	}
 }

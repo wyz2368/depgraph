@@ -9,10 +9,10 @@ import java.util.Map;
 public abstract class EncodingUtils {
 
 	/**
-	 * @param strategyString a string of the form
-	 * STRATEGY_NAME:param1_42_param2_7 . . .
-	 * @return everything up to the colon.
-	 */
+	* @param strategyString a string of the form
+	* STRATEGY_NAME:param1_42_param2_7 . . .
+	* @return everything up to the colon.
+	*/
 	public static String getStrategyName(final String strategyString) {
 		if (strategyString == null) {
 			throw new IllegalArgumentException();
@@ -28,13 +28,13 @@ public abstract class EncodingUtils {
 	}
 	
 	/**
-	 * @param strategyString a string of the form
-	 * STRATEGY_NAME:param1_42_param2_7 . . .
-	 * @return a map of key-value pairs, taken from splitting
-	 * the second part of the strategyString (after the colon)
-	 * on underbars, taking the first part of each pair as a String
-	 * name, and the second part as a Double value.
-	 */
+	* @param strategyString a string of the form
+	* STRATEGY_NAME:param1_42_param2_7 . . .
+	* @return a map of key-value pairs, taken from splitting
+	* the second part of the strategyString (after the colon)
+	* on underbars, taking the first part of each pair as a String
+	* name, and the second part as a Double value.
+	*/
 	public static Map<String, Double> getStrategyParams(
 		final String strategyString
 	) {

@@ -22,29 +22,29 @@ import com.google.gson.JsonParser;
 
 public final class JsonUtils {
 	/**
-	 * Name of the file with default parameters.
-	 */
+	* Name of the file with default parameters.
+	*/
 	public static final String DEFAULT_FILE_NAME = "defaults.json";
 	/**
-	 * Name of the folder that may contain simulation spec files.
-	 */
+	* Name of the folder that may contain simulation spec files.
+	*/
 	public static final String SIMSPEC_FOLDER_NAME = "simspecs";
 	/**
-	 * The field in simulation_spec.json that has the environment
-	 * parameters.
-	 */
+	* The field in simulation_spec.json that has the environment
+	* parameters.
+	*/
 	public static final String SIMSPEC_FIELD_NAME = "configuration";
 	/**
-	 * The name of a simulation specification file.
-	 */
+	* The name of a simulation specification file.
+	*/
 	public static final String SIMSPEC_FILE_NAME = "simulation_spec.json";
 	/**
-	 * The name prefix of an observation output file.
-	 */
+	* The name prefix of an observation output file.
+	*/
 	public static final String OBS_FILE_PREFIX = "observation";
 	/**
-	 * The file extension for Json files.
-	 */
+	* The file extension for Json files.
+	*/
 	public static final String JSON_SUFFIX = ".json";
 	
 	private JsonUtils() {
@@ -53,12 +53,6 @@ public final class JsonUtils {
 	
 	public static GameSimulationSpec getSimSpecOrDefaults(final String folderName) {
 		assert folderName != null;
-		
-		/*
-		final String inputPath =
-			SIMSPEC_FOLDER_NAME + File.separator
-			+ subfolderName + File.separator + SIMSPEC_FILE_NAME;
-		*/
 		final String inputPath =
 			folderName + File.separator + SIMSPEC_FILE_NAME;
 		// read in the input file
@@ -96,26 +90,8 @@ public final class JsonUtils {
 		return result;
 	}
 	
-	public static GameSimulationSpec getDefaults() {
-		final String jsonString = linesAsString(DEFAULT_FILE_NAME);
-		final JsonObject fileAsJson = 
-				new JsonParser().parse(jsonString).getAsJsonObject();
-		final Gson gson = new Gson();
-		final GameSimulationSpec result =
-			gson.fromJson(
-				fileAsJson.get(SIMSPEC_FIELD_NAME),
-				GameSimulationSpec.class
-			);
-		return result;
-	}
-	
 	public static String getAttackerString(final String folderName) {
 		assert folderName != null;
-		/*
-		final String inputPath =
-			SIMSPEC_FOLDER_NAME + File.separator
-			+ subfolderName + File.separator + SIMSPEC_FILE_NAME;
-		*/
 		final String inputPath =
 			folderName + File.separator + SIMSPEC_FILE_NAME;
 		final String jsonString = linesAsString(inputPath);
@@ -133,11 +109,6 @@ public final class JsonUtils {
 	
 	public static String getDefenderString(final String folderName) {
 		assert folderName != null;
-		/*
-		final String inputPath =
-			SIMSPEC_FOLDER_NAME + File.separator
-			+ subfolderName + File.separator + SIMSPEC_FILE_NAME;
-		*/
 		final String inputPath =
 			folderName + File.separator + SIMSPEC_FILE_NAME;
 		final String jsonString = linesAsString(inputPath);
@@ -153,7 +124,8 @@ public final class JsonUtils {
 		return defenderElement.toString().replaceAll("\"", "");
 	}
 
-	public static String getObservationString(final MeanGameSimulationResult simResult, final String attackerStrategyString
+	public static String getObservationString(
+		final MeanGameSimulationResult simResult, final String attackerStrategyString
 		, final String defenderStrategyString, final GameSimulationSpec simSpec) {
 		assert simResult != null
 			&& attackerStrategyString != null
@@ -183,16 +155,9 @@ public final class JsonUtils {
 		defenderObject.add(features, new JsonObject());
 		playersArray.add(defenderObject);
 		
-		// final String simResultJsonString = new Gson().toJson(simResult);
-		// final JsonObject simResultJsonObject =
-			// (JsonObject) new JsonParser().parse(simResultJsonString);
-		
 		final String simSpecJsonString = new Gson().toJson(simSpec);
 		final JsonObject simSpecJsonObject =
 			(JsonObject) new JsonParser().parse(simSpecJsonString);
-		// final String config = "config";
-			// simResultJsonObject.add(config, simSpecJsonObject);
-		// obsObject.add(features, simSpecJsonObject);
 		obsObject.add(features, simSpecJsonObject);
 		
 		final String players = "players";
@@ -208,14 +173,6 @@ public final class JsonUtils {
 	
 	public static void printObservationToFile(final String folderName, final String obsString) {
 		assert folderName != null && obsString != null;
-		/*
-		final String outputFolderPath =
-			SIMSPEC_FOLDER_NAME + File.separator + subfolderName;
-		final int maxSuffixValue =
-			maxSuffixValue(outputFolderPath, OBS_FILE_PREFIX);
-		final String fileName = outputFolderPath + File.separator
-			+ OBS_FILE_PREFIX + (maxSuffixValue + 1) + JSON_SUFFIX;
-		*/
 		final int maxSuffixValue =
 			maxSuffixValue(folderName, OBS_FILE_PREFIX);
 		final String fileName = folderName + File.separator
@@ -263,7 +220,7 @@ public final class JsonUtils {
 		return result;
 	 }
 	
-	public static String linesAsString(final String fileName) {
+	private static String linesAsString(final String fileName) {
 		assert fileName != null;
 		final StringBuilder builder = new StringBuilder();
 		try {

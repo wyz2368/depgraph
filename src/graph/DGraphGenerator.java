@@ -21,10 +21,6 @@ public final class DGraphGenerator {
 		// private constructor
 	}
 	
-	private static boolean isProb(final double i) {
-		return i >= 0.0 && i <= 1.0;
-	}
-	
 	// Number simulations per observation such that: 1-2 mins
 	// All leaf nodes are targets, all costs, reward, penalty are within [0,1]
 	public static void genGraph(final DependencyGraph dag, final RandomDataGenerator rand
@@ -273,5 +269,9 @@ public final class DGraphGenerator {
 				depGraph.addRoot(node);
 			}
 		}
+	}
+	
+	private static boolean isProb(final double i) {
+		return i >= 0.0 && i <= 1.0;
 	}
 }

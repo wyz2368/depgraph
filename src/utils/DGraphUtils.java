@@ -23,29 +23,29 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public final class DGraphUtils {
-	static final String NODES = "nodes";
-	static final String ID = "id";
-	static final String TOPO_POSITION = "topoPosition";
-	static final String NODE_TYPE = "nodeType";
-	static final String ACT_TYPE = "actType";
-	static final String STATE = "state";
-	static final String A_REWARD = "aReward";
-	static final String D_PENALTY = "dPenalty";
-	static final String D_COST = "dCost";
+	private static final String NODES = "nodes";
+	private static final String ID = "id";
+	private static final String TOPO_POSITION = "topoPosition";
+	private static final String NODE_TYPE = "nodeType";
+	private static final String ACT_TYPE = "actType";
+	private static final String STATE = "state";
+	private static final String A_REWARD = "aReward";
+	private static final String D_PENALTY = "dPenalty";
+	private static final String D_COST = "dCost";
 	
-	static final String POS_ACTIVE_PROB = "posActiveProb";
-	static final String POS_INACTIVE_PROB = "posInactiveProb";
+	private static final String POS_ACTIVE_PROB = "posActiveProb";
+	private static final String POS_INACTIVE_PROB = "posInactiveProb";
 	
-	static final String EDGES = "edges";
-	static final String EDGE_TYPE = "edgeType";
-	static final String SRC_ID = "srcID";
-	static final String DES_ID = "desID";
+	private static final String EDGES = "edges";
+	private static final String EDGE_TYPE = "edgeType";
+	private static final String SRC_ID = "srcID";
+	private static final String DES_ID = "desID";
 	
-	static final String A_ACTIVATION_COST = "aActivationCost";
-	static final String A_ACTIVATION_PROB = "aActivationProb";
+	private static final String A_ACTIVATION_COST = "aActivationCost";
+	private static final String A_ACTIVATION_PROB = "aActivationProb";
 	
-	static final String TARGETS = "targets";
-	static final String MIN_CUT = "minCut";
+	private static final String TARGETS = "targets";
+	private static final String MIN_CUT = "minCut";
 	
 	private DGraphUtils() {
 		// private constructor
@@ -128,25 +128,6 @@ public final class DGraphUtils {
 		return depGraph;
 	}
 	
-	public static String linesAsString(final String fileName) {
-		assert fileName != null;
-		final StringBuilder builder = new StringBuilder();
-		try {
-			 final BufferedReader br =
-				new BufferedReader(new FileReader(new File(fileName)));
-			String line = null;
-			while ((line = br.readLine()) != null) {
-				builder.append(line);
-				builder.append('\n');
-			}
-			br.close();
-		} catch (final Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-		return builder.toString();
-	}
-	
 	public static void save(final String filePathName, final DependencyGraph depGraph) {
 		assert filePathName != null && depGraph != null;
 		
@@ -219,5 +200,24 @@ public final class DGraphUtils {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private static String linesAsString(final String fileName) {
+		assert fileName != null;
+		final StringBuilder builder = new StringBuilder();
+		try {
+			 final BufferedReader br =
+				new BufferedReader(new FileReader(new File(fileName)));
+			String line = null;
+			while ((line = br.readLine()) != null) {
+				builder.append(line);
+				builder.append('\n');
+			}
+			br.close();
+		} catch (final Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return builder.toString();
 	}
 }

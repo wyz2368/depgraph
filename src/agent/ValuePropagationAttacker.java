@@ -163,7 +163,7 @@ public final class ValuePropagationAttacker extends Attacker {
 		return attActionList;
 	}
 	
-	public static double[] computeCandidateProb(
+	static double[] computeCandidateProb(
 		final DependencyGraph depGraph, final AttackCandidate attackCandidate,
 		final int curTimeStep, final int numTimeStep,
 		final double qrParam, final double discFact,
@@ -196,12 +196,12 @@ public final class ValuePropagationAttacker extends Attacker {
 	}
 	
 	/*****************************************************************************************
-	 * @param depGraph: dependency graph
-	 * @param curTimeStep: current time step 
-	 * @param numTimeStep: total number of time step
-	 * @return type of AttackCandidate: candidate set for the attacker
-	 *****************************************************************************************/
-	public static AttackCandidate selectCandidate(final DependencyGraph depGraph) {
+	* @param depGraph: dependency graph
+	* @param curTimeStep: current time step 
+	* @param numTimeStep: total number of time step
+	* @return type of AttackCandidate: candidate set for the attacker
+	*****************************************************************************************/
+	static AttackCandidate selectCandidate(final DependencyGraph depGraph) {
 		if (depGraph == null) {
 			throw new IllegalArgumentException();
 		}

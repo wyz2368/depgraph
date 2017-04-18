@@ -112,7 +112,7 @@ public final class GameOracle {
 		for (SecurityAlert alert : dObservation.getAlertSet()) {
 			Node node = alert.getNode();
 			boolean alertType = alert.isActiveAlert();
-			if (gameState.contain(node)) { // this is the active node
+			if (gameState.containsNode(node)) { // this is the active node
 				if (alertType) { // positive alert
 					prob *= node.getPosActiveProb();
 				} else { // negative alert
@@ -144,7 +144,7 @@ public final class GameOracle {
 			throw new IllegalArgumentException();
 		}
 		for (Node node : pastState.getEnabledNodeSet()) { // active nodes in past state will remain active if not disable
-			if (!dAction.containsNode(node) && !newState.contain(node)) {
+			if (!dAction.containsNode(node) && !newState.containsNode(node)) {
 				return 0.0;
 			}
 		}
@@ -157,7 +157,7 @@ public final class GameOracle {
 		double prob = 1.0;
 		for (Entry<Node, Set<Edge>> entry : aAction.getAction().entrySet()) { // iterate over nodes the attacker aims at activating
 			Node node = entry.getKey();
-			assert !pastState.contain(node); // if node is already enabled, the attacker should not enable it again
+			assert !pastState.containsNode(node); // if node is already enabled, the attacker should not enable it again
 			List<Edge> edgeList = new ArrayList<Edge>(entry.getValue());
 			if (!dAction.getAction().contains(node)) { // if the defender doesn't disable this node
 				double enableProb = 1.0;
@@ -169,7 +169,7 @@ public final class GameOracle {
 					}
 					enableProb = 1 - enableProb;
 				}
-				if (newState.contain(node)) {
+				if (newState.containsNode(node)) {
 					prob *= enableProb;
 				} else {
 					prob *= (1 - enableProb);
@@ -207,7 +207,7 @@ public final class GameOracle {
 		// Iterate over all nodes the attacker aims at activating
 		for (Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet()) {
 			Node node = entry.getKey();
-			assert !pastState.contain(node); // if node is already enabled, the attacker should not enable it again
+			assert !pastState.containsNode(node); // if node is already enabled, the attacker should not enable it again
 			if (!defAction.getAction().contains(node)) { // if the defender is not protecting this node
 				double enableProb = 1.0;
 				if (node.getActivationType() == NodeActivationType.AND) {

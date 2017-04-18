@@ -6,6 +6,7 @@ public final class Edge extends DefaultWeightedEdge {
 	
 	public enum EdgeType { 
 		NORMAL, VIRTUAL;
+		
 		@Override
 		public String toString() {
 			switch(this) {
@@ -30,11 +31,7 @@ public final class Edge extends DefaultWeightedEdge {
 		this(EdgeType.NORMAL, 0.0, 0.0);
 	}
 	
-	private static boolean isProb(final double i) {
-		return i >= 0.0 && i <= 1.0;
-	}
-	
-	public Edge(
+	private Edge(
 		final EdgeType aType, 
 		final double aCost,
 		final double curActProb
@@ -143,5 +140,9 @@ public final class Edge extends DefaultWeightedEdge {
 		System.out.println("aCost: " + this.getACost());
 		System.out.println("actProb: " + this.getActProb());
 		System.out.println("--------------------------------------------------------------------");
+	}
+	
+	private static boolean isProb(final double i) {
+		return i >= 0.0 && i <= 1.0;
 	}
 }

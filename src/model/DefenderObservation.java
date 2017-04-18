@@ -21,13 +21,6 @@ public final class DefenderObservation {
 		return this.alertSet;
 	}
 	
-	public boolean containsAlert(final SecurityAlert alert) {
-		if (alert == null) {
-			throw new IllegalArgumentException();
-		}
-		return this.alertSet.contains(alert);
-	}
-	
 	public void clear() {
 		this.alertSet.clear();
 	}

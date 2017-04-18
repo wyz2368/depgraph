@@ -24,7 +24,7 @@ public final class GameState {
 		return this.enabledNodeSet;
 	}
 	
-	public boolean contain(final Node node) {
+	public boolean containsNode(final Node node) {
 		if (node == null) {
 			throw new IllegalArgumentException();
 		}
@@ -43,51 +43,6 @@ public final class GameState {
 		}
 		System.out.println();
 		System.out.println("--------------------------------------------------------------------");
-	}
-	
-//	@Override
-//	public int hashCode() {
-//		final int prime = 31;
-//		int result = 1;
-//		result = prime * result;
-//		return result;
-//	}
-//	@Override
-//	public boolean equals(Object obj) {
-//		if (this == obj)
-//			return true;
-//		if (obj == null)
-//			return false;
-//		if (getClass() != obj.getClass())
-//			return false;
-//		GameState other = (GameState) obj;
-//		for(Node node : other.getEnabledNodeSet())
-//			if(!this.enabledNodeSet.contains(node))
-//				return false;
-//		return true;
-//	}
-	
-	@Override
-	public int hashCode() {
-		return this.id.hashCode();
-	}
-	
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		GameState other = (GameState) obj;
-		if (!this.id.equals(other.id)) {
-			return false;
-		}
-		return true;
 	}
 	
 	public void createID() {
@@ -112,5 +67,28 @@ public final class GameState {
 	
 	public String getID() {
 		return this.id;
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.id.hashCode();
+	}
+	
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		GameState other = (GameState) obj;
+		if (!this.id.equals(other.id)) {
+			return false;
+		}
+		return true;
 	}
 }

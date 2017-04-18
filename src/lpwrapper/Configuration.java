@@ -1,9 +1,9 @@
 package lpwrapper;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+// import java.io.BufferedReader;
+// import java.io.File;
+// import java.io.FileReader;
+// import java.io.IOException;
 import java.util.Random;
 
 // -Djava.library.path=/path/of/cplex/installation
@@ -27,14 +27,15 @@ public final class Configuration {
 	public static final boolean WARMSTARTLPS = true;
 	public static final boolean TRUNCATELPS = true;
 
-	private static boolean loadedGlpk = false;
-	private static boolean loadedCplex = false;
+	// private static boolean loadedGlpk = false;
+	// private static boolean loadedCplex = false;
 	
 	private Configuration() {
 		// private constructor
 	}
 
-	public static void loadLibrariesGLPK(final String configFileName) throws IOException {
+	/*
+	private static void loadLibrariesGLPK(final String configFileName) throws IOException {
 		if (loadedGlpk) {
 			return;
 		}
@@ -79,14 +80,18 @@ public final class Configuration {
 		System.load(gLPKFileJava.getAbsolutePath());
 		loadedGlpk = true;
 	}
+	*/
 
-	public static void loadLibrariesCplex() throws IOException {
+	/*
+	private static void loadLibrariesCplex() throws IOException {
 		Configuration.loadLibrariesCplex(
 			"/Users/thanhnguyen/Documents/WORKS/ATTACK_GRAPH/CODES/CPLEX/CplexConfig");
 		// Configuration.loadLibrariesCplex("/home/thanhhng/CPLEX/CplexConfig");
 	}
+	*/
 	
-	public static void loadLibrariesCplex(final String configFileName) throws IOException {
+	/*
+	private static void loadLibrariesCplex(final String configFileName) throws IOException {
 		if (loadedCplex) {
 			return;
 		}
@@ -142,4 +147,5 @@ public final class Configuration {
 		// }
 		loadedCplex = true;
 	}
+	*/
 }

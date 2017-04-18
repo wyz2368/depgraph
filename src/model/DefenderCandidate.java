@@ -22,8 +22,4 @@ public final class DefenderCandidate {
 	public Set<Node> getNodeCandidateSet() {
 		return this.nodeCandidateSet;
 	}
-	
-	public void clear() {
-		this.nodeCandidateSet.clear();
-	}
 }

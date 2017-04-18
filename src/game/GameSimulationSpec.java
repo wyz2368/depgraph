@@ -32,7 +32,8 @@ public final class GameSimulationSpec {
 		final int graphID, final int numNode,
 		final int numEdge, final int numTarget,
 		final double discFact) {
-		if (numTimeStep < 1 || numSim < 1 || numNode < 1 || numEdge < 0 || numTarget < 1 || discFact <= 0.0 || discFact > 1.0) {
+		if (numTimeStep < 1 || numSim < 1 || numNode < 1 || numEdge < 0
+			|| numTarget < 1 || discFact <= 0.0 || discFact > 1.0) {
 			throw new IllegalArgumentException();
 		}
 		this.numTimeStep = numTimeStep;
@@ -41,17 +42,6 @@ public final class GameSimulationSpec {
 		this.numNode = numNode;
 		this.numEdge = numEdge;
 		this.numTarget = numTarget;
-		// this.aRewardLB = aRewardLB;
-		// this.aRewardUB = aRewardUB;
-		// this.dPenaltyLB = dPenaltyLB;
-		// this.dPenaltyUB = dPenaltyUB;
-		// this.totalNumAlert = totalNumAlert;
-		// this.minNumAlert = minNumAlert;
-		// this.maxNumAlert = maxNumAlert;
-		// this.fixPoissonParam = fixPoissonParam;
-		// this.adaptPoissonRatio = adaptPoissonRatio;
-		// this.qrParam = qrParam;
-		// this.logisParam = logisParam;
 		this.discFact = discFact;
 	}
 	
@@ -78,51 +68,6 @@ public final class GameSimulationSpec {
 	public int getNumTarget() {
 		return this.numTarget;
 	}
-
-// public double getARewardLB()
-//	{
-//		return this.aRewardLB;
-//	}
-//	public double getARewardUB()
-//	{
-//		return this.aRewardUB;
-//	}
-//	public double getDPenaltyLB()
-//	{
-//		return this.dPenaltyLB;
-//	}
-//	public double getDPenaltyUB()
-//	{
-//		return this.dPenaltyUB;
-//	}
-//	public int getTotalNumAlert()
-//	{
-//		return this.totalNumAlert;
-//	}
-//	public int getMinNumAlert()
-//	{
-//		return this.minNumAlert;
-//	}
-//	public int getMaxNumAlert()
-//	{
-//		return this.maxNumAlert;
-//	}
-//	public double getFixPoissonParam()
-//	{
-//		return this.fixPoissonParam;
-//	}
-//	public double getAdaptPoissonRatio()
-//	{
-//		return this.adaptPoissonRatio;
-//	}
-//	public double getQRParam()
-//	{
-//		return this.qrParam;
-//	}
-//	public double getLogisParam()
-//	{
-//		return this.logisParam;
-//	}
 	
 	public double getDiscFact() {
 		return this.discFact;

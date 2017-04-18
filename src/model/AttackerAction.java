@@ -16,27 +16,6 @@ public final class AttackerAction {
 		this.action = new HashMap<Node, Set<Edge>>();
 	}
 	
-	public AttackerAction(final Map<Node, Set<Edge>> curAction) {
-		if (curAction == null) {
-			throw new IllegalArgumentException();
-		}
-		this.action = curAction;
-	}
-	
-	public boolean containsNode(final Node node) {
-		if (node == null) {
-			throw new IllegalArgumentException();
-		}
-		return this.action.containsKey(node);
-	}
-	
-	public void setAction(final Map<Node, Set<Edge>> curAction) {
-		if (curAction == null) {
-			throw new IllegalArgumentException();
-		}
-		this.action = curAction;
-	}
-	
 	public Map<Node, Set<Edge>> getAction() {
 		return this.action;
 	}

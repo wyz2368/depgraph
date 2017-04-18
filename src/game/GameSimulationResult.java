@@ -75,15 +75,15 @@ public final class GameSimulationResult {
 	/**
 	 * @param folderName  
 	 */
-	public void printResult(final String folderName) {
-		// do nothing
+	public static void printResult(final String folderName) {
+		throw new UnsupportedOperationException();
 	}
 	
 	/**
 	 * @param folderName  
 	 */
-	public void printPayoff(final String folderName) {
-		// do nothing
+	public static void printPayoff(final String folderName) {
+		throw new UnsupportedOperationException();
 	}
 	
 	public void printPayoff() {
