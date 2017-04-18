@@ -18,25 +18,31 @@ import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 import org.apache.commons.math3.random.RandomGenerator;
 
 public final class RandomWalkAttacker extends Attacker {
+	
 	public final class RandomWalkTuple {
 		private int tAct = 0;
 		private double pAct = 0.0;
 		private List<Edge> preAct;
+		
 		public RandomWalkTuple(final int tAct, final double pAct, final List<Edge> preAct) {
 			this.tAct = tAct;
 			this.pAct = pAct;
 			this.preAct = preAct;
 		}
+		
 		public int getTAct() {
 			return this.tAct;
 		}
+		
 		public double getPAct() {
 			return this.pAct;
 		}
+		
 		public List<Edge> getPreAct() {
 			return this.preAct;
 		}
 	}
+	
 	private double qrParam;
 	private double discFact;
 	private static final int DEFAULT_NUM_RW_SAMPLE = 200;
@@ -48,6 +54,7 @@ public final class RandomWalkAttacker extends Attacker {
 		this.qrParam = qrParam;
 		this.discFact = discFact;
 	}
+	
 	@Override
 	/**
 	 * @param depGraph: dependency graph

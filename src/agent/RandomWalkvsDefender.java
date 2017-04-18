@@ -485,5 +485,4 @@ public final class RandomWalkvsDefender extends Defender {
 		
 		return probabilities;
 	}
-	
 }

@@ -49,12 +49,15 @@ public final class GameSimulation {
 		//Outcome
 		this.simResult = new GameSimulationResult();
 	}
+	
 	public void setRandomSeed(final long seed) {
 		this.rng.reSeed(seed);
 	}
+	
 	public void setDefender(final Defender aDefender) {
 		this.defender = aDefender;
 	}
+	
 	public void setAttacker(final Attacker aAttacker) {
 		this.attacker = aAttacker;
 	}
@@ -121,6 +124,7 @@ public final class GameSimulation {
 		}
 		this.computePayoff();
 	}
+	
 	public void computePayoff() {
 		double defPayoff = 0.0;
 		double attPayoff = 0.0;
@@ -154,18 +158,23 @@ public final class GameSimulation {
 		this.simResult.setAttPayoff(attPayoff);
 		this.simResult.setDefPayoff(defPayoff);
 	}
+	
 	public GameSimulationResult getSimulationResult() {
 		return this.simResult;
 	}
+
 	public void saveResult() {
 		// do nothing
 	}
+	
 	public void printPayoff() {
 		this.simResult.printPayoff();
 	}
+	
 	public void end() {
 		// do nothing
 	}
+	
 	public void reset() {
 		//Reset node states
 		for (Node node : this.depGraph.vertexSet()) {

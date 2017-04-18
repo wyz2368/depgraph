@@ -225,7 +225,6 @@ public final class DagGenerator {
         return genRootedOutDAG(numNode, numNode - 1, rand);
     }
 
-
     /**
      * Returns a complete binary tree digraph on {@code numNode} vertices.
      * @param numNode the number of vertices in the binary tree
@@ -242,8 +241,9 @@ public final class DagGenerator {
     	}
         return dag;
     }
+    
     public static DependencyGraph genLayerDAG(final int numEdgeLB, final int numEdgeUB, final int numNodeperLayerLB, final int numNodeperLayerUB
-    		, final int numLayer, final RandomGenerator rng) {
+    	, final int numLayer, final RandomGenerator rng) {
     	DependencyGraph dag = new DependencyGraph();
     	RandomDataGenerator rand = new RandomDataGenerator(rng);
     	List<Node> preLayerNodeList = null;

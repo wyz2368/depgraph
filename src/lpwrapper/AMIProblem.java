@@ -64,11 +64,11 @@ public abstract class AMIProblem {
 	protected abstract void setObjectiveCoef(final int index, final double value);
 
 	protected abstract void setProblemType(final ProblemType problemType,
-			final ObjectiveType objectiveType);
+		final ObjectiveType objectiveType);
 
 	public abstract void addAndSetColumn(final String name, final BoundsType boundType,
-			final double lowerBound, final double upperBound, final VariableType varType,
-			final double objCoeff);
+		final double lowerBound, final double upperBound, final VariableType varType,
+		final double objCoeff);
 
 	/**
 	 * 
@@ -79,7 +79,7 @@ public abstract class AMIProblem {
 	 * @return return the index of the row.
 	 */
 	public abstract int addAndSetRow(String name, BoundsType boundType,
-			double lowerBound, double upperBound);
+		double lowerBound, double upperBound);
 
 	/**
 	 * adds a new column and initializes it
@@ -94,14 +94,14 @@ public abstract class AMIProblem {
 	 * @throws RuntimeException
 	 */
 	public abstract void setMatCol(String name, VariableType varType,
-			double objCoeff, double lowerBound, double upperBound,
-			List<Integer> indices, List<Double> values) throws RuntimeException;
+		double objCoeff, double lowerBound, double upperBound,
+		List<Integer> indices, List<Double> values) throws RuntimeException;
 
 	/**
 	 * Doesn't add a new row.
 	 */
 	public abstract void setMatRow(int rowNo, List<Integer> indices,
-			List<Double> values) throws RuntimeException;
+		List<Double> values) throws RuntimeException;
 
 	public abstract void updateObjective() throws Exception;
 

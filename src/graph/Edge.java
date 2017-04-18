@@ -3,6 +3,7 @@ package graph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 public final class Edge extends DefaultWeightedEdge {
+	
 	public enum EdgeType { 
 		NORMAL, VIRTUAL;
 		@Override
@@ -14,6 +15,7 @@ public final class Edge extends DefaultWeightedEdge {
 			}	
 		}
 	}
+	
 	private static final long serialVersionUID = 1L;
 
 	private int id = -1;
@@ -23,15 +25,14 @@ public final class Edge extends DefaultWeightedEdge {
 	private double actProb = 1.0; // probability of successfully activating, for OR node only 
 	
 	private static int counter = 1;
-	
 
 	public Edge() {
 		this(EdgeType.NORMAL
 				, 0.0, 0.0);
 	}
+	
 	public Edge(final EdgeType aType
-			, final double aCost, final double curActProb) {
-		super();
+		, final double aCost, final double curActProb) {
 		this.id = counter;
 		counter++;
 		
@@ -40,33 +41,43 @@ public final class Edge extends DefaultWeightedEdge {
 		this.cost = aCost;
 		this.actProb = curActProb;
 	}
+	
 	public int getId() {
 		return this.id;
 	}
+	
 	public void setId(final int aId) {
 		this.id = aId;
 	}
+	
 	public EdgeType getType() {
 		return this.type;
 	}
+	
 	public void setType(final EdgeType aType) {
 		this.type = aType;
 	}
+	
 	public double getACost() {
 		return this.cost;
 	}	
+	
 	public void setACost(final double aCost) {
 		this.cost = aCost;
 	}	
+	
 	public double getActProb() {
 		return this.actProb;
 	}
+	
 	public void setActProb(final double aActProb) {
 		this.actProb = aActProb;
 	}
+	
 	public Node getsource() {
 		return (Node) this.getSource();
 	}
+	
 	public Node gettarget() {
 		return (Node) this.getTarget();
 	}
@@ -78,6 +89,7 @@ public final class Edge extends DefaultWeightedEdge {
 		}
 		return "" + this.id + "(V)";
 	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -85,6 +97,7 @@ public final class Edge extends DefaultWeightedEdge {
 		result = prime * result + this.id;
 		return result;
 	}
+	
 	@Override
 	public boolean equals(final Object obj) {
 		if (this == obj) {
@@ -102,9 +115,11 @@ public final class Edge extends DefaultWeightedEdge {
 		}
 		return true;
 	}
+	
 	public static void resetCounter() {
 		counter = 1;
 	}
+	
 	public void print() {
 		System.out.println("--------------------------------------------------------------------");
 		System.out.println("ID: " + this.getId() + "\t" + "Source: " + this.getsource().getId() + "\t" + "Des: " + this.gettarget().getId());
@@ -114,4 +129,3 @@ public final class Edge extends DefaultWeightedEdge {
 		System.out.println("--------------------------------------------------------------------");
 	}
 }
-

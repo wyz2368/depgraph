@@ -46,8 +46,8 @@ public final class UniformvsDefender extends Defender {
 		, final int maxNumSelectACandidate, final int minNumSelectACandidate, final double numSelectACandidateRatio
 		, final int numStateSample, final int numAttActionSample) {
 		this(logisParam, discFact, thres
-				, maxNumRes, minNumRes, numResRatio
-				, maxNumSelectACandidate, minNumSelectACandidate, numSelectACandidateRatio);
+			, maxNumRes, minNumRes, numResRatio
+			, maxNumSelectACandidate, minNumSelectACandidate, numSelectACandidateRatio);
 		this.numStateSample = numStateSample;
 		this.numAttActionSample = numAttActionSample;
 	}
@@ -175,9 +175,9 @@ public final class UniformvsDefender extends Defender {
 						observationProb = observationProbMap.get(newGameState);
 					}
 					double addedProb = observationProb * curStateProb 
-							* GameOracle.computeStateTransitionProb(
-								 dAction, attAction
-									, gameState, newGameState);
+						* GameOracle.computeStateTransitionProb(
+							dAction, attAction
+							, gameState, newGameState);
 					
 					newBelief.addState(newGameState, curProb + addedProb);
 				}

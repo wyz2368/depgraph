@@ -28,10 +28,8 @@ public final class GameSimulationSpec {
 //	private double qrParam; // for attacker 
 //	private double logisParam; // for defender
 	
-	
-	
 	public GameSimulationSpec(final int numTimeStep, final int numSim, final int graphID, final int numNode, final int numEdge, final int numTarget
-			, final double discFact) {
+		, final double discFact) {
 		this.numTimeStep = numTimeStep;
 		this.numSim = numSim;
 		this.graphID = graphID;
@@ -51,24 +49,31 @@ public final class GameSimulationSpec {
 //		this.logisParam = logisParam;
 		this.discFact = discFact;
 	}
+	
 	public int getNumTimeStep() {
 		return this.numTimeStep;
 	}
+	
 	public int getNumSim() {
 		return this.numSim;
 	}
+	
 	public int getGraphID() {
 		return this.graphID;
 	}
+	
 	public int getNumNode() {
 		return this.numNode;
 	}
+	
 	public int getNumEdge() {
 		return this.numEdge;
 	}
+	
 	public int getNumTarget() {
 		return this.numTarget;
 	}
+
 //	public double getARewardLB()
 //	{
 //		return this.aRewardLB;
@@ -113,6 +118,7 @@ public final class GameSimulationSpec {
 //	{
 //		return this.logisParam;
 //	}
+	
 	public double getDiscFact() {
 		return this.discFact;
 	}

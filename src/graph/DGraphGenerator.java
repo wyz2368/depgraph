@@ -16,9 +16,11 @@ import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
 public final class DGraphGenerator {
+	
 	private DGraphGenerator() {
 		// private constructor
 	}
+	
 	// Number simulations per observation such that: 1-2 mins
 	// All leaf nodes are targets, all costs, reward, penalty are within [0,1]
 	public static void genGraph(final DependencyGraph dag, final RandomDataGenerator rand

@@ -17,6 +17,7 @@ public final class UniformDefender extends Defender {
 	private int maxNumRes;
 	private int minNumRes;
 	private double numResRatio;
+	
 	public UniformDefender(final double maxNumRes, final double minNumRes, final double numResRatio) {
 		super(DefenderType.UNIFORM);
 		this.maxNumRes = (int) maxNumRes;

@@ -1,6 +1,7 @@
 package graph;
 
 public interface INode {	
+	
 	enum NodeType { 
 		NONTARGET, TARGET;
 		
@@ -13,6 +14,7 @@ public interface INode {
 			}	
 		}
 	}
+	
 	enum NodeActivationType {
 		AND, OR;
 	
@@ -38,6 +40,7 @@ public interface INode {
 			}	
 		}
 	}
+	
 	int getId();
 	void setID(int id);
 	

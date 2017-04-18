@@ -10,6 +10,7 @@ import org.apache.commons.math3.random.RandomGenerator;
 public abstract class Attacker {
 	public enum AttackerType {
 		UNIFORM, VALUE_PROPAGATION, RANDOM_WALK;
+		
 		@Override
 		public String toString() {
 			switch(this) {
@@ -25,6 +26,7 @@ public abstract class Attacker {
 		maxNumSelectCandidate, minNumSelectCandidate
 		, numSelectCandidateRatio
 		, qrParam, numRWSample;
+		
 		@Override
 		public String toString() {
 			switch(this) {

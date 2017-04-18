@@ -12,6 +12,7 @@ public abstract class Defender {
 	public enum DefenderType {
 		UNIFORM, MINCUT, GOAL_ONLY, ROOT_ONLY
 		, vsVALUE_PROPAGATION, vsRANDOM_WALK, vsUNIFORM;
+		
 		@Override
 		public String toString() {
 			switch(this) {
@@ -33,6 +34,7 @@ public abstract class Defender {
 		, logisParam, bThres
 		, qrParam
 		, numRWSample;
+		
 		@Override
 		public String toString() {
 			switch(this) {

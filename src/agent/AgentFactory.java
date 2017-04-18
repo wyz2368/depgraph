@@ -54,24 +54,24 @@ public final class AgentFactory {
         	&& defenderParams.containsKey(DefenderParam.minNumRes.toString())
 			&& defenderParams.containsKey(DefenderParam.numResRatio.toString());
 			return new UniformDefender(defenderParams.get(DefenderParam.maxNumRes.toString())
-					, defenderParams.get(DefenderParam.minNumRes.toString())
-					, defenderParams.get(DefenderParam.numResRatio.toString()));
+				, defenderParams.get(DefenderParam.minNumRes.toString())
+				, defenderParams.get(DefenderParam.numResRatio.toString()));
         } else if (defType == DefenderType.MINCUT) {
 			assert defenderParams.containsKey(DefenderParam.maxNumRes.toString())
 			&& defenderParams.containsKey(DefenderParam.minNumRes.toString())
 			&& defenderParams.containsKey(DefenderParam.numResRatio.toString());
 			return new MinCutDefender(defenderParams.get(DefenderParam.maxNumRes.toString())
-					, defenderParams.get(DefenderParam.minNumRes.toString())
-					, defenderParams.get(DefenderParam.numResRatio.toString()));
+				, defenderParams.get(DefenderParam.minNumRes.toString())
+				, defenderParams.get(DefenderParam.numResRatio.toString()));
 		} else if (defType == DefenderType.GOAL_ONLY) {
 			assert defenderParams.containsKey(DefenderParam.maxNumRes.toString())
 			&& defenderParams.containsKey(DefenderParam.minNumRes.toString())
 			&& defenderParams.containsKey(DefenderParam.numResRatio.toString())
 			&& defenderParams.containsKey(DefenderParam.logisParam.toString());
 			return new GoalOnlyDefender(defenderParams.get(DefenderParam.maxNumRes.toString())
-					, defenderParams.get(DefenderParam.minNumRes.toString())
-					, defenderParams.get(DefenderParam.numResRatio.toString())
-					, defenderParams.get(DefenderParam.logisParam.toString()), discFact);
+				, defenderParams.get(DefenderParam.minNumRes.toString())
+				, defenderParams.get(DefenderParam.numResRatio.toString())
+				, defenderParams.get(DefenderParam.logisParam.toString()), discFact);
 		} else if (defType == DefenderType.vsVALUE_PROPAGATION) {
 			assert defenderParams.containsKey(DefenderParam.maxNumRes.toString())
 			&& defenderParams.containsKey(DefenderParam.minNumRes.toString())
@@ -98,10 +98,10 @@ public final class AgentFactory {
 			&& defenderParams.containsKey(DefenderParam.qrParam.toString())
 			&& defenderParams.containsKey(DefenderParam.numRWSample.toString());
 			return new RandomWalkvsDefender(defenderParams.get(DefenderParam.logisParam.toString())
-					, discFact
-					, defenderParams.get(DefenderParam.bThres.toString())
-					, defenderParams.get(DefenderParam.qrParam.toString())
-					, defenderParams.get(DefenderParam.numRWSample.toString()));
+				, discFact
+				, defenderParams.get(DefenderParam.bThres.toString())
+				, defenderParams.get(DefenderParam.qrParam.toString())
+				, defenderParams.get(DefenderParam.numRWSample.toString()));
 		}
         
 		return null;

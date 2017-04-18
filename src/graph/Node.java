@@ -22,17 +22,17 @@ public final class Node implements INode {
 	
 	public Node() {
 		this(NodeType.NONTARGET, NodeActivationType.OR
-				, 0.0, 0.0
-				, 0.0, 0.0
-				, 0.0, 0.0
-				, 0.0);
+			, 0.0, 0.0
+			, 0.0, 0.0
+			, 0.0, 0.0
+			, 0.0);
 	}
 
 	public Node(final NodeType type, final NodeActivationType eType
-			, final double aReward, final double dPenalty
-			, final double dCost, final double aCost
-			, final double posActiveProb, final double posInactiveProb
-			, final double actProb) {
+		, final double aReward, final double dPenalty
+		, final double dCost, final double aCost
+		, final double posActiveProb, final double posInactiveProb
+		, final double actProb) {
 		this.id = counter;
 		counter++;
 		this.type = type; 
@@ -45,11 +45,12 @@ public final class Node implements INode {
 		this.posInactiveProb = posInactiveProb;
 		this.actProb = actProb;
 	}
+	
 	public Node(final int id, final NodeType type, final NodeActivationType eType
-			, final double aReward, final double dPenalty
-			, final double dCost, final double aCost
-			, final double posActiveProb, final double posInactiveProb
-			, final double actProb) {
+		, final double aReward, final double dPenalty
+		, final double dCost, final double aCost
+		, final double posActiveProb, final double posInactiveProb
+		, final double actProb) {
 		this.id = id;
 		this.type = type; 
 		this.eType = eType;
@@ -70,22 +71,27 @@ public final class Node implements INode {
 	public NodeState getState() {
 		return this.state;
 	}
+	
 	@Override
 	public NodeType getType() {
 		return this.type;
 	}
+	
 	@Override
 	public NodeActivationType getActivationType() {
 		return this.eType;
 	}
+	
 	@Override
 	public double getAReward() {
 		return this.aReward;
 	}
+	
 	@Override
 	public double getDPenalty() {
 		return this.dPenalty;
 	}
+	
 	@Override
 	public double getDCost() {
 		return this.dCost;
@@ -95,10 +101,12 @@ public final class Node implements INode {
 	public double getACost() {
 		return this.aCost;
 	}
+	
 	@Override
 	public double getActProb() {
 		return this.actProb;
 	}
+	
 	@Override 
 	public int getTopoPosition() {
 		return this.topoPosition;
@@ -108,14 +116,17 @@ public final class Node implements INode {
 	public void setID(final int aId) {
 		this.id = aId;
 	}
+	
 	@Override
 	public void setState(final NodeState aState) {
 		this.state = aState;
 	}
+	
 	@Override
 	public void setType(final NodeType aType) {
 		this.type = aType;
 	}
+	
 	@Override
 	public void setActivationType(final NodeActivationType eTypeCur) {
 		this.eType = eTypeCur;
@@ -125,6 +136,7 @@ public final class Node implements INode {
 	public void setAReward(final double aRewardCur) {
 		this.aReward = aRewardCur;
 	}
+	
 	@Override
 	public void setDPenalty(final double dPenaltyCur) {
 		this.dPenalty = dPenaltyCur;
@@ -134,14 +146,17 @@ public final class Node implements INode {
 	public void setDCost(final double dCostCur) {
 		this.dCost = dCostCur;
 	}
+	
 	@Override
 	public void setACost(final double aCostCur) {
 		this.aCost = aCostCur;
 	}
+	
 	@Override
 	public void setActProb(final double actProbCur) {
 		this.actProb = actProbCur;
 	}
+	
 	@Override
 	public void setTopoPosition(final int positionCur) {
 		this.topoPosition = positionCur;
@@ -181,6 +196,7 @@ public final class Node implements INode {
 	public static void resetCounter() {
 		counter = 1;
 	}
+	
 	public void print() {
 		System.out.println("--------------------------------------------------------------------");
 		System.out.println("ID: " + this.getId());

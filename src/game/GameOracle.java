@@ -23,9 +23,11 @@ import model.SecurityAlert;
 
 public final class GameOracle {
 	private static final int MAX_ITER = 200;
+	
 	private GameOracle() {
 		// private constructor
 	}
+	
 	/**
 	 * 
 	 * @param pastState past game state.
@@ -42,6 +44,7 @@ public final class GameOracle {
 				,  rnd, 1, false);
 		return stateSampleList.get(0);
 	}
+	
 	/**
 	 * 
 	 * @param depGraph dependency graph with node states included
