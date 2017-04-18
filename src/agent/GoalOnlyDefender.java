@@ -68,7 +68,7 @@ public final class GoalOnlyDefender extends Defender {
 		final DefenderBelief currentBelief, final DefenderAction dAction,
 		final DefenderObservation dObservation, final int curTimeStep, final int numTimeStep,
 		final RandomGenerator rng) {
-		throw new UnsupportedOperationException();
+		return null;
 	}
 	
 	private static boolean isProb(final double i) {

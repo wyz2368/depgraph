@@ -56,7 +56,7 @@ public final class RootOnlyDefender extends Defender {
 		final DefenderBelief currentBelief, final DefenderAction dAction,
 		final DefenderObservation dObservation, final int curTimeStep, final int numTimeStep,
 		final RandomGenerator rng) {
-		throw new UnsupportedOperationException();
+		return null;
 	}
 	
 	private static DefenderAction sampleAction(final List<Node> dCandidateNodeList, final int numNodetoProtect,
