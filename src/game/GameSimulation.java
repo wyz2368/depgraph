@@ -88,7 +88,8 @@ public final class GameSimulation {
 			System.out.println("Time step: " + t);
 			start = System.currentTimeMillis();
 			System.out.println("Sample attacker action...");
-			AttackerAction attAction = this.attacker.sampleAction(this.depGraph, t, this.numTimeStep, this.rng.getRandomGenerator());
+			AttackerAction attAction = this.attacker.sampleAction(
+				this.depGraph, t, this.numTimeStep, this.rng.getRandomGenerator());
 			end = System.currentTimeMillis();
 			System.out.println("Elapsed time: " + (end - start) / thousand);
 			// attAction.print();
@@ -110,7 +111,8 @@ public final class GameSimulation {
 			
 			System.out.println("Sample observation...");
 			start = System.currentTimeMillis();
-			dObservation = GameOracle.generateDefObservation(this.depGraph, gameState, this.rng); // observation based on game state
+			// observation based on game state
+			dObservation = GameOracle.generateDefObservation(this.depGraph, gameState, this.rng); 
 			end = System.currentTimeMillis();
 			System.out.println("Elapsed time: " + (end - start) / thousand);
 			

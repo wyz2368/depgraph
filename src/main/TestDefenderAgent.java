@@ -84,6 +84,7 @@ public final class TestDefenderAgent {
 				gameState.addEnabledNode(node);
 			}
 		}
+		gameState.createID();
 		GameOracle.generateDefObservation(depGraph, gameState, rnd);
 		DefenderBelief defBelief = new DefenderBelief();
 		final double prob = 0.7;
