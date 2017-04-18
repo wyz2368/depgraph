@@ -85,8 +85,8 @@ public final class TestRWvsDefender {
 		RandomWalkvsDefender rwDefender = new RandomWalkvsDefender(logisParam, discFact, thres, qrParam, numRWSample);
 		Attacker rwAttacker = new RandomWalkAttacker(numRWSample, qrParam, discFact);
 		Attacker vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate
-				, minNumSelectCandidate, numSelectCandidateRatio
-				, qrParam, discFact);
+			, minNumSelectCandidate, numSelectCandidateRatio
+			, qrParam, discFact);
 		
 		long start = System.currentTimeMillis();
 		GameSimulation gameSimRWvsRW = new GameSimulation(depGraph, rwAttacker, rwDefender, rnd, numTimeStep, discFact);
@@ -100,7 +100,7 @@ public final class TestRWvsDefender {
 			defPayoffRWvsRW += gameSimRWvsRW.getSimulationResult().getDefPayoff();
 			attPayoffRWvsRW += gameSimRWvsRW.getSimulationResult().getAttPayoff();
 			gameSimRWvsRW.reset();
-//			System.out.println();
+			// System.out.println();
 		}
 		long end = System.currentTimeMillis();
 		defPayoffRWvsRW /= numSim;
@@ -122,7 +122,7 @@ public final class TestRWvsDefender {
 			defPayoffRWvsGO += gameSimRWvsGO.getSimulationResult().getDefPayoff();
 			attPayoffRWvsGO += gameSimRWvsGO.getSimulationResult().getAttPayoff();
 			gameSimRWvsGO.reset();
-//			System.out.println();
+			// System.out.println();
 		}
 		end = System.currentTimeMillis();
 		defPayoffRWvsGO /= numSim;
@@ -142,7 +142,7 @@ public final class TestRWvsDefender {
 			defPayoffVPvsRW += gameSimVPvsRW.getSimulationResult().getDefPayoff();
 			attPayoffVPvsRW += gameSimVPvsRW.getSimulationResult().getAttPayoff();
 			gameSimVPvsRW.reset();
-//			System.out.println();
+			// System.out.println();
 		}
 		end = System.currentTimeMillis();
 		defPayoffVPvsRW /= numSim;

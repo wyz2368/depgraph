@@ -79,11 +79,11 @@ public final class TestGameSimulation {
 		final int numTimeStep = 6;
 		final int numSim = 100;
 		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
-//		Defender valuePropagationvsDefender = new ValuePropagationvsDefender(maxNumRes, minNumRes, numResRatio
-//				, logisParam, discFact, thres
-//				, qrParam, maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
-//		Defender uniformDefender = new UniformDefender(maxNumRes, minNumRes, numResRatio);
-//		Defender mincutDefender = new MinCutDefender(maxNumRes, minNumRes, numResRatio);
+		// Defender valuePropagationvsDefender = new ValuePropagationvsDefender(maxNumRes, minNumRes, numResRatio
+			// , logisParam, discFact, thres
+			// , qrParam, maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
+		// Defender uniformDefender = new UniformDefender(maxNumRes, minNumRes, numResRatio);
+		// Defender mincutDefender = new MinCutDefender(maxNumRes, minNumRes, numResRatio);
 		
 		Attacker rwAttacker = new RandomWalkAttacker(numRWSample, qrParam, discFact);
 		GameSimulation gameSimRWvsGO = new GameSimulation(depGraph, rwAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
@@ -96,7 +96,7 @@ public final class TestGameSimulation {
 			defPayoffRWvsGO += gameSimRWvsGO.getSimulationResult().getDefPayoff();
 			attPayoffRWvsGO += gameSimRWvsGO.getSimulationResult().getAttPayoff();
 			gameSimRWvsGO.reset();
-//			System.out.println();
+			// System.out.println();
 		}
 		defPayoffRWvsGO /= numSim;
 		attPayoffRWvsGO /= numSim;
@@ -131,7 +131,7 @@ public final class TestGameSimulation {
 			defPayoffUvsGO += gameSimUvsGO.getSimulationResult().getDefPayoff();
 			attPayoffUvsGO += gameSimUvsGO.getSimulationResult().getAttPayoff();
 			gameSimUvsGO.reset();
-//			System.out.println();
+			// System.out.println();
 		}
 		defPayoffUvsGO /= numSim;
 		attPayoffUvsGO /= numSim;

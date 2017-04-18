@@ -58,16 +58,16 @@ public final class TestAttackerAgent {
 		rnd.reSeed(System.currentTimeMillis());
 		DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rnd);
 		DGraphGenerator.genGraph(depGraph, rnd
-				, numTarget, nodeActTypeRatio
-				, aRewardLB, aRewardUB
-				, dPenaltyLB, dPenaltyUB
-				, aNodeCostLB, aNodeCostUB
-				, aEdgeCostLB, aEdgeCostUB
-				, dCostLB, dCostUB
-				, aNodeActProbLB, aNodeActProbUB
-				, aEdgeActProbLB, aEdgeActProbUB
-				, minPosActiveProb, maxPosActiveProb
-				, minPosInactiveProb, maxPosInactiveProb);
+			, numTarget, nodeActTypeRatio
+			, aRewardLB, aRewardUB
+			, dPenaltyLB, dPenaltyUB
+			, aNodeCostLB, aNodeCostUB
+			, aEdgeCostLB, aEdgeCostUB
+			, dCostLB, dCostUB
+			, aNodeActProbLB, aNodeActProbUB
+			, aEdgeActProbLB, aEdgeActProbUB
+			, minPosActiveProb, maxPosActiveProb
+			, minPosInactiveProb, maxPosInactiveProb);
 		final double pivot = 0.2;
 		DGraphGenerator.randomizeInitialGraphState(depGraph, rnd, pivot);
 		depGraph.print();
@@ -76,8 +76,9 @@ public final class TestAttackerAgent {
 		AttackerAction uniformAction = uniformAttacker.sampleAction(depGraph, curTimeStep, numTimeStep, rnd.getRandomGenerator());
 		uniformAction.print();
 		
-		ValuePropagationAttacker vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio
-				, qrParam, discFact);
+		ValuePropagationAttacker vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate,
+			minNumSelectCandidate, numSelectCandidateRatio
+			, qrParam, discFact);
 		AttackerAction vpAction = vpAttacker.sampleAction(depGraph, curTimeStep, numTimeStep, rnd.getRandomGenerator());
 		vpAction.print();
 		

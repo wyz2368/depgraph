@@ -82,11 +82,11 @@ public final class TestVPvsDefender {
 		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
 		
 		Defender valuePropagationvsDefender = new ValuePropagationVsDefenderALT(maxNumRes, minNumRes, numResRatio
-				, logisParam, discFact, thres
-				, qrParam, maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
-//		Defender valuePropagationvsDefender = new ValuePropagationvsDefender(maxNumRes, minNumRes, numResRatio
-//				, logisParam, discFact, thres
-//				, qrParam, maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
+			, logisParam, discFact, thres
+			, qrParam, maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
+		// Defender valuePropagationvsDefender = new ValuePropagationvsDefender(maxNumRes, minNumRes, numResRatio
+			// , logisParam, discFact, thres
+			// , qrParam, maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
 		
 		Attacker vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate, minNumSelectCandidate
 				, numSelectCandidateRatio, qrParam, discFact);

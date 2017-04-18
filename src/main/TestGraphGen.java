@@ -45,16 +45,16 @@ public final class TestGraphGen {
 		rnd.reSeed(System.currentTimeMillis());
 		DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rnd);
 		DGraphGenerator.genGraph(depGraph, rnd
-				, numTarget, nodeActTypeRatio
-				, aRewardLB, aRewardUB
-				, dPenaltyLB, dPenaltyUB
-				, aNodeCostLB, aNodeCostUB
-				, aEdgeCostLB, aEdgeCostUB
-				, dCostLB, dCostUB
-				, aNodeActProbLB, aNodeActProbUB
-				, aEdgeActProbLB, aEdgeActProbUB
-				, minPosActiveProb, maxPosActiveProb
-				, minPosInactiveProb, maxPosInactiveProb);
+			, numTarget, nodeActTypeRatio
+			, aRewardLB, aRewardUB
+			, dPenaltyLB, dPenaltyUB
+			, aNodeCostLB, aNodeCostUB
+			, aEdgeCostLB, aEdgeCostUB
+			, dCostLB, dCostUB
+			, aNodeActProbLB, aNodeActProbUB
+			, aEdgeActProbLB, aEdgeActProbUB
+			, minPosActiveProb, maxPosActiveProb
+			, minPosInactiveProb, maxPosInactiveProb);
 		DGraphGenerator.findMinCut(depGraph);
         DGraphUtils.save("./TestGraphUtil_1.json", depGraph);
         DependencyGraph depGraphClone = DGraphUtils.loadGraph("./TestGraphUtil_1.json");

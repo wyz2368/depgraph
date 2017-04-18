@@ -15,15 +15,19 @@ public final class AttackerAction {
 	public AttackerAction() {
 		this.action = new HashMap<Node, Set<Edge>>();
 	}
+	
 	public boolean containNode(final Node node) {
 		return this.action.containsKey(node);
 	}
+	
 	public AttackerAction(final Map<Node, Set<Edge>> curAction) {
 		this.action = curAction;
 	}
+	
 	public void setAction(final Map<Node, Set<Edge>> curAction) {
 		this.action = curAction;
 	}
+	
 	public Map<Node, Set<Edge>> getAction() {
 		return this.action;
 	}
@@ -31,13 +35,15 @@ public final class AttackerAction {
 	public Set<Edge> addNodetoActive(final Node node, final Set<Edge> edgeSet) {
 		return this.action.put(node, edgeSet);
 	}
+	
 	public void clear() {
-//		for(Entry<Node, Set<Edge>> entry : action.entrySet())
-//		{
-//			entry.getValue().clear();
-//		}
+		// for(Entry<Node, Set<Edge>> entry : action.entrySet())
+		// {
+		// entry.getValue().clear();
+		// }
 		this.action.clear();
 	}
+	
 	public void print() {
 		System.out.println("--------------------------------------------------------------------");
 		System.out.println("Attacker Action...");

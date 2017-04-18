@@ -7,6 +7,7 @@ import java.util.Set;
 
 public final class DefenderCandidate {
 	private final Set<Node> nodeCandidateSet; // for AND node
+	
 	public DefenderCandidate() {
 		this.nodeCandidateSet = new HashSet<Node>();
 	}
@@ -14,9 +15,11 @@ public final class DefenderCandidate {
 	public boolean addNodeCandidate(final Node node) {
 		return this.nodeCandidateSet.add(node);
 	}
+	
 	public Set<Node> getNodeCandidateSet() {
 		return this.nodeCandidateSet;
 	}
+	
 	public void clear() {
 		this.nodeCandidateSet.clear();
 	}

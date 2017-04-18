@@ -55,25 +55,24 @@ public final class MainGraphGen {
      
 		final int numSample = 100;
 		for (int idx = 0; idx < numSample; idx++) {
-			 Node.resetCounter();
-		     Edge.resetCounter();
+			Node.resetCounter();
+			Edge.resetCounter();
 			String filePathName = graphFolderName + File.separator + "RandomGraph" + numNode + "N" + numEdge + "E" 
-	        		+ numTarget + "T" + idx + JsonUtils.JSON_SUFFIX;
+        		+ numTarget + "T" + idx + JsonUtils.JSON_SUFFIX;
 			DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rnd);
 			DGraphGenerator.genGraph(depGraph, rnd
-					, numTarget, nodeActTypeRatio
-					, aRewardLB, aRewardUB
-					, dPenaltyLB, dPenaltyUB
-					, aNodeCostLB, aNodeCostUB
-					, aEdgeCostLB, aEdgeCostUB
-					, dCostLB, dCostUB
-					, aNodeActProbLB, aNodeActProbUB
-					, aEdgeActProbLB, aEdgeActProbUB
-					, minPosActiveProb, maxPosActiveProb
-					, minPosInactiveProb, maxPosInactiveProb);
+				, numTarget, nodeActTypeRatio
+				, aRewardLB, aRewardUB
+				, dPenaltyLB, dPenaltyUB
+				, aNodeCostLB, aNodeCostUB
+				, aEdgeCostLB, aEdgeCostUB
+				, dCostLB, dCostUB
+				, aNodeActProbLB, aNodeActProbUB
+				, aEdgeActProbLB, aEdgeActProbUB
+				, minPosActiveProb, maxPosActiveProb
+				, minPosInactiveProb, maxPosInactiveProb);
 			DGraphGenerator.findMinCut(depGraph);
 	        DGraphUtils.save(filePathName, depGraph);
 		}
 	}
-
 }

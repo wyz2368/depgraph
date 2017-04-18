@@ -16,6 +16,7 @@ public final class TestGameState {
 	private TestGameState() {
 		// private constructor
 	}
+	
 	public static void main(final String[] args) {
 		final int numNode = 50;
 		final int numEdge = 150;
@@ -46,16 +47,16 @@ public final class TestGameState {
 		rnd.reSeed(System.currentTimeMillis());
 		DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rnd);
 		DGraphGenerator.genGraph(depGraph, rnd
-				, numTarget, nodeActTypeRatio
-				, aRewardLB, aRewardUB
-				, dPenaltyLB, dPenaltyUB
-				, aNodeCostLB, aNodeCostUB
-				, aEdgeCostLB, aEdgeCostUB
-				, dCostLB, dCostUB
-				, aNodeActProbLB, aNodeActProbUB
-				, aEdgeActProbLB, aEdgeActProbUB
-				, minPosActiveProb, maxPosActiveProb
-				, minPosInactiveProb, maxPosInactiveProb);
+			, numTarget, nodeActTypeRatio
+			, aRewardLB, aRewardUB
+			, dPenaltyLB, dPenaltyUB
+			, aNodeCostLB, aNodeCostUB
+			, aEdgeCostLB, aEdgeCostUB
+			, dCostLB, dCostUB
+			, aNodeActProbLB, aNodeActProbUB
+			, aEdgeActProbLB, aEdgeActProbUB
+			, minPosActiveProb, maxPosActiveProb
+			, minPosInactiveProb, maxPosInactiveProb);
 		DGraphGenerator.findMinCut(depGraph);
 		
 		GameState gameState1 = new GameState();

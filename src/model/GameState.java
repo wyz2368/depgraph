@@ -8,21 +8,27 @@ import java.util.Set;
 public final class GameState {
 	private String id;
 	private final Set<Node> enabledNodeSet;
+	
 	public GameState() {
 		this.enabledNodeSet = new HashSet<Node>();
 	}
+	
 	public boolean addEnabledNode(final Node node) {
 		return this.enabledNodeSet.add(node);
 	}
+	
 	public Set<Node> getEnabledNodeSet() {
 		return this.enabledNodeSet;
 	}
+	
 	public boolean contain(final Node node) {
 		return this.enabledNodeSet.contains(node);
 	}
+	
 	public void clear() {
 		this.enabledNodeSet.clear();
 	}
+	
 	public void print() {
 		System.out.println("--------------------------------------------------------------------");
 		System.out.println("Active Nodes");
@@ -32,6 +38,7 @@ public final class GameState {
 		System.out.println();
 		System.out.println("--------------------------------------------------------------------");
 	}
+	
 //	@Override
 //	public int hashCode() {
 //		final int prime = 31;
@@ -53,10 +60,12 @@ public final class GameState {
 //				return false;
 //		return true;
 //	}
+	
 	@Override
 	public int hashCode() {
 		return this.id.hashCode();
 	}
+	
 	@Override
 	public boolean equals(final Object obj) {
 		if (this == obj) {
@@ -94,6 +103,7 @@ public final class GameState {
 		}
 		this.id = new String(idChar);	
 	}
+	
 	public String getID() {
 		return this.id;
 	}

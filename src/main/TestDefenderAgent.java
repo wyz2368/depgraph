@@ -63,16 +63,16 @@ public final class TestDefenderAgent {
 		rnd.reSeed(System.currentTimeMillis());
 		DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rnd);
 		DGraphGenerator.genGraph(depGraph, rnd
-				, numTarget, nodeActTypeRatio
-				, aRewardLB, aRewardUB
-				, dPenaltyLB, dPenaltyUB
-				, aNodeCostLB, aNodeCostUB
-				, aEdgeCostLB, aEdgeCostUB
-				, dCostLB, dCostUB
-				, aNodeActProbLB, aNodeActProbUB
-				, aEdgeActProbLB, aEdgeActProbUB
-				, minPosActiveProb, maxPosActiveProb
-				, minPosInactiveProb, maxPosInactiveProb);
+			, numTarget, nodeActTypeRatio
+			, aRewardLB, aRewardUB
+			, dPenaltyLB, dPenaltyUB
+			, aNodeCostLB, aNodeCostUB
+			, aEdgeCostLB, aEdgeCostUB
+			, dCostLB, dCostUB
+			, aNodeActProbLB, aNodeActProbUB
+			, aEdgeActProbLB, aEdgeActProbUB
+			, minPosActiveProb, maxPosActiveProb
+			, minPosInactiveProb, maxPosInactiveProb);
 		final double pivot = 0.2;
 		DGraphGenerator.randomizeInitialGraphState(depGraph, rnd, pivot);
 		DGraphGenerator.findMinCut(depGraph);

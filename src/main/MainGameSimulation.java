@@ -37,6 +37,7 @@ public final class MainGameSimulation {
         final long millis = diff / 1000000;
         System.out.println("time taken in millis: " + millis);
     }
+	
 	 /**
      * @param simspecFolderName the local path to the folder
      * containing simulation_spec.json
@@ -47,15 +48,14 @@ public final class MainGameSimulation {
             throw new IllegalArgumentException();
         }
   
-        final GameSimulationSpec simSpec = JsonUtils.getSimSpecOrDefaults(simspecFolderName);
-        
+        final GameSimulationSpec simSpec = JsonUtils.getSimSpecOrDefaults(simspecFolderName);    
         // Load graph
-//        String filePathName = graphFolderName + File.separator + simSpec.getNumNode() + "N" + simSpec.getNumEdge() + "E" 
-//        		+ simSpec.getNumTarget() + "T" + simSpec.getTotalNumAlert() + "TA" + simSpec.getMinNumAlert() + "MIA" 
-//        		+ simSpec.getMaxNumAlert() + "MAA" + simSpec.getARewardLB() + "ARL" + simSpec.getARewardUB() + "ARU"
-//        		+ simSpec.getDPenaltyLB() + "DPL" + simSpec.getDPenaltyUB() + "DPU" + simSpec.getGraphID() + JsonUtils.JSON_SUFFIX;
+        // String filePathName = graphFolderName + File.separator + simSpec.getNumNode() + "N" + simSpec.getNumEdge() + "E" 
+        	// + simSpec.getNumTarget() + "T" + simSpec.getTotalNumAlert() + "TA" + simSpec.getMinNumAlert() + "MIA" 
+        	// + simSpec.getMaxNumAlert() + "MAA" + simSpec.getARewardLB() + "ARL" + simSpec.getARewardUB() + "ARU"
+        	// + simSpec.getDPenaltyLB() + "DPL" + simSpec.getDPenaltyUB() + "DPU" + simSpec.getGraphID() + JsonUtils.JSON_SUFFIX;
         String filePathName = graphFolderName + File.separator + "RandomGraph" + simSpec.getNumNode() + "N" + simSpec.getNumEdge() + "E" 
-        		+ simSpec.getNumTarget() + "T" + simSpec.getGraphID() + JsonUtils.JSON_SUFFIX;
+    		+ simSpec.getNumTarget() + "T" + simSpec.getGraphID() + JsonUtils.JSON_SUFFIX;
         DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
         		
         // Load players
@@ -66,22 +66,23 @@ public final class MainGameSimulation {
         final Map<String, Double> attackerParams = EncodingUtils.getStrategyParams(attackerString);
         final Map<String, Double> defenderParams = EncodingUtils.getStrategyParams(defenderString);
         
-        final MeanGameSimulationResult simResult = runSimulations(depGraph, simSpec, attackerName, attackerParams, defenderName, defenderParams,
-            		simSpec.getNumSim());
-            final String obsString = JsonUtils.getObservationString(simResult, attackerString, defenderString, simSpec);
-            JsonUtils.printObservationToFile(simspecFolderName, obsString);
-
+        final MeanGameSimulationResult simResult = runSimulations(depGraph, simSpec, attackerName,
+    		attackerParams, defenderName, defenderParams,
+    		simSpec.getNumSim());
+        final String obsString = JsonUtils.getObservationString(simResult, attackerString, defenderString, simSpec);
+        JsonUtils.printObservationToFile(simspecFolderName, obsString);
     }
+    
 	private static MeanGameSimulationResult runSimulations(final DependencyGraph depGraph,
-			final GameSimulationSpec simSpec, final String attackerName,
-			final Map<String, Double> attackerParams, final String defenderName,
-			final Map<String, Double> defenderParams, final int numSim) {
+		final GameSimulationSpec simSpec, final String attackerName,
+		final Map<String, Double> attackerParams, final String defenderName,
+		final Map<String, Double> defenderParams, final int numSim) {
 		MeanGameSimulationResult meanGameSimResult = new MeanGameSimulationResult();
 		Attacker attacker = AgentFactory.createAttacker(attackerName, attackerParams, simSpec.getDiscFact());
 		Defender defender = AgentFactory.createDefender(defenderName, defenderParams, simSpec.getDiscFact());
 		RandomDataGenerator rng = new RandomDataGenerator();
 		GameSimulation gameSim = new GameSimulation(depGraph, attacker, defender, rng
-				, simSpec.getNumTimeStep(), simSpec.getDiscFact());
+			, simSpec.getNumTimeStep(), simSpec.getDiscFact());
 		
 		final int thousand = 1000;
 		for (int i = 0; i < numSim; i++) {
