@@ -89,7 +89,11 @@ public final class GameSimulation {
 			start = System.currentTimeMillis();
 			System.out.println("Sample attacker action...");
 			AttackerAction attAction = this.attacker.sampleAction(
-				this.depGraph, t, this.numTimeStep, this.rng.getRandomGenerator());
+				this.depGraph, 
+				t, 
+				this.numTimeStep,
+				this.rng.getRandomGenerator()
+			);
 			end = System.currentTimeMillis();
 			System.out.println("Elapsed time: " + (end - start) / thousand);
 			// attAction.print();
