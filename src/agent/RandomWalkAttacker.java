@@ -77,7 +77,7 @@ public final class RandomWalkAttacker extends Attacker {
 		}
 		
 		// Compute the candidate probability
-		double[] probabilities = computecandidateProb(this.numRWSample, candidateValues, this.qrParam);
+		double[] probabilities = computeCandidateProb(this.numRWSample, candidateValues, this.qrParam);
 		
 		// Start sampling
 		int[] nodeIndexes = new int[this.numRWSample];
@@ -363,7 +363,7 @@ public final class RandomWalkAttacker extends Attacker {
 	 * @param qrParam
 	 * @return QR distribution over candidates
 	 *****************************************************************************************/
-	static double[] computecandidateProb(final int totalNumCandidate, final double[] candidateValue, final double qrParam) {
+	static double[] computeCandidateProb(final int totalNumCandidate, final double[] candidateValue, final double qrParam) {
 		//Normalize candidate value
 		double minValue = Double.POSITIVE_INFINITY;
 		double maxValue = Double.NEGATIVE_INFINITY;

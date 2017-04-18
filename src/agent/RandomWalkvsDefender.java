@@ -134,7 +134,7 @@ public final class RandomWalkvsDefender extends Defender {
 				attCandidateList.add(attCandidate);
 			}
 			DefenderAction defAction = new DefenderAction();
-			double[] attProb = RandomWalkAttacker.computecandidateProb(this.numRWSample, attValue, this.qrParam); // attack probability
+			double[] attProb = RandomWalkAttacker.computeCandidateProb(this.numRWSample, attValue, this.qrParam); // attack probability
 			double dValue = greedyCandidate(depGraph // greedy defense with respect to each possible game state
 				, rwTuplesList, attCandidateList, attProb
 				, defAction // this is outcome

@@ -129,9 +129,9 @@ public final class GoalOnlyDefender extends Defender {
 	
 	@Override
 	public DefenderBelief updateBelief(final DependencyGraph depGraph,
-			final DefenderBelief currentBelief, final DefenderAction dAction,
-			final DefenderObservation dObservation, final int curTimeStep, final int numTimeStep,
-			final RandomGenerator rng) {
+		final DefenderBelief currentBelief, final DefenderAction dAction,
+		final DefenderObservation dObservation, final int curTimeStep, final int numTimeStep,
+		final RandomGenerator rng) {
 		return null;
 	}
 }
