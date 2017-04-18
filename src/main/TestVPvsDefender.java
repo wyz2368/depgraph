@@ -17,6 +17,10 @@ import agent.ValuePropagationAttacker;
 import agent.ValuePropagationvsDefender_Alternative;
 
 public final class TestVPvsDefender {
+	
+	private TestVPvsDefender() {
+		// private constructor
+	}
 
 	public static void main(final String[] args) {
 		final int numNode = 100;
@@ -48,16 +52,16 @@ public final class TestVPvsDefender {
 		rnd.reSeed(System.currentTimeMillis());
 		DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rnd);
 		DGraphGenerator.genGraph(depGraph, rnd
-				, numTarget, nodeActTypeRatio
-				, aRewardLB, aRewardUB
-				, dPenaltyLB, dPenaltyUB
-				, aNodeCostLB, aNodeCostUB
-				, aEdgeCostLB, aEdgeCostUB
-				, dCostLB, dCostUB
-				, aNodeActProbLB, aNodeActProbUB
-				, aEdgeActProbLB, aEdgeActProbUB
-				, minPosActiveProb, maxPosActiveProb
-				, minPosInactiveProb, maxPosInactiveProb);
+			, numTarget, nodeActTypeRatio
+			, aRewardLB, aRewardUB
+			, dPenaltyLB, dPenaltyUB
+			, aNodeCostLB, aNodeCostUB
+			, aEdgeCostLB, aEdgeCostUB
+			, dCostLB, dCostUB
+			, aNodeActProbLB, aNodeActProbUB
+			, aEdgeActProbLB, aEdgeActProbUB
+			, minPosActiveProb, maxPosActiveProb
+			, minPosInactiveProb, maxPosInactiveProb);
 		DGraphGenerator.findMinCut(depGraph);
 		
 		final int maxNumSelectCandidate = 10;
@@ -103,7 +107,8 @@ public final class TestVPvsDefender {
 		long end = System.currentTimeMillis();
 		defPayoffVPvsGO /= numSim;
 		attPayoffVPvsGO /= numSim;
-		timeVPvsGO = (end - start) / 1000.0 / numSim;
+		final double thousand = 1000.0;
+		timeVPvsGO = (end - start) / thousand / numSim;
 		
 		start = System.currentTimeMillis();
 		GameSimulation gameSimVPvsVP = new GameSimulation(depGraph, vpAttacker, valuePropagationvsDefender, rnd, numTimeStep, discFact);
@@ -121,7 +126,7 @@ public final class TestVPvsDefender {
 		end = System.currentTimeMillis();
 		defPayoffVPvsVP /= numSim;
 		attPayoffVPvsVP /= numSim;
-		timeVPvsVP = (end - start) / 1000.0 / numSim;
+		timeVPvsVP = (end - start) / thousand / numSim;
 		
 		System.out.println("Defender value propagation payoff: " + defPayoffVPvsVP);
 		System.out.println("Attacker value propagation payoff: " + attPayoffVPvsVP);

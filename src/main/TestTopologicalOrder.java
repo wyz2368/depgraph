@@ -9,6 +9,11 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
 public final class TestTopologicalOrder {
+	
+	private TestTopologicalOrder() {
+		// private constructor
+	}
+	
 	public static void main(final String[] args) {
 		final int numNode = 10;
 		final int numEdge = 20;

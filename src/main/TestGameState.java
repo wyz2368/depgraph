@@ -13,6 +13,9 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 
 public final class TestGameState {
 
+	private TestGameState() {
+		// private constructor
+	}
 	public static void main(final String[] args) {
 		final int numNode = 50;
 		final int numEdge = 150;

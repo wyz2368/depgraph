@@ -14,6 +14,10 @@ import utils.DGraphUtils;
 import utils.JsonUtils;
 
 public final class MainGraphGen {
+	
+	private MainGraphGen() {
+		// private constuctor
+	}
 
 	public static void main(final String[] args) {
 		if (args == null || args.length != 1) {

@@ -19,6 +19,10 @@ import utils.EncodingUtils;
 import utils.JsonUtils;
 
 public final class MainGameSimulation {
+	
+	private MainGameSimulation() {
+		// private constructor
+	}
 
 	public static void main(final String[] args) {
         if (args == null || args.length != 2) {
@@ -79,8 +83,9 @@ public final class MainGameSimulation {
 		GameSimulation gameSim = new GameSimulation(depGraph, attacker, defender, rng
 				, simSpec.getNumTimeStep(), simSpec.getDiscFact());
 		
+		final int thousand = 1000;
 		for (int i = 0; i < numSim; i++) {
-			if (i % 1000 == 0) {
+			if (i % thousand == 0) {
 				System.out.println("Simulation: " + i);
 			}
 			gameSim.runSimulation();

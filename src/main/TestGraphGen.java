@@ -10,6 +10,11 @@ import graph.Edge;
 import graph.Node;
 
 public final class TestGraphGen {
+	
+	private TestGraphGen() {
+		// private constructor
+	}
+	
 	public static void main(final String[] args) {
 		final int numNode = 30;
 		final int numEdge = 100;

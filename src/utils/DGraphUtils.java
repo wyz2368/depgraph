@@ -22,59 +22,61 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-public class DGraphUtils {
-	static final String nodes = "nodes";
-	static final String id = "id";
-	static final String topoPosition = "topoPosition";
-	static final String nodeType = "nodeType";
-	static final String actType = "actType";
-	static final String state = "state";
-	static final String aReward = "aReward";
-	static final String dPenalty = "dPenalty";
-	static final String dCost = "dCost";
+public final class DGraphUtils {
+	static final String NODES = "nodes";
+	static final String ID = "id";
+	static final String TOPO_POSITION = "topoPosition";
+	static final String NODE_TYPE = "nodeType";
+	static final String ACT_TYPE = "actType";
+	static final String STATE = "state";
+	static final String A_REWARD = "aReward";
+	static final String D_PENALTY = "dPenalty";
+	static final String D_COST = "dCost";
 	
-	static final String posActiveProb = "posActiveProb";
-	static final String posInactiveProb = "posInactiveProb";
+	static final String POS_ACTIVE_PROB = "posActiveProb";
+	static final String POS_INACTIVE_PROB = "posInactiveProb";
 	
-	static final String edges = "edges";
-	static final String edgeType = "edgeType";
-	static final String srcID = "srcID";
-	static final String desID = "desID";
+	static final String EDGES = "edges";
+	static final String EDGE_TYPE = "edgeType";
+	static final String SRC_ID = "srcID";
+	static final String DES_ID = "desID";
 	
-	static final String aActivationCost = "aActivationCost";
-	static final String aActivationProb = "aActivationProb";
+	static final String A_ACTIVATION_COST = "aActivationCost";
+	static final String A_ACTIVATION_PROB = "aActivationProb";
 	
-	static final String targets = "targets";
-	static final String minCut = "minCut";
+	static final String TARGETS = "targets";
+	static final String MIN_CUT = "minCut";
+	
+	private DGraphUtils() {
+		// private constructor
+	}
 
-	public static DependencyGraph loadGraph(String filePathName)
-	{
+	public static DependencyGraph loadGraph(final String filePathName) {
 		DependencyGraph depGraph = new DependencyGraph();
 		final String inputString = linesAsString(filePathName);
         final JsonObject inputJson = 
                 new JsonParser().parse(inputString).getAsJsonObject();
-        JsonArray nodeDataJson = inputJson.get(nodes).getAsJsonArray();
-        JsonArray edgeDataJson = inputJson.get(edges).getAsJsonArray();
-        JsonArray targetDataJson = inputJson.get(targets).getAsJsonArray();
-        JsonArray mincutDataJson = inputJson.get(minCut).getAsJsonArray();
+        JsonArray nodeDataJson = inputJson.get(NODES).getAsJsonArray();
+        JsonArray edgeDataJson = inputJson.get(EDGES).getAsJsonArray();
+        JsonArray targetDataJson = inputJson.get(TARGETS).getAsJsonArray();
+        JsonArray mincutDataJson = inputJson.get(MIN_CUT).getAsJsonArray();
         
         /************************************************************************************/
         // Add node
-        for(int i = 0; i < nodeDataJson.size(); i++)
-        {
+        for (int i = 0; i < nodeDataJson.size(); i++) {
         	JsonObject nodeObject = nodeDataJson.get(i).getAsJsonObject();
-        	int nID = nodeObject.get(id).getAsInt();
-        	int nTopoPosition = nodeObject.get(topoPosition).getAsInt();
-        	NodeType nType = NodeType.valueOf(nodeObject.get(nodeType).getAsString());
-        	NodeActivationType nActType = NodeActivationType.valueOf(nodeObject.get(actType).getAsString());
-        	NodeState nState = NodeState.valueOf(nodeObject.get(state).getAsString());
-        	double nAReward = nodeObject.get(aReward).getAsDouble();
-        	double nDPenalty = nodeObject.get(dPenalty).getAsDouble();
-        	double nDCost = nodeObject.get(dCost).getAsDouble();
-        	double nPosActiveProb = nodeObject.get(posActiveProb).getAsDouble();
-        	double nPosInactiveProb = nodeObject.get(posInactiveProb).getAsDouble();
-        	double nActivationCost = nodeObject.get(aActivationCost).getAsDouble();
-        	double nActivationProb = nodeObject.get(aActivationProb).getAsDouble();
+        	int nID = nodeObject.get(ID).getAsInt();
+        	int nTopoPosition = nodeObject.get(TOPO_POSITION).getAsInt();
+        	NodeType nType = NodeType.valueOf(nodeObject.get(NODE_TYPE).getAsString());
+        	NodeActivationType nActType = NodeActivationType.valueOf(nodeObject.get(ACT_TYPE).getAsString());
+        	NodeState nState = NodeState.valueOf(nodeObject.get(STATE).getAsString());
+        	double nAReward = nodeObject.get(A_REWARD).getAsDouble();
+        	double nDPenalty = nodeObject.get(D_PENALTY).getAsDouble();
+        	double nDCost = nodeObject.get(D_COST).getAsDouble();
+        	double nPosActiveProb = nodeObject.get(POS_ACTIVE_PROB).getAsDouble();
+        	double nPosInactiveProb = nodeObject.get(POS_INACTIVE_PROB).getAsDouble();
+        	double nActivationCost = nodeObject.get(A_ACTIVATION_COST).getAsDouble();
+        	double nActivationProb = nodeObject.get(A_ACTIVATION_PROB).getAsDouble();
         	
         	Node node = new Node(nID, nType, nActType, nAReward, nDPenalty, nDCost
         			, nActivationCost, nPosActiveProb, nPosInactiveProb, nActivationProb);
@@ -86,20 +88,20 @@ public class DGraphUtils {
         
         // Distance
         Node[] nodeArray = new Node[depGraph.vertexSet().size()];
-        for(Node node : depGraph.vertexSet())
+        for (Node node : depGraph.vertexSet()) {
         	nodeArray[node.getId() - 1] = node;
+        }
        
         /************************************************************************************/
         // Add edges
-        for(int i = 0; i < edgeDataJson.size(); i++)
-        {
+        for (int i = 0; i < edgeDataJson.size(); i++) {
         	JsonObject edgeObject = edgeDataJson.get(i).getAsJsonObject();
-        	int edgeID = edgeObject.get(id).getAsInt();
-        	int srcEdgeID = edgeObject.get(srcID).getAsInt();
-        	int desEdgeID = edgeObject.get(desID).getAsInt();
-        	EdgeType type = EdgeType.valueOf(edgeObject.get(edgeType).getAsString());
-        	double aCost = edgeObject.get(aActivationCost).getAsDouble();
-        	double aProb = edgeObject.get(aActivationProb).getAsDouble();
+        	int edgeID = edgeObject.get(ID).getAsInt();
+        	int srcEdgeID = edgeObject.get(SRC_ID).getAsInt();
+        	int desEdgeID = edgeObject.get(DES_ID).getAsInt();
+        	EdgeType type = EdgeType.valueOf(edgeObject.get(EDGE_TYPE).getAsString());
+        	double aCost = edgeObject.get(A_ACTIVATION_COST).getAsDouble();
+        	double aProb = edgeObject.get(A_ACTIVATION_PROB).getAsDouble();
         	Edge edge = depGraph.addEdge(nodeArray[srcEdgeID - 1], nodeArray[desEdgeID - 1]);
         	edge.setId(edgeID);
         	edge.setType(type);
@@ -108,25 +110,24 @@ public class DGraphUtils {
         }
         /************************************************************************************/
         // Add target set
-        for(int i = 0; i < targetDataJson.size(); i++)
-        {
+        for (int i = 0; i < targetDataJson.size(); i++) {
         	JsonObject targetObject = targetDataJson.get(i).getAsJsonObject();
-        	int targetID = targetObject.get(id).getAsInt();
+        	int targetID = targetObject.get(ID).getAsInt();
         	depGraph.addTarget(nodeArray[targetID - 1]);
         }
         /************************************************************************************/
         /************************************************************************************/
         // Add min cut
-        for(int i = 0; i < mincutDataJson.size(); i++)
-        {
+        for (int i = 0; i < mincutDataJson.size(); i++) {
         	JsonObject mincutObject = mincutDataJson.get(i).getAsJsonObject();
-        	int nodeID = mincutObject.get(id).getAsInt();
+        	int nodeID = mincutObject.get(ID).getAsInt();
         	depGraph.addMinCut(nodeArray[nodeID - 1]);
         }
         /************************************************************************************/
 		return depGraph;
 	}
-	public static final String linesAsString(final String fileName) {
+	
+	public static String linesAsString(final String fileName) {
         assert fileName != null;
         final StringBuilder builder = new StringBuilder();
         try {
@@ -144,67 +145,63 @@ public class DGraphUtils {
         }
         return builder.toString();
     }
-	public static void save(String filePathName, DependencyGraph depGraph)
-	{
+	
+	public static void save(final String filePathName, final DependencyGraph depGraph) {
 		
 		/************************************************************************************/
 		// Save nodes
 		final JsonArray nodeArray = new JsonArray();
-		for(Node node : depGraph.vertexSet())
-		{
+		for (Node node : depGraph.vertexSet()) {
 			final JsonObject nodeObject = new JsonObject();
-			nodeObject.addProperty(id, node.getId());
-			nodeObject.addProperty(topoPosition, node.getTopoPosition());
-			nodeObject.addProperty(nodeType, node.getType().toString());
-			nodeObject.addProperty(actType, node.getActivationType().toString());
-			nodeObject.addProperty(state, node.getState().toString());
-			nodeObject.addProperty(aReward, node.getAReward());
-			nodeObject.addProperty(dPenalty, node.getDPenalty());
-			nodeObject.addProperty(dCost, node.getDCost());
-			nodeObject.addProperty(posActiveProb, node.getPosActiveProb());
-			nodeObject.addProperty(posInactiveProb, node.getPosInactiveProb());
-			nodeObject.addProperty(aActivationCost, node.getACost());
-			nodeObject.addProperty(aActivationProb, node.getActProb());
+			nodeObject.addProperty(ID, node.getId());
+			nodeObject.addProperty(TOPO_POSITION, node.getTopoPosition());
+			nodeObject.addProperty(NODE_TYPE, node.getType().toString());
+			nodeObject.addProperty(ACT_TYPE, node.getActivationType().toString());
+			nodeObject.addProperty(STATE, node.getState().toString());
+			nodeObject.addProperty(A_REWARD, node.getAReward());
+			nodeObject.addProperty(D_PENALTY, node.getDPenalty());
+			nodeObject.addProperty(D_COST, node.getDCost());
+			nodeObject.addProperty(POS_ACTIVE_PROB, node.getPosActiveProb());
+			nodeObject.addProperty(POS_INACTIVE_PROB, node.getPosInactiveProb());
+			nodeObject.addProperty(A_ACTIVATION_COST, node.getACost());
+			nodeObject.addProperty(A_ACTIVATION_PROB, node.getActProb());
 			nodeArray.add(nodeObject);
 		}
 		/************************************************************************************/
 		// Save edges
 		final JsonArray edgeArray = new JsonArray();
-		for(Edge edge : depGraph.edgeSet())
-		{
+		for (Edge edge : depGraph.edgeSet()) {
 			final JsonObject edgeObject = new JsonObject();
-			edgeObject.addProperty(id, edge.getId());
-			edgeObject.addProperty(srcID, edge.getsource().getId());
-			edgeObject.addProperty(desID, edge.gettarget().getId());
-			edgeObject.addProperty(edgeType, edge.getType().toString());
-			edgeObject.addProperty(aActivationCost, edge.getACost());
-			edgeObject.addProperty(aActivationProb, edge.getActProb());
+			edgeObject.addProperty(ID, edge.getId());
+			edgeObject.addProperty(SRC_ID, edge.getsource().getId());
+			edgeObject.addProperty(DES_ID, edge.gettarget().getId());
+			edgeObject.addProperty(EDGE_TYPE, edge.getType().toString());
+			edgeObject.addProperty(A_ACTIVATION_COST, edge.getACost());
+			edgeObject.addProperty(A_ACTIVATION_PROB, edge.getActProb());
 			edgeArray.add(edgeObject);
 		}
 		/************************************************************************************/
 		// Save target
 		final JsonArray targetArray = new JsonArray();
-		for(Node target : depGraph.getTargetSet())
-		{
+		for (Node target : depGraph.getTargetSet()) {
 			final JsonObject targetObject = new JsonObject();
-			targetObject.addProperty(id, target.getId());
+			targetObject.addProperty(ID, target.getId());
 			targetArray.add(targetObject);
 		}
 		/************************************************************************************/
 		// Save mincut
 		final JsonArray mincutArray = new JsonArray();
-		for(Node node : depGraph.getMinCut())
-		{
+		for (Node node : depGraph.getMinCut()) {
 			final JsonObject mincutObject = new JsonObject();
-			mincutObject.addProperty(id, node.getId());
+			mincutObject.addProperty(ID, node.getId());
 			mincutArray.add(mincutObject);
 		}
 		/************************************************************************************/
         final JsonObject graphObject = new JsonObject();
-        graphObject.add(nodes, nodeArray);
-        graphObject.add(edges, edgeArray);
-        graphObject.add(targets, targetArray);
-        graphObject.add(minCut, mincutArray);
+        graphObject.add(NODES, nodeArray);
+        graphObject.add(EDGES, edgeArray);
+        graphObject.add(TARGETS, targetArray);
+        graphObject.add(MIN_CUT, mincutArray);
 
         final Gson gson = new GsonBuilder()
         .setPrettyPrinting()

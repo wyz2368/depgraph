@@ -16,18 +16,18 @@ import java.util.List;
 public abstract class AMIProblem {
 	protected boolean isLoaded = false;
 	
-	protected PROBLEM_TYPE probType;
-	protected OBJECTIVE_TYPE objectiveType;
+	protected ProblemType probType;
+	protected ObjectiveType objectiveType;
 
 	protected long genTime, loadTime, runTime;
 
 	protected int numRows, numCols;
 
-	public int getNumRows() {
+	public final int getNumRows() {
 		return this.numRows;
 	}
 
-	public int getNumCols() {
+	public final int getNumCols() {
 		return this.numCols;
 	}
 
@@ -44,9 +44,9 @@ public abstract class AMIProblem {
 	protected abstract void loadBasisStatus();
 
 	protected abstract void resetColumnBound(int columnNumber,
-			BOUNDS_TYPE boundType, double lowerBound, double upperBound);
+			BoundsType boundType, double lowerBound, double upperBound);
 
-	protected abstract void resetRowBound(int rowNumber, BOUNDS_TYPE boundType,
+	protected abstract void resetRowBound(int rowNumber, BoundsType boundType,
 			double lowerBound, double upperBound);
 	
 	public AMIProblem() {
@@ -63,11 +63,11 @@ public abstract class AMIProblem {
 
 	protected abstract void setObjectiveCoef(final int index, final double value);
 
-	protected abstract void setProblemType(final PROBLEM_TYPE problemType,
-			final OBJECTIVE_TYPE objectiveType);
+	protected abstract void setProblemType(final ProblemType problemType,
+			final ObjectiveType objectiveType);
 
-	public abstract void addAndSetColumn(final String name, final BOUNDS_TYPE boundType,
-			final double lowerBound, final double upperBound, final VARIABLE_TYPE varType,
+	public abstract void addAndSetColumn(final String name, final BoundsType boundType,
+			final double lowerBound, final double upperBound, final VariableType varType,
 			final double objCoeff);
 
 	/**
@@ -78,7 +78,7 @@ public abstract class AMIProblem {
 	 * @param upperBound
 	 * @return return the index of the row.
 	 */
-	public abstract int addAndSetRow(String name, BOUNDS_TYPE boundType,
+	public abstract int addAndSetRow(String name, BoundsType boundType,
 			double lowerBound, double upperBound);
 
 	/**
@@ -93,7 +93,7 @@ public abstract class AMIProblem {
 	 * @param values
 	 * @throws RuntimeException
 	 */
-	public abstract void setMatCol(String name, VARIABLE_TYPE varType,
+	public abstract void setMatCol(String name, VariableType varType,
 			double objCoeff, double lowerBound, double upperBound,
 			List<Integer> indices, List<Double> values) throws RuntimeException;
 
@@ -110,7 +110,7 @@ public abstract class AMIProblem {
 	 * specified from indices 1 to finalIndex (both included) in ia,ja and ar
 	 * into the lp object.
 	 */
-	public void loadProblem() {
+	public final void loadProblem() {
 		long start = System.currentTimeMillis();
 		try {			
 			this.setProblemType();
@@ -130,7 +130,7 @@ public abstract class AMIProblem {
 	 */
 	public abstract void end();
 
-	public void resetLP() {
+	public final void resetLP() {
 		this.numRows = 0;
 		this.numCols = 0;
 		this.end();
@@ -138,7 +138,7 @@ public abstract class AMIProblem {
 		this.loadProblem();
 	}
 
-	public abstract STATUS_TYPE getSolveStatus();
+	public abstract StatusType getSolveStatus();
 	
 	public abstract boolean disableRow(int rowNumber) throws RuntimeException;
 
@@ -162,41 +162,41 @@ public abstract class AMIProblem {
 
 	public abstract void writeSol(String fileName);
 
-	public long getGenTime() {
+	public final long getGenTime() {
 		return this.genTime;
 	}
 
-	public long getLoadTime() {
+	public final long getLoadTime() {
 		return this.loadTime;
 	}
 
-	public long getRunTime() {
+	public final long getRunTime() {
 		return this.runTime;
 	}
 
 	public abstract void redirectOutput(OutputStream stream);
 
-	public enum STATUS_TYPE {
+	public enum StatusType {
 		OPTIMAL, INFEASIBLE, UNBOUNDED, UNKNOWN, FEASIBLE	
 	}
 	
-	public enum BOUNDS_TYPE {
+	public enum BoundsType {
 		LOWER, UPPER, DOUBLE, FIXED, FREE
 	}
 
-	public enum VARIABLE_TYPE {
+	public enum VariableType {
 		CONTINUOUS, INTEGER
 	}
 
-	public enum PROBLEM_TYPE {
+	public enum ProblemType {
 		LP, MIP
 	}
 
-	public enum OBJECTIVE_TYPE {
+	public enum ObjectiveType {
 		MIN, MAX
 	}
 
-	public enum ROW_STATUS {
+	public enum RowStatus {
 		ENABLED, DISABLED
 	}
 
@@ -204,7 +204,7 @@ public abstract class AMIProblem {
 
 	public abstract int getMIPStarts();
 
-	public abstract int getNodesExplored() ;
+	public abstract int getNodesExplored();
 
 	public abstract int getNodesLeft();
 

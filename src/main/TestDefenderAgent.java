@@ -18,8 +18,12 @@ import agent.MinCutDefender;
 import agent.UniformDefender;
 
 public final class TestDefenderAgent {
+	
+	private TestDefenderAgent() {
+		// private constructor
+	}
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		final int numTimeStep = 6;
 		final int curTimeStep = 2;
 		
@@ -69,7 +73,8 @@ public final class TestDefenderAgent {
 				, aEdgeActProbLB, aEdgeActProbUB
 				, minPosActiveProb, maxPosActiveProb
 				, minPosInactiveProb, maxPosInactiveProb);
-		DGraphGenerator.randomizeInitialGraphState(depGraph, rnd, 0.2);
+		final double pivot = 0.2;
+		DGraphGenerator.randomizeInitialGraphState(depGraph, rnd, pivot);
 		DGraphGenerator.findMinCut(depGraph);
 		depGraph.print();
 		
@@ -81,7 +86,8 @@ public final class TestDefenderAgent {
 		}
 		GameOracle.generateDefObservation(depGraph, gameState, rnd);
 		DefenderBelief defBelief = new DefenderBelief();
-		defBelief.addState(gameState, 0.7);
+		final double prob = 0.7;
+		defBelief.addState(gameState, prob);
 		
 		UniformDefender uniformDefender = new UniformDefender(maxNumRes, minNumRes, numResRatio);
 		DefenderAction dUniformAction = uniformDefender.sampleAction(depGraph, curTimeStep, numTimeStep

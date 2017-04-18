@@ -14,6 +14,10 @@ import agent.UniformAttacker;
 import agent.ValuePropagationAttacker;
 
 public final class TestAttackerAgent {
+	
+	private TestAttackerAgent() {
+		// private constructor
+	}
 
 	public static void main(final String[] args) {
 		final int numTimeStep = 6;
@@ -64,7 +68,8 @@ public final class TestAttackerAgent {
 				, aEdgeActProbLB, aEdgeActProbUB
 				, minPosActiveProb, maxPosActiveProb
 				, minPosInactiveProb, maxPosInactiveProb);
-		DGraphGenerator.randomizeInitialGraphState(depGraph, rnd, 0.2);
+		final double pivot = 0.2;
+		DGraphGenerator.randomizeInitialGraphState(depGraph, rnd, pivot);
 		depGraph.print();
 		
 		UniformAttacker uniformAttacker = new UniformAttacker(maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);

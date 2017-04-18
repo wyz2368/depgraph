@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public abstract class MIProblemCplex extends AMIProblem {
 	protected IloCplex cplex;
 	// IloObjective objectiveFunction;
@@ -25,17 +24,17 @@ public abstract class MIProblemCplex extends AMIProblem {
 	protected List<IloNumVar> columns;
 	protected Map<Integer, IloRange> rows;
 
-	protected Map<Integer, ROW_STATUS> rowsInModel;
+	protected Map<Integer, RowStatus> rowsInModel;
 	protected List<Double> objectiveCoeff;
 	protected List<IloNumVarType> columnType;
 
 	protected IloCplex.BasisStatus[] colStatuses;
 	protected IloCplex.BasisStatus[] rowStatuses;
 
-	private boolean objectiveModified;
+	protected boolean objectiveModified;
 	
 	@Override
-	protected void initialize() {
+	protected final void initialize() {
 		try {
 			if (this.cplex != null) {
 				this.cplex.end();
@@ -57,7 +56,7 @@ public abstract class MIProblemCplex extends AMIProblem {
 		}
 		this.columns = new ArrayList<IloNumVar>(this.numCols);
 		this.rows = new HashMap<Integer, IloRange>(this.numRows);
-		this.rowsInModel = new HashMap<Integer, MIProblemCplex.ROW_STATUS>(
+		this.rowsInModel = new HashMap<Integer, MIProblemCplex.RowStatus>(
 				this.numRows);
 		this.objectiveCoeff = new ArrayList<Double>(this.numCols);
 		this.columnType = new ArrayList<IloNumVarType>(this.numCols);
@@ -66,22 +65,21 @@ public abstract class MIProblemCplex extends AMIProblem {
 	}
 
 	@Override
-	public STATUS_TYPE getSolveStatus() {
+	public final StatusType getSolveStatus() {
 		CplexStatus cplexStat;
 		try {
 			cplexStat = this.cplex.getCplexStatus();
 			if (cplexStat == CplexStatus.Optimal || cplexStat == CplexStatus.OptimalTol) {
-				return STATUS_TYPE.OPTIMAL;
+				return StatusType.OPTIMAL;
 			} else if (cplexStat == CplexStatus.Infeasible) {
-				return STATUS_TYPE.INFEASIBLE;
+				return StatusType.INFEASIBLE;
 			} else if (cplexStat == CplexStatus.Unbounded) {
-				return STATUS_TYPE.UNBOUNDED;
+				return StatusType.UNBOUNDED;
 			} else {
 				// System.out.println("Cplex Status: " + cplex.getCplexStatus());
-				return STATUS_TYPE.UNKNOWN;
+				return StatusType.UNKNOWN;
 			}
 		} catch (IloException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new RuntimeException("Unable to get cplex status.");
 		}
@@ -94,7 +92,7 @@ public abstract class MIProblemCplex extends AMIProblem {
 	}
 
 	@Override
-	protected void setProblemName(String name) {
+	protected final void setProblemName(final String name) {
 		this.cplex.setName(name);
 	}
 //	public void writeProb(String fileName) {
@@ -107,12 +105,12 @@ public abstract class MIProblemCplex extends AMIProblem {
 //    }
 
 	@Override
-	protected void setObjectiveCoef(int index, double value) {
+	protected final void setObjectiveCoef(final int index, final double value) {
 		this.objectiveModified = true;
 		this.objectiveCoeff.set(index - 1, value);
 	}
 
-	protected double getObjectiveCoef(int index) {
+	protected final double getObjectiveCoef(final int index) {
 		return this.objectiveCoeff.get(index - 1);
 	}
 
@@ -122,7 +120,7 @@ public abstract class MIProblemCplex extends AMIProblem {
 	 * @return
 	 */
 	@Override
-	public int getNumberIterations() {
+	public final int getNumberIterations() {
 		return this.cplex.getNiterations();
 	}
 
@@ -132,11 +130,10 @@ public abstract class MIProblemCplex extends AMIProblem {
 	 * @return
 	 */
 	@Override
-	public int getMIPStarts() {
+	public final int getMIPStarts() {
 		try {
 			return this.cplex.getNMIPStarts();
 		} catch (IloException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new RuntimeException("MIP starts could not be obtained.");
 		}
@@ -149,7 +146,7 @@ public abstract class MIProblemCplex extends AMIProblem {
 	 * @return
 	 */
 	@Override
-	public int getNodesExplored() {
+	public final int getNodesExplored() {
 		return this.cplex.getNnodes();
 	}
 
@@ -159,7 +156,7 @@ public abstract class MIProblemCplex extends AMIProblem {
 	 * @return
 	 */
 	@Override
-	public int getNodesLeft() {
+	public final int getNodesLeft() {
 		return this.cplex.getNnodesLeft();
 	}
 
@@ -169,13 +166,13 @@ public abstract class MIProblemCplex extends AMIProblem {
 	 * @return
 	 */
 	@Override
-	public int getSimplexIterations() {
+	public final int getSimplexIterations() {
 		return this.cplex.getNphaseOneIterations();
 	}
 
 	@Override
-	public void resetColumnBound(int columnNumber, BOUNDS_TYPE boundType,
-			double lowerBound, double upperBound) {
+	public final void resetColumnBound(final int columnNumber, final BoundsType boundType,
+		final double lowerBound, final double upperBound) {
 		try {
 			switch (boundType) {
 			case FREE:
@@ -208,15 +205,14 @@ public abstract class MIProblemCplex extends AMIProblem {
 				throw new RuntimeException("No such bound type.");
 			}
 		} catch (IloException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new RuntimeException("Column Number is wrong.");
 		}
 	}
 
 	@Override
-	protected void setProblemType(PROBLEM_TYPE problemType,
-			OBJECTIVE_TYPE objectiveType) {
+	protected final void setProblemType(final ProblemType problemType,
+			final ObjectiveType objectiveType) {
 		this.probType = problemType;
 		this.objectiveType = objectiveType;
 		try {
@@ -228,11 +224,11 @@ public abstract class MIProblemCplex extends AMIProblem {
 	}
 
 	@Override
-	public boolean disableRow(int rowNumber) throws RuntimeException {
+	public final boolean disableRow(final int rowNumber) throws RuntimeException {
 		try {
-			if (this.rowsInModel.get(rowNumber - 1) == ROW_STATUS.ENABLED) {
+			if (this.rowsInModel.get(rowNumber - 1) == RowStatus.ENABLED) {
 				this.cplex.remove(this.rows.get(rowNumber - 1));
-				this.rowsInModel.put(rowNumber - 1, ROW_STATUS.DISABLED);
+				this.rowsInModel.put(rowNumber - 1, RowStatus.DISABLED);
 				return true;
 			}
 		} catch (IloException e) {
@@ -242,9 +238,9 @@ public abstract class MIProblemCplex extends AMIProblem {
 		return false;
 	}
 
-	public boolean deleteRow(int rowNumber) throws RuntimeException {
+	public final boolean deleteRow(final int rowNumber) throws RuntimeException {
 		try {
-			if (this.rowsInModel.get(rowNumber - 1) == ROW_STATUS.ENABLED) {
+			if (this.rowsInModel.get(rowNumber - 1) == RowStatus.ENABLED) {
 				this.cplex.remove(this.rows.get(rowNumber - 1));
 				this.rows.remove(rowNumber - 1);
 
@@ -258,23 +254,22 @@ public abstract class MIProblemCplex extends AMIProblem {
 	}
 
 	@Override
-	public void importFile(String fileName) {
+	public final void importFile(final String fileName) {
 		try {
 			this.cplex = new IloCplex();
 			this.cplex.importModel(fileName);
 		} catch (IloException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new RuntimeException("Error reading file");
 		}
 	}
 
 	@Override
-	public boolean enableRow(int rowNumber) throws RuntimeException {
+	public final boolean enableRow(final int rowNumber) throws RuntimeException {
 		try {
-			if (this.rowsInModel.get(rowNumber - 1) == ROW_STATUS.DISABLED) {
+			if (this.rowsInModel.get(rowNumber - 1) == RowStatus.DISABLED) {
 				this.cplex.add(this.rows.get(rowNumber - 1));
-				this.rowsInModel.put(rowNumber - 1, ROW_STATUS.ENABLED);
+				this.rowsInModel.put(rowNumber - 1, RowStatus.ENABLED);
 				return true;
 			}
 		} catch (IloException e) {
@@ -298,21 +293,20 @@ public abstract class MIProblemCplex extends AMIProblem {
 				objCoeffDblBasicType));
 	}
 
-	public void removeObjective() {
+	public final void removeObjective() {
 		try {
 			this.cplex.delete(this.cplex.getObjective());
-			for ( int i = 0; i < this.objectiveCoeff.size(); i++) {
+			for (int i = 0; i < this.objectiveCoeff.size(); i++) {
 				this.objectiveCoeff.set(i, 0.0);
 			}
 		} catch (IloException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new RuntimeException("Couldn't delete objective.");
 		}
 	}
 	
 	@Override
-	public void updateObjective() throws Exception {
+	public final void updateObjective() throws Exception {
 		IloNumExpr objectiveFunctionExpr = this.getObjectiveFunction();
 
 		this.cplex.delete(this.cplex.getObjective());
@@ -329,9 +323,9 @@ public abstract class MIProblemCplex extends AMIProblem {
 	}
 
 	@Override
-	public void addAndSetColumn(String name, BOUNDS_TYPE boundType,
-			double lowerBound, double upperBound, VARIABLE_TYPE varType,
-			double objCoeff) {
+	public final void addAndSetColumn(final String name, final BoundsType boundType,
+		final double lowerBound, final double upperBound, final VariableType varType,
+		final double objCoeff) {
 		try {
 			// IloColumn newCol = cplex.column(this.objectiveFunction,
 			// objCoeff);
@@ -362,10 +356,9 @@ public abstract class MIProblemCplex extends AMIProblem {
 	}
 
 	@Override
-	public void resetRowBound(int rowNumber, BOUNDS_TYPE boundType,
-			double lowerBound, double upperBound) {
+	public final void resetRowBound(final int rowNumber, final BoundsType boundType,
+		final double lowerBound, final double upperBound) {
 		try {
-
 			/*
 			 * this.rows.get(rowNumber - 1).setLB(-Configuration.MM);
 			 * this.rows.get(rowNumber - 1).setUB(Configuration.MM);
@@ -397,7 +390,6 @@ public abstract class MIProblemCplex extends AMIProblem {
 				throw new RuntimeException("No such bound type.");
 			}
 		} catch (IloException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new RuntimeException("Row Number is wrong. (row number = "
 					+ rowNumber + ")");
@@ -406,8 +398,8 @@ public abstract class MIProblemCplex extends AMIProblem {
 	}
 
 	@Override
-	public int addAndSetRow(String name, BOUNDS_TYPE boundType,
-			double lowerBound, double upperBound) {
+	public final int addAndSetRow(final String name, final BoundsType boundType,
+		final double lowerBound, final double upperBound) {
 		try {
 			IloRange newRow;
 			IloNumExpr rowExpr = this.cplex.constant(0.0);
@@ -425,7 +417,7 @@ public abstract class MIProblemCplex extends AMIProblem {
 				throw new IllegalArgumentException("Unknown Type");
 			}
 			this.rows.put(this.numRows, newRow);
-			this.rowsInModel.put(this.numRows, ROW_STATUS.ENABLED);
+			this.rowsInModel.put(this.numRows, RowStatus.ENABLED);
 			this.numRows++;
 		} catch (IloException e) {
 			e.printStackTrace();
@@ -448,9 +440,9 @@ public abstract class MIProblemCplex extends AMIProblem {
 	 * @throws RuntimeException
 	 */
 	@Override
-	public void setMatCol(String name, VARIABLE_TYPE varType, double objCoeff,
-			double lowerBound, double upperBound, List<Integer> indices,
-			List<Double> values) throws RuntimeException {
+	public final void setMatCol(final String name, final VariableType varType, final double objCoeff,
+		final double lowerBound, final double upperBound, final List<Integer> indices,
+		final List<Double> values) throws RuntimeException {
 		// do addColumn
 		// setColumn
 		// setMatCol
@@ -489,8 +481,8 @@ public abstract class MIProblemCplex extends AMIProblem {
 	 * Doesn't add a new row
 	 */
 	@Override
-	public void setMatRow(int rowNo, List<Integer> indices, List<Double> values)
-			throws RuntimeException {
+	public final void setMatRow(final int rowNo, final List<Integer> indices, final List<Double> values)
+		throws RuntimeException {
 		if (indices.size() != values.size()) {
 			throw new RuntimeException();
 		}
@@ -518,10 +510,11 @@ public abstract class MIProblemCplex extends AMIProblem {
 	}
 
 	@Override
-	protected void saveBasisStatus() {
+	protected final void saveBasisStatus() {
 		if (!Configuration.WARMSTARTLPS || this.columns.size() == 0
-				|| this.rows.size() == 0 || this.probType == PROBLEM_TYPE.MIP)
+			|| this.rows.size() == 0 || this.probType == ProblemType.MIP) {
 			return;
+		}
 		try {
 			// IloLPMatrix lp = (IloLPMatrix)cplex.LPMatrixIterator().next();
 			// IloNumVar[] vars = lp.getNumVars();
@@ -540,10 +533,11 @@ public abstract class MIProblemCplex extends AMIProblem {
 	}
 
 	@Override
-	protected void loadBasisStatus() {
+	protected final void loadBasisStatus() {
 		if (!Configuration.WARMSTARTLPS || this.colStatuses == null
-				|| this.rowStatuses == null || this.probType == PROBLEM_TYPE.MIP)
+				|| this.rowStatuses == null || this.probType == ProblemType.MIP) {
 			return;
+		}
 		try {
 			this.cplex.setBasisStatuses(this.columns.toArray(new IloNumVar[] {}),
 					this.colStatuses, 0, this.colStatuses.length, this.rows.values()
@@ -559,14 +553,14 @@ public abstract class MIProblemCplex extends AMIProblem {
 	}
 
 	@Override
-	public void solve() throws LPSolverException {	
-		if (this.isLoaded == false)
+	public final void solve() throws LPSolverException {	
+		if (!this.isLoaded) {
 			this.loadProblem();
-		if ( this.objectiveModified == true ) {
+		}
+		if (this.objectiveModified) {
 			try {
 				this.updateObjective();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				throw new LPSolverException();				
 			}
@@ -579,7 +573,7 @@ public abstract class MIProblemCplex extends AMIProblem {
 			boolean retval = this.cplex.solve();
 			// MANISH DEBUG PRINT
 			// cplex.getCplexStatus().equals(CplexStatus.Optimal)
-			if (retval == false /*
+			if (!retval /*
 								 * ||
 								 * !cplex.getCplexStatus().equals(CplexStatus.
 								 * Optimal)
@@ -603,7 +597,7 @@ public abstract class MIProblemCplex extends AMIProblem {
 	}
 
 	@Override
-	public double getRowDual(int rowNumber) {
+	public final double getRowDual(final int rowNumber) {
 		try {
 			double dual = this.cplex.getDual(this.rows.get(rowNumber - 1));
 			return dual;
@@ -617,7 +611,7 @@ public abstract class MIProblemCplex extends AMIProblem {
 	}
 
 	@Override
-	public double getRowSlack(int rowNumber) {
+	public final double getRowSlack(final int rowNumber) {
 		try {
 			return this.cplex.getSlack(this.rows.get(rowNumber - 1));
 		} catch (UnknownObjectException e) {
@@ -630,7 +624,7 @@ public abstract class MIProblemCplex extends AMIProblem {
 	}
 
 	@Override
-	public double getColumnPrimal(int columnNumber) {
+	public final double getColumnPrimal(final int columnNumber) {
 		double xVal;
 		try {
 			xVal = this.cplex.getValue(this.columns.get(columnNumber - 1));
@@ -649,7 +643,7 @@ public abstract class MIProblemCplex extends AMIProblem {
 	}
 
 	@Override
-	public List<Double> getRowDualVector() {
+	public final List<Double> getRowDualVector() {
 		double[] duals;
 		try {
 			duals = this.cplex.getDuals(this.rows.values().toArray(new IloRange[] {}));
@@ -668,7 +662,7 @@ public abstract class MIProblemCplex extends AMIProblem {
 	}
 
 	@Override
-	public List<Double> getColumnPrimalVector() {
+	public final List<Double> getColumnPrimalVector() {
 		try {
 			double[] xVals = this.cplex.getValues(this.columns
 					.toArray(new IloNumVar[] {}));
@@ -687,7 +681,7 @@ public abstract class MIProblemCplex extends AMIProblem {
 	}
 
 	@Override
-	public double getLPObjective() {
+	public final double getLPObjective() {
 		try {
 			return this.cplex.getObjValue();
 		} catch (IloException e) {
@@ -697,7 +691,7 @@ public abstract class MIProblemCplex extends AMIProblem {
 	}
 
 	@Override
-	public void writeProb(String fileName) {
+	public final void writeProb(final String fileName) {
 		try {
 			this.cplex.exportModel(fileName + ".lp");
 		} catch (IloException e) {
@@ -707,7 +701,7 @@ public abstract class MIProblemCplex extends AMIProblem {
 	}
 
 	@Override
-	public void writeSol(String fileName) {
+	public final void writeSol(final String fileName) {
 		try {
 			this.cplex.writeSolution(fileName);
 		} catch (IloException e) {
@@ -720,7 +714,7 @@ public abstract class MIProblemCplex extends AMIProblem {
 	 * clean the data structures.
 	 */
 	@Override
-	public void end() {
+	public final void end() {
 		this.cplex.end();
 		this.columns.clear();
 		this.rows.clear();
@@ -736,13 +730,13 @@ public abstract class MIProblemCplex extends AMIProblem {
 	 *            can be <code>null</code> if no output should be provided.
 	 */
 	@Override
-	public void redirectOutput(OutputStream stream) {
+	public final void redirectOutput(final OutputStream stream) {
 		this.cplex.setOut(stream);
 		this.cplex.setWarning(stream);
 	}
 
 	@Override
-	public double getRowPrimal(int rowNumber) {
+	public final double getRowPrimal(final int rowNumber) {
 		try {
 			return this.cplex.getValue(this.rows.get(rowNumber - 1).getExpr());
 		} catch (IloException e) {
