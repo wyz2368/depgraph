@@ -1,6 +1,5 @@
 package agent;
 
-
 import model.DefenderAction;
 import model.DefenderBelief;
 import model.DefenderObservation;

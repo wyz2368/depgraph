@@ -91,20 +91,20 @@ public final class TestDefenderAgent {
 		
 		UniformDefender uniformDefender = new UniformDefender(maxNumRes, minNumRes, numResRatio);
 		DefenderAction dUniformAction = uniformDefender.sampleAction(depGraph, curTimeStep, numTimeStep
-				, defBelief
-				, rnd.getRandomGenerator());
+			, defBelief
+			, rnd.getRandomGenerator());
 		dUniformAction.print();
 		
 		MinCutDefender minCutDefender = new MinCutDefender(maxNumRes, minNumRes, numResRatio);
 		DefenderAction dMinCutAction = minCutDefender.sampleAction(depGraph, curTimeStep, numTimeStep
-				, defBelief
-				, rnd.getRandomGenerator());
+			, defBelief
+			, rnd.getRandomGenerator());
 		dMinCutAction.print();
 		
 		GoalOnlyDefender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
 		DefenderAction dGoalOnlyAction = goalOnlyDefender.sampleAction(depGraph, curTimeStep, numTimeStep
-				, defBelief
-				, rnd.getRandomGenerator());
+			, defBelief
+			, rnd.getRandomGenerator());
 		dGoalOnlyAction.print();
 	}
 }

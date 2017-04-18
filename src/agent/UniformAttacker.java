@@ -122,7 +122,8 @@ public final class UniformAttacker extends Attacker {
 	 * @param rnd integer distribution randomizer
 	 * @return type of AttackerAction: an action for the attacker
 	 *****************************************************************************************/
-	public static AttackerAction sampleAction(final DependencyGraph depGraph, final AttackCandidate attackCandidate, final int numSelectCandidate
+	public static AttackerAction sampleAction(final DependencyGraph depGraph,
+		final AttackCandidate attackCandidate, final int numSelectCandidate
 		, final AbstractIntegerDistribution rnd) {
 		AttackerAction action = new AttackerAction();
 		List<Edge> edgeCandidateList = new ArrayList<Edge>(attackCandidate.getEdgeCandidateSet());
@@ -140,7 +141,8 @@ public final class UniformAttacker extends Attacker {
 				if (idx < edgeCandidateList.size()) { // select edge
 					Edge selectEdge = edgeCandidateList.get(idx);
 					Set<Edge> edgeSet = action.getAction().get(selectEdge.gettarget()); //find the current edge candidates w.r.t. the OR node
-					if (edgeSet != null) { // if this OR node is included in the attacker action, add new edge to the edge set associated with this node
+					if (edgeSet != null) { // if this OR node is included in the attacker action,
+						// add new edge to the edge set associated with this node
 						edgeSet.add(selectEdge);
 					} else { // if this OR node is node included in the attacker action, create a new one
 						edgeSet = new HashSet<Edge>();

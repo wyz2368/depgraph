@@ -52,7 +52,8 @@ public final class GameOracle {
 	 * @param rnd random data generator
 	 * @return observation of the defender
 	 */
-	public static DefenderObservation generateDefObservation(final DependencyGraph depGraph, final GameState gameState, final RandomDataGenerator rnd) {
+	public static DefenderObservation generateDefObservation(final DependencyGraph depGraph,
+		final GameState gameState, final RandomDataGenerator rnd) {
 		DefenderObservation defObservation = new DefenderObservation();
 		boolean[] isActive = new boolean[depGraph.vertexSet().size()];
 		for (int i = 0; i < depGraph.vertexSet().size(); i++) {

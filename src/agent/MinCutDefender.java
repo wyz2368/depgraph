@@ -27,7 +27,7 @@ public final class MinCutDefender extends Defender {
 	}
 	
 	public static DefenderAction sampleAction(final List<Node> dCandidateNodeList, final int numNodetoProtect,
-			final AbstractIntegerDistribution rnd) {
+		final AbstractIntegerDistribution rnd) {
 		DefenderAction action = new DefenderAction();
 		
 		boolean[] isChosen = new boolean[dCandidateNodeList.size()];

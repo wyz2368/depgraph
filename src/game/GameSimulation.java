@@ -26,7 +26,7 @@ public final class GameSimulation {
 	
 	private Attacker attacker;
 	private Defender defender;
-//	GameOracle gameOracle;
+	// private GameOracle gameOracle;
 	
 	private double discFact = 1.0;
 	
@@ -88,7 +88,8 @@ public final class GameSimulation {
 			
 			System.out.println("Sample defender action...");
 			start = System.currentTimeMillis();
-			DefenderAction defAction = this.defender.sampleAction(this.depGraph, t, this.numTimeStep, dBelief, this.rng.getRandomGenerator());
+			DefenderAction defAction = this.defender.sampleAction(
+				this.depGraph, t, this.numTimeStep, dBelief, this.rng.getRandomGenerator());
 			end = System.currentTimeMillis();
 			System.out.println("Elapsed time: " + (end - start) / thousand);
 			// defAction.print();
@@ -108,7 +109,8 @@ public final class GameSimulation {
 			
 			System.out.println("Update defender belief...");
 			start = System.currentTimeMillis();
-			dBelief = this.defender.updateBelief(this.depGraph, dBelief, defAction, dObservation, t, this.numTimeStep, this.rng.getRandomGenerator());
+			dBelief = this.defender.updateBelief(this.depGraph, dBelief, defAction,
+				dObservation, t, this.numTimeStep, this.rng.getRandomGenerator());
 			end = System.currentTimeMillis();
 			System.out.println("Elapsed time: " + (end - start) / thousand);
 			

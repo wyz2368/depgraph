@@ -27,7 +27,8 @@ public final class ValuePropagationAttacker extends Attacker {
 	
 	private final double propagationParam = 0.5;
 	
-	public ValuePropagationAttacker(final double maxNumSelectCandidate, final double minNumSelectCandidate, final double numSelectCandidateRatio
+	public ValuePropagationAttacker(final double maxNumSelectCandidate, final double minNumSelectCandidate,
+		final double numSelectCandidateRatio
 		, final double qrParam, final double discFact) {
 		super(AttackerType.VALUE_PROPAGATION);
 		this.maxNumSelectCandidate = (int) maxNumSelectCandidate;
@@ -45,7 +46,8 @@ public final class ValuePropagationAttacker extends Attacker {
 	 * @param rng: random generator
 	 * @return type of Attacker Action: an attack action
 	 *****************************************************************************************/
-	public AttackerAction sampleAction(final DependencyGraph depGraph, final int curTimeStep, final int numTimeStep, final RandomGenerator rng) {	
+	public AttackerAction sampleAction(final DependencyGraph depGraph, final int curTimeStep,
+		final int numTimeStep, final RandomGenerator rng) {	
 		// Find candidate
 		AttackCandidate attackCandidate = selectCandidate(depGraph);
 		// Compute candidate value
@@ -608,7 +610,8 @@ public final class ValuePropagationAttacker extends Attacker {
 	 * @param rnd: integer distribution randomizer
 	 * @return type of AttackerAction: an action for the attacker
 	 *****************************************************************************************/
-	public static AttackerAction sampleAction(final DependencyGraph depGraph, final AttackCandidate attackCandidate, final int numSelectCandidate
+	public static AttackerAction sampleAction(final DependencyGraph depGraph,
+		final AttackCandidate attackCandidate, final int numSelectCandidate
 		, final AbstractIntegerDistribution rnd) {
 		AttackerAction action = new AttackerAction();
 		List<Edge> edgeCandidateList = new ArrayList<Edge>(attackCandidate.getEdgeCandidateSet());
@@ -626,7 +629,8 @@ public final class ValuePropagationAttacker extends Attacker {
 				if (idx < edgeCandidateList.size()) { // select edge
 					Edge selectEdge = edgeCandidateList.get(idx);
 					Set<Edge> edgeSet = action.getAction().get(selectEdge.gettarget()); //find the current edge candidates w.r.t. the OR node
-					if (edgeSet != null) { // if this OR node is included in the attacker action, add new edge to the edge set associated with this node
+					if (edgeSet != null) { // if this OR node is included in the attacker action,
+						// add new edge to the edge set associated with this node
 						edgeSet.add(selectEdge);
 					} else { // if this OR node is node included in the attacker action, create a new one
 						edgeSet = new HashSet<Edge>();

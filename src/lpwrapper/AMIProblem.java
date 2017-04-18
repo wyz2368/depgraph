@@ -44,10 +44,10 @@ public abstract class AMIProblem {
 	protected abstract void loadBasisStatus();
 
 	protected abstract void resetColumnBound(int columnNumber,
-			BoundsType boundType, double lowerBound, double upperBound);
+		BoundsType boundType, double lowerBound, double upperBound);
 
 	protected abstract void resetRowBound(int rowNumber, BoundsType boundType,
-			double lowerBound, double upperBound);
+		double lowerBound, double upperBound);
 	
 	public AMIProblem() {
 		this.genTime = 0;

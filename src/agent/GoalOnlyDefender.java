@@ -20,7 +20,8 @@ public final class GoalOnlyDefender extends Defender {
 	private double logisParam;
 	private double discFact;
 	
-	public GoalOnlyDefender(final double maxNumRes, final double minNumRes, final double numResRatio, final double logisParam, final double discFact) {
+	public GoalOnlyDefender(final double maxNumRes, final double minNumRes, final double numResRatio,
+		final double logisParam, final double discFact) {
 		super(DefenderType.GOAL_ONLY);
 		this.maxNumRes = (int) maxNumRes;
 		this.minNumRes = (int) minNumRes;
