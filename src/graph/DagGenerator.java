@@ -32,6 +32,7 @@ public final class DagGenerator {
 
     // this class cannot be instantiated
     private DagGenerator() { }
+    
     /**
      * Returns a random simple DAG containing {@code numNode} vertices and {@code numEdge} edges.
      * Note: it is not uniformly selected at random among all such DAGs.
@@ -242,7 +243,8 @@ public final class DagGenerator {
         return dag;
     }
     
-    public static DependencyGraph genLayerDAG(final int numEdgeLB, final int numEdgeUB, final int numNodeperLayerLB, final int numNodeperLayerUB
+    public static DependencyGraph genLayerDAG(final int numEdgeLB, final int numEdgeUB,
+		final int numNodeperLayerLB, final int numNodeperLayerUB
     	, final int numLayer, final RandomGenerator rng) {
     	DependencyGraph dag = new DependencyGraph();
     	RandomDataGenerator rand = new RandomDataGenerator(rng);

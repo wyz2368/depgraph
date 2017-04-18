@@ -14,7 +14,8 @@ public final class GameSimulationResult {
 	private double defPayoff;
 	private double attPayoff;
 	
-	public GameSimulationResult(final GameState initialState, final List<GameSample> gameSampleList, final double defPayoff, final double attPayoff) {
+	public GameSimulationResult(final GameState initialState, final List<GameSample> gameSampleList,
+		final double defPayoff, final double attPayoff) {
 		this.initialState = initialState;
 		this.gameSampleList = gameSampleList;
 		this.defPayoff = defPayoff;

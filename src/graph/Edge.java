@@ -27,8 +27,7 @@ public final class Edge extends DefaultWeightedEdge {
 	private static int counter = 1;
 
 	public Edge() {
-		this(EdgeType.NORMAL
-				, 0.0, 0.0);
+		this(EdgeType.NORMAL, 0.0, 0.0);
 	}
 	
 	public Edge(final EdgeType aType
@@ -122,7 +121,8 @@ public final class Edge extends DefaultWeightedEdge {
 	
 	public void print() {
 		System.out.println("--------------------------------------------------------------------");
-		System.out.println("ID: " + this.getId() + "\t" + "Source: " + this.getsource().getId() + "\t" + "Des: " + this.gettarget().getId());
+		System.out.println("ID: " + this.getId() + "\t" + "Source: "
+			+ this.getsource().getId() + "\t" + "Des: " + this.gettarget().getId());
 		System.out.println("Type: " + this.getType().toString());
 		System.out.println("aCost: " + this.getACost());
 		System.out.println("actProb: " + this.getActProb());

@@ -44,14 +44,12 @@ public abstract class MIProblemCplex extends AMIProblem {
 			this.cplex.setName("MIProblem");
 			// objectiveFunction = cplex.getObjective();
 			// cplex.setParam(IloCplex.IntParam.RootAlg, IloCplex.Algorithm.Dual);
-//			cplex.setParam(IloCplex.IntParam.RootAlg, IloCplex.Algorithm.Primal);
+			// cplex.setParam(IloCplex.IntParam.RootAlg, IloCplex.Algorithm.Primal);
 			// cplex.setParam(IloCplex.IntParam.RootAlg, IloCplex.Algorithm.Barrier);
 			// cplex.setParam(IloCplex.DoubleParam.EpMrk, 0.999);
-
 			this.redirectOutput(null);
 		} catch (IloException e) {
 			e.printStackTrace();
-
 			throw new RuntimeException(e.getMessage());
 		}
 		this.columns = new ArrayList<IloNumVar>(this.numCols);
@@ -95,7 +93,8 @@ public abstract class MIProblemCplex extends AMIProblem {
 	protected final void setProblemName(final String name) {
 		this.cplex.setName(name);
 	}
-//	public void writeProb(String fileName) {
+
+// public void writeProb(String fileName) {
 //        try {
 //            cplex.exportModel(fileName + ".lp");
 //        } catch (IloException e) {
@@ -497,13 +496,13 @@ public abstract class MIProblemCplex extends AMIProblem {
 			}
 			this.rows.get(rowNo - 1).setExpr(constraintExpr);
 		} catch (Exception e) {	
-//			System.out.println("rowNo: " + rowNo);
-//			System.out.println(rows.size());
-//			System.out.println(rows.get(rowNo - 1));
+			// System.out.println("rowNo: " + rowNo);
+			// System.out.println(rows.size());
+			// System.out.println(rows.get(rowNo - 1));
 			
 			e.printStackTrace();
 			
-//			System.exit(1); // Manish
+			// System.exit(1); // Manish
 			
 			throw new RuntimeException(e.getMessage());						
 		}

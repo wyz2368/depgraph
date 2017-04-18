@@ -78,8 +78,9 @@ public final class Configuration {
 	}
 
 	public static void loadLibrariesCplex() throws IOException {
-		Configuration.loadLibrariesCplex("/Users/thanhnguyen/Documents/WORKS/ATTACK_GRAPH/CODES/CPLEX/CplexConfig");
-//		Configuration.loadLibrariesCplex("/home/thanhhng/CPLEX/CplexConfig");
+		Configuration.loadLibrariesCplex(
+			"/Users/thanhnguyen/Documents/WORKS/ATTACK_GRAPH/CODES/CPLEX/CplexConfig");
+		// Configuration.loadLibrariesCplex("/home/thanhhng/CPLEX/CplexConfig");
 	}
 	
 	public static void loadLibrariesCplex(final String configFileName) throws IOException {
@@ -110,13 +111,13 @@ public final class Configuration {
 					cPlexFileString = list[1];
 				} else if (osType.contains("64") && list[0].equals("LIB_FILE_64")) {
 					cPlexFileString = list[1];
-//				} 
-//				else if (list[0].equals("LICENSE_FILE")) {
-//					CplexLicenseString = list[1];
+					// } 
+					// else if (list[0].equals("LICENSE_FILE")) {
+						// CplexLicenseString = list[1];
 				} else {
 					System.err
-							.println("Unrecognized statement in Config File: "
-									+ line);
+						.println("Unrecognized statement in Config File: "
+							+ line);
 				}				
 			}
 			line = in.readLine();
@@ -127,14 +128,13 @@ public final class Configuration {
 		File cPlexFile = new File(cPlexFileString);
 		
 		System.load(cPlexFile.getAbsolutePath());
-//		File CplexLicenseFile = new File(CplexLicenseString);
-//		try {
-//			IloCplex.putenv("ILOG_LICENSE_FILE=" + CplexLicenseFile.getAbsolutePath());
-//		} catch (IloException e) {
-//			// TODO Auto-generated catch block
-//			System.err.println("Couldn't load Cplex license from file: " + CplexLicenseFile.getAbsolutePath());
-//			e.printStackTrace();
-//		}
+		// File CplexLicenseFile = new File(CplexLicenseString);
+		// try {
+			// IloCplex.putenv("ILOG_LICENSE_FILE=" + CplexLicenseFile.getAbsolutePath());
+		// } catch (IloException e) {
+			// System.err.println("Couldn't load Cplex license from file: " + CplexLicenseFile.getAbsolutePath());
+			// e.printStackTrace();
+		// }
 		loadedCplex = true;
 	}
 }

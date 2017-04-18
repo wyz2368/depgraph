@@ -95,7 +95,8 @@ public final class DGraphGenerator {
 		}
 	}
 	
-	public static void setNodeTypeRandom(final DependencyGraph depGraph, final Node node, final RandomDataGenerator rand, final double typePivot) {
+	public static void setNodeTypeRandom(final DependencyGraph depGraph, final Node node,
+		final RandomDataGenerator rand, final double typePivot) {
 		if (depGraph.inDegreeOf(node) != 0) { // non-root nodes
 			double value = rand.nextUniform(0, 1, true);
 			if (value <= typePivot) {
@@ -140,19 +141,19 @@ public final class DGraphGenerator {
 	}
 	
 	public static void genEdgePayoffRandom(final Edge edge, final RandomDataGenerator rand
-			, final double aCostLB, final double aCostUB) {
+		, final double aCostLB, final double aCostUB) {
 		double aCost = rand.nextUniform(aCostLB, aCostUB, true);
 		edge.setACost(aCost);
 	}
 	
 	public static void genActivationProbRandom(final Node node, final RandomDataGenerator rand
-			, final double aActProbLB, final double aActProbUB) {
+		, final double aActProbLB, final double aActProbUB) {
 		double aActProb = rand.nextUniform(aActProbLB, aActProbUB, true);
 		node.setActProb(aActProb);
 	}
 	
 	public static void genActivationProbRandom(final Edge edge, final RandomDataGenerator rand
-			, final double aActProbLB, final double aActProbUB) {
+		, final double aActProbLB, final double aActProbUB) {
 		double aActProb = rand.nextUniform(aActProbLB, aActProbUB, true);
 		edge.setActProb(aActProb);
 	}
@@ -175,7 +176,7 @@ public final class DGraphGenerator {
 	}
 	
 	public static void findMinCut(final DependencyGraph depGraph) {
-		 SimpleDirectedWeightedGraph<Node, Edge> cloneGraph = new SimpleDirectedWeightedGraph<Node, Edge>(Edge.class);
+		SimpleDirectedWeightedGraph<Node, Edge> cloneGraph = new SimpleDirectedWeightedGraph<Node, Edge>(Edge.class);
         for (Node node : depGraph.vertexSet()) {
         	cloneGraph.addVertex(node);
         }

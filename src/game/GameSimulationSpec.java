@@ -12,23 +12,24 @@ public final class GameSimulationSpec {
 	
 	private double discFact; // for computing payoff
 
-//	private double aRewardLB;
-//	private double aRewardUB;
-//	private double dPenaltyLB;
-//	private double dPenaltyUB;
-//	
-//	private int totalNumAlert; // total number of security alerts
-//	private int minNumAlert; // minimum number of alerts for each node
-//	private int maxNumAlert; // maximum number of alerts for each node
+	// private double aRewardLB;
+	//	private double aRewardUB;
+	//	private double dPenaltyLB;
+	//	private double dPenaltyUB;
+	//	
+	//	private int totalNumAlert; // total number of security alerts
+	//	private int minNumAlert; // minimum number of alerts for each node
+	//	private int maxNumAlert; // maximum number of alerts for each node
 	
 	// For strategy generation
 	// Note: should we use uniform distribution to generate number of nodes to enable or disable each time step???
-//	private double fixPoissonParam; // used if fixed mean is used
-//	private double adaptPoissonRatio; // used if mean is chosen according to the number of available nodes
-//	private double qrParam; // for attacker 
-//	private double logisParam; // for defender
+	//	private double fixPoissonParam; // used if fixed mean is used
+	//	private double adaptPoissonRatio; // used if mean is chosen according to the number of available nodes
+	//	private double qrParam; // for attacker 
+	//	private double logisParam; // for defender
 	
-	public GameSimulationSpec(final int numTimeStep, final int numSim, final int graphID, final int numNode, final int numEdge, final int numTarget
+	public GameSimulationSpec(final int numTimeStep, final int numSim, final int graphID, final int numNode,
+		final int numEdge, final int numTarget
 		, final double discFact) {
 		this.numTimeStep = numTimeStep;
 		this.numSim = numSim;
@@ -36,17 +37,17 @@ public final class GameSimulationSpec {
 		this.numNode = numNode;
 		this.numEdge = numEdge;
 		this.numTarget = numTarget;
-//		this.aRewardLB = aRewardLB;
-//		this.aRewardUB = aRewardUB;
-//		this.dPenaltyLB = dPenaltyLB;
-//		this.dPenaltyUB = dPenaltyUB;
-//		this.totalNumAlert = totalNumAlert;
-//		this.minNumAlert = minNumAlert;
-//		this.maxNumAlert = maxNumAlert;
-//		this.fixPoissonParam = fixPoissonParam;
-//		this.adaptPoissonRatio = adaptPoissonRatio;
-//		this.qrParam = qrParam;
-//		this.logisParam = logisParam;
+		// this.aRewardLB = aRewardLB;
+		// this.aRewardUB = aRewardUB;
+		// this.dPenaltyLB = dPenaltyLB;
+		// this.dPenaltyUB = dPenaltyUB;
+		// this.totalNumAlert = totalNumAlert;
+		// this.minNumAlert = minNumAlert;
+		// this.maxNumAlert = maxNumAlert;
+		// this.fixPoissonParam = fixPoissonParam;
+		// this.adaptPoissonRatio = adaptPoissonRatio;
+		// this.qrParam = qrParam;
+		// this.logisParam = logisParam;
 		this.discFact = discFact;
 	}
 	
@@ -74,7 +75,7 @@ public final class GameSimulationSpec {
 		return this.numTarget;
 	}
 
-//	public double getARewardLB()
+// public double getARewardLB()
 //	{
 //		return this.aRewardLB;
 //	}

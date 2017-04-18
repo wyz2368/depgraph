@@ -50,6 +50,7 @@ public final class JsonUtils {
     private JsonUtils() {
     	// private constructor
     }
+    
     public static GameSimulationSpec getSimSpecOrDefaults(final String folderName) {
         assert folderName != null;
         
@@ -94,6 +95,7 @@ public final class JsonUtils {
             );
         return result;
     }
+    
     public static GameSimulationSpec getDefaults() {
         final String jsonString = linesAsString(DEFAULT_FILE_NAME);
         final JsonObject fileAsJson = 
@@ -106,6 +108,7 @@ public final class JsonUtils {
             );
         return result;
     }
+    
     public static String getAttackerString(final String folderName) {
         assert folderName != null;
         /*
@@ -151,7 +154,7 @@ public final class JsonUtils {
     }
 
     public static String getObservationString(final MeanGameSimulationResult simResult, final String attackerStrategyString
-            , final String defenderStrategyString, final GameSimulationSpec simSpec) {
+        , final String defenderStrategyString, final GameSimulationSpec simSpec) {
         assert simResult != null
             && attackerStrategyString != null
             && defenderStrategyString != null
@@ -180,16 +183,16 @@ public final class JsonUtils {
         defenderObject.add(features, new JsonObject());
         playersArray.add(defenderObject);
         
-//        final String simResultJsonString = new Gson().toJson(simResult);
-//        final JsonObject simResultJsonObject =
-//            (JsonObject) new JsonParser().parse(simResultJsonString);
+        // final String simResultJsonString = new Gson().toJson(simResult);
+        // final JsonObject simResultJsonObject =
+        	// (JsonObject) new JsonParser().parse(simResultJsonString);
         
         final String simSpecJsonString = new Gson().toJson(simSpec);
         final JsonObject simSpecJsonObject =
             (JsonObject) new JsonParser().parse(simSpecJsonString);
-//        final String config = "config";
-//        simResultJsonObject.add(config, simSpecJsonObject);
-//        obsObject.add(features, simSpecJsonObject);
+        // final String config = "config";
+        	// simResultJsonObject.add(config, simSpecJsonObject);
+        // obsObject.add(features, simSpecJsonObject);
         obsObject.add(features, simSpecJsonObject);
         
         final String players = "players";
@@ -202,6 +205,7 @@ public final class JsonUtils {
             .create();
         return gson.toJson(obsObject).toString();
     }
+    
     public static void printObservationToFile(final String folderName, final String obsString) {
     	/*
         final String outputFolderPath =
@@ -226,7 +230,7 @@ public final class JsonUtils {
         }
     }
         
-        private static int maxSuffixValue(final String folderPath, final String fileNamePrefix) {
+    private static int maxSuffixValue(final String folderPath, final String fileNamePrefix) {
         final Set<Integer> values = new HashSet<Integer>();
         final File[] files = new File(folderPath).listFiles();
         if (files == null) {

@@ -36,7 +36,7 @@ public final class GameSimulation {
 	private GameSimulationResult simResult;
 	
 	public GameSimulation(final DependencyGraph depGraph, final Attacker attacker, final Defender defender, final RandomDataGenerator rng,
-			final int numTimeStep, final double discFact) {
+		final int numTimeStep, final double discFact) {
 		this.depGraph = depGraph;
 		this.numTimeStep = numTimeStep;
 		this.discFact = discFact;
@@ -84,21 +84,21 @@ public final class GameSimulation {
 			AttackerAction attAction = this.attacker.sampleAction(this.depGraph, t, this.numTimeStep, this.rng.getRandomGenerator());
 			end = System.currentTimeMillis();
 			System.out.println("Elapsed time: " + (end - start) / thousand);
-//			attAction.print();
+			// attAction.print();
 			
 			System.out.println("Sample defender action...");
 			start = System.currentTimeMillis();
 			DefenderAction defAction = this.defender.sampleAction(this.depGraph, t, this.numTimeStep, dBelief, this.rng.getRandomGenerator());
 			end = System.currentTimeMillis();
 			System.out.println("Elapsed time: " + (end - start) / thousand);
-//			defAction.print();
+			// defAction.print();
 			
 			System.out.println("Sample game state...");
 			start = System.currentTimeMillis();
 			gameState = GameOracle.generateStateSample(gameState, attAction, defAction, this.rng); // new game state
 			end = System.currentTimeMillis();
 			System.out.println("Elapsed time: " + (end - start) / thousand);
-//			gameState.print();
+			// gameState.print();
 			
 			System.out.println("Sample observation...");
 			start = System.currentTimeMillis();

@@ -37,11 +37,11 @@ public final class GameOracle {
 	 * @return new game state
 	 */
 	public static GameState generateStateSample(final GameState pastState
-			, final AttackerAction attAction, final DefenderAction defAction
-			, final RandomDataGenerator rnd) {
+		, final AttackerAction attAction, final DefenderAction defAction
+		, final RandomDataGenerator rnd) {
 		List<GameState> stateSampleList = generateStateSample(pastState
-				, attAction, defAction
-				,  rnd, 1, false);
+			, attAction, defAction
+			,  rnd, 1, false);
 		return stateSampleList.get(0);
 	}
 	
@@ -92,8 +92,7 @@ public final class GameOracle {
 	 * @param dObservation observation resulted from gameState
 	 * @return probability of the observation
 	 */
-	public static double computeObservationProb(final GameState gameState, final DefenderObservation dObservation)
-	{
+	public static double computeObservationProb(final GameState gameState, final DefenderObservation dObservation) {
 		double prob = 1.0;
 		for (SecurityAlert alert : dObservation.getAlertSet()) {
 			Node node = alert.getNode();
@@ -124,8 +123,8 @@ public final class GameOracle {
 	 * @return probability of the new  game state state
 	 */
 	public static double computeStateTransitionProb(
-			final DefenderAction dAction, final AttackerAction aAction
-			, final GameState pastState, final GameState newState) {
+		final DefenderAction dAction, final AttackerAction aAction
+		, final GameState pastState, final GameState newState) {
 		for (Node node : pastState.getEnabledNodeSet()) { // active nodes in past state will remain active if not disable
 			if (!dAction.contain(node) && !newState.contain(node)) {
 				return 0.0;
@@ -174,8 +173,8 @@ public final class GameOracle {
 	 * @return List of new game state samples
 	 */
 	public static List<GameState> generateStateSample(final GameState pastState
-			, final AttackerAction attAction, final DefenderAction defAction
-			, final RandomDataGenerator rnd, final int numStateSample, final boolean isReplacement) {
+		, final AttackerAction attAction, final DefenderAction defAction
+		, final RandomDataGenerator rnd, final int numStateSample, final boolean isReplacement) {
 		Map<Node, Double> enableProbMap = new HashMap<Node, Double>(); // probability each node is active
 		// Check if the defender disables any previously active nodes
 		for (Node node : pastState.getEnabledNodeSet()) {
