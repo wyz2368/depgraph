@@ -33,7 +33,7 @@ public final class ValuePropagationVsDefenderALT extends Defender {
 	private double discFact;
 	private double thres; // to remove game state from belief
 	
-	// defender's assumption abt attacker
+	// defender's assumption about attacker
 	private double qrParam; 
 	private int maxNumAttCandidate; 
 	private int minNumAttCandidate;
@@ -57,10 +57,19 @@ public final class ValuePropagationVsDefenderALT extends Defender {
 	 * @param minNumAttCandidate
 	 * @param numAttCandidateRatio
 	 *****************************************************************************************/
-	public ValuePropagationVsDefenderALT(final int maxNumRes, final int minNumRes, final double numResRatio
-		, final double logisParam, final double discFact, final double thres
-		, final double qrParam, final int maxNumAttCandidate, final int minNumAttCandidate, final double numAttCandidateRatio) {
+	public ValuePropagationVsDefenderALT(final int maxNumRes, final int minNumRes, final double numResRatio,
+		final double logisParam, final double discFact, final double thres,
+		final double qrParam, final int maxNumAttCandidate, final int minNumAttCandidate,
+		final double numAttCandidateRatio) {
 		super(DefenderType.vsVALUE_PROPAGATION);
+		if (
+			minNumRes < 1 || minNumRes < maxNumRes || !isProb(numResRatio)
+			|| discFact < 0.0 || discFact > 1.0 || !isProb(thres)
+			|| minNumAttCandidate < 1 || maxNumAttCandidate < minNumAttCandidate
+			|| !isProb(numAttCandidateRatio)
+		) {
+			throw new IllegalArgumentException();
+		}
 		
 		this.maxNumRes = maxNumRes;
 		this.minNumRes = minNumRes;
@@ -76,10 +85,12 @@ public final class ValuePropagationVsDefenderALT extends Defender {
 	}
 
 	@Override
-	public DefenderAction sampleAction(final DependencyGraph depGraph,
-		final int curTimeStep, final int numTimeStep
-		, final DefenderBelief dBelief
-		, final RandomGenerator rng) {
+	public DefenderAction sampleAction(
+		final DependencyGraph depGraph, final int curTimeStep, final int numTimeStep,
+		final DefenderBelief dBelief, final RandomGenerator rng) {
+		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null) {
+			throw new IllegalArgumentException();
+		}
 		Map<Node, Double> dValueMap = computeCandidateValueTopo(depGraph, dBelief, curTimeStep, numTimeStep
 			, this.discFact, rng);
 		List<Node> dCandidateNodeList = new ArrayList<Node>();
@@ -96,7 +107,7 @@ public final class ValuePropagationVsDefenderALT extends Defender {
 		int totalNumCandidate = dValueMap.size();
 		
 		// Compute probability to choose each node
-		double[] probabilities = computecandidateProb(totalNumCandidate, candidateValue, this.logisParam);
+		double[] probabilities = computeCandidateProb(totalNumCandidate, candidateValue, this.logisParam);
 
 		// Only keep candidates with high probability
 		int numGoodCandidate = 0;
@@ -136,6 +147,11 @@ public final class ValuePropagationVsDefenderALT extends Defender {
 		final DefenderBelief dBelief, final DefenderAction dAction,
 		final DefenderObservation dObservation, final int curTimeStep, final int numTimeStep,
 		final RandomGenerator rng) {
+		if (depGraph == null || dBelief == null || dAction == null || dObservation == null 
+			|| curTimeStep < 0 || numTimeStep < curTimeStep || rng == null
+		) {
+			throw new IllegalArgumentException();
+		}
 		RandomDataGenerator rnd = new RandomDataGenerator(rng);
 		
 		// Used for storing true game state of the game
@@ -159,7 +175,7 @@ public final class ValuePropagationVsDefenderALT extends Defender {
 			depGraph.setState(gameState); // for each possible state
 			
 			List<AttackerAction> attActionList = attacker.sampleAction(depGraph, curTimeStep, numTimeStep
-					, rng, this.numAttActionSample, false); // Sample attacker actions
+				, rng, this.numAttActionSample, false); // Sample attacker actions
 			
 			for (int attActionSample = 0; attActionSample < this.numAttActionSample; attActionSample++) {
 				// Iterate over all samples of attack actions
@@ -223,10 +239,16 @@ public final class ValuePropagationVsDefenderALT extends Defender {
 		return revisedBelief;
 	}
 	
-	public Map<Node, Double> computeCandidateValueTopo(final DependencyGraph depGraph
+	private Map<Node, Double> computeCandidateValueTopo(final DependencyGraph depGraph
 		, final DefenderBelief dBelief
 		, final int curTimeStep, final int numTimeStep, final double discountFactor
 		, final RandomGenerator rng) {
+		if (
+			depGraph == null || dBelief == null || curTimeStep < 0 || numTimeStep < curTimeStep
+			|| discountFactor < 0.0 || discountFactor > 1.0
+		) {
+			throw new IllegalArgumentException();
+		}
 		Map<Node, Double> dValueMap = new HashMap<Node, Double>();
 		
 		Attacker attacker = new ValuePropagationAttacker(this.maxNumAttCandidate, this.minNumAttCandidate
@@ -240,7 +262,8 @@ public final class ValuePropagationVsDefenderALT extends Defender {
 			}
 		}
 		System.out.println("Start defender belief:........");
-		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) { // iterate over current belief of the defender
+		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) {
+			// iterate over current belief of the defender
 			GameState gameState = entry.getKey();
 			gameState.print();
 			System.out.println("Prob: " + entry.getValue());
@@ -277,9 +300,16 @@ public final class ValuePropagationVsDefenderALT extends Defender {
 		return dValueMap;
 	}
 	
-	public static Map<Node, Double> computeCandidateValueTopo(final DependencyGraph depGraph
-		, final List<AttackerAction> attActionList
-		, final int curTimeStep, final int numTimeStep, final double discountFactor) {
+	private static Map<Node, Double> computeCandidateValueTopo(
+		final DependencyGraph depGraph, final List<AttackerAction> attActionList,
+		final int curTimeStep, final int numTimeStep,
+		final double discountFactor) {
+		if (
+			depGraph == null || attActionList == null || curTimeStep < 0 || numTimeStep < curTimeStep
+			|| discountFactor < 0.0 || discountFactor > 1.0
+		) {
+			throw new IllegalArgumentException();
+		}
 		// System.out.println("Defender compute candidate value");
 		Map<Node, Double> dValueMap = new HashMap<Node, Double>();
 		
@@ -396,8 +426,13 @@ public final class ValuePropagationVsDefenderALT extends Defender {
 		return dValueMap;
 	}
 	
-	public static DefenderAction sampleAction(final List<Node> dCandidateNodeList, final int numNodetoProtect,
+	private static DefenderAction sampleAction(
+		final List<Node> dCandidateNodeList,
+		final int numNodetoProtect,
 		final AbstractIntegerDistribution rnd) {
+		if (dCandidateNodeList == null || numNodetoProtect < 0 || rnd == null) {
+			throw new IllegalArgumentException();
+		}
 		DefenderAction action = new DefenderAction();
 		
 		boolean[] isChosen = new boolean[dCandidateNodeList.size()];
@@ -417,7 +452,11 @@ public final class ValuePropagationVsDefenderALT extends Defender {
 		return action;
 	}
 	
-	public static double[] computecandidateProb(final int totalNumCandidate, final double[] candidateValue, final double logisParam) {
+	private static double[] computeCandidateProb(
+		final int totalNumCandidate, final double[] candidateValue, final double logisParam) {
+		if (totalNumCandidate < 0 || candidateValue == null) {
+			throw new IllegalArgumentException();
+		}
 		//Normalize candidate value
 		double minValue = Double.POSITIVE_INFINITY;
 		double maxValue = Double.NEGATIVE_INFINITY;
@@ -453,5 +492,9 @@ public final class ValuePropagationVsDefenderALT extends Defender {
 		}
 		
 		return probabilities;
+	}
+	
+	private static boolean isProb(final double i) {
+		return i >= 0.0 && i <= 1.0;
 	}
 }

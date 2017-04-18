@@ -65,7 +65,8 @@ public abstract class Defender {
 		return this.dType;
 	}
 	
-	public abstract DefenderAction sampleAction(DependencyGraph depGraph, int curTimeStep, int numTimeStep
+	public abstract DefenderAction sampleAction(DependencyGraph depGraph,
+		int curTimeStep, int numTimeStep
 		, DefenderBelief dBelief, RandomGenerator rng);
 	
 	public abstract DefenderBelief updateBelief(DependencyGraph depGraph,

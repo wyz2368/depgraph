@@ -20,10 +20,12 @@ public final class GoalOnlyDefender extends Defender {
 	private double logisParam;
 	private double discFact;
 	
-	public GoalOnlyDefender(final double maxNumRes, final double minNumRes, final double numResRatio,
+	public GoalOnlyDefender(final double maxNumRes,
+		final double minNumRes, final double numResRatio,
 		final double logisParam, final double discFact) {
 		super(DefenderType.GOAL_ONLY);
-		if (maxNumRes < minNumRes || minNumRes < 0 || !isProb(numResRatio) || discFact <= 0.0 || discFact > 1.0) {
+		if (maxNumRes < minNumRes || minNumRes < 0 || !isProb(numResRatio)
+			|| discFact <= 0.0 || discFact > 1.0) {
 			throw new IllegalArgumentException();
 		}
 		this.maxNumRes = (int) maxNumRes;

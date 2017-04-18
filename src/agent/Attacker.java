@@ -53,8 +53,10 @@ public abstract class Attacker {
 		return this.attType;
 	}
 
-	public abstract AttackerAction sampleAction(DependencyGraph depGraph, int curTimeStep, int numTimeStep, RandomGenerator rng);
+	public abstract AttackerAction sampleAction(
+		DependencyGraph depGraph, int curTimeStep, int numTimeStep, RandomGenerator rng);
 	
-	public abstract List<AttackerAction> sampleAction(DependencyGraph depGraph, int curTimeStep, int numTimeStep
+	public abstract List<AttackerAction> sampleAction(
+		DependencyGraph depGraph, int curTimeStep, int numTimeStep
 		, RandomGenerator rng, int numSample, boolean isReplacement);
 }

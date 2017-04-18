@@ -13,7 +13,8 @@ public final class AgentFactory {
 		// private constructor
 	}
 	
-	public static Attacker createAttacker(final String attackerName, final Map<String, Double> attackerParams, final double discFact) {
+	public static Attacker createAttacker(final String attackerName,
+		final Map<String, Double> attackerParams, final double discFact) {
 		assert attackerName != null && AttackerType.valueOf(attackerName) != null;
 		assert attackerParams != null;
 		if (discFact <= 0.0 || discFact > 1.0) {
@@ -33,7 +34,8 @@ public final class AgentFactory {
 			&& attackerParams.containsKey(AttackerParam.minNumSelectCandidate.toString())
 			&& attackerParams.containsKey(AttackerParam.numSelectCandidateRatio.toString())
 			&& attackerParams.containsKey(AttackerParam.qrParam.toString());
-			return new ValuePropagationAttacker(attackerParams.get(AttackerParam.maxNumSelectCandidate.toString())
+			return new ValuePropagationAttacker(
+				attackerParams.get(AttackerParam.maxNumSelectCandidate.toString())
 				, attackerParams.get(AttackerParam.minNumSelectCandidate.toString())
 				, attackerParams.get(AttackerParam.numSelectCandidateRatio.toString())
 				, attackerParams.get(AttackerParam.qrParam.toString())
@@ -47,7 +49,8 @@ public final class AgentFactory {
 		return null;
 	}
 	
-	public static Defender createDefender(final String defenderName, final Map<String, Double> defenderParams, final double discFact) {
+	public static Defender createDefender(final String defenderName,
+		final Map<String, Double> defenderParams, final double discFact) {
 		assert defenderName != null && DefenderType.valueOf(defenderName) != null;
 		assert defenderParams != null;
 		if (discFact <= 0.0 || discFact > 1.0) {
