@@ -25,24 +25,24 @@ import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
 
-public final class ValuePropagationvsDefender_Alternative extends Defender {
-	int maxNumRes;
-	int minNumRes;
-	double numResRatio;
-	double logisParam;
-	double discFact;
-	double thres; // to remove game state from belief
+public final class ValuePropagationVsDefenderALT extends Defender {
+	private int maxNumRes;
+	private int minNumRes;
+	private double numResRatio;
+	private double logisParam;
+	private double discFact;
+	private double thres; // to remove game state from belief
 	
 	// defender's assumption abt attacker
-	double qrParam; 
-	int maxNumAttCandidate; 
-	int minNumAttCandidate;
-	double numAttCandidateRatio;
-	double propagationParam = 0.5;
+	private double qrParam; 
+	private int maxNumAttCandidate; 
+	private int minNumAttCandidate;
+	private double numAttCandidateRatio;
 	
 	// number of simulation to approximate update
-	int numStateSample = 50;
-	int numAttActionSample = 50;
+	private static final int DEFAULT_NUM_STATE_SAMPLE = 50;
+	private int numStateSample = DEFAULT_NUM_STATE_SAMPLE;
+	private int numAttActionSample = DEFAULT_NUM_STATE_SAMPLE;
 	
 	/*****************************************************************************************
 	 * 
@@ -57,7 +57,7 @@ public final class ValuePropagationvsDefender_Alternative extends Defender {
 	 * @param minNumAttCandidate
 	 * @param numAttCandidateRatio
 	 *****************************************************************************************/
-	public ValuePropagationvsDefender_Alternative(int maxNumRes, int minNumRes, double numResRatio
+	public ValuePropagationVsDefenderALT(int maxNumRes, int minNumRes, double numResRatio
 			, double logisParam, double discFact, double thres
 			, double qrParam, int maxNumAttCandidate, int minNumAttCandidate, double numAttCandidateRatio) {
 		super(DefenderType.vsVALUE_PROPAGATION);
@@ -73,7 +73,6 @@ public final class ValuePropagationvsDefender_Alternative extends Defender {
 		this.maxNumAttCandidate = maxNumAttCandidate;
 		this.minNumAttCandidate = minNumAttCandidate;
 		this.numAttCandidateRatio = numAttCandidateRatio;
-		// TODO Auto-generated constructor stub
 	}
 	
 	/*****************************************************************************************
@@ -91,14 +90,13 @@ public final class ValuePropagationvsDefender_Alternative extends Defender {
 	 * @param numStateSample
 	 * @param numAttActionSample
 	 *****************************************************************************************/
-	public ValuePropagationvsDefender_Alternative(int maxNumRes, int minNumRes, double numResRatio
+	public ValuePropagationVsDefenderALT(int maxNumRes, int minNumRes, double numResRatio
 			, double logisParam, double discFact, double thres
 			, double qrParam, int maxNumAttCandidate, int minNumAttCandidate, double numAttCandidateRatio
 			, int numStateSample, int numAttActionSample) {
 		this(maxNumRes, minNumRes, numResRatio
 				, logisParam, discFact, thres
 				, qrParam, maxNumAttCandidate, minNumAttCandidate, numAttCandidateRatio);
-		// TODO Auto-generated constructor stub
 		this.numStateSample = numStateSample;
 		this.numAttActionSample = numAttActionSample;
 	}
@@ -108,7 +106,6 @@ public final class ValuePropagationvsDefender_Alternative extends Defender {
 			int curTimeStep, int numTimeStep
 			, DefenderBelief dBelief
 			, RandomGenerator rng) {
-		// TODO Auto-generated method stub
 		Map<Node, Double> dValueMap = computeCandidateValueTopo(depGraph, dBelief, curTimeStep, numTimeStep
 				, this.discFact, rng);
 		List<Node> dCandidateNodeList = new ArrayList<Node>();

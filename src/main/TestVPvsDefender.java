@@ -14,7 +14,7 @@ import agent.Defender;
 import agent.GoalOnlyDefender;
 //import agent.GoalOnlyDefender;
 import agent.ValuePropagationAttacker;
-import agent.ValuePropagationvsDefender_Alternative;
+import agent.ValuePropagationVsDefenderALT;
 
 public final class TestVPvsDefender {
 	
@@ -81,7 +81,7 @@ public final class TestVPvsDefender {
 		final int numSim = 10;
 		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
 		
-		Defender valuePropagationvsDefender = new ValuePropagationvsDefender_Alternative(maxNumRes, minNumRes, numResRatio
+		Defender valuePropagationvsDefender = new ValuePropagationVsDefenderALT(maxNumRes, minNumRes, numResRatio
 				, logisParam, discFact, thres
 				, qrParam, maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
 //		Defender valuePropagationvsDefender = new ValuePropagationvsDefender(maxNumRes, minNumRes, numResRatio
