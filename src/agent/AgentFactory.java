@@ -91,7 +91,7 @@ public final class AgentFactory {
 			&& defenderParams.containsKey(DefenderParam.maxNumAttCandidate.toString())
 			&& defenderParams.containsKey(DefenderParam.minNumAttCandidate.toString())
 			&& defenderParams.containsKey(DefenderParam.numAttCandidateRatio.toString());
-			return new ValuePropagationvsDefender(defenderParams.get(DefenderParam.maxNumRes.toString())
+			return new ValuePropagationVsDefender(defenderParams.get(DefenderParam.maxNumRes.toString())
 				, defenderParams.get(DefenderParam.minNumRes.toString())
 				, defenderParams.get(DefenderParam.numResRatio.toString())
 				, defenderParams.get(DefenderParam.logisParam.toString())
@@ -106,7 +106,7 @@ public final class AgentFactory {
 			&& defenderParams.containsKey(DefenderParam.bThres.toString())
 			&& defenderParams.containsKey(DefenderParam.qrParam.toString())
 			&& defenderParams.containsKey(DefenderParam.numRWSample.toString());
-			return new RandomWalkvsDefender(defenderParams.get(DefenderParam.logisParam.toString())
+			return new RandomWalkVsDefender(defenderParams.get(DefenderParam.logisParam.toString())
 				, discFact
 				, defenderParams.get(DefenderParam.bThres.toString())
 				, defenderParams.get(DefenderParam.qrParam.toString())

@@ -69,11 +69,40 @@ public final class UniformAttacker extends Attacker {
 		return sampleAction(graph, attackCandidate, numSelectCandidate, rnd);
 	}
 	
+	@Override
+	public List<AttackerAction> sampleAction(final DependencyGraph depGraph,
+		final int curTimeStep, final int numTimeStep, final RandomGenerator rng,
+		final int numSample, final boolean isReplacement) {
+		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || rng == null
+			|| numSample < 1) {
+			throw new IllegalArgumentException();
+		}
+		if (isReplacement) { // this is currently not used, need to check if the isAdded works properly
+			Set<AttackerAction> attActionSet = new HashSet<AttackerAction>();
+			int i = 0;
+			while (i < numSample) {
+				AttackerAction attAction = sampleAction(depGraph, curTimeStep, numTimeStep, rng);
+				boolean isAdded = attActionSet.add(attAction);
+				if (isAdded) {
+					i++;
+				}
+			}
+			return new ArrayList<AttackerAction>(attActionSet);
+		}
+		 // this is currently used, correct
+		List<AttackerAction> attActionList = new ArrayList<AttackerAction>();
+		for (int i = 0; i < numSample; i++) {
+			AttackerAction attAction = sampleAction(depGraph, curTimeStep, numTimeStep, rng);
+			attActionList.add(attAction);
+		}
+		return attActionList;
+	}
+	
 	/*****************************************************************************************
-	 * @param depGraph dependency graph
-	 * @return type of AttackCandidate: candidate set for the attacker
-	 *****************************************************************************************/
-	static AttackCandidate selectCandidate(final DependencyGraph depGraph) {
+	* @param depGraph dependency graph
+	* @return type of AttackCandidate: candidate set for the attacker
+	*****************************************************************************************/
+	private static AttackCandidate selectCandidate(final DependencyGraph depGraph) {
 		if (depGraph == null) {
 			throw new IllegalArgumentException();
 		}
@@ -128,13 +157,13 @@ public final class UniformAttacker extends Attacker {
 	}
 	
 	/*****************************************************************************************
-	 * @param depGraph dependency graph
-	 * @param attackCandidate candidate set
-	 * @param numSelectCandidate number of candidates to select
-	 * @param rnd integer distribution randomizer
-	 * @return type of AttackerAction: an action for the attacker
-	 *****************************************************************************************/
-	public static AttackerAction sampleAction(final DependencyGraph depGraph,
+	* @param depGraph dependency graph
+	* @param attackCandidate candidate set
+	* @param numSelectCandidate number of candidates to select
+	* @param rnd integer distribution randomizer
+	* @return type of AttackerAction: an action for the attacker
+	*****************************************************************************************/
+	private static AttackerAction sampleAction(final DependencyGraph depGraph,
 		final AttackCandidate attackCandidate, final int numSelectCandidate
 		, final AbstractIntegerDistribution rnd) {
 		if (depGraph == null || numSelectCandidate < 0 || rnd == null || attackCandidate == null) {
@@ -174,34 +203,5 @@ public final class UniformAttacker extends Attacker {
 			}	
 		}
 		return action;
-	}
-
-	@Override
-	public List<AttackerAction> sampleAction(final DependencyGraph depGraph,
-		final int curTimeStep, final int numTimeStep, final RandomGenerator rng,
-		final int numSample, final boolean isReplacement) {
-		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || rng == null
-			|| numSample < 1) {
-			throw new IllegalArgumentException();
-		}
-		if (isReplacement) { // this is currently not used, need to check if the isAdded works properly
-			Set<AttackerAction> attActionSet = new HashSet<AttackerAction>();
-			int i = 0;
-			while (i < numSample) {
-				AttackerAction attAction = sampleAction(depGraph, curTimeStep, numTimeStep, rng);
-				boolean isAdded = attActionSet.add(attAction);
-				if (isAdded) {
-					i++;
-				}
-			}
-			return new ArrayList<AttackerAction>(attActionSet);
-		}
-		 // this is currently used, correct
-		List<AttackerAction> attActionList = new ArrayList<AttackerAction>();
-		for (int i = 0; i < numSample; i++) {
-			AttackerAction attAction = sampleAction(depGraph, curTimeStep, numTimeStep, rng);
-			attActionList.add(attAction);
-		}
-		return attActionList;
 	}
 }

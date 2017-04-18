@@ -27,7 +27,7 @@ import org.apache.commons.math3.random.RandomGenerator;
 
 import agent.RandomWalkAttacker.RandomWalkTuple;
 
-public final class RandomWalkvsDefender extends Defender {
+public final class RandomWalkVsDefender extends Defender {
 	private double logisParam; // Logistic parameter to randomize defense strategies
 	private double discFact; // reward discount factor
 	private double thres; // to remove game state from belief
@@ -43,40 +43,13 @@ public final class RandomWalkvsDefender extends Defender {
 	
 	/*****************************************************************************************
 	 * Initialization.
-	 * @param logisParam defense parameter for randomizing defenses.
-	 * @param discFact reward discount factor
-	 * @param thres threshold used to limit defender's belief
-	 * @param qrParam attack parameter for randomizing attacks
-	 * @param numRWSample number of random walk samples
-	 * @param numStateSample number of game state samples
-	 * @param numAttActionSample number of attack action samples
-	 *****************************************************************************************/
-	public RandomWalkvsDefender(final double logisParam
-		, final double discFact
-		, final double thres
-		, final double qrParam
-		, final int numRWSample
-		, final int numStateSample
-		, final int numAttActionSample) {
-		this(logisParam, discFact, thres
-			, qrParam, numRWSample);
-		if (discFact <= 0.0 || discFact > 1.0 || thres < 0.0 || thres > 1.0
-			|| numRWSample < 1 || numStateSample < 1 || numAttActionSample < 1) {
-			throw new IllegalArgumentException();
-		}
-		this.numStateSample = numStateSample;
-		this.numAttActionSample = numAttActionSample;
-	}
-	
-	/*****************************************************************************************
-	 * Initialization.
 	 * @param logisParam defense parameter for randomizing defenses
 	 * @param discFact reward discount factor
 	 * @param thres threshold used to limit defender's belief
 	 * @param qrParam attack parameter for randomizing attacks
 	 * @param numRWSample number of random walk samples
 	 *****************************************************************************************/
-	public RandomWalkvsDefender(final double logisParam
+	public RandomWalkVsDefender(final double logisParam
 		, final double discFact
 		, final double thres
 		, final double qrParam
@@ -279,18 +252,18 @@ public final class RandomWalkvsDefender extends Defender {
 	}
 	
 	/*****************************************************************************************
-	 * Note: defAction outcome of greedy, need to be pre-initialized.
-	 * @param depGraph dependency graph with game state which is being examined by the defender
-	 * @param rwTuplesList list of random walk tuples 
-	 * @param attCandidateList corresponding list of attack candidates
-	 * @param attProb attack probability
-	 * @param defAction defender action
-	 * @param curTimeStep current time step
-	 * @param numTimeStep total number of time step
-	 * @param discFact reward discount factor
-	 * @return a candidate
-	 *****************************************************************************************/
-	public static double greedyCandidate(final DependencyGraph depGraph // depGraph has current game state the defender is examining
+	* Note: defAction outcome of greedy, need to be pre-initialized.
+	* @param depGraph dependency graph with game state which is being examined by the defender
+	* @param rwTuplesList list of random walk tuples 
+	* @param attCandidateList corresponding list of attack candidates
+	* @param attProb attack probability
+	* @param defAction defender action
+	* @param curTimeStep current time step
+	* @param numTimeStep total number of time step
+	* @param discFact reward discount factor
+	* @return a candidate
+	*****************************************************************************************/
+	private static double greedyCandidate(final DependencyGraph depGraph // depGraph has current game state the defender is examining
 		, final List<RandomWalkTuple[]> rwTuplesList
 		, final List<AttackCandidate> attCandidateList
 		, final double[] attProb
@@ -462,13 +435,14 @@ public final class RandomWalkvsDefender extends Defender {
 	}
 	
 	/*****************************************************************************************
-	 * Compute defense probability.
-	 * @param totalNumCandidate total number of candidate actions
-	 * @param candidateValue array of candidate values
-	 * @param logisParam defense parameter for randomization
-	 * @return defense probability for every candidate action
-	 *****************************************************************************************/
-	public static double[] computeCandidateProb(final int totalNumCandidate, final double[] candidateValue, final double logisParam) {
+	* Compute defense probability.
+	* @param totalNumCandidate total number of candidate actions
+	* @param candidateValue array of candidate values
+	* @param logisParam defense parameter for randomization
+	* @return defense probability for every candidate action
+	*****************************************************************************************/
+	private static double[] computeCandidateProb(final int totalNumCandidate,
+		final double[] candidateValue, final double logisParam) {
 		if (totalNumCandidate < 0 || candidateValue == null) {
 			throw new IllegalArgumentException();
 		}

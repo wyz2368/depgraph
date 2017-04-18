@@ -13,7 +13,7 @@ import agent.Attacker;
 import agent.Defender;
 import agent.GoalOnlyDefender;
 import agent.UniformAttacker;
-import agent.UniformvsDefender;
+import agent.UniformVsDefender;
 
 public final class TestUniformVsDefender {
 	
@@ -78,7 +78,7 @@ public final class TestUniformVsDefender {
 		final int numTimeStep = 6;
 		final int numSim = 200;
 		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
-		Defender uniformvsDefender = new UniformvsDefender(logisParam, discFact, thres
+		Defender uniformvsDefender = new UniformVsDefender(logisParam, discFact, thres
 			, maxNumRes, minNumRes, numResRatio
 			, maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
 		

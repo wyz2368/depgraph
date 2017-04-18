@@ -25,7 +25,7 @@ import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
 
-public final class UniformvsDefender extends Defender {
+public final class UniformVsDefender extends Defender {
 	private int maxNumRes;
 	private int minNumRes;
 	private double numResRatio;
@@ -41,7 +41,7 @@ public final class UniformvsDefender extends Defender {
 	private int numStateSample = DEFAULT_NUM_STATE_SAMPLE; // number of states to sample
 	private int numAttActionSample = DEFAULT_NUM_STATE_SAMPLE; // number of attack actions to sample
 	
-	public UniformvsDefender(final double logisParam, final double discFact, final double thres
+	public UniformVsDefender(final double logisParam, final double discFact, final double thres
 		, final int maxNumRes, final int minNumRes, final double numResRatio
 		, final int maxNumSelectACandidate, final int minNumSelectACandidate, final double numSelectACandidateRatio) {
 		super(DefenderType.vsUNIFORM);

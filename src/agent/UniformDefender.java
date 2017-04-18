@@ -28,30 +28,6 @@ public final class UniformDefender extends Defender {
 		this.numResRatio = numResRatio;
 	}
 
-	public static DefenderAction sampleAction(final List<Node> dCandidateNodeList, final int numNodetoProtect,
-		final AbstractIntegerDistribution rnd) {
-		if (dCandidateNodeList == null || numNodetoProtect < 0 || rnd == null) {
-			throw new IllegalArgumentException();
-		}
-		DefenderAction action = new DefenderAction();
-		
-		boolean[] isChosen = new boolean[dCandidateNodeList.size()];
-		for (int i = 0; i < dCandidateNodeList.size(); i++) {
-			isChosen[i] = false;
-		}
-		int count = 0;
-		while (count < numNodetoProtect) {
-			int idx = rnd.sample();
-			if (!isChosen[idx]) {
-				action.addNodetoProtect(dCandidateNodeList.get(idx));
-				isChosen[idx] = true;
-				count++;
-			}
-				
-		}
-		return action;
-	}
-
 	@Override
 	public DefenderAction sampleAction(final DependencyGraph depGraph,
 		final int curTimeStep, final int numTimeStep, final DefenderBelief dBelief, final RandomGenerator rng) {
@@ -80,5 +56,30 @@ public final class UniformDefender extends Defender {
 		final DefenderObservation dObservation, final int curTimeStep, final int numTimeStep,
 		final RandomGenerator rng) {
 		throw new UnsupportedOperationException();
+	}
+	
+	private static DefenderAction sampleAction(final List<Node> dCandidateNodeList,
+		final int numNodetoProtect,
+		final AbstractIntegerDistribution rnd) {
+		if (dCandidateNodeList == null || numNodetoProtect < 0 || rnd == null) {
+			throw new IllegalArgumentException();
+		}
+		DefenderAction action = new DefenderAction();
+		
+		boolean[] isChosen = new boolean[dCandidateNodeList.size()];
+		for (int i = 0; i < dCandidateNodeList.size(); i++) {
+			isChosen[i] = false;
+		}
+		int count = 0;
+		while (count < numNodetoProtect) {
+			int idx = rnd.sample();
+			if (!isChosen[idx]) {
+				action.addNodetoProtect(dCandidateNodeList.get(idx));
+				isChosen[idx] = true;
+				count++;
+			}
+				
+		}
+		return action;
 	}
 }

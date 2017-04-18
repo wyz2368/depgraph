@@ -13,7 +13,7 @@ import agent.Attacker;
 import agent.Defender;
 import agent.GoalOnlyDefender;
 import agent.RandomWalkAttacker;
-import agent.RandomWalkvsDefender;
+import agent.RandomWalkVsDefender;
 import agent.ValuePropagationAttacker;
 
 public final class TestRWvsDefender {
@@ -82,7 +82,7 @@ public final class TestRWvsDefender {
 		final int numTimeStep = 6;
 		final int numSim = 10;
 		
-		RandomWalkvsDefender rwDefender = new RandomWalkvsDefender(logisParam, discFact, thres, qrParam, numRWSample);
+		RandomWalkVsDefender rwDefender = new RandomWalkVsDefender(logisParam, discFact, thres, qrParam, numRWSample);
 		Attacker rwAttacker = new RandomWalkAttacker(numRWSample, qrParam, discFact);
 		Attacker vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate
 			, minNumSelectCandidate, numSelectCandidateRatio

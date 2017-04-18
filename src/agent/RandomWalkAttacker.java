@@ -113,12 +113,40 @@ public final class RandomWalkAttacker extends Attacker {
 		return attAction;
 	}
 	
+	@Override
+	public List<AttackerAction> sampleAction(final DependencyGraph depGraph,
+		final int curTimeStep, final int numTimeStep, final RandomGenerator rng,
+		final int numSample, final boolean isReplacement) {
+		if (curTimeStep < 0 || numTimeStep < curTimeStep || rng == null || numSample < 1) {
+			throw new IllegalArgumentException();
+		}
+		if (isReplacement) { // this is currently not used, need to check if the isAdded works properly
+			Set<AttackerAction> attActionSet = new HashSet<AttackerAction>();
+			int i = 0;
+			while (i < numSample) {
+				AttackerAction attAction = sampleAction(depGraph, curTimeStep, numTimeStep, rng);
+				boolean isAdded = attActionSet.add(attAction);
+				if (isAdded) {
+					i++;
+				}
+			}
+			return new ArrayList<AttackerAction>(attActionSet);
+		}
+		// this is currently used, correct
+		List<AttackerAction> attActionList = new ArrayList<AttackerAction>();
+		for (int i = 0; i < numSample; i++) {
+			AttackerAction attAction = sampleAction(depGraph, curTimeStep, numTimeStep, rng);
+			attActionList.add(attAction);
+		}
+		return attActionList;
+	}
+	
 	/**
-	 * @param depGraph dependency graph
-	 * @param curTimeStep current time step
-	 * @param rng random generator
-	 * @return random walk tuple for all nodes
-	 */
+	* @param depGraph dependency graph
+	* @param curTimeStep current time step
+	* @param rng random generator
+	* @return random walk tuple for all nodes
+	*/
 	public RandomWalkTuple[] randomWalk(final DependencyGraph depGraph,
 			final int curTimeStep, final RandomGenerator rng) {
 		if (depGraph == null || curTimeStep < 0 || rng == null) {
@@ -422,33 +450,5 @@ public final class RandomWalkAttacker extends Attacker {
 		}
 		
 		return probabilities;
-	}
-	
-	@Override
-	public List<AttackerAction> sampleAction(final DependencyGraph depGraph,
-		final int curTimeStep, final int numTimeStep, final RandomGenerator rng,
-		final int numSample, final boolean isReplacement) {
-		if (curTimeStep < 0 || numTimeStep < curTimeStep || rng == null || numSample < 1) {
-			throw new IllegalArgumentException();
-		}
-		if (isReplacement) { // this is currently not used, need to check if the isAdded works properly
-			Set<AttackerAction> attActionSet = new HashSet<AttackerAction>();
-			int i = 0;
-			while (i < numSample) {
-				AttackerAction attAction = sampleAction(depGraph, curTimeStep, numTimeStep, rng);
-				boolean isAdded = attActionSet.add(attAction);
-				if (isAdded) {
-					i++;
-				}
-			}
-			return new ArrayList<AttackerAction>(attActionSet);
-		}
-		// this is currently used, correct
-		List<AttackerAction> attActionList = new ArrayList<AttackerAction>();
-		for (int i = 0; i < numSample; i++) {
-			AttackerAction attAction = sampleAction(depGraph, curTimeStep, numTimeStep, rng);
-			attActionList.add(attAction);
-		}
-		return attActionList;
 	}
 }
