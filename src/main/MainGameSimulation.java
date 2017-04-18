@@ -44,7 +44,7 @@ public final class MainGameSimulation {
 	 * @param graphFolderName path to graph folder
 	 */
 	public static void runSimulationsAndPrint(final String simspecFolderName, final String graphFolderName) {
-		if (simspecFolderName == null) {
+		if (simspecFolderName == null || graphFolderName == null) {
 			throw new IllegalArgumentException();
 		}
   

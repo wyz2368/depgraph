@@ -21,6 +21,9 @@ public final class MinCutDefender extends Defender {
 	
 	public MinCutDefender(final double maxNumRes, final double minNumRes, final double numResRatio) {
 		super(DefenderType.MINCUT);
+		if (maxNumRes < minNumRes || minNumRes < 0 || !isProb(numResRatio)) {
+			throw new IllegalArgumentException();
+		}
 		this.maxNumRes = (int) maxNumRes;
 		this.minNumRes = (int) minNumRes;
 		this.numResRatio = numResRatio;
@@ -28,6 +31,9 @@ public final class MinCutDefender extends Defender {
 	
 	public static DefenderAction sampleAction(final List<Node> dCandidateNodeList, final int numNodetoProtect,
 		final AbstractIntegerDistribution rnd) {
+		if (dCandidateNodeList == null || numNodetoProtect < 0 || rnd == null) {
+			throw new IllegalArgumentException();
+		}
 		DefenderAction action = new DefenderAction();
 		
 		boolean[] isChosen = new boolean[dCandidateNodeList.size()];
@@ -48,8 +54,16 @@ public final class MinCutDefender extends Defender {
 	}
 	
 	@Override
-	public DefenderAction sampleAction(final DependencyGraph depGraph,
-		final int curTimeStep, final int numTimeStep, final DefenderBelief dBelief, final RandomGenerator rng) {
+	public DefenderAction sampleAction(
+		final DependencyGraph depGraph,
+		final int curTimeStep,
+		final int numTimeStep,
+		final DefenderBelief dBelief,
+		final RandomGenerator rng
+	) {
+		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null) {
+			throw new IllegalArgumentException();
+		}
 		List<Node> dCandidateNodeList = new ArrayList<Node>(depGraph.getMinCut());
 		int numNodetoProtect = 0;
 		if (dCandidateNodeList.size() < this.minNumRes) {
@@ -71,6 +85,10 @@ public final class MinCutDefender extends Defender {
 		final DefenderBelief currentBelief, final DefenderAction dAction,
 		final DefenderObservation dObservation, final int curTimeStep, final int numTimeStep,
 		final RandomGenerator rng) {
-		return null;
+		throw new UnsupportedOperationException();
+	}
+	
+	private static boolean isProb(final double i) {
+		return i >= 0.0 && i <= 1.0;
 	}
 }

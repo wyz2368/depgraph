@@ -38,6 +38,9 @@ public final class Configuration {
 		if (loadedGlpk) {
 			return;
 		}
+		if (configFileName == null) {
+			throw new IllegalArgumentException();
+		}
 		FileReader fstream = new FileReader(configFileName);
 		@SuppressWarnings("resource")
 		BufferedReader in = new BufferedReader(fstream);
@@ -87,7 +90,9 @@ public final class Configuration {
 		if (loadedCplex) {
 			return;
 		}
-			
+		if (configFileName == null) {
+			throw new IllegalArgumentException();
+		}
 		FileReader fstream = new FileReader(configFileName);
 		@SuppressWarnings("resource")
 		BufferedReader in = new BufferedReader(fstream);

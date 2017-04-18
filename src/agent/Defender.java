@@ -55,6 +55,9 @@ public abstract class Defender {
 	private DefenderType dType;
 	
 	public Defender(final DefenderType dTypeCur) {
+		if (dTypeCur == null) {
+			throw new IllegalArgumentException();
+		}
 		this.dType = dTypeCur;
 	}
 	

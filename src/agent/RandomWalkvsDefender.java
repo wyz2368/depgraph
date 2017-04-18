@@ -60,6 +60,10 @@ public final class RandomWalkvsDefender extends Defender {
 		, final int numAttActionSample) {
 		this(logisParam, discFact, thres
 			, qrParam, numRWSample);
+		if (discFact <= 0.0 || discFact > 1.0 || thres < 0.0 || thres > 1.0
+			|| numRWSample < 1 || numStateSample < 1 || numAttActionSample < 1) {
+			throw new IllegalArgumentException();
+		}
 		this.numStateSample = numStateSample;
 		this.numAttActionSample = numAttActionSample;
 	}
@@ -78,6 +82,10 @@ public final class RandomWalkvsDefender extends Defender {
 		, final double qrParam
 		, final double numRWSample) {
 		super(DefenderType.vsRANDOM_WALK);
+		if (discFact <= 0.0 || discFact > 1.0 || thres < 0.0 || thres > 1.0
+			|| numRWSample < 1) {
+			throw new IllegalArgumentException();
+		}
 		this.logisParam = logisParam;
 		this.discFact = discFact;
 		this.thres = thres;
@@ -98,7 +106,10 @@ public final class RandomWalkvsDefender extends Defender {
 	public DefenderAction sampleAction(final DependencyGraph depGraph
 		, final int curTimeStep, final int numTimeStep
 		, final DefenderBelief dBelief
-		, final RandomGenerator rng) {		
+		, final RandomGenerator rng) {	
+		if (curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null) {
+			throw new IllegalArgumentException();
+		}
 		// True game state
 		GameState savedGameState = new GameState();
 		for (Node node : depGraph.vertexSet()) {
@@ -181,6 +192,11 @@ public final class RandomWalkvsDefender extends Defender {
 		, final DefenderObservation dObservation
 		, final int curTimeStep, final int numTimeStep
 		, final RandomGenerator rng) {		
+		if (curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null
+			|| dObservation == null || dAction == null
+		) {
+			throw new IllegalArgumentException();
+		}
 		RandomDataGenerator rnd = new RandomDataGenerator(rng);
 		
 		// Used for storing true game state of the game
@@ -281,6 +297,12 @@ public final class RandomWalkvsDefender extends Defender {
 		, final DefenderAction defAction
 		, final int curTimeStep, final int numTimeStep
 		, final double discFact) {
+		if (curTimeStep < 0 || numTimeStep < curTimeStep
+			|| rwTuplesList == null || attCandidateList == null || attProb == null
+			|| defAction == null || discFact <= 0.0 || discFact > 1.0
+		) {
+			throw new IllegalArgumentException();
+		}
 		double value = 0.0;
 		// Get topological order, starting from zero
 		Node[] topoOrder = new Node[depGraph.vertexSet().size()];
@@ -447,6 +469,9 @@ public final class RandomWalkvsDefender extends Defender {
 	 * @return defense probability for every candidate action
 	 *****************************************************************************************/
 	public static double[] computeCandidateProb(final int totalNumCandidate, final double[] candidateValue, final double logisParam) {
+		if (totalNumCandidate < 0 || candidateValue == null) {
+			throw new IllegalArgumentException();
+		}
 		//Normalize candidate value
 		double minValue = Double.POSITIVE_INFINITY;
 		double maxValue = Double.NEGATIVE_INFINITY;

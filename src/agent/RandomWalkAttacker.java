@@ -25,6 +25,9 @@ public final class RandomWalkAttacker extends Attacker {
 		private List<Edge> preAct;
 		
 		public RandomWalkTuple(final int tAct, final double pAct, final List<Edge> preAct) {
+			if (tAct < 0 || !isProb(pAct) || preAct == null) {
+				throw new IllegalArgumentException();
+			}
 			this.tAct = tAct;
 			this.pAct = pAct;
 			this.preAct = preAct;
@@ -41,6 +44,10 @@ public final class RandomWalkAttacker extends Attacker {
 		public List<Edge> getPreAct() {
 			return this.preAct;
 		}
+		
+		private boolean isProb(final double i) {
+			return i >= 0.0 && i <= 1.0;
+		}
 	}
 	
 	private double qrParam;
@@ -50,6 +57,9 @@ public final class RandomWalkAttacker extends Attacker {
 	
 	public RandomWalkAttacker(final double numRWSample, final double qrParam, final double discFact) {
 		super(AttackerType.RANDOM_WALK);
+		if (numRWSample < 0.0 || qrParam < 0.0 || discFact <= 0.0 || discFact > 1.0) {
+			throw new IllegalArgumentException();
+		}
 		this.numRWSample = (int) numRWSample;
 		this.qrParam = qrParam;
 		this.discFact = discFact;
@@ -65,6 +75,9 @@ public final class RandomWalkAttacker extends Attacker {
 	 */
 	public AttackerAction sampleAction(final DependencyGraph depGraph,
 		final int curTimeStep, final int numTimeStep, final RandomGenerator rng) {
+		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || rng == null) {
+			throw new IllegalArgumentException();
+		}
 		// Compute the candidate values, each candidate is a set
 		double[] candidateValues = new double[this.numRWSample];
 		AttackCandidate[] candidates = new AttackCandidate[this.numRWSample];
@@ -108,6 +121,9 @@ public final class RandomWalkAttacker extends Attacker {
 	 */
 	public RandomWalkTuple[] randomWalk(final DependencyGraph depGraph,
 			final int curTimeStep, final RandomGenerator rng) {
+		if (depGraph == null || curTimeStep < 0 || rng == null) {
+			throw new IllegalArgumentException();
+		}
 		RandomWalkTuple[] rwTuples = new RandomWalkTuple[depGraph.vertexSet().size()];
 		/*****************************************************************************************/
 		// Get topological order, starting from zero
@@ -216,6 +232,10 @@ public final class RandomWalkAttacker extends Attacker {
 	*****************************************************************************************/
 	static double greedyCandidate(final DependencyGraph depGraph, final RandomWalkTuple[] rwTuples
 		, final AttackCandidate attCandidate, final int numTimeStep, final double discFact) {
+		if (depGraph == null || rwTuples == null || attCandidate == null
+			|| numTimeStep < 0 || discFact <= 0.0 || discFact > 1.0) {
+			throw new IllegalArgumentException();
+		}
 		Set<Node> greedyTargetSet = new HashSet<Node>();
 		List<Node> targetList = new ArrayList<Node>(depGraph.getTargetSet());
 		boolean[] isChosen = new boolean[targetList.size()];
@@ -364,6 +384,9 @@ public final class RandomWalkAttacker extends Attacker {
 	 * @return QR distribution over candidates
 	 *****************************************************************************************/
 	static double[] computeCandidateProb(final int totalNumCandidate, final double[] candidateValue, final double qrParam) {
+		if (totalNumCandidate < 0 || candidateValue == null) {
+			throw new IllegalArgumentException();
+		}
 		//Normalize candidate value
 		double minValue = Double.POSITIVE_INFINITY;
 		double maxValue = Double.NEGATIVE_INFINITY;
@@ -405,6 +428,9 @@ public final class RandomWalkAttacker extends Attacker {
 	public List<AttackerAction> sampleAction(final DependencyGraph depGraph,
 		final int curTimeStep, final int numTimeStep, final RandomGenerator rng,
 		final int numSample, final boolean isReplacement) {
+		if (curTimeStep < 0 || numTimeStep < curTimeStep || rng == null || numSample < 1) {
+			throw new IllegalArgumentException();
+		}
 		if (isReplacement) { // this is currently not used, need to check if the isAdded works properly
 			Set<AttackerAction> attActionSet = new HashSet<AttackerAction>();
 			int i = 0;

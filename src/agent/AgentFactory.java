@@ -16,6 +16,9 @@ public final class AgentFactory {
 	public static Attacker createAttacker(final String attackerName, final Map<String, Double> attackerParams, final double discFact) {
 		assert attackerName != null && AttackerType.valueOf(attackerName) != null;
 		assert attackerParams != null;
+		if (discFact <= 0.0 || discFact > 1.0) {
+			throw new IllegalArgumentException();
+		}
 		AttackerType attType = AttackerType.valueOf(attackerName);
 		
 		if (attType == AttackerType.UNIFORM) {
@@ -47,6 +50,9 @@ public final class AgentFactory {
 	public static Defender createDefender(final String defenderName, final Map<String, Double> defenderParams, final double discFact) {
 		assert defenderName != null && DefenderType.valueOf(defenderName) != null;
 		assert defenderParams != null;
+		if (discFact <= 0.0 || discFact > 1.0) {
+			throw new IllegalArgumentException();
+		}
 		DefenderType defType = DefenderType.valueOf(defenderName);
 		
 		if (defType == DefenderType.UNIFORM) {

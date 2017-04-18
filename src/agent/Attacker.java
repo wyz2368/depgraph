@@ -43,6 +43,9 @@ public abstract class Attacker {
 	private AttackerType attType;
 
 	public Attacker(final AttackerType aAttType) {
+		if (aAttType == null) {
+			throw new IllegalArgumentException();
+		}
 		this.attType = aAttType;
 	}
 
