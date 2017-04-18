@@ -23,8 +23,13 @@ public final class UniformAttacker extends Attacker {
 	private int minNumSelectCandidate;
 	private double numSelectCandidateRatio;
 	
-	public UniformAttacker(final double maxNumSelectCandidate, final double minNumSelectCandidate, final double numSelectCandidateRatio) {
+	public UniformAttacker(final double maxNumSelectCandidate,
+		final double minNumSelectCandidate, final double numSelectCandidateRatio) {
 		super(AttackerType.UNIFORM);
+		if (minNumSelectCandidate < 1 || maxNumSelectCandidate < minNumSelectCandidate
+			|| numSelectCandidateRatio < 0.0 || numSelectCandidateRatio > 1.0) {
+			throw new IllegalArgumentException();
+		}
 		this.maxNumSelectCandidate = (int) maxNumSelectCandidate;
 		this.minNumSelectCandidate = (int) minNumSelectCandidate;
 		this.numSelectCandidateRatio = numSelectCandidateRatio;
@@ -38,7 +43,11 @@ public final class UniformAttacker extends Attacker {
 	 * @return type of Attacker Action: an attack action
 	 *****************************************************************************************/
 	@Override
-	public AttackerAction sampleAction(final DependencyGraph graph, final int curTimeStep, final int numTimeStep, final RandomGenerator rng) {
+	public AttackerAction sampleAction(final DependencyGraph graph, final int curTimeStep,
+		final int numTimeStep, final RandomGenerator rng) {
+		if (graph == null || curTimeStep < 0 || numTimeStep < curTimeStep || rng == null) {
+			throw new IllegalArgumentException();
+		}
 		// Select candidate for the attakcer
 		AttackCandidate attackCandidate = selectCandidate(graph); 
 		
@@ -65,6 +74,9 @@ public final class UniformAttacker extends Attacker {
 	 * @return type of AttackCandidate: candidate set for the attacker
 	 *****************************************************************************************/
 	static AttackCandidate selectCandidate(final DependencyGraph depGraph) {
+		if (depGraph == null) {
+			throw new IllegalArgumentException();
+		}
 		AttackCandidate aCandidate = new AttackCandidate();
 		
 		// Check if all targets are already active, then the attacker doesn't need to do anything
@@ -125,6 +137,9 @@ public final class UniformAttacker extends Attacker {
 	public static AttackerAction sampleAction(final DependencyGraph depGraph,
 		final AttackCandidate attackCandidate, final int numSelectCandidate
 		, final AbstractIntegerDistribution rnd) {
+		if (depGraph == null || numSelectCandidate < 0 || rnd == null || attackCandidate == null) {
+			throw new IllegalArgumentException();
+		}
 		AttackerAction action = new AttackerAction();
 		List<Edge> edgeCandidateList = new ArrayList<Edge>(attackCandidate.getEdgeCandidateSet());
 		List<Node> nodeCandidateList = new ArrayList<Node>(attackCandidate.getNodeCandidateSet());
@@ -165,6 +180,10 @@ public final class UniformAttacker extends Attacker {
 	public List<AttackerAction> sampleAction(final DependencyGraph depGraph,
 		final int curTimeStep, final int numTimeStep, final RandomGenerator rng,
 		final int numSample, final boolean isReplacement) {
+		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || rng == null
+			|| numSample < 1) {
+			throw new IllegalArgumentException();
+		}
 		if (isReplacement) { // this is currently not used, need to check if the isAdded works properly
 			Set<AttackerAction> attActionSet = new HashSet<AttackerAction>();
 			int i = 0;

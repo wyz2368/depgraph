@@ -48,6 +48,14 @@ public final class UniformvsDefender extends Defender {
 		this(logisParam, discFact, thres
 			, maxNumRes, minNumRes, numResRatio
 			, maxNumSelectACandidate, minNumSelectACandidate, numSelectACandidateRatio);
+		if (discFact <= 0.0 || discFact > 1.0 || thres < 0.0 || thres > 1.0
+			|| numStateSample < 1 || numAttActionSample < 1
+			|| minNumRes < 1 || maxNumRes < minNumRes || numResRatio < 0.0 || numResRatio > 1.0
+			|| minNumSelectACandidate < 1 || maxNumSelectACandidate < minNumSelectACandidate
+			|| numSelectACandidateRatio < 0.0 || numSelectACandidateRatio > 1.0
+		) {
+			throw new IllegalArgumentException();
+		}
 		this.numStateSample = numStateSample;
 		this.numAttActionSample = numAttActionSample;
 	}
@@ -56,6 +64,13 @@ public final class UniformvsDefender extends Defender {
 		, final int maxNumRes, final int minNumRes, final double numResRatio
 		, final int maxNumSelectACandidate, final int minNumSelectACandidate, final double numSelectACandidateRatio) {
 		super(DefenderType.vsUNIFORM);
+		if (discFact <= 0.0 || discFact > 1.0 || thres < 0.0 || thres > 1.0
+			|| minNumRes < 1 || maxNumRes < minNumRes || numResRatio < 0.0 || numResRatio > 1.0
+			|| minNumSelectACandidate < 1 || maxNumSelectACandidate < minNumSelectACandidate
+			|| numSelectACandidateRatio < 0.0 || numSelectACandidateRatio > 1.0
+		) {
+			throw new IllegalArgumentException();
+		}
 		this.logisParam = logisParam;
 		this.discFact = discFact;
 		this.thres = thres;
@@ -74,8 +89,11 @@ public final class UniformvsDefender extends Defender {
 		final int curTimeStep, final int numTimeStep
 		, final DefenderBelief dBelief
 		, final RandomGenerator rng) {
+		if (curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null) {
+			throw new IllegalArgumentException();
+		}
 		Map<Node, Double> dValueMap = computeCandidateValueTopo(depGraph, dBelief, curTimeStep, numTimeStep
-				, this.discFact, rng);
+			, this.discFact, rng);
 		List<Node> dCandidateNodeList = new ArrayList<Node>();
 		double[] candidateValue = new double[dValueMap.size()];
 		
@@ -90,7 +108,7 @@ public final class UniformvsDefender extends Defender {
 		int totalNumCandidate = dValueMap.size();
 		
 		// Compute probability to choose each node
-		double[] probabilities = computecandidateProb(totalNumCandidate, candidateValue, this.logisParam);
+		double[] probabilities = computeCandidateProb(totalNumCandidate, candidateValue, this.logisParam);
 
 		// Only keep candidates with high probability
 		int numGoodCandidate = 0;
@@ -132,6 +150,11 @@ public final class UniformvsDefender extends Defender {
 		, final DefenderObservation dObservation
 		, final int curTimeStep, final int numTimeStep
 		, final RandomGenerator rng) {
+		if (depGraph == null || dBelief == null || dAction == null || dObservation == null 
+			|| curTimeStep < 0 || numTimeStep < curTimeStep || rng == null
+		) {
+			throw new IllegalArgumentException();
+		}
 		
 		RandomDataGenerator rnd = new RandomDataGenerator(rng);
 		
@@ -215,10 +238,18 @@ public final class UniformvsDefender extends Defender {
 		return revisedBelief;
 	}
 	
-	public Map<Node, Double> computeCandidateValueTopo(final DependencyGraph depGraph
-		, final DefenderBelief dBelief
-		, final int curTimeStep, final int numTimeStep, final double discountFactor
-		, final RandomGenerator rng) {
+	private Map<Node, Double> computeCandidateValueTopo(
+		final DependencyGraph depGraph,
+		final DefenderBelief dBelief,
+		final int curTimeStep,
+		final int numTimeStep,
+		final double discountFactor,
+		final RandomGenerator rng) {
+		if (depGraph == null || dBelief == null || curTimeStep < 0 || numTimeStep < curTimeStep
+			|| discountFactor < 0.0 || discountFactor > 1.0 || rng == null
+		) {
+			throw new IllegalArgumentException();
+		}
 		Map<Node, Double> dValueMap = new HashMap<Node, Double>();
 		
 		Attacker attacker = new UniformAttacker(this.maxNumSelectACandidate, this.minNumSelectACandidate, this.numSelectACandidateRatio);
@@ -268,9 +299,14 @@ public final class UniformvsDefender extends Defender {
 		return dValueMap;
 	}
 	
-	public static Map<Node, Double> computeCandidateValueTopo(final DependencyGraph depGraph
+	private static Map<Node, Double> computeCandidateValueTopo(final DependencyGraph depGraph
 		, final List<AttackerAction> attActionList
 		, final int curTimeStep, final int numTimeStep, final double discountFactor) {
+		if (depGraph == null || attActionList == null || curTimeStep < 0 || numTimeStep < curTimeStep
+			|| discountFactor < 0.0 || discountFactor > 1.0
+		) {
+			throw new IllegalArgumentException();
+		}
 		// System.out.println("Defender compute candidate value");
 		Map<Node, Double> dValueMap = new HashMap<Node, Double>();
 		
@@ -383,8 +419,11 @@ public final class UniformvsDefender extends Defender {
 		return dValueMap;
 	}
 	
-	public static DefenderAction sampleAction(final List<Node> dCandidateNodeList, final int numNodetoProtect,
+	private static DefenderAction sampleAction(final List<Node> dCandidateNodeList, final int numNodetoProtect,
 		final AbstractIntegerDistribution rnd) {
+		if (numNodetoProtect < 0 || dCandidateNodeList == null || rnd == null) {
+			throw new IllegalArgumentException();
+		}
 		DefenderAction action = new DefenderAction();
 		
 		boolean[] isChosen = new boolean[dCandidateNodeList.size()];
@@ -404,7 +443,11 @@ public final class UniformvsDefender extends Defender {
 		return action;
 	}
 	
-	public static double[] computecandidateProb(final int totalNumCandidate, final double[] candidateValue, final double logisParam) {
+	private static double[] computeCandidateProb(final int totalNumCandidate,
+		final double[] candidateValue, final double logisParam) {
+		if (totalNumCandidate < 0 || candidateValue == null) {
+			throw new IllegalArgumentException();
+		}
 		//Normalize candidate value
 		double minValue = Double.POSITIVE_INFINITY;
 		double maxValue = Double.NEGATIVE_INFINITY;

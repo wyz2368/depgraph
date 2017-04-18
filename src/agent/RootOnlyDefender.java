@@ -21,6 +21,9 @@ public final class RootOnlyDefender extends Defender {
 	
 	public RootOnlyDefender(final double maxNumRes, final double minNumRes, final double numResRatio) {
 		super(DefenderType.ROOT_ONLY);
+		if (minNumRes < 1 || maxNumRes < minNumRes || numResRatio < 0.0 || numResRatio > 1.0) {
+			throw new IllegalArgumentException();
+		}
 		this.maxNumRes = (int) maxNumRes;
 		this.minNumRes = (int) minNumRes;
 		this.numResRatio = numResRatio;
@@ -28,6 +31,9 @@ public final class RootOnlyDefender extends Defender {
 	
 	public static DefenderAction sampleAction(final List<Node> dCandidateNodeList, final int numNodetoProtect,
 		final AbstractIntegerDistribution rnd) {
+		if (dCandidateNodeList == null || numNodetoProtect < 0 || rnd == null) {
+			throw new IllegalArgumentException();
+		}
 		DefenderAction action = new DefenderAction();
 		
 		boolean[] isChosen = new boolean[dCandidateNodeList.size()];
@@ -50,6 +56,9 @@ public final class RootOnlyDefender extends Defender {
 	@Override
 	public DefenderAction sampleAction(final DependencyGraph depGraph,
 		final int curTimeStep, final int numTimeStep, final DefenderBelief dBelief, final RandomGenerator rng) {
+		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null) {
+			throw new IllegalArgumentException();
+		}
 		List<Node> dCandidateNodeList = new ArrayList<Node>(depGraph.getRootSet());
 		int numNodetoProtect = 0;
 		if (dCandidateNodeList.size() < this.minNumRes) {
@@ -71,6 +80,6 @@ public final class RootOnlyDefender extends Defender {
 		final DefenderBelief currentBelief, final DefenderAction dAction,
 		final DefenderObservation dObservation, final int curTimeStep, final int numTimeStep,
 		final RandomGenerator rng) {
-		return null;
+		throw new UnsupportedOperationException();
 	}
 }

@@ -275,7 +275,7 @@ public final class ValuePropagationvsDefender extends Defender {
 			
 			AttackCandidate curAttCandidate = ValuePropagationAttacker.selectCandidate(depGraph);
 			
-			double[] curACandidateProb = ValuePropagationAttacker.computecandidateProb(depGraph, curAttCandidate
+			double[] curACandidateProb = ValuePropagationAttacker.computeCandidateProb(depGraph, curAttCandidate
 				, curTimeStep, numTimeStep, this.qrParam, discountFactor, propagationParamCur
 				, this.maxNumAttCandidate, this.minNumAttCandidate, this.numAttCandidateRatio);
 			// for(int i = 0; i < curACandidateProb.length; i++)
