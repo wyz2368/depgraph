@@ -177,38 +177,38 @@ public final class DGraphGenerator {
 	
 	public static void findMinCut(final DependencyGraph depGraph) {
 		SimpleDirectedWeightedGraph<Node, Edge> cloneGraph = new SimpleDirectedWeightedGraph<Node, Edge>(Edge.class);
-        for (Node node : depGraph.vertexSet()) {
-        	cloneGraph.addVertex(node);
-        }
-        for (Edge edge : depGraph.edgeSet()) {
-        	Edge newEdge = new Edge();
-        	cloneGraph.addEdge(edge.getsource(), edge.gettarget(), newEdge);
-        	cloneGraph.setEdgeWeight(newEdge, 1.0);
-        	
-        }
-        Node source = new Node();
-        Node sink = new Node();
-        cloneGraph.addVertex(source);
-        cloneGraph.addVertex(sink);
-        
-        for (Node node : cloneGraph.vertexSet()) {
-        	if (node.getTopoPosition() != -1 && cloneGraph.inDegreeOf(node) == 0) {
-        		Edge newEdge = new Edge();
-    			cloneGraph.addEdge(source, node, newEdge);
-    			cloneGraph.setEdgeWeight(newEdge, Double.POSITIVE_INFINITY);
-        	}
-        		
-        	if (node.getTopoPosition() != -1 && cloneGraph.outDegreeOf(node) == 0) {
-        		Edge newEdge = new Edge();
-        		cloneGraph.addEdge(node, sink, newEdge);
-        		cloneGraph.setEdgeWeight(newEdge, Double.POSITIVE_INFINITY);
-        	}
-        }
-        EdmondsKarpMFImpl<Node, Edge> minCutAlgo = new EdmondsKarpMFImpl<Node, Edge>(cloneGraph);
-        minCutAlgo.calculateMinCut(source, sink);
-        Set<Edge> minCut = minCutAlgo.getCutEdges();
-        for (Edge edge : minCut) {
-        	depGraph.addMinCut(edge.getsource());
-        }
+		for (Node node : depGraph.vertexSet()) {
+			cloneGraph.addVertex(node);
+		}
+		for (Edge edge : depGraph.edgeSet()) {
+			Edge newEdge = new Edge();
+			cloneGraph.addEdge(edge.getsource(), edge.gettarget(), newEdge);
+			cloneGraph.setEdgeWeight(newEdge, 1.0);
+			
+		}
+		Node source = new Node();
+		Node sink = new Node();
+		cloneGraph.addVertex(source);
+		cloneGraph.addVertex(sink);
+		
+		for (Node node : cloneGraph.vertexSet()) {
+			if (node.getTopoPosition() != -1 && cloneGraph.inDegreeOf(node) == 0) {
+				Edge newEdge = new Edge();
+				cloneGraph.addEdge(source, node, newEdge);
+				cloneGraph.setEdgeWeight(newEdge, Double.POSITIVE_INFINITY);
+			}
+				
+			if (node.getTopoPosition() != -1 && cloneGraph.outDegreeOf(node) == 0) {
+				Edge newEdge = new Edge();
+				cloneGraph.addEdge(node, sink, newEdge);
+				cloneGraph.setEdgeWeight(newEdge, Double.POSITIVE_INFINITY);
+			}
+		}
+		EdmondsKarpMFImpl<Node, Edge> minCutAlgo = new EdmondsKarpMFImpl<Node, Edge>(cloneGraph);
+		minCutAlgo.calculateMinCut(source, sink);
+		Set<Edge> minCut = minCutAlgo.getCutEdges();
+		for (Edge edge : minCut) {
+			depGraph.addMinCut(edge.getsource());
+		}
 	}
 }
