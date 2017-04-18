@@ -5,7 +5,7 @@ import java.util.List;
 import model.DependencyGraph;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
-import org.apache.commons.math3.random.RandomGenerator;
+// import org.apache.commons.math3.random.RandomGenerator;
 
 /******************************************************************************
  *  Compilation:  javac DigraphGenerator.java
@@ -43,7 +43,14 @@ public final class DagGenerator {
 	 *	 of {@code numEdge} edges
 	 * @throws IllegalArgumentException if no such simple DAG exists
 	 */
-	public static DependencyGraph genRandomDAG(final int numNode, final int numEdge, final RandomDataGenerator rand) {
+	public static DependencyGraph genRandomDAG(
+		final int numNode,
+		final int numEdge,
+		final RandomDataGenerator rand
+	) {
+		if (numNode < 1 || numEdge < 0 || rand == null) {
+			throw new IllegalArgumentException();
+		}
 		if (numEdge > (long) numNode * (numNode - 1) / 2) {
 			throw new IllegalArgumentException("Too many edges");
 		}
@@ -85,7 +92,14 @@ public final class DagGenerator {
 	 * @param rand a random number generator
 	 * @return a random tournament digraph on {@code numNode} vertices
 	 */
-	public static DependencyGraph genTournamentDAG(final int numNode, final RandomDataGenerator rand) {
+	/*
+	private static DependencyGraph genTournamentDAG(
+		final int numNode,
+		final RandomDataGenerator rand
+	) {
+		if (numNode < 1 || rand == null) {
+			throw new IllegalArgumentException();
+		}
 		DependencyGraph dag = new DependencyGraph();
 		for (int i = 0; i < numNode; i++) {
 			dag.addVertex(new Node());
@@ -105,6 +119,7 @@ public final class DagGenerator {
 		nodeList.clear();
 		return dag;
 	}
+	*/
 
 	/**
 	 * Returns a random rooted-in DAG on {@code numNode} vertices and {@code numEdge} edges.
@@ -116,7 +131,15 @@ public final class DagGenerator {
 	 * @param rand random number generator
 	 * @return a random rooted-in DAG on {@code numNode} vertices and {@code numEdge} edges
 	 */
-	public static DependencyGraph genRootedInDAG(final int numNode, final int numEdge, final RandomDataGenerator rand) {
+	/*
+	private static DependencyGraph genRootedInDAG(
+		final int numNode,
+		final int numEdge,
+		final RandomDataGenerator rand
+	) {
+		if (numNode < 1 || numEdge < 0 || rand == null) {
+			throw new IllegalArgumentException();
+		}
 		if (numEdge > (long) numNode * (numNode - 1) / 2) {
 			throw new IllegalArgumentException("Too many edges");
 		}
@@ -152,6 +175,7 @@ public final class DagGenerator {
 		nodeList.clear();
 		return dag;
 	}
+	*/
 
 	/**
 	 * Returns a random rooted-out DAG on {@code numNode} vertices and {@code numEdge} edges.
@@ -163,7 +187,15 @@ public final class DagGenerator {
 	 * @param rand a random number generator
 	 * @return a random rooted-out DAG on {@code numNode} vertices and {@code numEdge} edges
 	 */
-	public static DependencyGraph genRootedOutDAG(final int numNode, final int numEdge, final RandomDataGenerator rand) {
+	/*
+	private static DependencyGraph genRootedOutDAG(
+		final int numNode,
+		final int numEdge,
+		final RandomDataGenerator rand
+	) {
+		if (numNode < 1 || numEdge < 0 || rand == null) {
+			throw new IllegalArgumentException();
+		}
 		if (numEdge > (long) numNode * (numNode - 1) / 2) {
 			throw new IllegalArgumentException("Too many edges");
 		}
@@ -199,6 +231,7 @@ public final class DagGenerator {
 		}
 		return dag;
 	}
+	*/
 
 	/**
 	 * Returns a random rooted-in tree on {@code numNode} vertices.
@@ -209,9 +242,11 @@ public final class DagGenerator {
 	 * @param rand a random number generator
 	 * @return a random rooted-in tree on {@code numNode} vertices
 	 */
-	public static DependencyGraph rootedInTree(final int numNode, final RandomDataGenerator rand) {
+	/*
+	private static DependencyGraph rootedInTree(final int numNode, final RandomDataGenerator rand) {
 		return genRootedInDAG(numNode, numNode - 1, rand);
 	}
+	*/
 
 	/**
 	 * Returns a random rooted-out tree on {@code numNode} vertices. A rooted out-tree
@@ -222,16 +257,22 @@ public final class DagGenerator {
 	 * @param rand a random number generator
 	 * @return a random rooted-out tree on {@code numNode} vertices
 	 */
-	public static DependencyGraph rootedOutTree(final int numNode, final RandomDataGenerator rand) {
+	/*
+	private static DependencyGraph rootedOutTree(final int numNode, final RandomDataGenerator rand) {
 		return genRootedOutDAG(numNode, numNode - 1, rand);
 	}
+	*/
 
 	/**
 	 * Returns a complete binary tree digraph on {@code numNode} vertices.
 	 * @param numNode the number of vertices in the binary tree
 	 * @return a digraph that is a complete binary tree on {@code numNode} vertices
 	 */
-	public static DependencyGraph binaryTree(final int numNode) {
+	/*
+	private static DependencyGraph binaryTree(final int numNode) {
+		if (numNode < 1) {
+			throw new IllegalArgumentException();
+		}
 		DependencyGraph dag = new DependencyGraph();
 		for (int i = 0; i < numNode; i++) {
 			dag.addVertex(new Node());
@@ -242,10 +283,18 @@ public final class DagGenerator {
 		}
 		return dag;
 	}
+	*/
 	
-	public static DependencyGraph genLayerDAG(final int numEdgeLB, final int numEdgeUB,
+	/*
+	private static DependencyGraph genLayerDAG(final int numEdgeLB, final int numEdgeUB,
 		final int numNodeperLayerLB, final int numNodeperLayerUB
 		, final int numLayer, final RandomGenerator rng) {
+		if (numEdgeLB < 0 || numEdgeLB > numEdgeUB || numNodeperLayerLB < 1 || numNodeperLayerUB < numNodeperLayerLB) {
+			throw new IllegalArgumentException();
+		}
+		if (numLayer < 1 || rng == null) {
+			throw new IllegalArgumentException();
+		}
 		DependencyGraph dag = new DependencyGraph();
 		RandomDataGenerator rand = new RandomDataGenerator(rng);
 		List<Node> preLayerNodeList = null;
@@ -294,4 +343,5 @@ public final class DagGenerator {
 		preLayerNodeList.clear();
 		return dag;
 	}
+	*/
 }

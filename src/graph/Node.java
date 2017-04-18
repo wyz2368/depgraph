@@ -20,6 +20,10 @@ public final class Node implements INode {
 
 	private static int counter = 1;
 	
+	private static boolean isProb(final double i) {
+		return i >= 0.0 && i <= 1.0;
+	}
+	
 	public Node() {
 		this(NodeType.NONTARGET, NodeActivationType.OR
 			, 0.0, 0.0
@@ -33,6 +37,13 @@ public final class Node implements INode {
 		, final double dCost, final double aCost
 		, final double posActiveProb, final double posInactiveProb
 		, final double actProb) {
+		if (
+			type == null || eType == null
+			|| !isProb(posActiveProb) || !isProb(posInactiveProb)
+			|| !isProb(actProb)
+		) {
+			throw new IllegalArgumentException();
+		}
 		this.id = counter;
 		counter++;
 		this.type = type; 
@@ -51,6 +62,13 @@ public final class Node implements INode {
 		, final double dCost, final double aCost
 		, final double posActiveProb, final double posInactiveProb
 		, final double actProb) {
+		if (
+			type == null || eType == null
+			|| !isProb(posActiveProb) || !isProb(posInactiveProb)
+			|| !isProb(actProb)
+		) {
+			throw new IllegalArgumentException();
+		}
 		this.id = id;
 		this.type = type; 
 		this.eType = eType;
@@ -119,16 +137,25 @@ public final class Node implements INode {
 	
 	@Override
 	public void setState(final NodeState aState) {
+		if (aState == null) {
+			throw new IllegalArgumentException();
+		}
 		this.state = aState;
 	}
 	
 	@Override
 	public void setType(final NodeType aType) {
+		if (aType == null) {
+			throw new IllegalArgumentException();
+		}
 		this.type = aType;
 	}
 	
 	@Override
 	public void setActivationType(final NodeActivationType eTypeCur) {
+		if (eTypeCur == null) {
+			throw new IllegalArgumentException();
+		}
 		this.eType = eTypeCur;
 	}
 	
@@ -154,6 +181,9 @@ public final class Node implements INode {
 	
 	@Override
 	public void setActProb(final double actProbCur) {
+		if (!isProb(actProbCur)) {
+			throw new IllegalArgumentException();
+		}
 		this.actProb = actProbCur;
 	}
 	
@@ -217,6 +247,9 @@ public final class Node implements INode {
 
 	@Override
 	public void setPosActiveProb(final double aPosActiveProb) {
+		if (!isProb(aPosActiveProb)) {
+			throw new IllegalArgumentException();
+		}
 		this.posActiveProb = aPosActiveProb;
 	}
 
@@ -227,6 +260,9 @@ public final class Node implements INode {
 
 	@Override
 	public void setPosInactiveProb(final double aPosInactiveProb) {
+		if (!isProb(aPosInactiveProb)) {
+			throw new IllegalArgumentException();
+		}
 		this.posInactiveProb = aPosInactiveProb;
 	}
 }

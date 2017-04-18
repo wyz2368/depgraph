@@ -30,8 +30,18 @@ public final class Edge extends DefaultWeightedEdge {
 		this(EdgeType.NORMAL, 0.0, 0.0);
 	}
 	
-	public Edge(final EdgeType aType
-		, final double aCost, final double curActProb) {
+	private static boolean isProb(final double i) {
+		return i >= 0.0 && i <= 1.0;
+	}
+	
+	public Edge(
+		final EdgeType aType, 
+		final double aCost,
+		final double curActProb
+	) {
+		if (aType == null || !isProb(curActProb)) {
+			throw new IllegalArgumentException();
+		}
 		this.id = counter;
 		counter++;
 		
@@ -54,6 +64,9 @@ public final class Edge extends DefaultWeightedEdge {
 	}
 	
 	public void setType(final EdgeType aType) {
+		if (aType == null) {
+			throw new IllegalArgumentException();
+		}
 		this.type = aType;
 	}
 	
@@ -70,6 +83,9 @@ public final class Edge extends DefaultWeightedEdge {
 	}
 	
 	public void setActProb(final double aActProb) {
+		if (!isProb(aActProb)) {
+			throw new IllegalArgumentException();
+		}
 		this.actProb = aActProb;
 	}
 	

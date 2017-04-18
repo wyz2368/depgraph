@@ -21,6 +21,10 @@ public final class DGraphGenerator {
 		// private constructor
 	}
 	
+	private static boolean isProb(final double i) {
+		return i >= 0.0 && i <= 1.0;
+	}
+	
 	// Number simulations per observation such that: 1-2 mins
 	// All leaf nodes are targets, all costs, reward, penalty are within [0,1]
 	public static void genGraph(final DependencyGraph dag, final RandomDataGenerator rand
@@ -34,6 +38,16 @@ public final class DGraphGenerator {
 		, final double aEdgeActProbLB, final double aEdgeActProbUB
 		, final double minPosActiveProb, final double maxPosActiveProb
 		, final double minPosInactiveProb, final double maxPosInactiveProb) {
+		if (dag == null || rand == null || numTarget < 0 || !isProb(nodeActTypeRatio)
+			|| aRewardLB > aRewardUB || dPenaltyLB > dPenaltyUB || aNodeCostLB > aNodeActProbUB
+			|| aEdgeActProbLB > aEdgeActProbUB || dCostLB > dCostUB
+			|| !isProb(aNodeActProbLB) || !isProb(aNodeActProbUB) || aNodeActProbLB > aNodeActProbUB
+			|| !isProb(aEdgeActProbLB) || !isProb(aEdgeActProbUB) || aEdgeActProbLB > aEdgeActProbUB 
+			|| !isProb(minPosActiveProb) || !isProb(maxPosActiveProb) || minPosActiveProb > maxPosActiveProb
+			|| !isProb(minPosInactiveProb) || !isProb(maxPosInactiveProb) || minPosInactiveProb > maxPosInactiveProb
+		) {
+			throw new IllegalArgumentException();
+		}
 		DependencyGraph depGraph = dag;
 		setTopologicalOrder(depGraph);
 		selectTargetRandom(depGraph, rand, numTarget);
@@ -61,7 +75,14 @@ public final class DGraphGenerator {
 		}
 	}
 	
-	public static GameState randomizeInitialGraphState(final DependencyGraph depGraph, final RandomDataGenerator rand, final double pivot) {
+	public static GameState randomizeInitialGraphState(
+		final DependencyGraph depGraph,
+		final RandomDataGenerator rand,
+		final double pivot
+	) {
+		if (depGraph == null || rand == null || !isProb(pivot)) {
+			throw new IllegalArgumentException();
+		}
 		GameState gameState = new GameState();
 		for (Node node : depGraph.vertexSet()) {
 			double value = rand.nextUniform(0, 1, true);
@@ -75,107 +96,10 @@ public final class DGraphGenerator {
 		return gameState;
 	}
 	
-	public static void selectTargetRandom(final DependencyGraph depGraph, final RandomDataGenerator rand, final int numTarget) {
-		List<Node> nodeList = new ArrayList<Node>(depGraph.vertexSet());
-		for (Node node : depGraph.vertexSet()) {
-			if (depGraph.outDegreeOf(node) == 0) {
-				node.setType(NodeType.TARGET);
-				depGraph.addTarget(node);
-			}
-		}
-		int curNumTarget = depGraph.getTargetSet().size();
-		while (curNumTarget < numTarget) {
-			int idx = rand.nextInt(0, nodeList.size() - 1);
-			Node node = nodeList.get(idx);
-			if (node.getType() != NodeType.TARGET) {
-				node.setType(NodeType.TARGET);
-				depGraph.addTarget(node);
-				curNumTarget++;
-			}
-		}
-	}
-	
-	public static void setNodeTypeRandom(final DependencyGraph depGraph, final Node node,
-		final RandomDataGenerator rand, final double typePivot) {
-		if (depGraph.inDegreeOf(node) != 0) { // non-root nodes
-			double value = rand.nextUniform(0, 1, true);
-			if (value <= typePivot) {
-				node.setActivationType(NodeActivationType.AND);
-			}
-		} else { // root nodes
-			node.setActivationType(NodeActivationType.AND);
-		}
-	}
-	
-	public static void genAlertProbRandom(final Node node, final RandomDataGenerator rand
-		, final double minPosActiveProb, final double maxPosActiveProb
-		, final double minPosInactiveProb, final double maxPosInactiveProb) {
-		double posActiveProb = rand.nextUniform(minPosActiveProb, maxPosActiveProb, true);
-		double posInactiveProb = rand.nextUniform(minPosInactiveProb, maxPosInactiveProb, true);
-		node.setPosActiveProb(posActiveProb);
-		node.setPosInactiveProb(posInactiveProb);
-	}
-	
-	public static void genNodePayoffRandom(final Node node, final RandomDataGenerator rand
-		, final double aRewardLB, final double aRewardUB
-		, final double dPenaltyLB, final double dPenaltyUB
-		, final double aCostLB, final double aCostUB
-		, final double dCostLB, final double dCostUB) {
-		double aReward = rand.nextUniform(aRewardLB, aRewardUB, true);
-		double dPenalty = rand.nextUniform(dPenaltyLB, dPenaltyUB, true);
-		node.setAReward(aReward);
-		node.setDPenalty(dPenalty);
-		
-		if (node.getType() == NodeType.TARGET) {
-			double aCost = 2 * rand.nextUniform(aCostLB, aCostUB, true);
-			double dCost = 2 * rand.nextUniform(dCostLB, dCostUB, true);
-			node.setACost(aCost);
-			node.setDCost(dCost);
-		} else {
-			double aCost = rand.nextUniform(aCostLB, aCostUB, true);
-			double dCost = rand.nextUniform(dCostLB, dCostUB, true);
-			node.setACost(aCost);
-			node.setDCost(dCost);
-		}
-		
-	}
-	
-	public static void genEdgePayoffRandom(final Edge edge, final RandomDataGenerator rand
-		, final double aCostLB, final double aCostUB) {
-		double aCost = rand.nextUniform(aCostLB, aCostUB, true);
-		edge.setACost(aCost);
-	}
-	
-	public static void genActivationProbRandom(final Node node, final RandomDataGenerator rand
-		, final double aActProbLB, final double aActProbUB) {
-		double aActProb = rand.nextUniform(aActProbLB, aActProbUB, true);
-		node.setActProb(aActProb);
-	}
-	
-	public static void genActivationProbRandom(final Edge edge, final RandomDataGenerator rand
-		, final double aActProbLB, final double aActProbUB) {
-		double aActProb = rand.nextUniform(aActProbLB, aActProbUB, true);
-		edge.setActProb(aActProb);
-	}
-	
-	public static void setTopologicalOrder(final DependencyGraph depGraph) {
-		TopologicalOrderIterator<Node, Edge> topoOrderIter = new TopologicalOrderIterator<Node, Edge>(depGraph);
-		int pos = 0;
-		while (topoOrderIter.hasNext()) {
-			Node node = topoOrderIter.next();
-			node.setTopoPosition(pos++);
-		}
-	}
-	
-	public static void setRootSet(final DependencyGraph depGraph) {
-		for (Node node : depGraph.vertexSet()) {
-			if (depGraph.inDegreeOf(node) == 0) {
-				depGraph.addRoot(node);
-			}
-		}
-	}
-	
 	public static void findMinCut(final DependencyGraph depGraph) {
+		if (depGraph == null) {
+			throw new IllegalArgumentException();
+		}
 		SimpleDirectedWeightedGraph<Node, Edge> cloneGraph = new SimpleDirectedWeightedGraph<Node, Edge>(Edge.class);
 		for (Node node : depGraph.vertexSet()) {
 			cloneGraph.addVertex(node);
@@ -209,6 +133,145 @@ public final class DGraphGenerator {
 		Set<Edge> minCut = minCutAlgo.getCutEdges();
 		for (Edge edge : minCut) {
 			depGraph.addMinCut(edge.getsource());
+		}
+	}
+	
+	private static void selectTargetRandom(
+		final DependencyGraph depGraph,
+		final RandomDataGenerator rand,
+		final int numTarget
+	) {
+		if (depGraph == null || rand == null || numTarget < 1) {
+			throw new IllegalArgumentException();
+		}
+		List<Node> nodeList = new ArrayList<Node>(depGraph.vertexSet());
+		for (Node node : depGraph.vertexSet()) {
+			if (depGraph.outDegreeOf(node) == 0) {
+				node.setType(NodeType.TARGET);
+				depGraph.addTarget(node);
+			}
+		}
+		int curNumTarget = depGraph.getTargetSet().size();
+		while (curNumTarget < numTarget) {
+			int idx = rand.nextInt(0, nodeList.size() - 1);
+			Node node = nodeList.get(idx);
+			if (node.getType() != NodeType.TARGET) {
+				node.setType(NodeType.TARGET);
+				depGraph.addTarget(node);
+				curNumTarget++;
+			}
+		}
+	}
+	
+	private static void setNodeTypeRandom(
+		final DependencyGraph depGraph,
+		final Node node,
+		final RandomDataGenerator rand,
+		final double typePivot
+	) {
+		if (depGraph == null || node == null || rand == null || !isProb(typePivot)) {
+			throw new IllegalArgumentException();
+		}
+		if (depGraph.inDegreeOf(node) != 0) { // non-root nodes
+			double value = rand.nextUniform(0, 1, true);
+			if (value <= typePivot) {
+				node.setActivationType(NodeActivationType.AND);
+			}
+		} else { // root nodes
+			node.setActivationType(NodeActivationType.AND);
+		}
+	}
+	
+	private static void genAlertProbRandom(
+		final Node node,
+		final RandomDataGenerator rand, 
+		final double minPosActiveProb, 
+		final double maxPosActiveProb, 
+		final double minPosInactiveProb, 
+		final double maxPosInactiveProb
+	) {
+		if (
+			node == null || rand == null
+			|| !isProb(minPosActiveProb) || !isProb(maxPosActiveProb) || minPosActiveProb > maxPosActiveProb
+			|| !isProb(minPosInactiveProb) || !isProb(maxPosInactiveProb) || minPosInactiveProb > maxPosInactiveProb
+		) {
+			throw new IllegalArgumentException();
+		}
+		double posActiveProb = rand.nextUniform(minPosActiveProb, maxPosActiveProb, true);
+		double posInactiveProb = rand.nextUniform(minPosInactiveProb, maxPosInactiveProb, true);
+		node.setPosActiveProb(posActiveProb);
+		node.setPosInactiveProb(posInactiveProb);
+	}
+	
+	private static void genNodePayoffRandom(
+		final Node node, 
+		final RandomDataGenerator rand, 
+		final double aRewardLB, 
+		final double aRewardUB, 
+		final double dPenaltyLB, 
+		final double dPenaltyUB, 
+		final double aCostLB, 
+		final double aCostUB, 
+		final double dCostLB, 
+		final double dCostUB
+	) {
+		if (
+			node == null || rand == null
+			|| aRewardLB > aRewardUB || dPenaltyLB > dPenaltyUB || aCostLB > aCostUB || dCostLB > dCostUB
+		) {
+			throw new IllegalArgumentException();
+		}
+		double aReward = rand.nextUniform(aRewardLB, aRewardUB, true);
+		double dPenalty = rand.nextUniform(dPenaltyLB, dPenaltyUB, true);
+		node.setAReward(aReward);
+		node.setDPenalty(dPenalty);
+		
+		if (node.getType() == NodeType.TARGET) {
+			double aCost = 2 * rand.nextUniform(aCostLB, aCostUB, true);
+			double dCost = 2 * rand.nextUniform(dCostLB, dCostUB, true);
+			node.setACost(aCost);
+			node.setDCost(dCost);
+		} else {
+			double aCost = rand.nextUniform(aCostLB, aCostUB, true);
+			double dCost = rand.nextUniform(dCostLB, dCostUB, true);
+			node.setACost(aCost);
+			node.setDCost(dCost);
+		}
+		
+	}
+	
+	private static void genEdgePayoffRandom(final Edge edge, final RandomDataGenerator rand
+		, final double aCostLB, final double aCostUB) {
+		double aCost = rand.nextUniform(aCostLB, aCostUB, true);
+		edge.setACost(aCost);
+	}
+	
+	private static void genActivationProbRandom(final Node node, final RandomDataGenerator rand
+		, final double aActProbLB, final double aActProbUB) {
+		double aActProb = rand.nextUniform(aActProbLB, aActProbUB, true);
+		node.setActProb(aActProb);
+	}
+	
+	private static void genActivationProbRandom(final Edge edge, final RandomDataGenerator rand
+		, final double aActProbLB, final double aActProbUB) {
+		double aActProb = rand.nextUniform(aActProbLB, aActProbUB, true);
+		edge.setActProb(aActProb);
+	}
+	
+	private static void setTopologicalOrder(final DependencyGraph depGraph) {
+		TopologicalOrderIterator<Node, Edge> topoOrderIter = new TopologicalOrderIterator<Node, Edge>(depGraph);
+		int pos = 0;
+		while (topoOrderIter.hasNext()) {
+			Node node = topoOrderIter.next();
+			node.setTopoPosition(pos++);
+		}
+	}
+	
+	private static void setRootSet(final DependencyGraph depGraph) {
+		for (Node node : depGraph.vertexSet()) {
+			if (depGraph.inDegreeOf(node) == 0) {
+				depGraph.addRoot(node);
+			}
 		}
 	}
 }
