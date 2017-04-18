@@ -25,54 +25,54 @@ public final class MainGameSimulation {
 	}
 
 	public static void main(final String[] args) {
-        if (args == null || args.length != 2) {
-            throw new IllegalStateException(
-        		"Need two arguments: simspecFolder, graphFolder"
-    		);
-        }
-        final long startTime = System.nanoTime();
-        runSimulationsAndPrint(args[0], args[1]);
-        final long endTime = System.nanoTime();
-        final long diff = endTime - startTime;
-        final long millis = diff / 1000000;
-        System.out.println("time taken in millis: " + millis);
-    }
+		if (args == null || args.length != 2) {
+			throw new IllegalStateException(
+				"Need two arguments: simspecFolder, graphFolder"
+			);
+		}
+		final long startTime = System.nanoTime();
+		runSimulationsAndPrint(args[0], args[1]);
+		final long endTime = System.nanoTime();
+		final long diff = endTime - startTime;
+		final long millis = diff / 1000000;
+		System.out.println("time taken in millis: " + millis);
+	}
 	
-	 /**
-     * @param simspecFolderName the local path to the folder
-     * containing simulation_spec.json
-     * @param graphFolderName path to graph folder
-     */
-    public static void runSimulationsAndPrint(final String simspecFolderName, final String graphFolderName) {
-        if (simspecFolderName == null) {
-            throw new IllegalArgumentException();
-        }
+	/**
+	 * @param simspecFolderName the local path to the folder
+	 * containing simulation_spec.json
+	 * @param graphFolderName path to graph folder
+	 */
+	public static void runSimulationsAndPrint(final String simspecFolderName, final String graphFolderName) {
+		if (simspecFolderName == null) {
+			throw new IllegalArgumentException();
+		}
   
-        final GameSimulationSpec simSpec = JsonUtils.getSimSpecOrDefaults(simspecFolderName);    
-        // Load graph
-        // String filePathName = graphFolderName + File.separator + simSpec.getNumNode() + "N" + simSpec.getNumEdge() + "E" 
-        	// + simSpec.getNumTarget() + "T" + simSpec.getTotalNumAlert() + "TA" + simSpec.getMinNumAlert() + "MIA" 
-        	// + simSpec.getMaxNumAlert() + "MAA" + simSpec.getARewardLB() + "ARL" + simSpec.getARewardUB() + "ARU"
-        	// + simSpec.getDPenaltyLB() + "DPL" + simSpec.getDPenaltyUB() + "DPU" + simSpec.getGraphID() + JsonUtils.JSON_SUFFIX;
-        String filePathName = graphFolderName + File.separator + "RandomGraph" + simSpec.getNumNode() + "N" + simSpec.getNumEdge() + "E" 
-    		+ simSpec.getNumTarget() + "T" + simSpec.getGraphID() + JsonUtils.JSON_SUFFIX;
-        DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
-        		
-        // Load players
-        final String attackerString = JsonUtils.getAttackerString(simspecFolderName);
-        final String defenderString = JsonUtils.getDefenderString(simspecFolderName);
-        final String attackerName = EncodingUtils.getStrategyName(attackerString);
-        final String defenderName = EncodingUtils.getStrategyName(defenderString);
-        final Map<String, Double> attackerParams = EncodingUtils.getStrategyParams(attackerString);
-        final Map<String, Double> defenderParams = EncodingUtils.getStrategyParams(defenderString);
-        
-        final MeanGameSimulationResult simResult = runSimulations(depGraph, simSpec, attackerName,
-    		attackerParams, defenderName, defenderParams,
-    		simSpec.getNumSim());
-        final String obsString = JsonUtils.getObservationString(simResult, attackerString, defenderString, simSpec);
-        JsonUtils.printObservationToFile(simspecFolderName, obsString);
-    }
-    
+		final GameSimulationSpec simSpec = JsonUtils.getSimSpecOrDefaults(simspecFolderName);	
+		// Load graph
+		// String filePathName = graphFolderName + File.separator + simSpec.getNumNode() + "N" + simSpec.getNumEdge() + "E" 
+			// + simSpec.getNumTarget() + "T" + simSpec.getTotalNumAlert() + "TA" + simSpec.getMinNumAlert() + "MIA" 
+			// + simSpec.getMaxNumAlert() + "MAA" + simSpec.getARewardLB() + "ARL" + simSpec.getARewardUB() + "ARU"
+			// + simSpec.getDPenaltyLB() + "DPL" + simSpec.getDPenaltyUB() + "DPU" + simSpec.getGraphID() + JsonUtils.JSON_SUFFIX;
+		String filePathName = graphFolderName + File.separator + "RandomGraph" + simSpec.getNumNode() + "N" + simSpec.getNumEdge() + "E" 
+			+ simSpec.getNumTarget() + "T" + simSpec.getGraphID() + JsonUtils.JSON_SUFFIX;
+		DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
+				
+		// Load players
+		final String attackerString = JsonUtils.getAttackerString(simspecFolderName);
+		final String defenderString = JsonUtils.getDefenderString(simspecFolderName);
+		final String attackerName = EncodingUtils.getStrategyName(attackerString);
+		final String defenderName = EncodingUtils.getStrategyName(defenderString);
+		final Map<String, Double> attackerParams = EncodingUtils.getStrategyParams(attackerString);
+		final Map<String, Double> defenderParams = EncodingUtils.getStrategyParams(defenderString);
+		
+		final MeanGameSimulationResult simResult = runSimulations(depGraph, simSpec, attackerName,
+			attackerParams, defenderName, defenderParams,
+			simSpec.getNumSim());
+		final String obsString = JsonUtils.getObservationString(simResult, attackerString, defenderString, simSpec);
+		JsonUtils.printObservationToFile(simspecFolderName, obsString);
+	}
+	
 	private static MeanGameSimulationResult runSimulations(final DependencyGraph depGraph,
 		final GameSimulationSpec simSpec, final String attackerName,
 		final Map<String, Double> attackerParams, final String defenderName,

@@ -49,13 +49,13 @@ public final class AttackerAction {
 		System.out.println("Attacker Action...");
 		for (Entry<Node, Set<Edge>> entry : this.action.entrySet()) {
 			System.out.println("Activating node: " + entry.getKey().getId() 
-					+ "\t Node type: " + entry.getKey().getType().toString()
-					+ "\t Activation Type: " + entry.getKey().getActivationType().toString());
+				+ "\t Node type: " + entry.getKey().getType().toString()
+				+ "\t Activation Type: " + entry.getKey().getActivationType().toString());
 			if (entry.getKey().getActivationType() == NodeActivationType.OR) {
 				System.out.println("Via edge: ");
 				for (Edge edge : entry.getValue()) {
 					System.out.println(edge.getsource().getId() + "(" + edge.getsource().getState().toString() 
-							+ ")-->" + edge.gettarget().getId());
+						+ ")-->" + edge.gettarget().getId());
 				}
 				System.out.println();
 			}

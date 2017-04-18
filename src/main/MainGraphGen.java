@@ -21,8 +21,8 @@ public final class MainGraphGen {
 
 	public static void main(final String[] args) {
 		if (args == null || args.length != 1) {
-            throw new IllegalStateException("Need two arguments: simspecFolder, graphFolder, graph sample index");
-        }
+			throw new IllegalStateException("Need two arguments: simspecFolder, graphFolder, graph sample index");
+		}
 		String graphFolderName = args[0];
 		
 		final int numNode = 100;
@@ -52,13 +52,13 @@ public final class MainGraphGen {
 		Edge.resetCounter();
 		RandomDataGenerator rnd = new RandomDataGenerator();
 		rnd.reSeed(System.currentTimeMillis());
-     
+	 
 		final int numSample = 100;
 		for (int idx = 0; idx < numSample; idx++) {
 			Node.resetCounter();
 			Edge.resetCounter();
 			String filePathName = graphFolderName + File.separator + "RandomGraph" + numNode + "N" + numEdge + "E" 
-        		+ numTarget + "T" + idx + JsonUtils.JSON_SUFFIX;
+				+ numTarget + "T" + idx + JsonUtils.JSON_SUFFIX;
 			DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rnd);
 			DGraphGenerator.genGraph(depGraph, rnd
 				, numTarget, nodeActTypeRatio
@@ -72,7 +72,7 @@ public final class MainGraphGen {
 				, minPosActiveProb, maxPosActiveProb
 				, minPosInactiveProb, maxPosInactiveProb);
 			DGraphGenerator.findMinCut(depGraph);
-	        DGraphUtils.save(filePathName, depGraph);
+			DGraphUtils.save(filePathName, depGraph);
 		}
 	}
 }
