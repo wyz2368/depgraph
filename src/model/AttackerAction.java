@@ -16,15 +16,24 @@ public final class AttackerAction {
 		this.action = new HashMap<Node, Set<Edge>>();
 	}
 	
-	public boolean containNode(final Node node) {
-		return this.action.containsKey(node);
-	}
-	
 	public AttackerAction(final Map<Node, Set<Edge>> curAction) {
+		if (curAction == null) {
+			throw new IllegalArgumentException();
+		}
 		this.action = curAction;
 	}
 	
+	public boolean containsNode(final Node node) {
+		if (node == null) {
+			throw new IllegalArgumentException();
+		}
+		return this.action.containsKey(node);
+	}
+	
 	public void setAction(final Map<Node, Set<Edge>> curAction) {
+		if (curAction == null) {
+			throw new IllegalArgumentException();
+		}
 		this.action = curAction;
 	}
 	
@@ -32,7 +41,13 @@ public final class AttackerAction {
 		return this.action;
 	}
 	
-	public Set<Edge> addNodetoActive(final Node node, final Set<Edge> edgeSet) {
+	public Set<Edge> addNodetoActive(
+		final Node node,
+		final Set<Edge> edgeSet
+	) {
+		if (node == null || edgeSet == null) {
+			throw new IllegalArgumentException();
+		}
 		return this.action.put(node, edgeSet);
 	}
 	

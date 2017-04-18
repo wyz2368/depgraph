@@ -24,6 +24,9 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 	}
 	
 	public boolean addTarget(final Node node) {
+		if (node == null) {
+			throw new IllegalArgumentException();
+		}
 		return this.targetSet.add(node);
 	}
 	
@@ -36,10 +39,16 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 	}
 	
 	public void setMinCut(final Set<Node> curMinCut) {
+		if (curMinCut == null) {
+			throw new IllegalArgumentException();
+		}
 		this.minCut = curMinCut;
 	}
 	
 	public void addMinCut(final Node node) {
+		if (node == null) {
+			throw new IllegalArgumentException();
+		}
 		this.minCut.add(node);
 	}
 	
@@ -48,10 +57,16 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 	}
 	
 	public boolean addRoot(final Node node) {
+		if (node == null) {
+			throw new IllegalArgumentException();
+		}
 		return this.rootSet.add(node);
 	}
 	
 	public void setRootSet(final Set<Node> curRootSet) {
+		if (curRootSet == null) {
+			throw new IllegalArgumentException();
+		}
 		this.rootSet = curRootSet;
 	}
 	
@@ -62,6 +77,9 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 	}
 	
 	public void setState(final GameState gameState) {
+		if (gameState == null) {
+			throw new IllegalArgumentException();
+		}
 		this.resetState();
 		for (Node node : gameState.getEnabledNodeSet()) {
 			node.setState(NodeState.ACTIVE);

@@ -15,6 +15,9 @@ public final class GameSample {
 	}
 	
 	public GameSample(final int aTimeStep) {
+		if (aTimeStep < 0) {
+			throw new IllegalArgumentException();
+		}
 		this.timeStep = aTimeStep;
 		this.gameState = new GameState();
 		this.defObservation = new DefenderObservation();
@@ -22,8 +25,16 @@ public final class GameSample {
 		this.attAction = new AttackerAction();
 	}
 	
-	public GameSample(final int aTimeStep, final GameState aGameState, final DefenderObservation aDefObservation
-		, final DefenderAction aDefAction, final AttackerAction aAttAction) {
+	public GameSample(
+		final int aTimeStep,
+		final GameState aGameState,
+		final DefenderObservation aDefObservation,
+		final DefenderAction aDefAction, 
+		final AttackerAction aAttAction
+	) {
+		if (aTimeStep < 0 || aGameState == null || aDefObservation == null || aDefAction == null || aAttAction == null) {
+			throw new IllegalArgumentException();
+		}
 		this.timeStep = aTimeStep;
 		this.gameState = aGameState;
 		this.defObservation = aDefObservation;

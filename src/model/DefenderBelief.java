@@ -12,6 +12,9 @@ public final class DefenderBelief {
 	}
 	
 	public Double getProbability(final GameState gameState) {
+		if (gameState == null) {
+			throw new IllegalArgumentException();
+		}
 		return this.gameStateMap.get(gameState);
 	}
 	

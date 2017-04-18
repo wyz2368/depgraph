@@ -11,6 +11,9 @@ public final class DefenderObservation {
 	}
 	
 	public boolean addAlert(final SecurityAlert alert) {
+		if (alert == null) {
+			throw new IllegalArgumentException();
+		}
 		return this.alertSet.add(alert);
 	}
 	
@@ -18,7 +21,10 @@ public final class DefenderObservation {
 		return this.alertSet;
 	}
 	
-	public boolean contain(final SecurityAlert alert) {
+	public boolean containsAlert(final SecurityAlert alert) {
+		if (alert == null) {
+			throw new IllegalArgumentException();
+		}
 		return this.alertSet.contains(alert);
 	}
 	
@@ -30,7 +36,7 @@ public final class DefenderObservation {
 		System.out.println("--------------------------------------------------------------------");
 		System.out.println("Defender observation: ");
 		for (SecurityAlert alert : this.alertSet) {
-			System.out.print("Node: " + alert.getNode().getId() + "\t" + "Alert: " + alert.getAlert());
+			System.out.print("Node: " + alert.getNode().getId() + "\t" + "Alert: " + alert.isActiveAlert());
 		}
 		System.out.println();
 		System.out.println("--------------------------------------------------------------------");

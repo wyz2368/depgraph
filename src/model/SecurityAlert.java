@@ -7,11 +7,14 @@ public final class SecurityAlert {
 	private final boolean isActive;
 	
 	public SecurityAlert(final Node aNode, final boolean aIsActive) {
+		if (aNode == null) {
+			throw new IllegalArgumentException();
+		}
 		this.node = aNode;
 		this.isActive = aIsActive;
 	}
 	
-	public boolean getAlert() {
+	public boolean isActiveAlert() {
 		return this.isActive;
 	}
 	

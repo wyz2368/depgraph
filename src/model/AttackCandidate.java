@@ -16,10 +16,16 @@ public final class AttackCandidate {
 	}
 	
 	public boolean addNodeCandidate(final Node node) {
+		if (node == null) {
+			throw new IllegalArgumentException();
+		}
 		return this.nodeCandidateSet.add(node);
 	}
 	
 	public boolean addEdgeCandidate(final Edge edge) {
+		if (edge == null) {
+			throw new IllegalArgumentException();
+		}
 		return this.edgeCandidateSet.add(edge);
 	}
 	

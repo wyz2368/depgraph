@@ -14,6 +14,9 @@ public final class GameState {
 	}
 	
 	public boolean addEnabledNode(final Node node) {
+		if (node == null) {
+			throw new IllegalArgumentException();
+		}
 		return this.enabledNodeSet.add(node);
 	}
 	
@@ -22,6 +25,9 @@ public final class GameState {
 	}
 	
 	public boolean contain(final Node node) {
+		if (node == null) {
+			throw new IllegalArgumentException();
+		}
 		return this.enabledNodeSet.contains(node);
 	}
 	

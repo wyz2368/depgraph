@@ -111,7 +111,7 @@ public final class GameOracle {
 		double prob = 1.0;
 		for (SecurityAlert alert : dObservation.getAlertSet()) {
 			Node node = alert.getNode();
-			boolean alertType = alert.getAlert();
+			boolean alertType = alert.isActiveAlert();
 			if (gameState.contain(node)) { // this is the active node
 				if (alertType) { // positive alert
 					prob *= node.getPosActiveProb();
@@ -144,12 +144,12 @@ public final class GameOracle {
 			throw new IllegalArgumentException();
 		}
 		for (Node node : pastState.getEnabledNodeSet()) { // active nodes in past state will remain active if not disable
-			if (!dAction.contain(node) && !newState.contain(node)) {
+			if (!dAction.containsNode(node) && !newState.contain(node)) {
 				return 0.0;
 			}
 		}
 		for (Node node : newState.getEnabledNodeSet()) { // nodes which are disabled by the defender can not be active
-			if (dAction.contain(node)) {
+			if (dAction.containsNode(node)) {
 				return 0.0;
 			}
 		}
@@ -199,7 +199,7 @@ public final class GameOracle {
 		Map<Node, Double> enableProbMap = new HashMap<Node, Double>(); // probability each node is active
 		// Check if the defender disables any previously active nodes
 		for (Node node : pastState.getEnabledNodeSet()) {
-			if (!defAction.contain(node)) {
+			if (!defAction.containsNode(node)) {
 				enableProbMap.put(node, 1.0);
 			}
 		}

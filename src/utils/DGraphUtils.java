@@ -52,6 +52,7 @@ public final class DGraphUtils {
 	}
 
 	public static DependencyGraph loadGraph(final String filePathName) {
+		assert filePathName != null;
 		DependencyGraph depGraph = new DependencyGraph();
 		final String inputString = linesAsString(filePathName);
 		final JsonObject inputJson = 
@@ -147,6 +148,7 @@ public final class DGraphUtils {
 	}
 	
 	public static void save(final String filePathName, final DependencyGraph depGraph) {
+		assert filePathName != null && depGraph != null;
 		
 		/************************************************************************************/
 		// Save nodes

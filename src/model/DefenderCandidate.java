@@ -13,6 +13,9 @@ public final class DefenderCandidate {
 	}
 	
 	public boolean addNodeCandidate(final Node node) {
+		if (node == null) {
+			throw new IllegalArgumentException();
+		}
 		return this.nodeCandidateSet.add(node);
 	}
 	

@@ -207,6 +207,7 @@ public final class JsonUtils {
 	}
 	
 	public static void printObservationToFile(final String folderName, final String obsString) {
+		assert folderName != null && obsString != null;
 		/*
 		final String outputFolderPath =
 			SIMSPEC_FOLDER_NAME + File.separator + subfolderName;
@@ -231,6 +232,7 @@ public final class JsonUtils {
 	}
 		
 	private static int maxSuffixValue(final String folderPath, final String fileNamePrefix) {
+		assert folderPath != null && fileNamePrefix != null;
 		final Set<Integer> values = new HashSet<Integer>();
 		final File[] files = new File(folderPath).listFiles();
 		if (files == null) {

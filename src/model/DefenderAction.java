@@ -13,10 +13,16 @@ public final class DefenderAction {
 	}
 	
 	public DefenderAction(final Set<Node> curAction) {
+		if (curAction == null) {
+			throw new IllegalArgumentException();
+		}
 		this.action = curAction;
 	}
 	
 	public void setAction(final Set<Node> curAction) {
+		if (curAction == null) {
+			throw new IllegalArgumentException();
+		}
 		this.action.clear();
 		this.action.addAll(curAction);
 	}
@@ -26,10 +32,16 @@ public final class DefenderAction {
 	}
 	
 	public boolean addNodetoProtect(final Node node) {
+		if (node == null) {
+			throw new IllegalArgumentException();
+		}
 		return this.action.add(node);
 	}
 	
-	public boolean contain(final Node node) {
+	public boolean containsNode(final Node node) {
+		if (node == null) {
+			throw new IllegalArgumentException();
+		}
 		return this.action.contains(node);
 	}
 	
