@@ -1,7 +1,7 @@
 /**
  * 
  */
-package lpWrapper;
+package lpwrapper;
 
 import java.io.OutputStream;
 import java.util.List;

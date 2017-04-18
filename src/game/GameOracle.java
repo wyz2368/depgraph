@@ -21,9 +21,11 @@ import model.DependencyGraph;
 import model.GameState;
 import model.SecurityAlert;
 
-
 public final class GameOracle {
 	private static final int MAX_ITER = 200;
+	private GameOracle() {
+		// private constructor
+	}
 	/**
 	 * 
 	 * @param pastState past game state.

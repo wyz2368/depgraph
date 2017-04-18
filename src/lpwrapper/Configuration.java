@@ -1,4 +1,4 @@
-package lpWrapper;
+package lpwrapper;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,7 +8,7 @@ import java.util.Random;
 
 // -Djava.library.path=/path/of/cplex/installation
 
-public class Configuration {
+public final class Configuration {
 	public static final int MIP_PRESOLVE = 1;
 	public static final int MIP_TIMELIMIT = -1;
 	public static final double MIP_TOLERANCE = 0.001;
@@ -19,8 +19,8 @@ public class Configuration {
 	public static final boolean SUCCESS = true;
 	public static final double EPSILON = 1e-4;
 
-	public static final long seed = System.currentTimeMillis();
-	public static final Random random = new Random(seed);
+	public static final long SEED = System.currentTimeMillis();
+	public static final Random RAND = new Random(SEED);
 
 	public static final boolean PRINT_ERROR = false;
 
@@ -29,21 +29,26 @@ public class Configuration {
 
 	private static boolean loadedGlpk = false;
 	private static boolean loadedCplex = false;
+	
+	private Configuration() {
+		// private constructor
+	}
 
-	public static void loadLibrariesGLPK(String ConfigFile) throws IOException {
-		if ( loadedGlpk == true ) {
+	public static void loadLibrariesGLPK(final String configFileName) throws IOException {
+		if (loadedGlpk) {
 			return;
 		}
-		FileReader fstream = new FileReader(ConfigFile);
+		FileReader fstream = new FileReader(configFileName);
 		@SuppressWarnings("resource")
 		BufferedReader in = new BufferedReader(fstream);
 
-		String GLPKFileString = null, GLPKFile_Java_String = null;
+		String gLPKFileName = null;
+		String gLPKFileJavaName = null;
 
 		String line = in.readLine();
 		while (line != null) {
 			line = line.trim();		
-			if (line.length() > 0 && ! line.startsWith("#")) {
+			if (line.length() > 0 && !line.startsWith("#")) {
 				// not a comment
 				String[] list = line.split("=");
 				if (list.length != 2) {
@@ -51,9 +56,9 @@ public class Configuration {
 							"Unrecognized format for the config file.\n");
 				}
 				if (list[0].equals("GLPKLIB_FILE")) {
-					GLPKFileString = list[1];
+					gLPKFileName = list[1];
 				} else if (list[0].equals("GLPKJAVABINDING_FILE")) {
-					GLPKFile_Java_String = list[1];
+					gLPKFileJavaName = list[1];
 				} else {
 					System.err
 							.println("Unrecognized statement in Config File: "
@@ -65,10 +70,10 @@ public class Configuration {
 		}
 
 		// Finally, load the libs.
-		File GLPKFile = new File(GLPKFileString);
-		File GLPKFile_Java = new File(GLPKFile_Java_String);
-		System.load(GLPKFile.getAbsolutePath());
-		System.load(GLPKFile_Java.getAbsolutePath());
+		File gLPKFile = new File(gLPKFileName);
+		File gLPKFileJava = new File(gLPKFileJavaName);
+		System.load(gLPKFile.getAbsolutePath());
+		System.load(gLPKFileJava.getAbsolutePath());
 		loadedGlpk = true;
 	}
 
@@ -77,22 +82,21 @@ public class Configuration {
 //		Configuration.loadLibrariesCplex("/home/thanhhng/CPLEX/CplexConfig");
 	}
 	
-	public static void loadLibrariesCplex(String ConfigFile) throws IOException {
-		if ( loadedCplex == true ) {
+	public static void loadLibrariesCplex(final String configFileName) throws IOException {
+		if (loadedCplex) {
 			return;
 		}
 			
-		FileReader fstream = new FileReader(ConfigFile);
+		FileReader fstream = new FileReader(configFileName);
 		@SuppressWarnings("resource")
 		BufferedReader in = new BufferedReader(fstream);
 		
-		String CplexFileString = null;
-//		String CplexLicenseString = null;
+		String cPlexFileString = null;
 
 		String line = in.readLine();
 		while (line != null) {
 			line = line.trim();
-			if (line.length() > 0 && ! line.startsWith("#")) {
+			if (line.length() > 0 && !line.startsWith("#")) {
 				// not a comment
 				String[] list = line.split("=");
 				if (list.length != 2) {
@@ -101,11 +105,11 @@ public class Configuration {
 				}
 				String osType = System.getProperty("os.arch");
 				if (list[0].equals("LIB_FILE")) {
-					CplexFileString = list[1];
+					cPlexFileString = list[1];
 				} else if (osType.contains("32") && list[0].equals("LIB_FILE_32")) {
-					CplexFileString = list[1];
+					cPlexFileString = list[1];
 				} else if (osType.contains("64") && list[0].equals("LIB_FILE_64")) {
-					CplexFileString = list[1];
+					cPlexFileString = list[1];
 //				} 
 //				else if (list[0].equals("LICENSE_FILE")) {
 //					CplexLicenseString = list[1];
@@ -120,9 +124,9 @@ public class Configuration {
 		}
 
 		// Finally, load the libs.
-		File CplexFile = new File(CplexFileString);
+		File cPlexFile = new File(cPlexFileString);
 		
-		System.load(CplexFile.getAbsolutePath());
+		System.load(cPlexFile.getAbsolutePath());
 //		File CplexLicenseFile = new File(CplexLicenseString);
 //		try {
 //			IloCplex.putenv("ILOG_LICENSE_FILE=" + CplexLicenseFile.getAbsolutePath());
@@ -133,5 +137,4 @@ public class Configuration {
 //		}
 		loadedCplex = true;
 	}
-
 }

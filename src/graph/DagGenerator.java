@@ -90,10 +90,11 @@ public final class DagGenerator {
             dag.addVertex(new Node());
         }
         List<Node> nodeList = new ArrayList<Node>(dag.vertexSet());
+        final double half = 0.5;
         for (int v = 0; v < numNode; v++) {
             for (int w = v + 1; w < numNode; w++) {
             	double pivot = rand.nextUniform(0, 1, true);
-            	if (pivot <= 0.5) {
+            	if (pivot <= half) {
             		dag.addEdge(nodeList.get(v), nodeList.get(w));
             	} else {
             		dag.addEdge(nodeList.get(w), nodeList.get(v));

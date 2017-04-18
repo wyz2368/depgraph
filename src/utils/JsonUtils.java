@@ -46,6 +46,10 @@ public final class JsonUtils {
      * The file extension for Json files.
      */
     public static final String JSON_SUFFIX = ".json";
+    
+    private JsonUtils() {
+    	// private constructor
+    }
     public static GameSimulationSpec getSimSpecOrDefaults(final String folderName) {
         assert folderName != null;
         

@@ -10,7 +10,7 @@ import java.util.Set;
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 
 // There is a dummy node connecting to entry nodes.
-public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge>{
+public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 	private static final long serialVersionUID = 1L; // I dont know what this is for :)))
 	private final Set<Node> targetSet;
 	private Set<Node> minCut;

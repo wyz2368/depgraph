@@ -18,13 +18,13 @@ public final class GameSample {
 		this.defAction = new DefenderAction();
 		this.attAction = new AttackerAction();
 	}
-	public GameSample(int timeStep, GameState gameState, DefenderObservation defObservation
-			, DefenderAction defAction, AttackerAction attAction) {
-		this.timeStep = timeStep;
-		this.gameState = gameState;
-		this.defObservation = defObservation;
-		this.defAction = defAction;
-		this.attAction = attAction;
+	public GameSample(final int aTimeStep, final GameState aGameState, final DefenderObservation aDefObservation
+			, final DefenderAction aDefAction, final AttackerAction aAttAction) {
+		this.timeStep = aTimeStep;
+		this.gameState = aGameState;
+		this.defObservation = aDefObservation;
+		this.defAction = aDefAction;
+		this.attAction = aAttAction;
 	}
 	public int getTimeStep() {
 		return this.timeStep;

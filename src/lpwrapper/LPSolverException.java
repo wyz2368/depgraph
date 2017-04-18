@@ -1,4 +1,4 @@
-package lpWrapper;
+package lpwrapper;
 
 public class LPSolverException extends Exception {
 

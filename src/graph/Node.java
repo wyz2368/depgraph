@@ -33,7 +33,6 @@ public final class Node implements INode {
 			, final double dCost, final double aCost
 			, final double posActiveProb, final double posInactiveProb
 			, final double actProb) {
-		super();
 		this.id = counter;
 		counter++;
 		this.type = type; 
@@ -46,12 +45,11 @@ public final class Node implements INode {
 		this.posInactiveProb = posInactiveProb;
 		this.actProb = actProb;
 	}
-	public Node(final int id, NodeType type, final NodeActivationType eType
+	public Node(final int id, final NodeType type, final NodeActivationType eType
 			, final double aReward, final double dPenalty
 			, final double dCost, final double aCost
 			, final double posActiveProb, final double posInactiveProb
-			, final double actProb){
-		super();
+			, final double actProb) {
 		this.id = id;
 		this.type = type; 
 		this.eType = eType;
@@ -128,24 +126,24 @@ public final class Node implements INode {
 		this.aReward = aRewardCur;
 	}
 	@Override
-	public void setDPenalty(final double dPenaltyCur){
+	public void setDPenalty(final double dPenaltyCur) {
 		this.dPenalty = dPenaltyCur;
 	}
 	
 	@Override
-	public void setDCost(final double dCostCur){
+	public void setDCost(final double dCostCur) {
 		this.dCost = dCostCur;
 	}
 	@Override
-	public void setACost(final double aCostCur){
+	public void setACost(final double aCostCur) {
 		this.aCost = aCostCur;
 	}
 	@Override
-	public void setActProb(final double actProbCur){
+	public void setActProb(final double actProbCur) {
 		this.actProb = actProbCur;
 	}
 	@Override
-	public void setTopoPosition(final int positionCur){
+	public void setTopoPosition(final int positionCur) {
 		this.topoPosition = positionCur;
 	}
 	

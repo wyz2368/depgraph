@@ -2,7 +2,7 @@ package model;
 
 import graph.Node;
 
-public final class SecurityAlert{
+public final class SecurityAlert {
 	private final Node node;
 	private final boolean isActive;
 	public SecurityAlert(final Node aNode, final boolean aIsActive) {

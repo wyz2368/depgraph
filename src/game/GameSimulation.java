@@ -73,47 +73,48 @@ public final class GameSimulation {
 		DefenderBelief dBelief = new DefenderBelief(); 
 		dBelief.addState(gameState, 1.0); // initial belief of the defender
 		long start, end;
+		final double thousand = 1000.0;
 		for (int t = 0; t <= this.numTimeStep; t++) {
 			System.out.println("Time step: " + t);
 			start = System.currentTimeMillis();
 			System.out.println("Sample attacker action...");
 			AttackerAction attAction = this.attacker.sampleAction(this.depGraph, t, this.numTimeStep, this.rng.getRandomGenerator());
 			end = System.currentTimeMillis();
-			System.out.println("Elapsed time: " + (end - start) / 1000.0);
+			System.out.println("Elapsed time: " + (end - start) / thousand);
 //			attAction.print();
 			
 			System.out.println("Sample defender action...");
 			start = System.currentTimeMillis();
 			DefenderAction defAction = this.defender.sampleAction(this.depGraph, t, this.numTimeStep, dBelief, this.rng.getRandomGenerator());
 			end = System.currentTimeMillis();
-			System.out.println("Elapsed time: " + (end - start) / 1000.0);
+			System.out.println("Elapsed time: " + (end - start) / thousand);
 //			defAction.print();
 			
 			System.out.println("Sample game state...");
 			start = System.currentTimeMillis();
 			gameState = GameOracle.generateStateSample(gameState, attAction, defAction, this.rng); // new game state
 			end = System.currentTimeMillis();
-			System.out.println("Elapsed time: " + (end - start) / 1000.0);
+			System.out.println("Elapsed time: " + (end - start) / thousand);
 //			gameState.print();
 			
 			System.out.println("Sample observation...");
 			start = System.currentTimeMillis();
 			dObservation = GameOracle.generateDefObservation(this.depGraph, gameState, this.rng); // observation based on game state
 			end = System.currentTimeMillis();
-			System.out.println("Elapsed time: " + (end - start) / 1000.0);
+			System.out.println("Elapsed time: " + (end - start) / thousand);
 			
 			System.out.println("Update defender belief...");
 			start = System.currentTimeMillis();
 			dBelief = this.defender.updateBelief(this.depGraph, dBelief, defAction, dObservation, t, this.numTimeStep, this.rng.getRandomGenerator());
 			end = System.currentTimeMillis();
-			System.out.println("Elapsed time: " + (end - start) / 1000.0);
+			System.out.println("Elapsed time: " + (end - start) / thousand);
 			
 			//Update states
 			System.out.println("Update game state...");
 			start = System.currentTimeMillis();
 			this.depGraph.setState(gameState);
 			end = System.currentTimeMillis();
-			System.out.println("Elapsed time: " + (end - start) / 1000.0);
+			System.out.println("Elapsed time: " + (end - start) / thousand);
 			
 			GameSample gameSample = new GameSample(t, gameState, dObservation, defAction, attAction);
 			this.simResult.addGameSample(gameSample);

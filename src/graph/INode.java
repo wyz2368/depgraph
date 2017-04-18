@@ -1,6 +1,6 @@
 package graph;
 
-public interface INode{	
+public interface INode {	
 	enum NodeType { 
 		NONTARGET, TARGET;
 		
@@ -26,7 +26,7 @@ public interface INode{
 		}
 	}
 	
-	public enum NodeState {
+	enum NodeState {
 		ACTIVE, INACTIVE;
 	
 		@Override

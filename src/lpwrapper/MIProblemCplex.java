@@ -1,4 +1,4 @@
-package lpWrapper;
+package lpwrapper;
 
 import ilog.concert.IloColumn;
 import ilog.concert.IloException;
