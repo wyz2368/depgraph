@@ -36,9 +36,15 @@ public final class GameOracle {
 	 * @param rnd random data generator
 	 * @return new game state
 	 */
-	public static GameState generateStateSample(final GameState pastState
-		, final AttackerAction attAction, final DefenderAction defAction
-		, final RandomDataGenerator rnd) {
+	public static GameState generateStateSample(
+		final GameState pastState,
+		final AttackerAction attAction,
+		final DefenderAction defAction, 
+		final RandomDataGenerator rnd
+	) {
+		if (pastState == null || attAction == null || defAction == null || rnd == null) {
+			throw new IllegalArgumentException();
+		}
 		List<GameState> stateSampleList = generateStateSample(pastState
 			, attAction, defAction
 			,  rnd, 1, false);
@@ -52,8 +58,13 @@ public final class GameOracle {
 	 * @param rnd random data generator
 	 * @return observation of the defender
 	 */
-	public static DefenderObservation generateDefObservation(final DependencyGraph depGraph,
-		final GameState gameState, final RandomDataGenerator rnd) {
+	public static DefenderObservation generateDefObservation(
+		final DependencyGraph depGraph,
+		final GameState gameState, final RandomDataGenerator rnd
+	) {
+		if (depGraph == null || gameState == null || rnd == null) {
+			throw new IllegalArgumentException();
+		}
 		DefenderObservation defObservation = new DefenderObservation();
 		boolean[] isActive = new boolean[depGraph.vertexSet().size()];
 		for (int i = 0; i < depGraph.vertexSet().size(); i++) {
@@ -94,6 +105,9 @@ public final class GameOracle {
 	 * @return probability of the observation
 	 */
 	public static double computeObservationProb(final GameState gameState, final DefenderObservation dObservation) {
+		if (gameState == null || dObservation == null) {
+			throw new IllegalArgumentException();
+		}
 		double prob = 1.0;
 		for (SecurityAlert alert : dObservation.getAlertSet()) {
 			Node node = alert.getNode();
@@ -126,6 +140,9 @@ public final class GameOracle {
 	public static double computeStateTransitionProb(
 		final DefenderAction dAction, final AttackerAction aAction
 		, final GameState pastState, final GameState newState) {
+		if (dAction == null || aAction == null || pastState == null || newState == null) {
+			throw new IllegalArgumentException();
+		}
 		for (Node node : pastState.getEnabledNodeSet()) { // active nodes in past state will remain active if not disable
 			if (!dAction.contain(node) && !newState.contain(node)) {
 				return 0.0;
@@ -176,6 +193,9 @@ public final class GameOracle {
 	public static List<GameState> generateStateSample(final GameState pastState
 		, final AttackerAction attAction, final DefenderAction defAction
 		, final RandomDataGenerator rnd, final int numStateSample, final boolean isReplacement) {
+		if (pastState == null || attAction == null || defAction == null || rnd == null || numStateSample < 1) {
+			throw new IllegalArgumentException();
+		}
 		Map<Node, Double> enableProbMap = new HashMap<Node, Double>(); // probability each node is active
 		// Check if the defender disables any previously active nodes
 		for (Node node : pastState.getEnabledNodeSet()) {

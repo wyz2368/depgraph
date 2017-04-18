@@ -35,8 +35,12 @@ public final class GameSimulation {
 	//Outcome
 	private GameSimulationResult simResult;
 	
-	public GameSimulation(final DependencyGraph depGraph, final Attacker attacker, final Defender defender, final RandomDataGenerator rng,
+	public GameSimulation(final DependencyGraph depGraph, final Attacker attacker,
+		final Defender defender, final RandomDataGenerator rng,
 		final int numTimeStep, final double discFact) {
+		if (depGraph == null || attacker == null || defender == null || rng == null || numTimeStep < 1 || discFact <= 0.0 || discFact > 1.0) {
+			throw new IllegalArgumentException();
+		}
 		this.depGraph = depGraph;
 		this.numTimeStep = numTimeStep;
 		this.discFact = discFact;
@@ -55,10 +59,12 @@ public final class GameSimulation {
 	}
 	
 	public void setDefender(final Defender aDefender) {
+		assert aDefender != null;
 		this.defender = aDefender;
 	}
 	
 	public void setAttacker(final Attacker aAttacker) {
+		assert aAttacker != null;
 		this.attacker = aAttacker;
 	}
 	

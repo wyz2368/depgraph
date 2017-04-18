@@ -1,16 +1,16 @@
 package game;
 
 public final class GameSimulationSpec {
-	private int numTimeStep; // total number of time steps
-	private int numSim; // number of simulation per game configuration
+	private final int numTimeStep; // total number of time steps
+	private final int numSim; // number of simulation per game configuration
 	
 	// For graph generation
-	private int graphID;
-	private int numNode; // number of nodes 
-	private int numEdge; // number of edges
-	private int numTarget; // minimum number of targets
+	private final int graphID;
+	private final int numNode; // number of nodes 
+	private final int numEdge; // number of edges
+	private final int numTarget; // minimum number of targets
 	
-	private double discFact; // for computing payoff
+	private final double discFact; // for computing payoff
 
 	// private double aRewardLB;
 	//	private double aRewardUB;
@@ -28,9 +28,13 @@ public final class GameSimulationSpec {
 	//	private double qrParam; // for attacker 
 	//	private double logisParam; // for defender
 	
-	public GameSimulationSpec(final int numTimeStep, final int numSim, final int graphID, final int numNode,
-		final int numEdge, final int numTarget
-		, final double discFact) {
+	public GameSimulationSpec(final int numTimeStep, final int numSim,
+		final int graphID, final int numNode,
+		final int numEdge, final int numTarget,
+		final double discFact) {
+		if (numTimeStep < 1 || numSim < 1 || numNode < 1 || numEdge < 0 || numTarget < 1 || discFact <= 0.0 || discFact > 1.0) {
+			throw new IllegalArgumentException();
+		}
 		this.numTimeStep = numTimeStep;
 		this.numSim = numSim;
 		this.graphID = graphID;

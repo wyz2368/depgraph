@@ -16,6 +16,9 @@ public final class GameSimulationResult {
 	
 	public GameSimulationResult(final GameState initialState, final List<GameSample> gameSampleList,
 		final double defPayoff, final double attPayoff) {
+		if (initialState == null || gameSampleList == null) {
+			throw new IllegalArgumentException();
+		}
 		this.initialState = initialState;
 		this.gameSampleList = gameSampleList;
 		this.defPayoff = defPayoff;
@@ -30,18 +33,22 @@ public final class GameSimulationResult {
 	}
 	
 	public void addEnabledNodetoInitialState(final Node node) {
+		assert node != null;
 		this.initialState.addEnabledNode(node);
 	}
 	
 	public void setInitialState(final GameState aInitialState) {
+		assert aInitialState != null;
 		this.initialState = aInitialState;
 	}
 	
 	public void setGameSampleList(final List<GameSample> aGameSampleList) {
+		assert aGameSampleList != null;
 		this.gameSampleList = aGameSampleList;
 	}
 	
 	public void addGameSample(final GameSample gameSample) {
+		assert gameSample != null;
 		this.gameSampleList.add(gameSample);
 	}
 	
