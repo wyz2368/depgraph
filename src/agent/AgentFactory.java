@@ -23,28 +23,28 @@ public final class AgentFactory {
 		AttackerType attType = AttackerType.valueOf(attackerName);
 		
 		if (attType == AttackerType.UNIFORM) {
-			assert attackerParams.containsKey(AttackerParam.maxNumSelectCandidate.toString())
-				&& attackerParams.containsKey(AttackerParam.minNumSelectCandidate.toString())
-				&& attackerParams.containsKey(AttackerParam.numSelectCandidateRatio.toString());
-			return new UniformAttacker(attackerParams.get(AttackerParam.maxNumSelectCandidate.toString())
-				, attackerParams.get(AttackerParam.minNumSelectCandidate.toString())
-				, attackerParams.get(AttackerParam.numSelectCandidateRatio.toString()));
+			assert attackerParams.containsKey(AttackerParam.MAX_NUM_SELECT_CAND.toString())
+				&& attackerParams.containsKey(AttackerParam.MIN_NUM_SELECT_CAND.toString())
+				&& attackerParams.containsKey(AttackerParam.NUM_SELECT_CAND_RATIO.toString());
+			return new UniformAttacker(attackerParams.get(AttackerParam.MAX_NUM_SELECT_CAND.toString())
+				, attackerParams.get(AttackerParam.MIN_NUM_SELECT_CAND.toString())
+				, attackerParams.get(AttackerParam.NUM_SELECT_CAND_RATIO.toString()));
 		} else if (attType == AttackerType.VALUE_PROPAGATION) {
-			assert attackerParams.containsKey(AttackerParam.maxNumSelectCandidate.toString()) 
-			&& attackerParams.containsKey(AttackerParam.minNumSelectCandidate.toString())
-			&& attackerParams.containsKey(AttackerParam.numSelectCandidateRatio.toString())
-			&& attackerParams.containsKey(AttackerParam.qrParam.toString());
+			assert attackerParams.containsKey(AttackerParam.MAX_NUM_SELECT_CAND.toString()) 
+			&& attackerParams.containsKey(AttackerParam.MIN_NUM_SELECT_CAND.toString())
+			&& attackerParams.containsKey(AttackerParam.NUM_SELECT_CAND_RATIO.toString())
+			&& attackerParams.containsKey(AttackerParam.QR_PARAM.toString());
 			return new ValuePropagationAttacker(
-				attackerParams.get(AttackerParam.maxNumSelectCandidate.toString())
-				, attackerParams.get(AttackerParam.minNumSelectCandidate.toString())
-				, attackerParams.get(AttackerParam.numSelectCandidateRatio.toString())
-				, attackerParams.get(AttackerParam.qrParam.toString())
+				attackerParams.get(AttackerParam.MAX_NUM_SELECT_CAND.toString())
+				, attackerParams.get(AttackerParam.MIN_NUM_SELECT_CAND.toString())
+				, attackerParams.get(AttackerParam.NUM_SELECT_CAND_RATIO.toString())
+				, attackerParams.get(AttackerParam.QR_PARAM.toString())
 				, discFact);
 		} else if (attType == AttackerType.RANDOM_WALK) {
-			assert attackerParams.containsKey(AttackerParam.numRWSample.toString()) 
-			&& attackerParams.containsKey(AttackerParam.qrParam.toString());
-			return new RandomWalkAttacker(attackerParams.get(AttackerParam.numRWSample.toString())
-				, attackerParams.get(AttackerParam.qrParam.toString()), discFact);
+			assert attackerParams.containsKey(AttackerParam.NUM_RW_SAMPLE.toString()) 
+			&& attackerParams.containsKey(AttackerParam.QR_PARAM.toString());
+			return new RandomWalkAttacker(attackerParams.get(AttackerParam.NUM_RW_SAMPLE.toString())
+				, attackerParams.get(AttackerParam.QR_PARAM.toString()), discFact);
 		}
 		return null;
 	}

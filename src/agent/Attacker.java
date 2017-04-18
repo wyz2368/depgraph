@@ -23,18 +23,17 @@ public abstract class Attacker {
 	}
 	
 	public enum AttackerParam {
-		maxNumSelectCandidate, minNumSelectCandidate
-		, numSelectCandidateRatio
-		, qrParam, numRWSample;
+		MAX_NUM_SELECT_CAND, MIN_NUM_SELECT_CAND,
+		NUM_SELECT_CAND_RATIO, QR_PARAM, NUM_RW_SAMPLE;
 		
 		@Override
 		public String toString() {
 			switch(this) {
-			case maxNumSelectCandidate: return "maxNumSelectCandidate";
-			case minNumSelectCandidate: return "minNumSelectCandidate";
-			case numSelectCandidateRatio: return "numSelectCandidateRatio";
-			case qrParam: return "qrParam";
-			case numRWSample: return "numRWSample";
+			case MAX_NUM_SELECT_CAND: return "maxNumSelectCandidate";
+			case MIN_NUM_SELECT_CAND: return "minNumSelectCandidate";
+			case NUM_SELECT_CAND_RATIO: return "numSelectCandidateRatio";
+			case QR_PARAM: return "qrParam";
+			case NUM_RW_SAMPLE: return "numRWSample";
 			default: return "";
 			}	
 		}

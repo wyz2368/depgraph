@@ -48,7 +48,7 @@ public final class DagGenerator {
 		final int numEdge,
 		final RandomDataGenerator rand
 	) {
-		if (numNode < 1 || numEdge < 0 || rand == null) {
+		if (numNode < 1 || rand == null) {
 			throw new IllegalArgumentException();
 		}
 		if (numEdge > (long) numNode * (numNode - 1) / 2) {
