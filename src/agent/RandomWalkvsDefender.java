@@ -150,7 +150,7 @@ public final class RandomWalkvsDefender extends Defender {
 		depGraph.setState(savedGameState);
 		
 		// probability for each possible candidate action for the defender
-		double[] probabilities = computecandidateProb(dBelief.getGameStateMap().size(), candidateValues, this.logisParam);
+		double[] probabilities = computeCandidateProb(dBelief.getGameStateMap().size(), candidateValues, this.logisParam);
 		
 		// Start sampling
 		int[] nodeIndexes = new int[dBelief.getGameStateMap().size()];
@@ -446,7 +446,7 @@ public final class RandomWalkvsDefender extends Defender {
 	 * @param logisParam defense parameter for randomization
 	 * @return defense probability for every candidate action
 	 *****************************************************************************************/
-	public static double[] computecandidateProb(final int totalNumCandidate, final double[] candidateValue, final double logisParam) {
+	public static double[] computeCandidateProb(final int totalNumCandidate, final double[] candidateValue, final double logisParam) {
 		//Normalize candidate value
 		double minValue = Double.POSITIVE_INFINITY;
 		double maxValue = Double.NEGATIVE_INFINITY;

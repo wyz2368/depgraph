@@ -107,7 +107,7 @@ public final class ValuePropagationVsDefenderALT extends Defender {
 		, final DefenderBelief dBelief
 		, final RandomGenerator rng) {
 		Map<Node, Double> dValueMap = computeCandidateValueTopo(depGraph, dBelief, curTimeStep, numTimeStep
-				, this.discFact, rng);
+			, this.discFact, rng);
 		List<Node> dCandidateNodeList = new ArrayList<Node>();
 		double[] candidateValue = new double[dValueMap.size()];
 		
