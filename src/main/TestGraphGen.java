@@ -56,8 +56,8 @@ public final class TestGraphGen {
 			, minPosActiveProb, maxPosActiveProb
 			, minPosInactiveProb, maxPosInactiveProb);
 		DGraphGenerator.findMinCut(depGraph);
-        DGraphUtils.save("./TestGraphUtil_1.json", depGraph);
-        DependencyGraph depGraphClone = DGraphUtils.loadGraph("./TestGraphUtil_1.json");
-        DGraphUtils.save("./TestGraphUtil_2.json", depGraphClone);
+		DGraphUtils.save("./TestGraphUtil_1.json", depGraph);
+		DependencyGraph depGraphClone = DGraphUtils.loadGraph("./TestGraphUtil_1.json");
+		DGraphUtils.save("./TestGraphUtil_2.json", depGraphClone);
 	}
 }
