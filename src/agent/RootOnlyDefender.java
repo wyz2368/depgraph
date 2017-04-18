@@ -18,12 +18,14 @@ public final class RootOnlyDefender extends Defender {
 	private int maxNumRes;
 	private int minNumRes;
 	private double numResRatio;
+	
 	public RootOnlyDefender(final double maxNumRes, final double minNumRes, final double numResRatio) {
 		super(DefenderType.ROOT_ONLY);
 		this.maxNumRes = (int) maxNumRes;
 		this.minNumRes = (int) minNumRes;
 		this.numResRatio = numResRatio;
 	}
+	
 	public static DefenderAction sampleAction(final List<Node> dCandidateNodeList, final int numNodetoProtect,
 		final AbstractIntegerDistribution rnd) {
 		DefenderAction action = new DefenderAction();
@@ -44,6 +46,7 @@ public final class RootOnlyDefender extends Defender {
 		}
 		return action;
 	}
+	
 	@Override
 	public DefenderAction sampleAction(final DependencyGraph depGraph,
 		final int curTimeStep, final int numTimeStep, final DefenderBelief dBelief, final RandomGenerator rng) {
@@ -62,6 +65,7 @@ public final class RootOnlyDefender extends Defender {
 		UniformIntegerDistribution rnd = new UniformIntegerDistribution(rng, 0, dCandidateNodeList.size() - 1);
 		return sampleAction(dCandidateNodeList, numNodetoProtect, rnd);	
 	}
+	
 	@Override
 	public DefenderBelief updateBelief(final DependencyGraph depGraph,
 		final DefenderBelief currentBelief, final DefenderAction dAction,

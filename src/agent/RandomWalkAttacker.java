@@ -72,7 +72,7 @@ public final class RandomWalkAttacker extends Attacker {
 			RandomWalkTuple[] rwSample = randomWalk(depGraph, curTimeStep, rng);
 			AttackCandidate attCandidate = new AttackCandidate();
 			candidateValues[i] = greedyCandidate(depGraph, rwSample, attCandidate, numTimeStep, this.discFact);
-//			System.out.println(candidateValues[i]);
+			// System.out.println(candidateValues[i]);
 			candidates[i] = attCandidate;
 		}
 		
@@ -149,7 +149,7 @@ public final class RandomWalkAttacker extends Attacker {
 						sequenceList.add(edge.getsource());
 						isInSequence[edge.getsource().getId() - 1] = true;
 					}
-//					sequenceSet.add(edge.getsource());
+					// sequenceSet.add(edge.getsource());
 				}
 				// Start backtracking
 				while (!sequenceList.isEmpty()) {
@@ -160,8 +160,8 @@ public final class RandomWalkAttacker extends Attacker {
 						if (rwTuple.getPreAct() != null) {
 							for (Edge edge : rwTuple.getPreAct()) {
 								Node preNode = edge.getsource();
-//								if(sequenceSet.add(preNode))
-//									sequenceList.add(preNode);
+								// if(sequenceSet.add(preNode))
+									// sequenceList.add(preNode);
 								if (!isInSequence[preNode.getId() - 1]) {
 									sequenceList.add(preNode);
 									isInSequence[preNode.getId() - 1] = true;
@@ -173,8 +173,8 @@ public final class RandomWalkAttacker extends Attacker {
 							Edge edge = rwTuple.getPreAct().get(0);
 							pAct *= edge.getActProb();
 							Node preNode = edge.getsource();
-//							if(sequenceSet.add(preNode))
-//								sequenceList.add(preNode);
+							// if(sequenceSet.add(preNode))
+								// sequenceList.add(preNode);
 							if (!isInSequence[preNode.getId() - 1]) {
 								sequenceList.add(preNode);
 								isInSequence[preNode.getId() - 1] = true;
@@ -225,7 +225,7 @@ public final class RandomWalkAttacker extends Attacker {
 		double value = 0.0; // value of the chosen target subset
 		boolean isStop = false; // greedy stop
 		boolean[] isInSequence = new boolean[depGraph.vertexSet().size()]; // sequence to reach greedy target subset
-//		Set<Node> sequenceSet = new HashSet<Node>();
+		// Set<Node> sequenceSet = new HashSet<Node>();
 		for (int j = 0; j < depGraph.vertexSet().size(); j++) {
 			isInSequence[j] = false;
 		}

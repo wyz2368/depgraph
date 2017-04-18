@@ -230,11 +230,11 @@ public final class UniformvsDefender extends Defender {
 				savedGameState.addEnabledNode(node);
 			}
 		}
-//		System.out.println("Start defender belief:........");
+		// System.out.println("Start defender belief:........");
 		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) { // iterate over current belief of the defender
 			GameState gameState = entry.getKey();
-//			gameState.print();
-//			System.out.println("Prob: " + entry.getValue());
+			// gameState.print();
+			// System.out.println("Prob: " + entry.getValue());
 			Double curStateProb = entry.getValue();
 			
 			depGraph.setState(gameState); // for each possible state
@@ -255,7 +255,7 @@ public final class UniformvsDefender extends Defender {
 				dValueMap.put(node, curDValue);
 			}
 		}
-//		System.out.println("End defender belief:........");
+		// System.out.println("End defender belief:........");
 		for (Entry<Node, Double> entry : dValueMap.entrySet()) {
 			Node node = entry.getKey();
 			Double value = entry.getValue();
@@ -271,7 +271,7 @@ public final class UniformvsDefender extends Defender {
 	public static Map<Node, Double> computeCandidateValueTopo(final DependencyGraph depGraph
 		, final List<AttackerAction> attActionList
 		, final int curTimeStep, final int numTimeStep, final double discountFactor) {
-//		System.out.println("Defender compute candidate value");
+		// System.out.println("Defender compute candidate value");
 		Map<Node, Double> dValueMap = new HashMap<Node, Double>();
 		
 		// Compute values for each node in the graph
@@ -343,7 +343,7 @@ public final class UniformvsDefender extends Defender {
 		
 		/*****************************************************************************************/
 		for (AttackerAction attAction : attActionList) {
-//			attAction.print();
+			// attAction.print();
 			for (Entry<Node, Set<Edge>> attEntry : attAction.getAction().entrySet()) {
 				Node node = attEntry.getKey();
 				Set<Edge> edgeSet = attEntry.getValue();
@@ -372,7 +372,7 @@ public final class UniformvsDefender extends Defender {
 		
 		for (Node target : depGraph.getTargetSet()) {
 			if (target.getState() == NodeState.ACTIVE) {
-//				System.out.println("This is active target...........");
+				// System.out.println("This is active target...........");
 				double dValue = target.getDPenalty();
 				if (rSum[target.getId() - 1] != Double.POSITIVE_INFINITY) {
 					dValue += rSum[target.getId() - 1];

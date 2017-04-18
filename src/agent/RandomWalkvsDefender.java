@@ -52,14 +52,14 @@ public final class RandomWalkvsDefender extends Defender {
 	 * @param numAttActionSample number of attack action samples
 	 *****************************************************************************************/
 	public RandomWalkvsDefender(final double logisParam
-			, final double discFact
-			, final double thres
-			, final double qrParam
-			, final int numRWSample
-			, final int numStateSample
-			, final int numAttActionSample) {
+		, final double discFact
+		, final double thres
+		, final double qrParam
+		, final int numRWSample
+		, final int numStateSample
+		, final int numAttActionSample) {
 		this(logisParam, discFact, thres
-				, qrParam, numRWSample);
+			, qrParam, numRWSample);
 		this.numStateSample = numStateSample;
 		this.numAttActionSample = numAttActionSample;
 	}
@@ -73,10 +73,10 @@ public final class RandomWalkvsDefender extends Defender {
 	 * @param numRWSample number of random walk samples
 	 *****************************************************************************************/
 	public RandomWalkvsDefender(final double logisParam
-			, final double discFact
-			, final double thres
-			, final double qrParam
-			, final double numRWSample) {
+		, final double discFact
+		, final double thres
+		, final double qrParam
+		, final double numRWSample) {
 		super(DefenderType.vsRANDOM_WALK);
 		this.logisParam = logisParam;
 		this.discFact = discFact;
@@ -96,10 +96,9 @@ public final class RandomWalkvsDefender extends Defender {
 	 *****************************************************************************************/
 	@Override
 	public DefenderAction sampleAction(final DependencyGraph depGraph
-			, final int curTimeStep, final int numTimeStep
-			, final DefenderBelief dBelief
-			, final RandomGenerator rng) {
-		
+		, final int curTimeStep, final int numTimeStep
+		, final DefenderBelief dBelief
+		, final RandomGenerator rng) {		
 		// True game state
 		GameState savedGameState = new GameState();
 		for (Node node : depGraph.vertexSet()) {
@@ -129,19 +128,19 @@ public final class RandomWalkvsDefender extends Defender {
 				RandomWalkTuple[] rwTuples = rwAttacker.randomWalk(depGraph, curTimeStep, rng); // sample random walk
 				AttackCandidate attCandidate = new AttackCandidate();
 				attValue[i] = RandomWalkAttacker.greedyCandidate(depGraph // greedy attack
-						, rwTuples, attCandidate // attCandidate is an outcome as well
-						, numTimeStep, this.discFact); 
+					, rwTuples, attCandidate // attCandidate is an outcome as well
+					, numTimeStep, this.discFact); 
 				rwTuplesList.add(rwTuples);
 				attCandidateList.add(attCandidate);
 			}
 			DefenderAction defAction = new DefenderAction();
 			double[] attProb = RandomWalkAttacker.computecandidateProb(this.numRWSample, attValue, this.qrParam); // attack probability
 			double dValue = greedyCandidate(depGraph // greedy defense with respect to each possible game state
-					, rwTuplesList, attCandidateList, attProb
-					, defAction // this is outcome
-					, curTimeStep, numTimeStep
-					, this.discFact);
-		
+				, rwTuplesList, attCandidateList, attProb
+				, defAction // this is outcome
+				, curTimeStep, numTimeStep
+				, this.discFact);
+	
 			candidateValues[idx] = dValue * gameStateProb;
 			candidates[idx] = defAction;
 			idx++;
@@ -177,12 +176,11 @@ public final class RandomWalkvsDefender extends Defender {
 	 * @return new belief of the defender
 	 *****************************************************************************************/
 	public DefenderBelief updateBelief(final DependencyGraph depGraph
-			, final DefenderBelief dBelief
-			, final DefenderAction dAction
-			, final DefenderObservation dObservation
-			, final int curTimeStep, final int numTimeStep
-			, final RandomGenerator rng) {
-		
+		, final DefenderBelief dBelief
+		, final DefenderAction dAction
+		, final DefenderObservation dObservation
+		, final int curTimeStep, final int numTimeStep
+		, final RandomGenerator rng) {		
 		RandomDataGenerator rnd = new RandomDataGenerator(rng);
 		
 		// Used for storing true game state of the game
@@ -277,12 +275,12 @@ public final class RandomWalkvsDefender extends Defender {
 	 * @return a candidate
 	 *****************************************************************************************/
 	public static double greedyCandidate(final DependencyGraph depGraph // depGraph has current game state the defender is examining
-			, final List<RandomWalkTuple[]> rwTuplesList
-			, final List<AttackCandidate> attCandidateList
-			, final double[] attProb
-			, final DefenderAction defAction
-			, final int curTimeStep, final int numTimeStep
-			, final double discFact) {
+		, final List<RandomWalkTuple[]> rwTuplesList
+		, final List<AttackCandidate> attCandidateList
+		, final double[] attProb
+		, final DefenderAction defAction
+		, final int curTimeStep, final int numTimeStep
+		, final double discFact) {
 		double value = 0.0;
 		// Get topological order, starting from zero
 		Node[] topoOrder = new Node[depGraph.vertexSet().size()];

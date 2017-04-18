@@ -19,6 +19,7 @@ public final class GoalOnlyDefender extends Defender {
 	private double numResRatio;
 	private double logisParam;
 	private double discFact;
+	
 	public GoalOnlyDefender(final double maxNumRes, final double minNumRes, final double numResRatio, final double logisParam, final double discFact) {
 		super(DefenderType.GOAL_ONLY);
 		this.maxNumRes = (int) maxNumRes;
@@ -27,6 +28,7 @@ public final class GoalOnlyDefender extends Defender {
 		this.logisParam = logisParam;
 		this.discFact = discFact;
 	}
+	
 	double[] computeCandidateProb(final int totalNumCandidate, final double[] candidateValue) {
 		//Normalize candidate value
 		double minValue = Double.POSITIVE_INFINITY;
@@ -64,8 +66,9 @@ public final class GoalOnlyDefender extends Defender {
 		
 		return probabilities;
 	}
+	
 	public static DefenderAction sampleAction(final List<Node> dCandidateNodeList, final int numNodetoProtect,
-			final AbstractIntegerDistribution rnd) {
+		final AbstractIntegerDistribution rnd) {
 		DefenderAction action = new DefenderAction();
 		
 		boolean[] isChosen = new boolean[dCandidateNodeList.size()];
@@ -86,7 +89,7 @@ public final class GoalOnlyDefender extends Defender {
 	}
 	
 	public static double[] computeCandidateValue(final List<Node> dCandidateNodeList
-			, final double discountFactor, final int curTimeStep) {
+		, final double discountFactor, final int curTimeStep) {
 		double[] candidateValue = new double[dCandidateNodeList.size()];
 		for (int i = 0; i < dCandidateNodeList.size(); i++) {
 			candidateValue[i] = Math.pow(discountFactor, curTimeStep - 1) 
@@ -94,9 +97,10 @@ public final class GoalOnlyDefender extends Defender {
 		}
 		return candidateValue;
 	}
+	
 	@Override
 	public DefenderAction sampleAction(final DependencyGraph depGraph,
-			final int curTimeStep, final int numTimeStep, final DefenderBelief dBelief, final RandomGenerator rng) {
+		final int curTimeStep, final int numTimeStep, final DefenderBelief dBelief, final RandomGenerator rng) {
 		List<Node> dCandidateNodeList = new ArrayList<Node>(depGraph.getTargetSet());
 		double[] candidateValue = computeCandidateValue(dCandidateNodeList, this.discFact, curTimeStep);
 		double[] probabilities = computeCandidateProb(dCandidateNodeList.size(), candidateValue);
@@ -118,9 +122,10 @@ public final class GoalOnlyDefender extends Defender {
 			return new DefenderAction();
 		}
 		// Sample nodes
-//		System.out.println(numNodetoProtect);
+		// System.out.println(numNodetoProtect);
 		return sampleAction(dCandidateNodeList, numNodetoProtect, rnd);	
 	}
+	
 	@Override
 	public DefenderBelief updateBelief(final DependencyGraph depGraph,
 			final DefenderBelief currentBelief, final DefenderAction dAction,

@@ -26,6 +26,7 @@ public final class ValuePropagationAttacker extends Attacker {
 	private double discFact;
 	
 	private final double propagationParam = 0.5;
+	
 	public ValuePropagationAttacker(final double maxNumSelectCandidate, final double minNumSelectCandidate, final double numSelectCandidateRatio
 		, final double qrParam, final double discFact) {
 		super(AttackerType.VALUE_PROPAGATION);
@@ -48,10 +49,10 @@ public final class ValuePropagationAttacker extends Attacker {
 		// Find candidate
 		AttackCandidate attackCandidate = selectCandidate(depGraph);
 		// Compute candidate value
-//		double[] candidateValue = computeCandidateValue(depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
-//				, this.propagationParam);
-//		double[] candidateValue = computeCandidateValueTime(depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
-//				, this.propagationParam);
+		// double[] candidateValue = computeCandidateValue(depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
+		// , this.propagationParam);
+		// double[] candidateValue = computeCandidateValueTime(depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
+		// , this.propagationParam);
 		double[] candidateValue = computeCandidateValueTopoBest(depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
 				, this.propagationParam);
 		int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
@@ -80,6 +81,7 @@ public final class ValuePropagationAttacker extends Attacker {
 		
 		return sampleAction(depGraph, attackCandidate, numSelectCandidate, rnd);
 	}
+	
 	public static double[] computecandidateProb(final DependencyGraph depGraph, final AttackCandidate attackCandidate
 		, final int curTimeStep, final int numTimeStep
 		, final double qrParam, final double discFact, final double propagationParam
@@ -120,10 +122,10 @@ public final class ValuePropagationAttacker extends Attacker {
 		// Find candidate
 		AttackCandidate attackCandidate = selectCandidate(depGraph);
 		// Compute candidate value
-//		double[] candidateValue = computeCandidateValue(depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
-//				, this.propagationParam);
-//		double[] candidateValue = computeCandidateValueTime(depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
-//				, this.propagationParam);
+		// double[] candidateValue = computeCandidateValue(depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
+		// , this.propagationParam);
+		// double[] candidateValue = computeCandidateValueTime(depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
+		// , this.propagationParam);
 		double[] candidateValue = computeCandidateValueTopoBest(depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
 				, this.propagationParam);
 		int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
@@ -214,6 +216,7 @@ public final class ValuePropagationAttacker extends Attacker {
 		
 		return probabilities;
 	}
+	
 	/*****************************************************************************************
 	 * @param depGraph: dependency graph
 	 * @param attackCandidate: candidate lists 
@@ -283,8 +286,8 @@ public final class ValuePropagationAttacker extends Attacker {
 							if (r[i][srcNode.getId() - 1] < discountFactor * rHat) {
 								r[i][srcNode.getId() - 1] = discountFactor * rHat;
 							}
-	//						if(r_hat > 0)
-	//							r[i][srcNode.getId() - 1] += discountFactor * r_hat;
+							// if(r_hat > 0)
+								// r[i][srcNode.getId() - 1] += discountFactor * r_hat;
 						}
 						// if the new time step doesn't exceed the total number of time step, then add new node to the queue
 						if (timeStep + 1 < numTimeStep) {
@@ -303,11 +306,11 @@ public final class ValuePropagationAttacker extends Attacker {
 		for (int i = 0; i < depGraph.vertexSet().size(); i++) {
 			for (int j = 0; j < targetList.size(); j++) {
 				rSum[i] += r[j][i];
-//				rSum[i] = Math.max(rSum[i], r[j][i]) ;
+				// rSum[i] = Math.max(rSum[i], r[j][i]) ;
 			}
 		}
-//		for(int i = 0; i < depGraph.vertexSet().size(); i++)
-//			rSum[i] /= targetList.size();
+		// for(int i = 0; i < depGraph.vertexSet().size(); i++)
+			// rSum[i] /= targetList.size();
 		/*****************************************************************************************/
 		// Sum of value for candidates
 		int idx = 0;
