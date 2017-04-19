@@ -26,4 +26,6 @@ The code was written by Thanh Nguyen with help from Mason Wright.
         * jgrapht-core-1.0.1.jar
 8. File -> Import -> General -> File System -> depgraph/graphs
     * Into folder: depgraph/graphs -> Finish
+9. File -> Import -> General -> File System -> depgraph/simspecs
+    * Into folder: depgraph/simspecs -> Finish
 
