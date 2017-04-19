@@ -81,9 +81,11 @@ public final class TestVPvsDefender {
 		final int numSim = 10;
 		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
 		
-		Defender valuePropagationvsDefender = new ValuePropagationVsDefenderALT(maxNumRes, minNumRes, numResRatio
-			, logisParam, discFact, thres
-			, qrParam, maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
+		Defender valuePropagationvsDefender = new ValuePropagationVsDefenderALT(
+			maxNumRes, minNumRes, numResRatio,
+			logisParam, discFact, thres,
+			qrParam, maxNumSelectCandidate, minNumSelectCandidate,
+			numSelectCandidateRatio);
 		// Defender valuePropagationvsDefender = new ValuePropagationvsDefender(maxNumRes, minNumRes, numResRatio
 			// , logisParam, discFact, thres
 			// , qrParam, maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);

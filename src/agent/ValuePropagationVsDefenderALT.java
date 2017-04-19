@@ -63,7 +63,7 @@ public final class ValuePropagationVsDefenderALT extends Defender {
 		final double numAttCandidateRatio) {
 		super(DefenderType.vsVALUE_PROPAGATION);
 		if (
-			minNumRes < 1 || minNumRes < maxNumRes || !isProb(numResRatio)
+			minNumRes < 1 || minNumRes > maxNumRes || !isProb(numResRatio)
 			|| discFact < 0.0 || discFact > 1.0 || !isProb(thres)
 			|| minNumAttCandidate < 1 || maxNumAttCandidate < minNumAttCandidate
 			|| !isProb(numAttCandidateRatio)
