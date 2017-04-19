@@ -80,6 +80,10 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 		}
 		System.out.println();
 		System.out.println("--------------------------------------------------------------------");
+		System.out.println("Root set: ");
+		for(Node root : this.rootSet) {
+			System.out.print(root.getId() + "\t");
+		}
 		System.out.println("--------------------------------------------------------------------");
 		System.out.println("Mincut set: ");
 		for (Node node : this.minCut) {

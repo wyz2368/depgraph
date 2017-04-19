@@ -38,7 +38,7 @@ public final class DefenderAction {
 		System.out.println("--------------------------------------------------------------------");
 		System.out.println("Defender Action...");
 		for (Node node : this.action) {
-			System.out.println("Protect node: " + node.getId() + "\t Node type" + node.getType()
+			System.out.println("Protect node: " + node.getId() + "\t Node type: " + node.getType()
 				+ "\t Activation Type: " + node.getActivationType().toString());
 		}
 		System.out.println("--------------------------------------------------------------------");

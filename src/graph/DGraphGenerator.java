@@ -98,39 +98,57 @@ public final class DGraphGenerator {
 			throw new IllegalArgumentException();
 		}
 		SimpleDirectedWeightedGraph<Node, Edge> cloneGraph = new SimpleDirectedWeightedGraph<Node, Edge>(Edge.class);
-		for (Node node : depGraph.vertexSet()) {
-			cloneGraph.addVertex(node);
-		}
-		for (Edge edge : depGraph.edgeSet()) {
-			Edge newEdge = new Edge();
-			cloneGraph.addEdge(edge.getsource(), edge.gettarget(), newEdge);
-			cloneGraph.setEdgeWeight(newEdge, 1.0);
-			
-		}
-		Node source = new Node();
-		Node sink = new Node();
-		cloneGraph.addVertex(source);
-		cloneGraph.addVertex(sink);
-		
-		for (Node node : cloneGraph.vertexSet()) {
-			if (node.getTopoPosition() != -1 && cloneGraph.inDegreeOf(node) == 0) {
-				Edge newEdge = new Edge();
-				cloneGraph.addEdge(source, node, newEdge);
-				cloneGraph.setEdgeWeight(newEdge, Double.POSITIVE_INFINITY);
-			}
-				
-			if (node.getTopoPosition() != -1 && cloneGraph.outDegreeOf(node) == 0) {
-				Edge newEdge = new Edge();
-				cloneGraph.addEdge(node, sink, newEdge);
-				cloneGraph.setEdgeWeight(newEdge, Double.POSITIVE_INFINITY);
-			}
-		}
-		EdmondsKarpMFImpl<Node, Edge> minCutAlgo = new EdmondsKarpMFImpl<Node, Edge>(cloneGraph);
-		minCutAlgo.calculateMinCut(source, sink);
-		Set<Edge> minCut = minCutAlgo.getCutEdges();
-		for (Edge edge : minCut) {
-			depGraph.addMinCut(edge.getsource());
-		}
+        for(Node node : depGraph.vertexSet())
+        	cloneGraph.addVertex(node);
+        for(Edge edge : depGraph.edgeSet())
+        {
+        	Edge newEdge = new Edge();
+        	cloneGraph.addEdge(edge.getsource(), edge.gettarget(), newEdge);
+        	cloneGraph.setEdgeWeight(newEdge, 1.0);
+        	
+        }
+        Node source = new Node();
+        Node sink = new Node();
+        cloneGraph.addVertex(source);
+        cloneGraph.addVertex(sink);
+        
+        for(Node node : cloneGraph.vertexSet())
+        {
+        	if(node.getTopoPosition() != -1 && cloneGraph.inDegreeOf(node) == 0)
+        	{
+        		Edge newEdge = new Edge();
+    			cloneGraph.addEdge(source, node, newEdge);
+//	    			cloneGraph.setEdgeWeight(newEdge, Double.POSITIVE_INFINITY);
+    			cloneGraph.setEdgeWeight(newEdge, 1E10);
+        	}
+        		
+        	if(node.getTopoPosition() != -1 && cloneGraph.outDegreeOf(node) == 0)
+        	{
+        		Edge newEdge = new Edge();
+        		cloneGraph.addEdge(node, sink, newEdge);
+//	        		cloneGraph.setEdgeWeight(newEdge, Double.POSITIVE_INFINITY);
+        		cloneGraph.setEdgeWeight(newEdge, 1E10);
+        		
+        	}
+        }
+        EdmondsKarpMFImpl<Node, Edge> minCutAlgo = new EdmondsKarpMFImpl<Node, Edge>(cloneGraph);
+        minCutAlgo.calculateMinCut(source, sink);
+        Set<Edge> minCut = minCutAlgo.getCutEdges();
+        
+        System.out.println("Min cut: ");
+        for(Edge edge : minCut)
+        {
+        	if(edge.getsource().getId() != source.getId())
+        		depGraph.addMinCut(edge.getsource());
+        	else if(edge.gettarget().getId() != sink.getId())
+        		depGraph.addMinCut(edge.gettarget());
+        	System.out.println(edge.getsource().getId() + "\t" + edge.gettarget().getId() + "\t" + edge.getweight());
+        }
+        System.out.println("Edges of new graph clone: ");
+        for(Edge edge : cloneGraph.edgeSet())
+        {
+        	System.out.println(edge.getsource().getId() + "\t" + edge.gettarget().getId() + "\t" + edge.getweight());
+        }
 	}
 	
 	private static void selectTargetRandom(
@@ -223,12 +241,13 @@ public final class DGraphGenerator {
 		node.setAReward(aReward);
 		node.setDPenalty(dPenalty);
 		
-		if (node.getType() == NodeType.TARGET) {
-			double aCost = 2 * rand.nextUniform(aCostLB, aCostUB, true);
-			double dCost = 2 * rand.nextUniform(dCostLB, dCostUB, true);
-			node.setACost(aCost);
-			node.setDCost(dCost);
-		} else {
+//		if (node.getType() == NodeType.TARGET) {
+//			double aCost = 2 * rand.nextUniform(aCostLB, aCostUB, true);
+//			double dCost = 2 * rand.nextUniform(dCostLB, dCostUB, true);
+//			node.setACost(aCost);
+//			node.setDCost(dCost);
+//		} else 
+		{
 			double aCost = rand.nextUniform(aCostLB, aCostUB, true);
 			double dCost = rand.nextUniform(dCostLB, dCostUB, true);
 			node.setACost(aCost);

@@ -25,7 +25,10 @@ public final class RandomWalkAttacker extends Attacker {
 		private List<Edge> preAct;
 		
 		public RandomWalkTuple(final int tAct, final double pAct, final List<Edge> preAct) {
-			if (tAct < 0 || !isProb(pAct) || preAct == null) {
+//			if (tAct < 0 || !isProb(pAct) || preAct == null) {
+//				throw new IllegalArgumentException(tAct + "\t" + pAct + "\t" + preAct);
+//			}
+			if (tAct < 0 || !isProb(pAct)) {
 				throw new IllegalArgumentException(tAct + "\t" + pAct + "\t" + preAct);
 			}
 			this.tAct = tAct;
@@ -166,7 +169,8 @@ public final class RandomWalkAttacker extends Attacker {
 			Node node = topoOrder[i];
 			int tAct = 0;
 			double pAct = 0.0;
-			List<Edge> preAct = new ArrayList<Edge>();
+//			List<Edge> preAct = new ArrayList<Edge>();
+			List<Edge> preAct = null;
 			/*****************************************************************************************/
 			if (node.getState() == NodeState.ACTIVE) { // active nodes
 				tAct = curTimeStep - 1;
@@ -175,6 +179,7 @@ public final class RandomWalkAttacker extends Attacker {
 				tAct = curTimeStep;
 				pAct = node.getActProb();
 			} else if (node.getActivationType() == NodeActivationType.AND) { // inactive and non-root and AND-type
+				preAct = new ArrayList<Edge>();
 				for (Edge edge : depGraph.incomingEdgesOf(node)) {
 					Node preNode = edge.getsource();
 					tAct = Math.max(tAct, rwTuples[preNode.getId() - 1].getTAct());
@@ -209,7 +214,7 @@ public final class RandomWalkAttacker extends Attacker {
 							}
 						}
 					} else { // OR node
-						if (!rwTuple.getPreAct().isEmpty()) {
+						if(rwTuple.getPreAct() != null) {
 							Edge edge = rwTuple.getPreAct().get(0);
 							pAct *= edge.getActProb();
 							Node preNode = edge.getsource();
