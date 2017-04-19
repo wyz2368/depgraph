@@ -72,8 +72,10 @@ public final class TestAttackerAgent {
 		DGraphGenerator.randomizeInitialGraphState(depGraph, rnd, pivot);
 		depGraph.print();
 		
-		UniformAttacker uniformAttacker = new UniformAttacker(maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
-		AttackerAction uniformAction = uniformAttacker.sampleAction(depGraph, curTimeStep, numTimeStep, rnd.getRandomGenerator());
+		UniformAttacker uniformAttacker =
+			new UniformAttacker(maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
+		AttackerAction uniformAction =
+			uniformAttacker.sampleAction(depGraph, curTimeStep, numTimeStep, rnd.getRandomGenerator());
 		uniformAction.print();
 		
 		ValuePropagationAttacker vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate,

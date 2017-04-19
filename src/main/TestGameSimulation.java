@@ -86,7 +86,8 @@ public final class TestGameSimulation {
 		// Defender mincutDefender = new MinCutDefender(maxNumRes, minNumRes, numResRatio);
 		
 		Attacker rwAttacker = new RandomWalkAttacker(numRWSample, qrParam, discFact);
-		GameSimulation gameSimRWvsGO = new GameSimulation(depGraph, rwAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
+		GameSimulation gameSimRWvsGO =
+			new GameSimulation(depGraph, rwAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
 		double defPayoffRWvsGO = 0.0;
 		double attPayoffRWvsGO = 0.0;
 		for (int i = 0; i < numSim; i++) {
@@ -103,7 +104,8 @@ public final class TestGameSimulation {
 		
 //		Attacker vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate, minNumSelectCandidate
 //				, numSelectCandidateRatio, qrParam, discFact);
-//		GameSimulation gameSimVPvsGO = new GameSimulation(depGraph, vpAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
+//		GameSimulation gameSimVPvsGO =
+		// new GameSimulation(depGraph, vpAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
 //		double defPayoffVPvsGO = 0.0;
 //		double attPayoffVPvsGO = 0.0;
 //		for(int i = 0; i < numSim; i++)
@@ -121,7 +123,8 @@ public final class TestGameSimulation {
 		
 		Attacker uniformAttacker = new UniformAttacker(maxNumSelectCandidate, minNumSelectCandidate
 				, numSelectCandidateRatio);
-		GameSimulation gameSimUvsGO = new GameSimulation(depGraph, uniformAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
+		GameSimulation gameSimUvsGO =
+			new GameSimulation(depGraph, uniformAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
 		double defPayoffUvsGO = 0.0;
 		double attPayoffUvsGO = 0.0;
 		for (int i = 0; i < numSim; i++) {
@@ -136,7 +139,8 @@ public final class TestGameSimulation {
 		defPayoffUvsGO /= numSim;
 		attPayoffUvsGO /= numSim;
 		
-//		GameSimulation gameSimRWvsU = new GameSimulation(depGraph, rwAttacker, uniformDefender, rnd, numTimeStep, discFact);
+//		GameSimulation gameSimRWvsU =
+		// new GameSimulation(depGraph, rwAttacker, uniformDefender, rnd, numTimeStep, discFact);
 //		double defPayoffRWvsU = 0.0;
 //		double attPayoffRWvsU = 0.0;
 //		for(int i = 0; i < numSim; i++)
@@ -152,7 +156,8 @@ public final class TestGameSimulation {
 //		defPayoffRWvsU /= numSim;
 //		attPayoffRWvsU /= numSim;
 //		
-//		GameSimulation gameSimVPvsU = new GameSimulation(depGraph, vpAttacker, uniformDefender, rnd, numTimeStep, discFact);
+//		GameSimulation gameSimVPvsU =
+		// new GameSimulation(depGraph, vpAttacker, uniformDefender, rnd, numTimeStep, discFact);
 //		double defPayoffVPvsU = 0.0;
 //		double attPayoffVPvsU = 0.0;
 //		for(int i = 0; i < numSim; i++)
@@ -169,7 +174,8 @@ public final class TestGameSimulation {
 //		attPayoffVPvsU /= numSim;
 //		
 //
-//		GameSimulation gameSimUvsU = new GameSimulation(depGraph, uniformAttacker, uniformDefender, rnd, numTimeStep, discFact);
+//		GameSimulation gameSimUvsU =
+		// new GameSimulation(depGraph, uniformAttacker, uniformDefender, rnd, numTimeStep, discFact);
 //		double defPayoffUvsU = 0.0;
 //		double attPayoffUvsU = 0.0;
 //		for(int i = 0; i < numSim; i++)
@@ -185,7 +191,8 @@ public final class TestGameSimulation {
 //		defPayoffUvsU /= numSim;
 //		attPayoffUvsU /= numSim;
 		
-//		GameSimulation gameSimVPvsVP = new GameSimulation(depGraph, vpAttacker, valuePropagationvsDefender, rnd, numTimeStep, discFact);
+//		GameSimulation gameSimVPvsVP =
+		// new GameSimulation(depGraph, vpAttacker, valuePropagationvsDefender, rnd, numTimeStep, discFact);
 //		double defPayoffVPvsVP = 0.0;
 //		double attPayoffVPvsVP = 0.0;
 //		for(int i = 0; i < numSim; i++)

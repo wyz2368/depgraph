@@ -85,7 +85,8 @@ public final class TestUniformVsDefender {
 		Attacker uniformAttacker = new UniformAttacker(maxNumSelectCandidate, minNumSelectCandidate
 			, numSelectCandidateRatio);
 		
-		GameSimulation gameSimUvsGO = new GameSimulation(depGraph, uniformAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
+		GameSimulation gameSimUvsGO =
+			new GameSimulation(depGraph, uniformAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
 		double defPayoffUvsGO = 0.0;
 		double attPayoffUvsGO = 0.0;
 		for (int i = 0; i < numSim; i++) {
@@ -99,7 +100,8 @@ public final class TestUniformVsDefender {
 		defPayoffUvsGO /= numSim;
 		attPayoffUvsGO /= numSim;
 		
-		GameSimulation gameSimUvsUvs = new GameSimulation(depGraph, uniformAttacker, uniformvsDefender, rnd, numTimeStep, discFact);
+		GameSimulation gameSimUvsUvs =
+			new GameSimulation(depGraph, uniformAttacker, uniformvsDefender, rnd, numTimeStep, discFact);
 		double defPayoffUvsUvs = 0.0;
 		double attPayoffUvsUvs = 0.0;
 		for (int i = 0; i < numSim; i++) {

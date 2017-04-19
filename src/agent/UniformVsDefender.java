@@ -148,11 +148,14 @@ public final class UniformVsDefender extends Defender {
 		}
 		
 		DefenderBelief newBelief = new DefenderBelief(); // new belief of the defender
-		Map<GameState, Double> observationProbMap = new HashMap<GameState, Double>(); // probability of observation given game state
+		// probability of observation given game state
+		Map<GameState, Double> observationProbMap = new HashMap<GameState, Double>();
 		
-		Attacker attacker = new UniformAttacker(this.maxNumSelectACandidate, this.minNumSelectACandidate, this.numSelectACandidateRatio);
+		Attacker attacker = new UniformAttacker(
+			this.maxNumSelectACandidate, this.minNumSelectACandidate, this.numSelectACandidateRatio);
 		
-		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) { // iterate over current belief of the defender
+		// iterate over current belief of the defender
+		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) {
 			GameState gameState = entry.getKey(); // one of possible game state
 			Double curStateProb = entry.getValue(); // probability of the game state
 		
@@ -169,7 +172,8 @@ public final class UniformVsDefender extends Defender {
 				int curNumStateSample = gameStateList.size();
 				for (int stateSample = 0; stateSample < curNumStateSample; stateSample++) {
 					GameState newGameState = gameStateList.get(stateSample);
-					Double curProb = newBelief.getProbability(newGameState); // check if this new game state is already generated
+					// check if this new game state is already generated
+					Double curProb = newBelief.getProbability(newGameState);
 					double observationProb = 0.0;
 					if (curProb == null) { // new game state
 						observationProb = GameOracle.computeObservationProb(newGameState, dObservation);
@@ -233,7 +237,8 @@ public final class UniformVsDefender extends Defender {
 		}
 		Map<Node, Double> dValueMap = new HashMap<Node, Double>();
 		
-		Attacker attacker = new UniformAttacker(this.maxNumSelectACandidate, this.minNumSelectACandidate, this.numSelectACandidateRatio);
+		Attacker attacker = new UniformAttacker(
+			this.maxNumSelectACandidate, this.minNumSelectACandidate, this.numSelectACandidateRatio);
 		
 		// Used for storing true game state of the game
 		GameState savedGameState = new GameState();
@@ -243,7 +248,8 @@ public final class UniformVsDefender extends Defender {
 			}
 		}
 		// System.out.println("Start defender belief:........");
-		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) { // iterate over current belief of the defender
+		// iterate over current belief of the defender
+		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) {
 			GameState gameState = entry.getKey();
 			// gameState.print();
 			// System.out.println("Prob: " + entry.getValue());

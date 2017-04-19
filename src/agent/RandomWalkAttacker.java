@@ -284,7 +284,8 @@ public final class RandomWalkAttacker extends Attacker {
 				if (target.getState() != NodeState.ACTIVE && !isChosen[targetIdx] && rwTuple.getTAct() <= numTimeStep) {
 					/*****************************************************************************************/
 					// Value of target
-					double curValue = value + rwTuple.getPAct() * target.getAReward() * Math.pow(discFact, rwTuple.getTAct() - 1);
+					double curValue = value
+						+ rwTuple.getPAct() * target.getAReward() * Math.pow(discFact, rwTuple.getTAct() - 1);
 					/*****************************************************************************************/
 					for (int j = 0; j < depGraph.vertexSet().size(); j++) {
 						isInCurSequence[j] = isInSequence[j];
@@ -405,7 +406,8 @@ public final class RandomWalkAttacker extends Attacker {
 	 * @param qrParam
 	 * @return QR distribution over candidates
 	 *****************************************************************************************/
-	static double[] computeCandidateProb(final int totalNumCandidate, final double[] candidateValue, final double qrParam) {
+	static double[] computeCandidateProb(
+		final int totalNumCandidate, final double[] candidateValue, final double qrParam) {
 		if (totalNumCandidate < 0 || candidateValue == null) {
 			throw new IllegalArgumentException();
 		}

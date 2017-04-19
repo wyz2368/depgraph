@@ -163,12 +163,14 @@ public final class ValuePropagationVsDefenderALT extends Defender {
 		}
 		
 		DefenderBelief newBelief = new DefenderBelief(); // new belief of the defender
-		Map<GameState, Double> observationProbMap = new HashMap<GameState, Double>(); // probability of observation given game state
+		// probability of observation given game state
+		Map<GameState, Double> observationProbMap = new HashMap<GameState, Double>();
 		
 		Attacker attacker = new ValuePropagationAttacker(this.maxNumAttCandidate, this.minNumAttCandidate
 			, this.numAttCandidateRatio, this.qrParam, this.discFact);
 		
-		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) { // iterate over current belief of the defender
+		// iterate over current belief of the defender
+		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) {
 			GameState gameState = entry.getKey(); // one of possible game state
 			Double curStateProb = entry.getValue(); // probability of the game state
 		
@@ -188,7 +190,8 @@ public final class ValuePropagationVsDefenderALT extends Defender {
 					GameState newGameState = gameStateList.get(stateSample);
 					// System.out.println("New game state");
 					// newGameState.print();
-					Double curProb = newBelief.getProbability(newGameState); // check if this new game state is already generated
+					// check if this new game state is already generated
+					Double curProb = newBelief.getProbability(newGameState);
 					double observationProb = 0.0;
 					if (curProb == null) { // new game state
 						observationProb = GameOracle.computeObservationProb(newGameState, dObservation);

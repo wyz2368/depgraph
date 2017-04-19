@@ -50,7 +50,8 @@ public final class DGraphGenerator {
 		setRootSet(depGraph);
 		for (Node node : depGraph.vertexSet()) {
 			setNodeTypeRandom(depGraph, node, rand, nodeActTypeRatio);
-			genNodePayoffRandom(node, rand, aRewardLB, aRewardUB, dPenaltyLB, dPenaltyUB, aNodeCostLB, aNodeCostUB, dCostLB, dCostUB);
+			genNodePayoffRandom(
+				node, rand, aRewardLB, aRewardUB, dPenaltyLB, dPenaltyUB, aNodeCostLB, aNodeCostUB, dCostLB, dCostUB);
 			genActivationProbRandom(node, rand, aNodeActProbLB, aNodeActProbUB);
 			if (node.getType() != NodeType.TARGET) {
 				node.setAReward(0.0);

@@ -109,8 +109,10 @@ public final class RandomWalkVsDefender extends Defender {
 			Double gameStateProb = entry.getValue(); // corresponding state probability
 			depGraph.setState(gameState); // temporarily set game state to the graph
 			
-			List<RandomWalkTuple[]> rwTuplesList = new ArrayList<RandomWalkTuple[]>(); // list of all random walk tuples sampled
-			List<AttackCandidate> attCandidateList = new ArrayList<AttackCandidate>(); // corresponding list of attack candidates
+			// list of all random walk tuples sampled
+			List<RandomWalkTuple[]> rwTuplesList = new ArrayList<RandomWalkTuple[]>();
+			// corresponding list of attack candidates
+			List<AttackCandidate> attCandidateList = new ArrayList<AttackCandidate>();
 			double[] attValue = new double[this.numRWSample]; // values of corresponding action of the attacker
 			for (int i = 0; i < this.numRWSample; i++) {
 				RandomWalkTuple[] rwTuples = rwAttacker.randomWalk(depGraph, curTimeStep, rng); // sample random walk
@@ -187,11 +189,13 @@ public final class RandomWalkVsDefender extends Defender {
 		}
 		
 		DefenderBelief newBelief = new DefenderBelief(); // new belief of the defender
-		Map<GameState, Double> observationProbMap = new HashMap<GameState, Double>(); // probability of observation given game state
+		// probability of observation given game state
+		Map<GameState, Double> observationProbMap = new HashMap<GameState, Double>();
 		
 		Attacker attacker = new RandomWalkAttacker(this.numRWSample, this.qrParam, this.discFact);
 		
-		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) { // iterate over current belief of the defender
+		// iterate over current belief of the defender
+		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) { 
 			GameState gameState = entry.getKey(); // one of possible game state
 			Double curStateProb = entry.getValue(); // probability of the game state
 		
@@ -208,7 +212,8 @@ public final class RandomWalkVsDefender extends Defender {
 				int curNumStateSample = gameStateList.size();
 				for (int stateSample = 0; stateSample < curNumStateSample; stateSample++) {
 					GameState newGameState = gameStateList.get(stateSample);
-					Double curProb = newBelief.getProbability(newGameState); // check if this new game state is already generated
+					// check if this new game state is already generated
+					Double curProb = newBelief.getProbability(newGameState);
 					double observationProb = 0.0;
 					if (curProb == null) { // new game state
 						observationProb = GameOracle.computeObservationProb(newGameState, dObservation);
@@ -269,7 +274,8 @@ public final class RandomWalkVsDefender extends Defender {
 	* @param discFact reward discount factor
 	* @return a candidate
 	*****************************************************************************************/
-	private static double greedyCandidate(final DependencyGraph depGraph // depGraph has current game state the defender is examining
+	private static double greedyCandidate(
+		final DependencyGraph depGraph // depGraph has current game state the defender is examining
 		, final List<RandomWalkTuple[]> rwTuplesList
 		, final List<AttackCandidate> attCandidateList
 		, final double[] attProb
@@ -338,7 +344,8 @@ public final class RandomWalkVsDefender extends Defender {
 				if (node.getState() == NodeState.ACTIVE) {
 					isInQueue[idx][node.getId() - 1] = true;
 				}
-				if (!isInQueue[idx][node.getId() - 1] && depGraph.inDegreeOf(node) > 0) { // if not set in queue yet and not root node
+				// if not set in queue yet and not root node
+				if (!isInQueue[idx][node.getId() - 1] && depGraph.inDegreeOf(node) > 0) {
 					if (node.getActivationType() == NodeActivationType.OR) { // if OR node
 						Node preNode = rwTuplesList.get(idx)[node.getId() - 1].getPreAct().get(0).getsource();
 						if (isInQueue[idx][preNode.getId() - 1]) {
@@ -385,7 +392,8 @@ public final class RandomWalkVsDefender extends Defender {
 							Node node = queue.remove(0);
 							for (Edge postEdge : depGraph.outgoingEdgesOf(node)) {
 								Node postNode = postEdge.gettarget();
-								if (isInCurrentQueue[idx][postNode.getId() - 1]) { // if this postNode is in the current queue
+								// if this postNode is in the current queue
+								if (isInCurrentQueue[idx][postNode.getId() - 1]) {
 									if (postNode.getActivationType() == NodeActivationType.OR) {
 										Node preNode = rwTuples[postNode.getId() - 1].getPreAct().get(0).getsource();
 										if (!isInCurrentQueue[idx][preNode.getId() - 1]) {
@@ -412,8 +420,8 @@ public final class RandomWalkVsDefender extends Defender {
 						for (Node target : depGraph.getTargetSet()) {
 							int actTime = rwTuples[target.getId() - 1].getTAct();
 							if (actTime <= numTimeStep && isInCurrentQueue[idx][target.getId() - 1]) {
-								curValue += attProb[idx] * rwTuples[target.getId() - 1].getPAct() * target.getDPenalty() 
-												* Math.pow(discFact, actTime - 1);
+								curValue += attProb[idx] * rwTuples[target.getId() - 1].getPAct()
+									* target.getDPenalty() * Math.pow(discFact, actTime - 1);
 							}
 						}
 						idx++;

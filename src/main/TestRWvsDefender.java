@@ -111,7 +111,8 @@ public final class TestRWvsDefender {
 		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
 		
 		start = System.currentTimeMillis();
-		GameSimulation gameSimRWvsGO = new GameSimulation(depGraph, rwAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
+		GameSimulation gameSimRWvsGO =
+			new GameSimulation(depGraph, rwAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
 		double defPayoffRWvsGO = 0.0;
 		double attPayoffRWvsGO = 0.0;
 		double timeRWvsGO = 0.0;

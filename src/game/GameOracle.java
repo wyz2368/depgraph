@@ -143,7 +143,8 @@ public final class GameOracle {
 		if (dAction == null || aAction == null || pastState == null || newState == null) {
 			throw new IllegalArgumentException();
 		}
-		for (Node node : pastState.getEnabledNodeSet()) { // active nodes in past state will remain active if not disable
+		// active nodes in past state will remain active if not disable
+		for (Node node : pastState.getEnabledNodeSet()) {
 			if (!dAction.containsNode(node) && !newState.containsNode(node)) {
 				return 0.0;
 			}
@@ -155,7 +156,8 @@ public final class GameOracle {
 		}
 		
 		double prob = 1.0;
-		for (Entry<Node, Set<Edge>> entry : aAction.getAction().entrySet()) { // iterate over nodes the attacker aims at activating
+		// iterate over nodes the attacker aims at activating
+		for (Entry<Node, Set<Edge>> entry : aAction.getAction().entrySet()) {
 			Node node = entry.getKey();
 			assert !pastState.containsNode(node); // if node is already enabled, the attacker should not enable it again
 			List<Edge> edgeList = new ArrayList<Edge>(entry.getValue());
@@ -244,7 +246,8 @@ public final class GameOracle {
 				if (isAdd) {
 					i++;
 				}
-				if (count > MAX_ITER) { // if the maximum number of iterations reached before obtaining the required number of samples
+				// if the maximum number of iterations reached before obtaining the required number of samples
+				if (count > MAX_ITER) {
 					break;
 				}
 			}

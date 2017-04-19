@@ -102,7 +102,8 @@ public final class TestDefenderAgent {
 			, rnd.getRandomGenerator());
 		dMinCutAction.print();
 		
-		GoalOnlyDefender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
+		GoalOnlyDefender goalOnlyDefender =
+			new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
 		DefenderAction dGoalOnlyAction = goalOnlyDefender.sampleAction(depGraph, curTimeStep, numTimeStep
 			, defBelief
 			, rnd.getRandomGenerator());

@@ -169,12 +169,14 @@ public final class ValuePropagationVsDefender extends Defender {
 		}
 		
 		DefenderBelief newBelief = new DefenderBelief(); // new belief of the defender
-		Map<GameState, Double> observationProbMap = new HashMap<GameState, Double>(); // observation prob given game state
+		// observation prob given game state
+		Map<GameState, Double> observationProbMap = new HashMap<GameState, Double>();
 		
 		Attacker attacker = new ValuePropagationAttacker(this.maxNumAttCandidate, this.minNumAttCandidate
 				, this.numAttCandidateRatio, this.qrParam, this.discFact); // assumption about the attacker
 		
-		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) { // iterate over current belief of the defender
+		// iterate over current belief of the defender
+		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) {
 			GameState gameState = entry.getKey();
 			Double curStateProb = entry.getValue();
 			

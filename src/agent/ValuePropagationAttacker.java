@@ -59,20 +59,19 @@ public final class ValuePropagationAttacker extends Attacker {
 		// Find candidate
 		AttackCandidate attackCandidate = selectCandidate(depGraph);
 		// Compute candidate value
-		// double[] candidateValue = computeCandidateValue(depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
-		// , this.propagationParam);
-		// double[] candidateValue = computeCandidateValueTime(depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
-		// , this.propagationParam);
-		double[] candidateValue = computeCandidateValueTopoBest(depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
-				, this.propagationParam);
-		int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
+		double[] candidateValue = computeCandidateValueTopoBest(
+			depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
+			, this.propagationParam);
+		int totalNumCandidate =
+			attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
 		
 		// Compute number of candidates to select
 		int numSelectCandidate = 0;
 		if (totalNumCandidate < this.minNumSelectCandidate) {
 			numSelectCandidate = totalNumCandidate;
 		} else {
-			numSelectCandidate = Math.max(this.minNumSelectCandidate, (int) (totalNumCandidate * this.numSelectCandidateRatio));
+			numSelectCandidate = Math.max(this.minNumSelectCandidate,
+				(int) (totalNumCandidate * this.numSelectCandidateRatio));
 			numSelectCandidate = Math.min(this.maxNumSelectCandidate, numSelectCandidate);
 		}
 		if (numSelectCandidate == 0) { // if there is no candidate
@@ -111,20 +110,19 @@ public final class ValuePropagationAttacker extends Attacker {
 		// Find candidate
 		AttackCandidate attackCandidate = selectCandidate(depGraph);
 		// Compute candidate value
-		// double[] candidateValue = computeCandidateValue(depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
-		// , this.propagationParam);
-		// double[] candidateValue = computeCandidateValueTime(depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
-		// , this.propagationParam);
-		double[] candidateValue = computeCandidateValueTopoBest(depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
-				, this.propagationParam);
-		int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
+		double[] candidateValue = computeCandidateValueTopoBest(
+			depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
+			, this.propagationParam);
+		int totalNumCandidate =
+			attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
 		
 		// Compute number of candidates to select
 		int numSelectCandidate = 0;
 		if (totalNumCandidate < this.minNumSelectCandidate) {
 			numSelectCandidate = totalNumCandidate;
 		} else {
-			numSelectCandidate = Math.max(this.minNumSelectCandidate, (int) (totalNumCandidate * this.numSelectCandidateRatio));
+			numSelectCandidate = Math.max(this.minNumSelectCandidate,
+				(int) (totalNumCandidate * this.numSelectCandidateRatio));
 			numSelectCandidate = Math.min(this.maxNumSelectCandidate, numSelectCandidate);
 		}
 		if (numSelectCandidate == 0) { // if there is no candidate
@@ -169,15 +167,19 @@ public final class ValuePropagationAttacker extends Attacker {
 		final double qrParam, final double discFact,
 		final double propagationParam, final int maxNumSelectCandidate,
 		final int minNumSelectCandidate, final double numSelectCandidateRatio) {
-		if (depGraph == null || attackCandidate == null || curTimeStep < 0 || numTimeStep < curTimeStep
-			|| discFact < 0.0 || discFact > 1.0 || minNumSelectCandidate < 1 || maxNumSelectCandidate < minNumSelectCandidate
+		if (depGraph == null || attackCandidate == null
+			|| curTimeStep < 0 || numTimeStep < curTimeStep
+			|| discFact < 0.0 || discFact > 1.0 || minNumSelectCandidate < 1
+			|| maxNumSelectCandidate < minNumSelectCandidate
 			|| !isProb(numSelectCandidateRatio)
 		) {
 			throw new IllegalArgumentException();
 		}
-		double[] candidateValue = computeCandidateValueTopoBest(depGraph, attackCandidate, curTimeStep, numTimeStep, discFact
+		double[] candidateValue =
+			computeCandidateValueTopoBest(depGraph, attackCandidate, curTimeStep, numTimeStep, discFact
 			, propagationParam);
-		int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
+		int totalNumCandidate =
+			attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
 		
 		// Compute number of candidates to select
 		int numSelectCandidate = 0;
@@ -238,7 +240,8 @@ public final class ValuePropagationAttacker extends Attacker {
 					}
 					
 					if (isCandidate) { // if this node is a candidate
-						if (node.getActivationType() == NodeActivationType.AND) { // if AND node, then add node to the candidate set
+						// if AND node, then add node to the candidate set
+						if (node.getActivationType() == NodeActivationType.AND) {
 							aCandidate.addNodeCandidate(node);
 						} else { // if OR node, then add edges to the  candidate set
 							for (Edge inEdge : depGraph.incomingEdgesOf(node)) {
@@ -259,7 +262,8 @@ public final class ValuePropagationAttacker extends Attacker {
 	 * @param candidateValue: corresponding candidate values
 	 * @return QR distribution over candidates
 	 *****************************************************************************************/
-	private static double[] computeCandidateProb(final int totalNumCandidate, final double[] candidateValue, final double qrParam) {
+	private static double[] computeCandidateProb(
+		final int totalNumCandidate, final double[] candidateValue, final double qrParam) {
 		if (totalNumCandidate < 0 || candidateValue == null) {
 			throw new IllegalArgumentException();
 		}

@@ -52,13 +52,15 @@ public final class UniformAttacker extends Attacker {
 		AttackCandidate attackCandidate = selectCandidate(graph); 
 		
 		// Sample number of nodes
-		int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
+		int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size()
+			+ attackCandidate.getNodeCandidateSet().size();
 		// Compute number of candidates to select
 		int numSelectCandidate = 0;
 		if (totalNumCandidate < this.minNumSelectCandidate) {
 			numSelectCandidate = totalNumCandidate;
 		} else  {
-			numSelectCandidate = Math.max(this.minNumSelectCandidate, (int) (totalNumCandidate * this.numSelectCandidateRatio));
+			numSelectCandidate = Math.max(this.minNumSelectCandidate,
+				(int) (totalNumCandidate * this.numSelectCandidateRatio));
 			numSelectCandidate = Math.min(this.maxNumSelectCandidate, numSelectCandidate);
 		}
 		if (numSelectCandidate == 0) { // if there is no candidate
@@ -139,7 +141,8 @@ public final class UniformAttacker extends Attacker {
 					}
 					
 					if (isCandidate) { // if this node is a candidate
-						if (node.getActivationType() == NodeActivationType.AND) { // if AND node, then add node to the candidate set
+						// if AND node, then add node to the candidate set
+						if (node.getActivationType() == NodeActivationType.AND) {
 							aCandidate.addNodeCandidate(node);
 						} else { // if OR node, then add edges to the  candidate set
 							for (Edge inEdge : depGraph.incomingEdgesOf(node)) {
@@ -184,7 +187,8 @@ public final class UniformAttacker extends Attacker {
 			if (!isChosen[idx]) { // if this candidate is not chosen
 				if (idx < edgeCandidateList.size()) { // select edge
 					Edge selectEdge = edgeCandidateList.get(idx);
-					Set<Edge> edgeSet = action.getAction().get(selectEdge.gettarget()); //find the current edge candidates w.r.t. the OR node
+					// find the current edge candidates w.r.t. the OR node
+					Set<Edge> edgeSet = action.getAction().get(selectEdge.gettarget());
 					if (edgeSet != null) { // if this OR node is included in the attacker action,
 						// add new edge to the edge set associated with this node
 						edgeSet.add(selectEdge);

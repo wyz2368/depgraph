@@ -61,11 +61,13 @@ public final class GameSample {
 	
 	public void print() {
 		System.out.println(
-			"-------------------------------------TIME STEP " + this.timeStep + "-------------------------------------------");
+			"-------------------------------------TIME STEP "
+			+ this.timeStep + "-------------------------------------------");
 		this.defAction.print();
 		this.attAction.print();
 		this.gameState.print();
 		this.defObservation.print();
-		System.out.println("--------------------------------------------------------------------------------------------");
+		System.out.println(
+			"--------------------------------------------------------------------------------------------");
 	}
 }

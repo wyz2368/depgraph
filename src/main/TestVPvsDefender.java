@@ -94,7 +94,8 @@ public final class TestVPvsDefender {
 				, numSelectCandidateRatio, qrParam, discFact);
 				
 		long start = System.currentTimeMillis();
-		GameSimulation gameSimVPvsGO = new GameSimulation(depGraph, vpAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
+		GameSimulation gameSimVPvsGO =
+			new GameSimulation(depGraph, vpAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
 		double defPayoffVPvsGO = 0.0;
 		double attPayoffVPvsGO = 0.0;
 		double timeVPvsGO = 0.0;
@@ -113,7 +114,8 @@ public final class TestVPvsDefender {
 		timeVPvsGO = (end - start) / thousand / numSim;
 		
 		start = System.currentTimeMillis();
-		GameSimulation gameSimVPvsVP = new GameSimulation(depGraph, vpAttacker, valuePropagationvsDefender, rnd, numTimeStep, discFact);
+		GameSimulation gameSimVPvsVP =
+			new GameSimulation(depGraph, vpAttacker, valuePropagationvsDefender, rnd, numTimeStep, discFact);
 		double defPayoffVPvsVP = 0.0;
 		double attPayoffVPvsVP = 0.0;
 		double timeVPvsVP = 0.0;
