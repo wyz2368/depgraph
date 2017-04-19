@@ -7,10 +7,8 @@ import graph.Edge.EdgeType;
 import graph.INode.NodeState;
 import graph.INode.NodeType;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -54,7 +52,7 @@ public final class DGraphUtils {
 	public static DependencyGraph loadGraph(final String filePathName) {
 		assert filePathName != null;
 		DependencyGraph depGraph = new DependencyGraph();
-		final String inputString = linesAsString(filePathName);
+		final String inputString = JsonUtils.linesAsString(filePathName);
 		final JsonObject inputJson = 
 				new JsonParser().parse(inputString).getAsJsonObject();
 		JsonArray nodeDataJson = inputJson.get(NODES).getAsJsonArray();
@@ -200,24 +198,5 @@ public final class DGraphUtils {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	private static String linesAsString(final String fileName) {
-		assert fileName != null;
-		final StringBuilder builder = new StringBuilder();
-		try {
-			 final BufferedReader br =
-				new BufferedReader(new FileReader(new File(fileName)));
-			String line = null;
-			while ((line = br.readLine()) != null) {
-				builder.append(line);
-				builder.append('\n');
-			}
-			br.close();
-		} catch (final Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-		return builder.toString();
 	}
 }

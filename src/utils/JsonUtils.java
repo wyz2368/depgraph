@@ -187,6 +187,25 @@ public final class JsonUtils {
 			e.printStackTrace();
 		}
 	}
+	
+	public static String linesAsString(final String fileName) {
+		assert fileName != null;
+		final StringBuilder builder = new StringBuilder();
+		try {
+			 final BufferedReader br =
+				new BufferedReader(new FileReader(new File(fileName)));
+			String line = null;
+			while ((line = br.readLine()) != null) {
+				builder.append(line);
+				builder.append('\n');
+			}
+			br.close();
+		} catch (final Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return builder.toString();
+	}
 		
 	private static int maxSuffixValue(final String folderPath, final String fileNamePrefix) {
 		assert folderPath != null && fileNamePrefix != null;
@@ -219,23 +238,4 @@ public final class JsonUtils {
 		}
 		return result;
 	 }
-	
-	private static String linesAsString(final String fileName) {
-		assert fileName != null;
-		final StringBuilder builder = new StringBuilder();
-		try {
-			 final BufferedReader br =
-				new BufferedReader(new FileReader(new File(fileName)));
-			String line = null;
-			while ((line = br.readLine()) != null) {
-				builder.append(line);
-				builder.append('\n');
-			}
-			br.close();
-		} catch (final Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-		return builder.toString();
-	}
 }
