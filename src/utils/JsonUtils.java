@@ -66,7 +66,7 @@ public final class JsonUtils {
 		// read in the default file
 		final String defaultJsonString = linesAsString(DEFAULT_FILE_NAME);
 		final JsonObject defaultAsJson = 
-				new JsonParser().parse(defaultJsonString).getAsJsonObject();
+			new JsonParser().parse(defaultJsonString).getAsJsonObject();
 		// get JsonObject of default file's appropriate field
 		final JsonObject defaultConfig =
 			(JsonObject) defaultAsJson.get(SIMSPEC_FIELD_NAME);
