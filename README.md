@@ -24,4 +24,6 @@ The code was written by Thanh Nguyen with help from Mason Wright.
         * gson-2.2.4.jar
         * java-json.jar
         * jgrapht-core-1.0.1.jar
+8. File -> Import -> General -> File System -> depgraph/graphs
+    * Into folder: depgraph/graphs -> Finish
 
