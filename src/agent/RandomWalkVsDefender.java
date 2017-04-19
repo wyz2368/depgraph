@@ -99,8 +99,8 @@ public final class RandomWalkVsDefender extends Defender {
 		// Assumption about the attacker
 		RandomWalkAttacker rwAttacker = new RandomWalkAttacker(
 			this.numRWSample,
-			curTimeStep,
-			numTimeStep);
+			this.qrParam,
+			this.discFact);
 		
 		int idx = 0;
 		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) {
