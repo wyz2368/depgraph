@@ -214,7 +214,7 @@ public final class RandomWalkAttacker extends Attacker {
 							}
 						}
 					} else { // OR node
-						if(rwTuple.getPreAct() != null) {
+						if (rwTuple.getPreAct() != null) {
 							Edge edge = rwTuple.getPreAct().get(0);
 							pAct *= edge.getActProb();
 							Node preNode = edge.getsource();
