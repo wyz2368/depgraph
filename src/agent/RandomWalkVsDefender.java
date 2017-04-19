@@ -97,10 +97,14 @@ public final class RandomWalkVsDefender extends Defender {
 		DefenderAction[] candidates = new DefenderAction[dBelief.getGameStateMap().size()];
 		
 		// Assumption about the attacker
-		RandomWalkAttacker rwAttacker = new RandomWalkAttacker(this.numRWSample, curTimeStep, numTimeStep);
+		RandomWalkAttacker rwAttacker = new RandomWalkAttacker(
+			this.numRWSample,
+			curTimeStep,
+			numTimeStep);
 		
 		int idx = 0;
-		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) { // iterate over all possible game states
+		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) {
+			// iterate over all possible game states
 			GameState gameState = entry.getKey(); // a possible game state
 			Double gameStateProb = entry.getValue(); // corresponding state probability
 			depGraph.setState(gameState); // temporarily set game state to the graph
@@ -118,7 +122,8 @@ public final class RandomWalkVsDefender extends Defender {
 				attCandidateList.add(attCandidate);
 			}
 			DefenderAction defAction = new DefenderAction();
-			double[] attProb = RandomWalkAttacker.computeCandidateProb(this.numRWSample, attValue, this.qrParam); // attack probability
+			// attack probability
+			double[] attProb = RandomWalkAttacker.computeCandidateProb(this.numRWSample, attValue, this.qrParam);
 			double dValue = greedyCandidate(depGraph // greedy defense with respect to each possible game state
 				, rwTuplesList, attCandidateList, attProb
 				, defAction // this is outcome
@@ -134,7 +139,8 @@ public final class RandomWalkVsDefender extends Defender {
 		depGraph.setState(savedGameState);
 		
 		// probability for each possible candidate action for the defender
-		double[] probabilities = computeCandidateProb(dBelief.getGameStateMap().size(), candidateValues, this.logisParam);
+		double[] probabilities = computeCandidateProb(
+			dBelief.getGameStateMap().size(), candidateValues, this.logisParam);
 		
 		// Start sampling
 		int[] nodeIndexes = new int[dBelief.getGameStateMap().size()];

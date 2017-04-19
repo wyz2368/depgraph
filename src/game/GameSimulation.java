@@ -101,7 +101,12 @@ public final class GameSimulation {
 			System.out.println("Sample defender action...");
 			start = System.currentTimeMillis();
 			DefenderAction defAction = this.defender.sampleAction(
-				this.depGraph, t, this.numTimeStep, dBelief, this.rng.getRandomGenerator());
+				this.depGraph,
+				t,
+				this.numTimeStep,
+				dBelief,
+				this.rng.getRandomGenerator()
+			);
 			end = System.currentTimeMillis();
 			System.out.println("Elapsed time: " + (end - start) / thousand);
 			// defAction.print();
