@@ -17,6 +17,7 @@ The code was written by Thanh Nguyen with help from Mason Wright.
     * Java SE 8 [1.8.0_121] -> depgraph (title of your choice) -> Finish
 7. Configure the build path:
     * link source: depgraph/src
+    * link source: depgraph/test
     * add extrernal jars:
         * commons-math3-3.6.1.jar
         * cplex.jar
