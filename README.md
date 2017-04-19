@@ -28,6 +28,6 @@ The code was written by Thanh Nguyen with help from Mason Wright.
     * Into folder: depgraph/graphs -> Finish
 9. File -> Import -> General -> File System -> depgraph/simspecs
     * Into folder: depgraph/simspecs -> Finish
-10. File -> Immport -> General -> File System -> depgraph -> defaults.json (select 1 file only)
+10. File -> Import -> General -> File System -> depgraph -> defaults.json (select 1 file only)
     * Into folder: depgraph -> Finish
 
