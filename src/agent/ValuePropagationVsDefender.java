@@ -1,6 +1,5 @@
 package agent;
 
-import game.GameOracle;
 import graph.Edge;
 import graph.INode.NodeType;
 import graph.Node;
@@ -16,19 +15,16 @@ import java.util.Map.Entry;
 
 import org.apache.commons.math3.distribution.AbstractIntegerDistribution;
 import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
-import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
 
 import model.AttackCandidate;
-import model.AttackerAction;
 import model.DefenderAction;
 import model.DefenderBelief;
 import model.DefenderCandidate;
-import model.DefenderObservation;
 import model.DependencyGraph;
 import model.GameState;
 
-public final class ValuePropagationVsDefender extends Defender {
+public final class ValuePropagationVsDefender extends ValuePropVsDefSuper {
 	
 	private int maxNumRes;
 	private int minNumRes;
@@ -45,17 +41,13 @@ public final class ValuePropagationVsDefender extends Defender {
 	private static final double DEFAULT_PROP_PARAM = 0.5;
 	private double propagationParam = DEFAULT_PROP_PARAM;
 	
-	// number of simulation to approximate update
-	private static final int DEFAULT_NUM_STATE_SAMPLE = 50;
-	private int numStateSample = DEFAULT_NUM_STATE_SAMPLE;
-	private int numAttActionSample = DEFAULT_NUM_STATE_SAMPLE;
-	
 	public ValuePropagationVsDefender(
 		final double maxNumRes, final double minNumRes, final double numResRatio,
 		final double logisParam, final double discFact, final double thres,
 		final double qrParam, final double maxNumAttCandidate, final double minNumAttCandidate,
 		final double numAttCandidateRatio) {
-		super(DefenderType.vsVALUE_PROPAGATION);
+		super(DefenderType.vsVALUE_PROPAGATION, discFact, thres, qrParam,
+			(int) maxNumAttCandidate, (int) minNumAttCandidate, numAttCandidateRatio);
 		if (
 			minNumRes < 1 || minNumRes < maxNumRes || !isProb(numResRatio)
 			|| discFact < 0.0 || discFact > 1.0 || !isProb(thres)
@@ -135,123 +127,6 @@ public final class ValuePropagationVsDefender extends Defender {
 		EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
 
 		return sampleAction(dCandidateNodeList, numNodetoProtect, rnd);
-	}
-
-	/*****************************************************************************************
-	 * 
-	 * @param depGraph: dependency graph 
-	 * @param dBelief: belief of the defender over states
-	 * @param dAction: action of the defender
-	 * @param dObservation: observation of the defender
-	 * @param curTimeStep: current time step
-	 * @param numTimeStep: total number of time step
-	 * @param rng: random generator
-	 * @return type of DefenderBelief: new belief of the defender
-	 *****************************************************************************************/
-	@Override
-	public DefenderBelief updateBelief(final DependencyGraph depGraph, final DefenderBelief dBelief
-		, final DefenderAction dAction, final DefenderObservation dObservation
-		, final int curTimeStep, final int numTimeStep
-		, final RandomGenerator rng) {
-		if (depGraph == null || dBelief == null || dAction == null || dObservation == null 
-			|| curTimeStep < 0 || numTimeStep < curTimeStep || rng == null
-		) {
-			throw new IllegalArgumentException();
-		}
-		RandomDataGenerator rnd = new RandomDataGenerator(rng);
-		
-		// Used for storing true game state of the game
-		GameState savedGameState = new GameState();
-		for (Node node : depGraph.vertexSet()) {
-			if (node.getState() == NodeState.ACTIVE) {
-				savedGameState.addEnabledNode(node);
-			}
-		}
-		
-		DefenderBelief newBelief = new DefenderBelief(); // new belief of the defender
-		// observation prob given game state
-		Map<GameState, Double> observationProbMap = new HashMap<GameState, Double>();
-		
-		Attacker attacker = new ValuePropagationAttacker(this.maxNumAttCandidate, this.minNumAttCandidate
-				, this.numAttCandidateRatio, this.qrParam, this.discFact); // assumption about the attacker
-		
-		// iterate over current belief of the defender
-		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) {
-			GameState gameState = entry.getKey();
-			Double curStateProb = entry.getValue();
-			
-			depGraph.setState(gameState); // for each possible state
-			List<AttackerAction> attActionList = attacker.sampleAction(depGraph, curTimeStep, numTimeStep
-				, rng, this.numAttActionSample, false); // Sample attacker actions
-			
-			for (int attActionSample = 0; attActionSample < this.numAttActionSample; attActionSample++) {
-				AttackerAction attAction = attActionList.get(attActionSample);
-				// attAction.print();
-				// Sample states
-				List<GameState> gameStateList = GameOracle.generateStateSample(gameState, attAction, dAction
-						, rnd, this.numStateSample, true); // s' <- s, a, d
-				int curNumStateSample = gameStateList.size();
-				for (int stateSample = 0; stateSample < curNumStateSample; stateSample++) {
-					GameState newGameState = gameStateList.get(stateSample);
-					Double curProb = newBelief.getProbability(newGameState);
-					double observationProb = 0.0;
-					if (curProb == null) { // new game state
-						observationProb = GameOracle.computeObservationProb(newGameState, dObservation);
-						observationProbMap.put(newGameState, observationProb);
-						curProb = 0.0;
-					} else {
-						observationProb = observationProbMap.get(newGameState);
-					}
-					double addedProb = observationProb * curStateProb 
-						* GameOracle.computeStateTransitionProb(
-								dAction, attAction
-								, gameState, newGameState);	
-					newBelief.addState(newGameState, curProb + addedProb);
-				}
-			}
-			
-		}
-		depGraph.setState(savedGameState);
-		// Normalization
-		double sumProb = 0.0;
-		for (Entry<GameState, Double> entry : newBelief.getGameStateMap().entrySet()) {
-			sumProb += entry.getValue();
-		}
-		for (Entry<GameState, Double> entry : newBelief.getGameStateMap().entrySet()) {
-			entry.setValue(entry.getValue() / sumProb); 
-		}
-		DefenderBelief revisedBelief = new DefenderBelief();
-		for (Entry<GameState, Double> entry : newBelief.getGameStateMap().entrySet()) {
-			// System.out.println(entry.getValue());
-			if (entry.getValue() > this.thres) {
-				revisedBelief.addState(entry.getKey(), entry.getValue());
-			}
-		}
-
-		// System.out.println("Testing belief size");
-		// System.out.println(dBelief.getGameStateMap().size());
-		// System.out.println(newBelief.getGameStateMap().size());
-		// System.out.println(revisedBelief.getGameStateMap().size());
-		// System.out.println("End testing belief size");
-		// newBelief.clear();
-		// Revision
-		sumProb = 0.0;
-		for (Entry<GameState, Double> entry : revisedBelief.getGameStateMap().entrySet()) {
-			sumProb += entry.getValue();
-		}
-		for (Entry<GameState, Double> entry : revisedBelief.getGameStateMap().entrySet()) {
-			entry.setValue(entry.getValue() / sumProb); 
-			// System.out.println(entry.getValue());
-		}
-		// if(sumProb == 0.0)
-			// System.out.println("Wrong in belief");
-		// depGraph.setState(savedGameState);
-		// if(revisedBelief.getGameStateMap().isEmpty())
-		// {
-			// System.out.println("Something is wrong");
-			// revisedBelief.addState(new GameState(), 1.0);
-		// }
-		return revisedBelief;
 	}
 
 	/*****************************************************************************************
