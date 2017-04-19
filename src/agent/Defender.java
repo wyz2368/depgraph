@@ -5,7 +5,12 @@ import model.DefenderBelief;
 import model.DefenderObservation;
 import model.DependencyGraph;
 
+import java.util.List;
+
+import org.apache.commons.math3.distribution.AbstractIntegerDistribution;
 import org.apache.commons.math3.random.RandomGenerator;
+
+import graph.Node;
 
 public abstract class Defender {
 	public enum DefenderType {
@@ -73,4 +78,31 @@ public abstract class Defender {
 		DefenderBelief currentBelief, DefenderAction dAction,
 		DefenderObservation dObservation, int curTimeStep, int numTimeStep,
 		RandomGenerator rng);
+	
+	public static final DefenderAction simpleSampleAction(
+		final List<Node> dCandidateNodeList,
+		final int numNodetoProtect,
+		final AbstractIntegerDistribution rnd
+	) {
+		if (dCandidateNodeList == null || numNodetoProtect < 0 || rnd == null) {
+			throw new IllegalArgumentException();
+		}
+		DefenderAction action = new DefenderAction();
+		
+		boolean[] isChosen = new boolean[dCandidateNodeList.size()];
+		for (int i = 0; i < dCandidateNodeList.size(); i++) {
+			isChosen[i] = false;
+		}
+		int count = 0;
+		while (count < numNodetoProtect) {
+			int idx = rnd.sample();
+			if (!isChosen[idx]) {
+				action.addNodetoProtect(dCandidateNodeList.get(idx));
+				isChosen[idx] = true;
+				count++;
+			}
+				
+		}
+		return action;
+	}
 }

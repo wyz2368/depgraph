@@ -20,7 +20,6 @@ import model.DefenderObservation;
 import model.DependencyGraph;
 import model.GameState;
 
-import org.apache.commons.math3.distribution.AbstractIntegerDistribution;
 import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
@@ -121,7 +120,7 @@ public final class UniformVsDefender extends Defender {
 		}
 		EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
 
-		return sampleAction(dCandidateNodeList, numNodetoProtect, rnd);
+		return simpleSampleAction(dCandidateNodeList, numNodetoProtect, rnd);
 	}
 	
 	@Override
@@ -404,30 +403,6 @@ public final class UniformVsDefender extends Defender {
 			}
 		}
 		return dValueMap;
-	}
-	
-	private static DefenderAction sampleAction(final List<Node> dCandidateNodeList, final int numNodetoProtect,
-		final AbstractIntegerDistribution rnd) {
-		if (numNodetoProtect < 0 || dCandidateNodeList == null || rnd == null) {
-			throw new IllegalArgumentException();
-		}
-		DefenderAction action = new DefenderAction();
-		
-		boolean[] isChosen = new boolean[dCandidateNodeList.size()];
-		for (int i = 0; i < dCandidateNodeList.size(); i++) {
-			isChosen[i] = false;
-		}
-		int count = 0;
-		while (count < numNodetoProtect) {
-			int idx = rnd.sample();
-			if (!isChosen[idx]) {
-				action.addNodetoProtect(dCandidateNodeList.get(idx));
-				isChosen[idx] = true;
-				count++;
-			}
-				
-		}
-		return action;
 	}
 	
 	private static double[] computeCandidateProb(final int totalNumCandidate,

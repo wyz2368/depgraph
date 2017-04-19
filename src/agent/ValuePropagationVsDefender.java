@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.apache.commons.math3.distribution.AbstractIntegerDistribution;
 import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 import org.apache.commons.math3.random.RandomGenerator;
 
@@ -126,7 +125,7 @@ public final class ValuePropagationVsDefender extends ValuePropVsDefSuper {
 		}
 		EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
 
-		return sampleAction(dCandidateNodeList, numNodetoProtect, rnd);
+		return simpleSampleAction(dCandidateNodeList, numNodetoProtect, rnd);
 	}
 
 	/*****************************************************************************************
@@ -427,30 +426,6 @@ public final class ValuePropagationVsDefender extends ValuePropVsDefSuper {
 		}
 		
 		return probabilities;
-	}
-	
-	private static DefenderAction sampleAction(final List<Node> dCandidateNodeList, final int numNodetoProtect,
-		final AbstractIntegerDistribution rnd) {
-		if (dCandidateNodeList == null || numNodetoProtect < 0 || rnd == null) {
-			throw new IllegalArgumentException();
-		}
-		DefenderAction action = new DefenderAction();
-		
-		boolean[] isChosen = new boolean[dCandidateNodeList.size()];
-		for (int i = 0; i < dCandidateNodeList.size(); i++) {
-			isChosen[i] = false;
-		}
-		int count = 0;
-		while (count < numNodetoProtect) {
-			int idx = rnd.sample();
-			if (!isChosen[idx]) {
-				action.addNodetoProtect(dCandidateNodeList.get(idx));
-				isChosen[idx] = true;
-				count++;
-			}
-				
-		}
-		return action;
 	}
 	
 	private static boolean isProb(final double i) {

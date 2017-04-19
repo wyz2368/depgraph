@@ -10,7 +10,6 @@ import model.DefenderBelief;
 import model.DefenderObservation;
 import model.DependencyGraph;
 
-import org.apache.commons.math3.distribution.AbstractIntegerDistribution;
 import org.apache.commons.math3.distribution.UniformIntegerDistribution;
 import org.apache.commons.math3.random.RandomGenerator;
 
@@ -53,7 +52,7 @@ public final class MinCutDefender extends Defender {
 		}
 		// Sample nodes
 		UniformIntegerDistribution rnd = new UniformIntegerDistribution(rng, 0, dCandidateNodeList.size() - 1);
-		return sampleAction(dCandidateNodeList, numNodetoProtect, rnd);	
+		return simpleSampleAction(dCandidateNodeList, numNodetoProtect, rnd);	
 	}
 	
 	@Override
@@ -62,31 +61,6 @@ public final class MinCutDefender extends Defender {
 		final DefenderObservation dObservation, final int curTimeStep, final int numTimeStep,
 		final RandomGenerator rng) {
 		return null;
-	}
-	
-	private static DefenderAction sampleAction(final List<Node> dCandidateNodeList,
-		final int numNodetoProtect,
-		final AbstractIntegerDistribution rnd) {
-		if (dCandidateNodeList == null || numNodetoProtect < 0 || rnd == null) {
-			throw new IllegalArgumentException();
-		}
-		DefenderAction action = new DefenderAction();
-		
-		boolean[] isChosen = new boolean[dCandidateNodeList.size()];
-		for (int i = 0; i < dCandidateNodeList.size(); i++) {
-			isChosen[i] = false;
-		}
-		int count = 0;
-		while (count < numNodetoProtect) {
-			int idx = rnd.sample();
-			if (!isChosen[idx]) {
-				action.addNodetoProtect(dCandidateNodeList.get(idx));
-				isChosen[idx] = true;
-				count++;
-			}
-				
-		}
-		return action;
 	}
 	
 	private static boolean isProb(final double i) {
