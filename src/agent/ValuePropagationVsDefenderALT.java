@@ -49,9 +49,9 @@ public final class ValuePropagationVsDefenderALT extends ValuePropVsDefSuper {
 	 * @param minNumAttCandidate
 	 * @param numAttCandidateRatio
 	 *****************************************************************************************/
-	public ValuePropagationVsDefenderALT(final int maxNumRes, final int minNumRes, final double numResRatio,
+	public ValuePropagationVsDefenderALT(final double maxNumRes, final double minNumRes, final double numResRatio,
 		final double logisParam, final double discFact, final double thres,
-		final double qrParam, final int maxNumAttCandidate, final int minNumAttCandidate,
+		final double qrParam, final double maxNumAttCandidate, final double minNumAttCandidate,
 		final double numAttCandidateRatio) {
 		super(DefenderType.vsVALUE_PROPAGATION, discFact, thres, qrParam,
 			maxNumAttCandidate, minNumAttCandidate, numAttCandidateRatio);
@@ -64,16 +64,16 @@ public final class ValuePropagationVsDefenderALT extends ValuePropVsDefSuper {
 			throw new IllegalArgumentException();
 		}
 		
-		this.maxNumRes = maxNumRes;
-		this.minNumRes = minNumRes;
+		this.maxNumRes = (int) maxNumRes;
+		this.minNumRes = (int) minNumRes;
 		this.numResRatio = numResRatio;
 		this.logisParam = logisParam;
 		this.discFact = discFact;
 		this.thres = thres;
 		
 		this.qrParam = qrParam;
-		this.maxNumAttCandidate = maxNumAttCandidate;
-		this.minNumAttCandidate = minNumAttCandidate;
+		this.maxNumAttCandidate = (int) maxNumAttCandidate;
+		this.minNumAttCandidate = (int) minNumAttCandidate;
 		this.numAttCandidateRatio = numAttCandidateRatio;
 	}
 

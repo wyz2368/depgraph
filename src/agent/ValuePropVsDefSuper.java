@@ -37,7 +37,7 @@ public abstract class ValuePropVsDefSuper extends Defender {
 	public ValuePropVsDefSuper(
 		final DefenderType type,
 		final double discFact, final double thres,
-		final double qrParam, final int maxNumAttCandidate, final int minNumAttCandidate,
+		final double qrParam, final double maxNumAttCandidate, final double minNumAttCandidate,
 		final double numAttCandidateRatio
 	) {
 		super(type);
@@ -51,8 +51,8 @@ public abstract class ValuePropVsDefSuper extends Defender {
 		this.discFact = discFact;
 		this.thres = thres;
 		this.qrParam = qrParam;
-		this.maxNumAttCandidate = maxNumAttCandidate;
-		this.minNumAttCandidate = minNumAttCandidate;
+		this.maxNumAttCandidate = (int) maxNumAttCandidate;
+		this.minNumAttCandidate = (int) minNumAttCandidate;
 		this.numAttCandidateRatio = numAttCandidateRatio;
 	}
 
