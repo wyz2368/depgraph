@@ -10,12 +10,20 @@ import model.DependencyGraph;
 import org.apache.commons.math3.random.RandomDataGenerator;
 
 import agent.Attacker;
+import agent.Attacker.AttackerType;
+import agent.Defender.DefenderType;
 import agent.Defender;
 import agent.GoalOnlyDefender;
+import agent.MinCutDefender;
 import agent.RandomWalkAttacker;
 import agent.RandomWalkVsDefender;
 import agent.RandomWalkVsDefenderALT;
+import agent.RootOnlyDefender;
+import agent.UniformAttacker;
+import agent.UniformDefender;
+import agent.UniformVsDefender;
 import agent.ValuePropagationAttacker;
+import agent.ValuePropagationVsDefenderALT;
 
 public final class TestRWvsDefender {
 
@@ -67,23 +75,30 @@ public final class TestRWvsDefender {
 		DGraphGenerator.findMinCut(depGraph);
 		depGraph.print();
 		
-		final double qrParam = 5.0;
-		final double discFact = 0.9;
-		final int numRWSample = 50;
+		
 		
 		final double logisParam = 5.0;
 		final double thres = 1e-2;
-		
 		final int maxNumRes = 10;
 		final int minNumRes = 2;
 		final double numResRatio = 0.7;
 		
+		final double qrParamDef = 5.0;
+		final int numRWSampleDef = 50;
+		final int maxNumSelectCandidateDef = 10;
+		final int minNumSelectCandidateDef = 2;
+		final double numSelectCandidateRatioDef = 0.7;
+		
+		final double qrParam = 5.0;
+		final double discFact = 0.9;
+		final int numRWSample = 50;
 		final int maxNumSelectCandidate = 10;
 		final int minNumSelectCandidate = 2;
 		final double numSelectCandidateRatio = 0.7;
 		
 		final int numTimeStep = 10;
 		final int numSim = 10;
+		
 		
 		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
 		RandomWalkVsDefender rwDefender = new RandomWalkVsDefender(logisParam, discFact, thres, qrParam, numRWSample);

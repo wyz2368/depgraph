@@ -12,8 +12,17 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 import agent.Attacker;
 import agent.Defender;
 import agent.GoalOnlyDefender;
+import agent.MinCutDefender;
 import agent.RandomWalkAttacker;
+import agent.RandomWalkVsDefenderALT;
+import agent.RootOnlyDefender;
 import agent.UniformAttacker;
+import agent.UniformDefender;
+import agent.UniformVsDefender;
+import agent.ValuePropagationAttacker;
+import agent.ValuePropagationVsDefenderALT;
+import agent.Attacker.AttackerType;
+import agent.Defender.DefenderType;
 
 public final class TestGameSimulation {
 
@@ -26,16 +35,16 @@ public final class TestGameSimulation {
 		final int numEdge = 300;
 		final int numTarget = 10;
 		final double nodeActTypeRatio = 0.3;
-		final double aRewardLB = 1.0;
+		final double aRewardLB = 5.0;
 		final double aRewardUB = 10.0;
 		final double dPenaltyLB = -10.0;
-		final double dPenaltyUB = -1.0;
-		final double aNodeCostLB = -0.5;
-		final double aNodeCostUB = -0.1;
-		final double aEdgeCostLB = -0.5;
-		final double aEdgeCostUB = -0.1;
-		final double dCostLB = -0.5;
-		final double dCostUB = -0.1;
+		final double dPenaltyUB = -5.0;
+		final double aNodeCostLB = -1.0;
+		final double aNodeCostUB = -0.5;
+		final double aEdgeCostLB = -1.0;
+		final double aEdgeCostUB = -0.5;
+		final double dCostLB = -2.0;
+		final double dCostUB = -1.0;
 		final double aNodeActProbLB = 0.8;
 		final double aNodeActProbUB = 1.0;
 		final double aEdgeActProbLB = 0.6;
@@ -51,189 +60,150 @@ public final class TestGameSimulation {
 		rnd.reSeed(System.currentTimeMillis());
 		DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rnd);
 		DGraphGenerator.genGraph(depGraph, rnd
-			, numTarget, nodeActTypeRatio
-			, aRewardLB, aRewardUB
-			, dPenaltyLB, dPenaltyUB
-			, aNodeCostLB, aNodeCostUB
-			, aEdgeCostLB, aEdgeCostUB
-			, dCostLB, dCostUB
-			, aNodeActProbLB, aNodeActProbUB
-			, aEdgeActProbLB, aEdgeActProbUB
-			, minPosActiveProb, maxPosActiveProb
-			, minPosInactiveProb, maxPosInactiveProb);
+				, numTarget, nodeActTypeRatio
+				, aRewardLB, aRewardUB
+				, dPenaltyLB, dPenaltyUB
+				, aNodeCostLB, aNodeCostUB
+				, aEdgeCostLB, aEdgeCostUB
+				, dCostLB, dCostUB
+				, aNodeActProbLB, aNodeActProbUB
+				, aEdgeActProbLB, aEdgeActProbUB
+				, minPosActiveProb, maxPosActiveProb
+				, minPosInactiveProb, maxPosInactiveProb);
 		DGraphGenerator.findMinCut(depGraph);
+		depGraph.print();
 		
+		
+		
+		final double logisParam = 5.0;
+		final double thres = 1e-2;
+		final int maxNumRes = 10;
+		final int minNumRes = 2;
+		final double numResRatio = 0.7;
+		
+		final double qrParamDef = 5.0;
+		final int numRWSampleDef = 50;
+		final int maxNumSelectCandidateDef = 10;
+		final int minNumSelectCandidateDef = 2;
+		final double numSelectCandidateRatioDef = 0.7;
+		
+		final double qrParam = 5.0;
+		final double discFact = 0.9;
+		final int numRWSample = 50;
 		final int maxNumSelectCandidate = 10;
 		final int minNumSelectCandidate = 2;
 		final double numSelectCandidateRatio = 0.7;
 		
-		final double qrParam = 5.0;
-		final double discFact = 0.9;
-		final int numRWSample = 200;
+		final int numTimeStep = 10;
+		final int numSim = 10;
 		
-		final int maxNumRes = 10;
-		final int minNumRes = 2;
-		final double numResRatio = 0.7;
-		final double logisParam = 5.0;
-		
-		final int numTimeStep = 6;
-		final int numSim = 100;
-		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
-		// Defender valuePropagationvsDefender = new ValuePropagationvsDefender(maxNumRes, minNumRes, numResRatio
-			// , logisParam, discFact, thres
-			// , qrParam, maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
-		// Defender uniformDefender = new UniformDefender(maxNumRes, minNumRes, numResRatio);
-		// Defender mincutDefender = new MinCutDefender(maxNumRes, minNumRes, numResRatio);
-		
-		Attacker rwAttacker = new RandomWalkAttacker(numRWSample, qrParam, discFact);
-		GameSimulation gameSimRWvsGO =
-			new GameSimulation(depGraph, rwAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
-		double defPayoffRWvsGO = 0.0;
-		double attPayoffRWvsGO = 0.0;
-		for (int i = 0; i < numSim; i++) {
-			System.out.println("Simulation " + i);
-			gameSimRWvsGO.runSimulation();
-			gameSimRWvsGO.printPayoff();
-			defPayoffRWvsGO += gameSimRWvsGO.getSimulationResult().getDefPayoff();
-			attPayoffRWvsGO += gameSimRWvsGO.getSimulationResult().getAttPayoff();
-			gameSimRWvsGO.reset();
-			// System.out.println();
+		AttackerType[] aTypeList = AttackerType.values();
+		Attacker[] attList = new Attacker[aTypeList.length];
+		for(int i = 0; i < aTypeList.length; i++)
+		{
+			switch (aTypeList[i]) {
+			case UNIFORM:
+				attList[i] = new UniformAttacker(maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
+				break;
+			case VALUE_PROPAGATION:
+				attList[i] = new ValuePropagationAttacker(maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio
+						, qrParam, discFact);
+				break;
+			case RANDOM_WALK:
+				attList[i] = new RandomWalkAttacker(numRWSample, qrParam, discFact);
+				break;
+			default:
+				System.out.println("Attacker type does not exist");
+				break;
+			}
 		}
-		defPayoffRWvsGO /= numSim;
-		attPayoffRWvsGO /= numSim;
-		
-//		Attacker vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate, minNumSelectCandidate
-//				, numSelectCandidateRatio, qrParam, discFact);
-//		GameSimulation gameSimVPvsGO =
-		// new GameSimulation(depGraph, vpAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
-//		double defPayoffVPvsGO = 0.0;
-//		double attPayoffVPvsGO = 0.0;
-//		for(int i = 0; i < numSim; i++)
-//		{
-//			System.out.println("Simulation " + i);
-//			gameSimVPvsGO.runSimulation();
-//			gameSimVPvsGO.printPayoff();
-//			defPayoffVPvsGO += gameSimVPvsGO.getSimulationResult().getDefPayoff();
-//			attPayoffVPvsGO += gameSimVPvsGO.getSimulationResult().getAttPayoff();
-//			gameSimVPvsGO.reset();
-////			System.out.println();
-//		}
-//		defPayoffVPvsGO /= numSim;
-//		attPayoffVPvsGO /= numSim;
-		
-		Attacker uniformAttacker = new UniformAttacker(maxNumSelectCandidate, minNumSelectCandidate
-				, numSelectCandidateRatio);
-		GameSimulation gameSimUvsGO =
-			new GameSimulation(depGraph, uniformAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
-		double defPayoffUvsGO = 0.0;
-		double attPayoffUvsGO = 0.0;
-		for (int i = 0; i < numSim; i++) {
-			System.out.println("Simulation " + i);
-			gameSimUvsGO.runSimulation();
-			gameSimUvsGO.printPayoff();
-			defPayoffUvsGO += gameSimUvsGO.getSimulationResult().getDefPayoff();
-			attPayoffUvsGO += gameSimUvsGO.getSimulationResult().getAttPayoff();
-			gameSimUvsGO.reset();
-			// System.out.println();
+		DefenderType[] dTypeList = DefenderType.values();
+		Defender[] defList = new Defender[dTypeList.length];
+		for(int i = 0; i < dTypeList.length; i++)
+		{
+			switch (dTypeList[i]) {
+			case UNIFORM:
+				defList[i] = new UniformDefender(maxNumRes, minNumRes, numResRatio);
+				break;
+			case MINCUT:
+				defList[i] = new MinCutDefender(maxNumRes, minNumRes, numResRatio);
+				break;
+			case GOAL_ONLY:
+				defList[i] = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
+				break;
+			case ROOT_ONLY:
+				defList[i] = new RootOnlyDefender(maxNumRes, minNumRes, numResRatio);
+				break;
+			case vsVALUE_PROPAGATION:
+				defList[i] = new ValuePropagationVsDefenderALT(maxNumRes, minNumRes, numResRatio
+						, logisParam, discFact, thres
+						, qrParamDef
+						, maxNumSelectCandidateDef, minNumSelectCandidateDef, numSelectCandidateRatioDef);
+				break;
+			case vsRANDOM_WALK:
+				defList[i] = new RandomWalkVsDefenderALT(logisParam, discFact, thres, qrParamDef, numRWSampleDef);
+				break;
+			case vsUNIFORM:
+				defList[i] = new UniformVsDefender(logisParam, discFact, thres, maxNumRes, minNumRes, numResRatio
+						, maxNumSelectCandidateDef, minNumSelectCandidateDef, numSelectCandidateRatioDef);
+				break;
+			default:
+				System.out.println("Defender type does not exist");
+				break;
+			}
 		}
-		defPayoffUvsGO /= numSim;
-		attPayoffUvsGO /= numSim;
 		
-//		GameSimulation gameSimRWvsU =
-		// new GameSimulation(depGraph, rwAttacker, uniformDefender, rnd, numTimeStep, discFact);
-//		double defPayoffRWvsU = 0.0;
-//		double attPayoffRWvsU = 0.0;
-//		for(int i = 0; i < numSim; i++)
-//		{
-//			System.out.println("Simulation " + i);
-//			gameSimRWvsU.runSimulation();
-//			gameSimRWvsU.printPayoff();
-//			defPayoffRWvsU += gameSimRWvsU.getSimulationResult().getDefPayoff();
-//			attPayoffRWvsU += gameSimRWvsU.getSimulationResult().getAttPayoff();
-//			gameSimRWvsU.reset();
-////			System.out.println();
-//		}
-//		defPayoffRWvsU /= numSim;
-//		attPayoffRWvsU /= numSim;
-//		
-//		GameSimulation gameSimVPvsU =
-		// new GameSimulation(depGraph, vpAttacker, uniformDefender, rnd, numTimeStep, discFact);
-//		double defPayoffVPvsU = 0.0;
-//		double attPayoffVPvsU = 0.0;
-//		for(int i = 0; i < numSim; i++)
-//		{
-//			System.out.println("Simulation " + i);
-//			gameSimVPvsU.runSimulation();
-//			gameSimVPvsU.printPayoff();
-//			defPayoffVPvsU += gameSimVPvsU.getSimulationResult().getDefPayoff();
-//			attPayoffVPvsU += gameSimVPvsU.getSimulationResult().getAttPayoff();
-//			gameSimVPvsU.reset();
-////			System.out.println();
-//		}
-//		defPayoffVPvsU /= numSim;
-//		attPayoffVPvsU /= numSim;
-//		
-//
-//		GameSimulation gameSimUvsU =
-		// new GameSimulation(depGraph, uniformAttacker, uniformDefender, rnd, numTimeStep, discFact);
-//		double defPayoffUvsU = 0.0;
-//		double attPayoffUvsU = 0.0;
-//		for(int i = 0; i < numSim; i++)
-//		{
-//			System.out.println("Simulation " + i);
-//			gameSimUvsU.runSimulation();
-//			gameSimUvsU.printPayoff();
-//			defPayoffUvsU += gameSimUvsU.getSimulationResult().getDefPayoff();
-//			attPayoffUvsU += gameSimUvsU.getSimulationResult().getAttPayoff();
-//			gameSimUvsU.reset();
-////			System.out.println();
-//		}
-//		defPayoffUvsU /= numSim;
-//		attPayoffUvsU /= numSim;
+		GameSimulation[][] gameSimList = new GameSimulation[defList.length][attList.length];
+		double[][] defPayoffList = new double[defList.length][attList.length];
+		double[][] attPayoffList = new double[defList.length][attList.length];
+		double[][] runtimeList = new double[defList.length][attList.length];
+		for(int i = 0; i < defList.length; i++)
+		{
+			Defender defender = defList[i];
+			for(int j = 0; j < attList.length; j++)
+			{
+				Attacker attacker = attList[j];
+				gameSimList[i][j] = new GameSimulation(depGraph, attacker, defender, rnd, numTimeStep, discFact);
+				defPayoffList[i][j] = 0.0;
+				attPayoffList[i][j] = 0.0;
+				runtimeList[i][j] = 0.0;
+			}
+		}
+		for(int i = 0; i < defList.length; i++)
+		{
+			for(int j = 0; j < attList.length; j++)
+			{
+				System.out.println("Attacker type: " + aTypeList[j].toString());
+				System.out.println("Defender type: " + dTypeList[i].toString());
+				for(int k = 0; k < numSim; k++)
+				{
+					long start = System.currentTimeMillis();
+					gameSimList[i][j].runSimulation();
+					long end = System.currentTimeMillis();
+					gameSimList[i][j].printPayoff();
+					defPayoffList[i][j] += gameSimList[i][j].getSimulationResult().getDefPayoff();
+					attPayoffList[i][j] += gameSimList[i][j].getSimulationResult().getAttPayoff();
+					runtimeList[i][j] += (end - start) / 1000.0;
+					gameSimList[i][j].reset();
+				}
+				defPayoffList[i][j] /= numSim;
+				attPayoffList[i][j] /= numSim;
+				runtimeList[i][j] /= numSim;
+			}
+		}
+		for(int i = 0; i < defList.length; i++)
+		{
+			for(int j = 0; j < attList.length; j++)
+			{
+				System.out.println("----------------------------------------------------");
+				System.out.println("Attacker type: " + aTypeList[j].toString());
+				System.out.println("Defender type: " + dTypeList[i].toString());
+				System.out.println("Defender payoff: " + defPayoffList[i][j]);
+				System.out.println("Attacker payoff: " + attPayoffList[i][j]);
+				System.out.println("Simulation runtime: " + runtimeList[i][j]);
+				System.out.println("----------------------------------------------------");
+			}
+		}
 		
-//		GameSimulation gameSimVPvsVP =
-		// new GameSimulation(depGraph, vpAttacker, valuePropagationvsDefender, rnd, numTimeStep, discFact);
-//		double defPayoffVPvsVP = 0.0;
-//		double attPayoffVPvsVP = 0.0;
-//		for(int i = 0; i < numSim; i++)
-//		{
-//			System.out.println("Simulation " + i);
-//			gameSimVPvsVP.runSimulation();
-//			gameSimVPvsVP.printPayoff();
-//			defPayoffVPvsVP += gameSimVPvsVP.getSimulationResult().getDefPayoff();
-//			attPayoffVPvsVP += gameSimVPvsVP.getSimulationResult().getAttPayoff();
-//			gameSimVPvsVP.reset();
-////			System.out.println();
-//		}
-//		defPayoffVPvsVP /= numSim;
-//		attPayoffVPvsVP /= numSim;
-		
-		System.out.println("Final result: ");
-		System.out.println("Defender goal node payoff: " + defPayoffRWvsGO);
-		System.out.println("Attacker random walk payoff: " + attPayoffRWvsGO);
-		System.out.println();
-		
-//		System.out.println("Defender value propagation payoff: " + defPayoffVPvsVP);
-//		System.out.println("Attacker value propagation payoff: " + attPayoffVPvsVP);
-//		System.out.println();
-		
-//		System.out.println("Defender goal node payoff: " + defPayoffVPvsGO);
-//		System.out.println("Attacker value propagation payoff: " + attPayoffVPvsGO);
-//		System.out.println();
-		
-		System.out.println("Defender goal node payoff: " + defPayoffUvsGO);
-		System.out.println("Attacker uniform payoff: " + attPayoffUvsGO);
-		System.out.println();
-//		
-		
-//		System.out.println("Defender uniform payoff: " + defPayoffRWvsU);
-//		System.out.println("Attacker random walk payoff: " + attPayoffRWvsU);
-//		System.out.println();
-//		System.out.println("Defender uniform payoff: " + defPayoffVPvsU);
-//		System.out.println("Attacker value propagation payoff: " + attPayoffVPvsU);
-//		System.out.println();
-//		System.out.println("Defender uniform payoff: " + defPayoffUvsU);
-//		System.out.println("Attacker uniform payoff: " + attPayoffUvsU);
-//		System.out.println();	
 	}
 }
