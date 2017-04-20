@@ -122,7 +122,7 @@ public final class DGraphGenerator {
     			cloneGraph.setEdgeWeight(newEdge, 1E10);
         	}
         		
-        	if(node.getTopoPosition() != -1 && cloneGraph.outDegreeOf(node) == 0)
+        	if (node.getTopoPosition() != -1 && cloneGraph.outDegreeOf(node) == 0)
         	{
         		Edge newEdge = new Edge();
         		cloneGraph.addEdge(node, sink, newEdge);
@@ -136,11 +136,10 @@ public final class DGraphGenerator {
         Set<Edge> minCut = minCutAlgo.getCutEdges();
         
         System.out.println("Min cut: ");
-        for(Edge edge : minCut)
-        {
-        	if(edge.getsource().getId() != source.getId())
+        for (Edge edge : minCut) {
+        	if (edge.getsource().getId() != source.getId())
         		depGraph.addMinCut(edge.getsource());
-        	else if(edge.gettarget().getId() != sink.getId())
+        	else if (edge.gettarget().getId() != sink.getId())
         		depGraph.addMinCut(edge.gettarget());
         	System.out.println(edge.getsource().getId() + "\t" + edge.gettarget().getId() + "\t" + edge.getweight());
         }
