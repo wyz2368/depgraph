@@ -39,6 +39,7 @@ public final class ValuePropagationVsDefender extends ValuePropVsDefSuper {
 	private double numAttCandidateRatio;
 	private static final double DEFAULT_PROP_PARAM = 0.5;
 	private double propagationParam = DEFAULT_PROP_PARAM;
+	private boolean isBest = true;
 	
 	public ValuePropagationVsDefender(
 		final double maxNumRes, final double minNumRes, final double numResRatio,
@@ -166,7 +167,7 @@ public final class ValuePropagationVsDefender extends ValuePropVsDefSuper {
 			
 			double[] curACandidateProb = ValuePropagationAttacker.computeCandidateProb(depGraph, curAttCandidate
 				, curTimeStep, numTimeStep, this.qrParam, discountFactor, propagationParamCur
-				, this.maxNumAttCandidate, this.minNumAttCandidate, this.numAttCandidateRatio);
+				, this.maxNumAttCandidate, this.minNumAttCandidate, this.numAttCandidateRatio, this.isBest);
 			// for(int i = 0; i < curACandidateProb.length; i++)
 				// System.out.println(curACandidateProb[i]);
 			

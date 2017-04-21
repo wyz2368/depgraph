@@ -112,6 +112,27 @@ public final class AgentFactory {
 				, defenderParams.get(DefenderParam.qrParam.toString())
 				, defenderParams.get(DefenderParam.numRWSample.toString()));
 		}
+		else if(defType == DefenderType.vsUNIFORM)
+		{
+			assert defenderParams.containsKey(DefenderParam.maxNumRes.toString())
+			&& defenderParams.containsKey(DefenderParam.minNumRes.toString())
+			&& defenderParams.containsKey(DefenderParam.numResRatio.toString())
+			&& defenderParams.containsKey(DefenderParam.logisParam.toString())
+			&& defenderParams.containsKey(DefenderParam.bThres.toString())
+			&& defenderParams.containsKey(DefenderParam.maxNumAttCandidate.toString())
+			&& defenderParams.containsKey(DefenderParam.minNumAttCandidate.toString())
+			&& defenderParams.containsKey(DefenderParam.numAttCandidateRatio.toString());
+			
+			return new UniformVsDefender(defenderParams.get(DefenderParam.logisParam.toString())
+					, discFact
+					, defenderParams.get(DefenderParam.bThres.toString())
+					, defenderParams.get(DefenderParam.maxNumRes.toString())
+					, defenderParams.get(DefenderParam.minNumRes.toString())
+					, defenderParams.get(DefenderParam.numResRatio.toString())
+					, defenderParams.get(DefenderParam.maxNumAttCandidate.toString())
+					, defenderParams.get(DefenderParam.minNumAttCandidate.toString())
+					, defenderParams.get(DefenderParam.numAttCandidateRatio.toString()));
+		}
 
 		return null;
 	 }

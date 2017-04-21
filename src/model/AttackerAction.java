@@ -31,10 +31,6 @@ public final class AttackerAction {
 	}
 	
 	public void clear() {
-		// for(Entry<Node, Set<Edge>> entry : action.entrySet())
-		// {
-		// entry.getValue().clear();
-		// }
 		this.action.clear();
 	}
 	

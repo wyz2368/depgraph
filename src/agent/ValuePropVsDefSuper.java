@@ -36,8 +36,11 @@ public abstract class ValuePropVsDefSuper extends Defender {
 	
 	public ValuePropVsDefSuper(
 		final DefenderType type,
-		final double discFact, final double thres,
-		final double qrParam, final double maxNumAttCandidate, final double minNumAttCandidate,
+		final double discFact, 
+		final double thres,
+		final double qrParam, 
+		final double maxNumAttCandidate, 
+		final double minNumAttCandidate,
 		final double numAttCandidateRatio
 	) {
 		super(type);
@@ -57,10 +60,14 @@ public abstract class ValuePropVsDefSuper extends Defender {
 	}
 
 	@Override
-	public final DefenderBelief updateBelief(final DependencyGraph depGraph,
-		final DefenderBelief dBelief, final DefenderAction dAction,
-		final DefenderObservation dObservation, final int curTimeStep, final int numTimeStep,
-		final RandomGenerator rng) {
+	public final DefenderBelief updateBelief(
+			final DependencyGraph depGraph,
+			final DefenderBelief dBelief, 
+			final DefenderAction dAction,
+			final DefenderObservation dObservation, 
+			final int curTimeStep, 
+			final int numTimeStep,
+			final RandomGenerator rng) {
 		if (depGraph == null || dBelief == null || dAction == null || dObservation == null 
 			|| curTimeStep < 0 || numTimeStep < curTimeStep || rng == null
 		) {

@@ -43,11 +43,11 @@ public abstract class Defender {
 	}
 	
 	public enum DefenderParam {
-		maxNumRes, minNumRes, numResRatio
-		, maxNumAttCandidate, minNumAttCandidate, numAttCandidateRatio
-		, logisParam, bThres
-		, qrParam
-		, numRWSample;
+		maxNumRes, minNumRes, numResRatio, 
+		maxNumAttCandidate, minNumAttCandidate, numAttCandidateRatio, 
+		logisParam, bThres, 
+		qrParam, 
+		numRWSample;
 		
 		@Override
 		public String toString() {
@@ -55,11 +55,14 @@ public abstract class Defender {
 			case maxNumRes: return "maxNumRes";
 			case minNumRes: return "minNumRes";
 			case numResRatio: return "numResRatio";
+			
 			case maxNumAttCandidate: return "maxNumAttCandidate";
 			case numAttCandidateRatio: return "numAttCandidateRatio";
 			case minNumAttCandidate: return "minNumAttCandidate";
+			
 			case logisParam: return "logisParam";
 			case bThres: return "bThres";
+			
 			case qrParam: return "qrParam";
 			case numRWSample: return "numRWSample";
 			default: return "";
@@ -80,20 +83,26 @@ public abstract class Defender {
 		return this.dType;
 	}
 	
-	public abstract DefenderAction sampleAction(DependencyGraph depGraph,
-		int curTimeStep, int numTimeStep
-		, DefenderBelief dBelief, RandomGenerator rng);
+	public abstract DefenderAction sampleAction(
+			DependencyGraph depGraph,
+			int curTimeStep, 
+			int numTimeStep, 
+			DefenderBelief dBelief, 
+			RandomGenerator rng);
 	
-	public abstract DefenderBelief updateBelief(DependencyGraph depGraph,
-		DefenderBelief currentBelief, DefenderAction dAction,
-		DefenderObservation dObservation, int curTimeStep, int numTimeStep,
-		RandomGenerator rng);
+	public abstract DefenderBelief updateBelief(
+			DependencyGraph depGraph,
+			DefenderBelief currentBelief, 
+			DefenderAction dAction,
+			DefenderObservation dObservation, 
+			int curTimeStep, 
+			int numTimeStep,
+			RandomGenerator rng);
 	
 	public static final DefenderAction simpleSampleAction(
 		final List<Node> dCandidateNodeList,
 		final int numNodetoProtect,
-		final AbstractIntegerDistribution rnd
-	) {
+		final AbstractIntegerDistribution rnd) {
 		if (dCandidateNodeList == null || numNodetoProtect < 0 || rnd == null) {
 			throw new IllegalArgumentException();
 		}

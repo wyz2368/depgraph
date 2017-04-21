@@ -26,9 +26,11 @@ public final class ValuePropagationAttacker extends Attacker {
 	private double discFact;
 	
 	private final double propagationParam = 0.5;
+	private final boolean isBest = true;
 	
 	public ValuePropagationAttacker(
-		final double maxNumSelectCandidate, final double minNumSelectCandidate,
+		final double maxNumSelectCandidate, 
+		final double minNumSelectCandidate,
 		final double numSelectCandidateRatio,
 		final double qrParam, final double discFact) {
 		super(AttackerType.VALUE_PROPAGATION);
@@ -51,19 +53,27 @@ public final class ValuePropagationAttacker extends Attacker {
 	 * @param rng: random generator
 	 * @return type of Attacker Action: an attack action
 	 *****************************************************************************************/
-	public AttackerAction sampleAction(final DependencyGraph depGraph, final int curTimeStep,
-		final int numTimeStep, final RandomGenerator rng) {	
+	public AttackerAction sampleAction(
+			final DependencyGraph depGraph, 
+			final int curTimeStep,
+			final int numTimeStep, 
+			final RandomGenerator rng) {	
 		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || rng == null) {
 			throw new IllegalArgumentException();
 		}
 		// Find candidate
 		AttackCandidate attackCandidate = selectCandidate(depGraph);
 		// Compute candidate value
-		double[] candidateValue = computeCandidateValueTopoBest(
-			depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
-			, this.propagationParam);
-		int totalNumCandidate =
-			attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
+		double[] candidateValue = computeCandidateValueTopo(
+									depGraph, 
+									attackCandidate, 
+									curTimeStep, 
+									numTimeStep, 
+									this.discFact, 
+									this.propagationParam,
+									this.isBest);
+		int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size() 
+			+ attackCandidate.getNodeCandidateSet().size();
 		
 		// Compute number of candidates to select
 		int numSelectCandidate = 0;
@@ -101,18 +111,27 @@ public final class ValuePropagationAttacker extends Attacker {
 	 * @param isReplacement: whether sampling with replacement or not
 	 * @return Samples of attacker action
 	 *****************************************************************************************/
-	public List<AttackerAction> sampleAction(final DependencyGraph depGraph,
-		final int curTimeStep, final int numTimeStep, final RandomGenerator rng,
-		final int numSample, final boolean isReplacement) {
+	public List<AttackerAction> sampleAction(
+			final DependencyGraph depGraph,
+			final int curTimeStep, 
+			final int numTimeStep, 
+			final RandomGenerator rng,
+			final int numSample, 
+			final boolean isReplacement) {
 		if (depGraph == null || numTimeStep < 0 || rng == null || numSample < 1) {
 			throw new IllegalArgumentException();
 		}
 		// Find candidate
 		AttackCandidate attackCandidate = selectCandidate(depGraph);
 		// Compute candidate value
-		double[] candidateValue = computeCandidateValueTopoBest(
-			depGraph, attackCandidate, curTimeStep, numTimeStep, this.discFact
-			, this.propagationParam);
+		double[] candidateValue = computeCandidateValueTopo(
+										depGraph, 
+										attackCandidate, 
+										curTimeStep, 
+										numTimeStep, 
+										this.discFact, 
+										this.propagationParam,
+										this.isBest);
 		int totalNumCandidate =
 			attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
 		
@@ -162,11 +181,17 @@ public final class ValuePropagationAttacker extends Attacker {
 	}
 	
 	static double[] computeCandidateProb(
-		final DependencyGraph depGraph, final AttackCandidate attackCandidate,
-		final int curTimeStep, final int numTimeStep,
-		final double qrParam, final double discFact,
-		final double propagationParam, final int maxNumSelectCandidate,
-		final int minNumSelectCandidate, final double numSelectCandidateRatio) {
+		final DependencyGraph depGraph, 
+		final AttackCandidate attackCandidate,
+		final int curTimeStep, 
+		final int numTimeStep,
+		final double qrParam, 
+		final double discFact,
+		final double propagationParam, 
+		final int maxNumSelectCandidate,
+		final int minNumSelectCandidate, 
+		final double numSelectCandidateRatio,
+		boolean isBest) {
 		if (depGraph == null || attackCandidate == null
 			|| curTimeStep < 0 || numTimeStep < curTimeStep
 			|| discFact < 0.0 || discFact > 1.0 || minNumSelectCandidate < 1
@@ -175,9 +200,14 @@ public final class ValuePropagationAttacker extends Attacker {
 		) {
 			throw new IllegalArgumentException();
 		}
-		double[] candidateValue =
-			computeCandidateValueTopoBest(depGraph, attackCandidate, curTimeStep, numTimeStep, discFact
-			, propagationParam);
+		double[] candidateValue = computeCandidateValueTopo(
+									depGraph, 
+									attackCandidate, 
+									curTimeStep, 
+									numTimeStep,
+									discFact, 
+									propagationParam,
+									isBest);
 		int totalNumCandidate =
 			attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
 		
@@ -304,10 +334,14 @@ public final class ValuePropagationAttacker extends Attacker {
 		return probabilities;
 	}
 	
-	private static double[] computeCandidateValueTopoBest(
-		final DependencyGraph depGraph, final AttackCandidate attackCandidate, 
-		final int curTimeStep, final int numTimeStep, 
-		final double discountFactor, final double propagationParam
+	private static double[] computeCandidateValueTopo(
+		final DependencyGraph depGraph, 
+		final AttackCandidate attackCandidate, 
+		final int curTimeStep, 
+		final int numTimeStep, 
+		final double discountFactor, 
+		final double propagationParam,
+		boolean isBest
 	) {
 		if (depGraph == null || attackCandidate == null
 			|| curTimeStep < 0 || numTimeStep < curTimeStep
@@ -315,6 +349,8 @@ public final class ValuePropagationAttacker extends Attacker {
 		) {
 			throw new IllegalArgumentException();
 		}
+		if(attackCandidate.isEmpty()) // if there is no candidate, then no point to compute attack probability
+			return null;
 		List<Edge> edgeCandidateList = new ArrayList<Edge>(attackCandidate.getEdgeCandidateSet());
 		List<Node> nodeCandidateList = new ArrayList<Node>(attackCandidate.getNodeCandidateSet());
 		int totalNumCandidate = edgeCandidateList.size() + nodeCandidateList.size();
@@ -329,16 +365,15 @@ public final class ValuePropagationAttacker extends Attacker {
 				targetList.add(target);
 			}
 		}
-		if (targetList.isEmpty()) { // if all targets are already enabled
-			return candidateValue;
-		}
 		
+		// Get topological order of the vertices in graph
 		Node[] topoOrder = new Node[depGraph.vertexSet().size()];
 
 		for (Node node : depGraph.vertexSet()) {
 			topoOrder[node.getTopoPosition()] = node;
 		}
 		
+		// Value propagation of each node with respect to each inactive target and propagation time (>= curTimeStep & <= numTimeStep).
 		double[][][] r = new double[targetList.size()][numTimeStep - curTimeStep + 1][depGraph.vertexSet().size()];
 		for (int i = 0; i < targetList.size(); i++) {
 			for (int j = 0; j <= numTimeStep - curTimeStep; j++) {
@@ -347,25 +382,28 @@ public final class ValuePropagationAttacker extends Attacker {
 				}
 			}
 		}
+		
+		// For inactive targets first
 		for (int i = 0; i < targetList.size(); i++) {
 			Node node = targetList.get(i);
 			r[i][0][node.getId() - 1] = node.getAReward();
 		}
+		// Start examining nodes in inverse topological order (leaf nodes first)
 		for (int k = depGraph.vertexSet().size() - 1; k >= 0; k--) {
 			Node node = topoOrder[k];
-			if (node.getState() != NodeState.ACTIVE) {
+			if (node.getState() != NodeState.ACTIVE) { // checking inactive nodes only since no need to examine active nodes
 				Set<Edge> edgeSet = depGraph.outgoingEdgesOf(node);
 				if (edgeSet != null && !edgeSet.isEmpty()) { // if non-leaf 
-					for (Edge edge : edgeSet) {
+					for (Edge edge : edgeSet) { // examining each outgoing edge of this node
 						Node postNode = edge.gettarget();
-						if (postNode.getState() != NodeState.ACTIVE) {
+						if (postNode.getState() != NodeState.ACTIVE) { // if this postcondition is not active, then propagate value from this node
 							for (int i = 0; i < targetList.size(); i++) {
 								for (int j = 1; j <= numTimeStep - curTimeStep; j++) {
 									double rHat = 0.0;
-									if (postNode.getActivationType() == NodeActivationType.OR) {
+									if (postNode.getActivationType() == NodeActivationType.OR) { // postNode is of type OR
 										rHat = r[i][j - 1][postNode.getId() - 1] * edge.getActProb(); 
 										rHat += edge.getACost();
-									} else {
+									} else { // postNode is of type AND
 										rHat = r[i][j - 1][postNode.getId() - 1] * postNode.getActProb();
 										rHat += postNode.getACost();
 										int degree = depGraph.inDegreeOf(postNode);
@@ -374,11 +412,17 @@ public final class ValuePropagationAttacker extends Attacker {
 												degree--;
 											}
 										}
+										// Some normalization with respect to # inactive precondition nodes
 										rHat = rHat / Math.pow(degree, propagationParam);
 									}
-									if (r[i][j][node.getId() - 1] < discountFactor * rHat) {
-										// r[i][j][node.getId() - 1] += discountFactor * r_hat;
-										r[i][j][node.getId() - 1] = discountFactor * rHat;
+									if(isBest) {
+										if (r[i][j][node.getId() - 1] < discountFactor * rHat) { // only keep maximum propagation value
+											r[i][j][node.getId() - 1] = discountFactor * rHat;
+										}
+									}
+									else { // sum
+										if(rHat > 0)
+											r[i][j][node.getId() - 1] += discountFactor * rHat;
 									}
 								}
 							}
@@ -389,7 +433,7 @@ public final class ValuePropagationAttacker extends Attacker {
 		}
 		
 		/*****************************************************************************************/
-		// Sum of value for candidates
+		// Now, only keep maximum propagation values over all propagation paths
 		double[] rSum = new double[depGraph.vertexSet().size()];
 		for (int i = 0; i < depGraph.vertexSet().size(); i++) {
 			rSum[i] = 0;
@@ -397,13 +441,20 @@ public final class ValuePropagationAttacker extends Attacker {
 		for (int i = 0; i < targetList.size(); i++) {
 			for (int j = 0; j <= numTimeStep - curTimeStep; j++) {
 				for (int k = 0; k < depGraph.vertexSet().size(); k++) {
-					// rSum[k] += r[i][j][k] * Math.pow(discountFactor, j);
-					if (rSum[k] < r[i][j][k]) {
-						rSum[k] = r[i][j][k];
+					if(isBest) {
+						if (rSum[k] < r[i][j][k]) {
+							rSum[k] = r[i][j][k];
+						}
+					}
+					else { // sum
+						if(r[i][j][k] > 0)
+							rSum[k] += r[i][j][k];
 					}
 				}
 			}
 		}
+		
+		// Now compute final propagation value for each candidate, considering cost and activation probs
 		int idx = 0;
 		for (Edge edge : edgeCandidateList) {
 			candidateValue[idx] = Math.pow(discountFactor, curTimeStep - 1) 
@@ -428,9 +479,11 @@ public final class ValuePropagationAttacker extends Attacker {
 	 * @param rnd: integer distribution randomizer
 	 * @return type of AttackerAction: an action for the attacker
 	 *****************************************************************************************/
-	private static AttackerAction sampleAction(final DependencyGraph depGraph,
-		final AttackCandidate attackCandidate, final int numSelectCandidate
-		, final AbstractIntegerDistribution rnd) {
+	private static AttackerAction sampleAction(
+			final DependencyGraph depGraph,
+			final AttackCandidate attackCandidate, 
+			final int numSelectCandidate, 
+			final AbstractIntegerDistribution rnd) {
 		if (depGraph == null || numSelectCandidate < 0 || rnd == null || attackCandidate == null) {
 			throw new IllegalArgumentException();
 		}

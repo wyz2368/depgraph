@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import model.AttackCandidate;
 import model.AttackerAction;
 import model.DependencyGraph;
 
@@ -25,9 +24,6 @@ public final class RandomWalkAttacker extends Attacker {
 		private List<Edge> preAct;
 		
 		public RandomWalkTuple(final int tAct, final double pAct, final List<Edge> preAct) {
-//			if (tAct < 0 || !isProb(pAct) || preAct == null) {
-//				throw new IllegalArgumentException(tAct + "\t" + pAct + "\t" + preAct);
-//			}
 			if (tAct < 0 || !isProb(pAct)) {
 				throw new IllegalArgumentException(tAct + "\t" + pAct + "\t" + preAct);
 			}
@@ -55,7 +51,7 @@ public final class RandomWalkAttacker extends Attacker {
 	
 	private double qrParam;
 	private double discFact;
-	private static final int DEFAULT_NUM_RW_SAMPLE = 200;
+	private static final int DEFAULT_NUM_RW_SAMPLE = 100;
 	private int numRWSample = DEFAULT_NUM_RW_SAMPLE;
 	
 	public RandomWalkAttacker(final double numRWSample, final double qrParam, final double discFact) {
@@ -76,24 +72,27 @@ public final class RandomWalkAttacker extends Attacker {
 	 * @param rng: random generator
 	 * @return type of Attacker Action: an attack action
 	 */
-	public AttackerAction sampleAction(final DependencyGraph depGraph,
-		final int curTimeStep, final int numTimeStep, final RandomGenerator rng) {
+	public AttackerAction sampleAction(
+			final DependencyGraph depGraph,
+			final int curTimeStep, 
+			final int numTimeStep, 
+			final RandomGenerator rng) {
 		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || rng == null) {
 			throw new IllegalArgumentException();
 		}
-		// Compute the candidate values, each candidate is a set
-		double[] candidateValues = new double[this.numRWSample];
-		AttackCandidate[] candidates = new AttackCandidate[this.numRWSample];
+		// Compute the greedy action values
+		double[] actionValues = new double[this.numRWSample];
+		AttackerAction[] actions = new AttackerAction[this.numRWSample];
 		for (int i = 0; i < this.numRWSample; i++) {
 			RandomWalkTuple[] rwSample = randomWalk(depGraph, curTimeStep, rng);
-			AttackCandidate attCandidate = new AttackCandidate();
-			candidateValues[i] = greedyCandidate(depGraph, rwSample, attCandidate, numTimeStep, this.discFact);
+			AttackerAction attAction = new AttackerAction();
+			actionValues[i] = greedyAction(depGraph, rwSample, attAction, numTimeStep, this.discFact);
 			// System.out.println(candidateValues[i]);
-			candidates[i] = attCandidate;
+			actions[i] = attAction;
 		}
 		
 		// Compute the candidate probability
-		double[] probabilities = computeCandidateProb(this.numRWSample, candidateValues, this.qrParam);
+		double[] probabilities = computeCandidateProb(this.numRWSample, actionValues, this.qrParam);
 		
 		// Start sampling
 		int[] nodeIndexes = new int[this.numRWSample];
@@ -103,17 +102,7 @@ public final class RandomWalkAttacker extends Attacker {
 		EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
 		
 		int sampleIdx = rnd.sample();
-		AttackerAction attAction = new AttackerAction();
-		for (Node node : candidates[sampleIdx].getNodeCandidateSet()) {
-			attAction.addNodetoActive(node, depGraph.incomingEdgesOf(node));
-		}
-		for (Edge edge : candidates[sampleIdx].getEdgeCandidateSet()) {
-			Set<Edge> edgeSet = new HashSet<Edge>();
-			edgeSet.add(edge);
-			attAction.addNodetoActive(edge.gettarget(), edgeSet);
-		}
-		
-		return attAction;
+		return actions[sampleIdx];
 	}
 	
 	@Override
@@ -169,7 +158,6 @@ public final class RandomWalkAttacker extends Attacker {
 			Node node = topoOrder[i];
 			int tAct = 0;
 			double pAct = 0.0;
-//			List<Edge> preAct = new ArrayList<Edge>();
 			List<Edge> preAct = null;
 			/*****************************************************************************************/
 			if (node.getState() == NodeState.ACTIVE) { // active nodes
@@ -188,13 +176,13 @@ public final class RandomWalkAttacker extends Attacker {
 				tAct = tAct + 1;
 				// Activation probability
 				pAct = node.getActProb();
-				List<Node> sequenceList = new ArrayList<Node>();
+				List<Node> sequenceList = new ArrayList<Node>(); 
 				for (int j = 0; j < depGraph.vertexSet().size(); j++) {
-					isInSequence[i] = false;
+					isInSequence[i] = false; // used to check if nodes are in the sequence to activate this AND node
 				}
 				for (Edge edge : preAct) {
 					if (!isInSequence[edge.getsource().getId() - 1]) {
-						sequenceList.add(edge.getsource());
+						sequenceList.add(edge.getsource()); // used to backtrack nodes in the sequence
 						isInSequence[edge.getsource().getId() - 1] = true;
 					}
 				}
@@ -202,19 +190,22 @@ public final class RandomWalkAttacker extends Attacker {
 				while (!sequenceList.isEmpty()) {
 					Node curNode = sequenceList.remove(0);
 					RandomWalkTuple rwTuple = rwTuples[curNode.getId() - 1];
-					if (curNode.getActivationType() == NodeActivationType.AND) { // OR node
-						pAct *= curNode.getActProb();
-						if (rwTuple.getPreAct() != null) {
-							for (Edge edge : rwTuple.getPreAct()) {
-								Node preNode = edge.getsource();
-								if (!isInSequence[preNode.getId() - 1]) {
-									sequenceList.add(preNode);
-									isInSequence[preNode.getId() - 1] = true;
+					if (curNode.getActivationType() == NodeActivationType.AND) { // AND node
+						if(curNode.getState() != NodeState.ACTIVE) // not the active node
+						{
+							pAct *= curNode.getActProb(); 
+							if (rwTuple.getPreAct() != null) { // not the root node
+								for (Edge edge : rwTuple.getPreAct()) {
+									Node preNode = edge.getsource();
+									if (!isInSequence[preNode.getId() - 1]) {
+										sequenceList.add(preNode);
+										isInSequence[preNode.getId() - 1] = true;
+									}
 								}
 							}
 						}
 					} else { // OR node
-						if (rwTuple.getPreAct() != null) {
+						if (rwTuple.getPreAct() != null) {  // not the active node
 							Edge edge = rwTuple.getPreAct().get(0);
 							pAct *= edge.getActProb();
 							Node preNode = edge.getsource();
@@ -233,7 +224,7 @@ public final class RandomWalkAttacker extends Attacker {
 				for (int j = 0; j < edgeList.size(); j++) {
 					nodeIndexes[j] = j;
 					Node curNode = edgeList.get(j).getsource();
-					probabilities[j] = rwTuples[curNode.getId() - 1].getPAct();
+					probabilities[j] = rwTuples[curNode.getId() - 1].getPAct() * edgeList.get(j).getActProb();
 					sumProb += probabilities[j];
 				}
 				for (int j = 0; j < edgeList.size(); j++) {
@@ -257,9 +248,13 @@ public final class RandomWalkAttacker extends Attacker {
 	/*
 	attCandidate: outcome of greedy, initialized already*
 	*****************************************************************************************/
-	static double greedyCandidate(final DependencyGraph depGraph, final RandomWalkTuple[] rwTuples
-		, final AttackCandidate attCandidate, final int numTimeStep, final double discFact) {
-		if (depGraph == null || rwTuples == null || attCandidate == null
+	static double greedyAction(
+			final DependencyGraph depGraph, 
+			final RandomWalkTuple[] rwTuples, 
+			final AttackerAction attAction, 
+			final int numTimeStep, 
+			final double discFact) {
+		if (depGraph == null || rwTuples == null || attAction == null
 			|| numTimeStep < 0 || discFact <= 0.0 || discFact > 1.0) {
 			throw new IllegalArgumentException();
 		}
@@ -276,7 +271,7 @@ public final class RandomWalkAttacker extends Attacker {
 		for (int j = 0; j < depGraph.vertexSet().size(); j++) {
 			isInSequence[j] = false;
 		}
-		boolean[] chosenIsInSequence = new boolean[depGraph.vertexSet().size()]; // keep track for the searching
+		boolean[] chosenIsInSequence = new boolean[depGraph.vertexSet().size()]; // keep track for the searching, not contains active nodes
 		boolean[] isInCurSequence = new boolean[depGraph.vertexSet().size()]; // for each iteration of greedy
 		while (!isStop) {
 			/*****************************************************************************************/
@@ -322,10 +317,10 @@ public final class RandomWalkAttacker extends Attacker {
 							RandomWalkTuple curRwTuple = rwTuples[curNode.getId() - 1];
 							if (!isInCurSequence[curNode.getId() - 1]) {
 								isInCurSequence[curNode.getId() - 1] = true;
-								if (curNode.getActivationType() == NodeActivationType.AND) {
+								if (curNode.getActivationType() == NodeActivationType.AND) { // AND node
 									curValue += curRwTuple.getPAct() / curNode.getActProb()  
 											* curNode.getACost() * Math.pow(discFact, curRwTuple.getTAct() - 1);
-									if (curRwTuple.getPreAct() != null) {
+									if (curRwTuple.getPreAct() != null) { // not root node
 										for (Edge edge : curRwTuple.getPreAct()) {
 											Node preNode = edge.getsource();
 											if (!isInCurSequence[preNode.getId() - 1] 
@@ -335,7 +330,7 @@ public final class RandomWalkAttacker extends Attacker {
 											}
 										}
 									}
-								} else {
+								} else { // OR node
 									if (curRwTuple.getPreAct() != null) {
 										Edge chosenEdge = curRwTuple.getPreAct().get(0);
 										curValue += curRwTuple.getPAct() / chosenEdge.getActProb() 
@@ -387,13 +382,15 @@ public final class RandomWalkAttacker extends Attacker {
 							}
 						}
 						if (isCandidate) {
-							attCandidate.addNodeCandidate(node);
+							attAction.addNodetoActive(node, depGraph.incomingEdgesOf(node));
 						}
 					} else {
 						RandomWalkTuple rwTuple = rwTuples[node.getId() - 1];
 						Edge edge = rwTuple.getPreAct().get(0);
 						if (edge.getsource().getState() == NodeState.ACTIVE) {
-							attCandidate.addEdgeCandidate(edge);
+							Set<Edge> edgeSet = new HashSet<Edge>();
+							edgeSet.add(edge);
+							attAction.addNodetoActive(edge.gettarget(), edgeSet);
 						}
 					}
 				}

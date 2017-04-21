@@ -53,9 +53,16 @@ public abstract class Attacker {
 	}
 
 	public abstract AttackerAction sampleAction(
-		DependencyGraph depGraph, int curTimeStep, int numTimeStep, RandomGenerator rng);
+		DependencyGraph depGraph, 
+		int curTimeStep, 
+		int numTimeStep, 
+		RandomGenerator rng);
 	
 	public abstract List<AttackerAction> sampleAction(
-		DependencyGraph depGraph, int curTimeStep, int numTimeStep
-		, RandomGenerator rng, int numSample, boolean isReplacement);
+		DependencyGraph depGraph, 
+		int curTimeStep,
+		int numTimeStep, 
+		RandomGenerator rng, 
+		int numSample, 
+		boolean isReplacement);
 }

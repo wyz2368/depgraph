@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
-import model.AttackCandidate;
 import model.AttackerAction;
 import model.DefenderAction;
 import model.DefenderBelief;
@@ -101,7 +101,7 @@ public final class RandomWalkVsDefender extends Defender {
 		
 
 		RandomWalkTuple[][][] rwTuplesLists = new RandomWalkTuple[dBelief.getGameStateMap().size()][][];
-		AttackCandidate[][] attCandidateLists = new AttackCandidate[dBelief.getGameStateMap().size()][];
+		AttackerAction[][] attActionLists = new AttackerAction[dBelief.getGameStateMap().size()][];
 		double[][] attProbs = new double[dBelief.getGameStateMap().size()][];
 		int idx = 0;
 		// iterate over all possible game states
@@ -111,29 +111,29 @@ public final class RandomWalkVsDefender extends Defender {
 			
 			RandomWalkTuple[][] rwTuplesList =
 				new RandomWalkTuple[this.numRWSample][]; // list of all random walk tuples sampled
-			AttackCandidate[] attCandidateList =
-				new AttackCandidate[this.numRWSample]; // corresponding list of attack candidates
+			AttackerAction[] attActionList =
+				new AttackerAction[this.numRWSample]; // corresponding list of attack candidates
 			double[] attValue = new double[this.numRWSample]; // values of corresponding action of the attacker
 			for (int i = 0; i < this.numRWSample; i++) {
 				RandomWalkTuple[] rwTuples = rwAttacker.randomWalk(depGraph, curTimeStep, rng); // sample random walk
-				AttackCandidate attCandidate = new AttackCandidate();
-				attValue[i] = RandomWalkAttacker.greedyCandidate(depGraph // greedy attack
-						, rwTuples, attCandidate // attCandidate is an outcome as well
+				AttackerAction attAction = new AttackerAction();
+				attValue[i] = RandomWalkAttacker.greedyAction(depGraph // greedy attack
+						, rwTuples, attAction // attCandidate is an outcome as well
 						, numTimeStep, this.discFact); 
 				rwTuplesList[i] = rwTuples;
-				attCandidateList[i] = attCandidate;
+				attActionList[i] = attAction;
 			}
 			DefenderAction defAction = new DefenderAction();
 			// attack probability
 			double[] attProb = RandomWalkAttacker.computeCandidateProb(this.numRWSample, attValue, this.qrParam);
-			greedyCandidate(depGraph // greedy defense with respect to each possible game state
-					, rwTuplesList, attCandidateList, attProb
+			greedyAction(depGraph // greedy defense with respect to each possible game state
+					, rwTuplesList, attActionList, attProb
 					, defAction // this is outcome
 					, curTimeStep, numTimeStep
 					, this.discFact);
 //					System.out.println(dValue);
 			rwTuplesLists[idx] = rwTuplesList;
-			attCandidateLists[idx] = attCandidateList;
+			attActionLists[idx] = attActionList;
 			attProbs[idx] = attProb;
 		
 			candidates[idx] = defAction;
@@ -144,7 +144,7 @@ public final class RandomWalkVsDefender extends Defender {
 		depGraph.setState(savedGameState);
 		
 		for (int i = 0; i < dBelief.getGameStateMap().size(); i++) {
-			candidateValues[i] = computeDValue(depGraph, dBelief, rwTuplesLists, attCandidateLists, attProbs
+			candidateValues[i] = computeDValue(depGraph, dBelief, rwTuplesLists, attActionLists, attProbs
 					, candidates[i], curTimeStep, numTimeStep, this.discFact);
 		}
 		
@@ -282,16 +282,16 @@ public final class RandomWalkVsDefender extends Defender {
 	* @param discFact reward discount factor
 	* @return a candidate
 	*****************************************************************************************/
-	private static double greedyCandidate(
+	private static double greedyAction(
 		final DependencyGraph depGraph // depGraph has current game state the defender is examining
 		, final RandomWalkTuple[][] rwTuplesList
-		, final AttackCandidate[] attCandidateList
+		, final AttackerAction[] attActionList
 		, final double[] attProb
 		, final DefenderAction defAction
 		, final int curTimeStep, final int numTimeStep
 		, final double discFact) {
 		if (curTimeStep < 0 || numTimeStep < curTimeStep
-			|| rwTuplesList == null || attCandidateList == null || attProb == null
+			|| rwTuplesList == null || attActionList == null || attProb == null
 			|| defAction == null || discFact <= 0.0 || discFact > 1.0
 		) {
 			throw new IllegalArgumentException();
@@ -303,13 +303,10 @@ public final class RandomWalkVsDefender extends Defender {
 			topoOrder[node.getTopoPosition()] = node;
 		}
 		DefenderCandidate defCandidateAll = new DefenderCandidate(); // all candidate nodes for the defender
-		for (AttackCandidate attCandidate : attCandidateList) { // all these are inactive
-			for (Node node : attCandidate.getNodeCandidateSet()) {
-				defCandidateAll.addNodeCandidate(node);
-			}
-			for (Edge edge : attCandidate.getEdgeCandidateSet()) {
-				defCandidateAll.addNodeCandidate(edge.gettarget());
-			}
+		for(AttackerAction attAction : attActionList)
+		{
+			for(Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet())
+				defCandidateAll.addNodeCandidate(entry.getKey());
 		}
 		for (Node target : depGraph.getTargetSet()) { // active targets
 			if (target.getState() == NodeState.ACTIVE) {
@@ -323,10 +320,10 @@ public final class RandomWalkVsDefender extends Defender {
 			isChosen[i] = false;
 		}
 		
-		boolean[][] isInQueue = new boolean[attCandidateList.length][depGraph.vertexSet().size()];
+		boolean[][] isInQueue = new boolean[attActionList.length][depGraph.vertexSet().size()];
 		// Initialize queue, this queue is used for checking if any node is still in the queue of activating
 		// when the defender starts disabling nodes
-		for (int i = 0; i < attCandidateList.length; i++) {
+		for (int i = 0; i < attActionList.length; i++) {
 			for (int j = 0; j < depGraph.vertexSet().size(); j++) {
 				isInQueue[i][j] = false;
 			}
@@ -334,16 +331,15 @@ public final class RandomWalkVsDefender extends Defender {
 		
 		
 		int idx = 0;
-		for (AttackCandidate attCandidate : attCandidateList) {
-			for (Node node : attCandidate.getNodeCandidateSet()) {
+		for(AttackerAction attAction : attActionList){
+			for(Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet())
+			{
+				Node node = entry.getKey();
 				isInQueue[idx][node.getId() - 1] = true;
-			}
-			for (Edge edge : attCandidate.getEdgeCandidateSet()) {
-				isInQueue[idx][edge.gettarget().getId() - 1] = true;
 			}
 			idx++;
 		}
-		for (idx = 0; idx < attCandidateList.length; idx++) {
+		for (idx = 0; idx < attActionList.length; idx++) {
 			for (int i = 0; i < depGraph.vertexSet().size(); i++) {
 				Node node = topoOrder[i];
 				if (!isInQueue[idx][node.getId() - 1] 
@@ -375,7 +371,7 @@ public final class RandomWalkVsDefender extends Defender {
 			if (target.getState() == NodeState.ACTIVE) {
 				value += target.getDPenalty() * Math.pow(discFact, curTimeStep - 1);
 			} else {
-				for (idx = 0; idx < attCandidateList.length; idx++) {
+				for (idx = 0; idx < attActionList.length; idx++) {
 					if (isInQueue[idx][target.getId() - 1]) {
 						RandomWalkTuple[] rwTuples = rwTuplesList[idx];
 						int actTime = rwTuples[target.getId() - 1].getTAct();
@@ -401,10 +397,10 @@ public final class RandomWalkVsDefender extends Defender {
 				if (isInQueue == null) {
 					throw new IllegalStateException();
 				}
-				boolean[][] isInCurrentQueue = new boolean[attCandidateList.length][depGraph.vertexSet().size()];
+				boolean[][] isInCurrentQueue = new boolean[attActionList.length][depGraph.vertexSet().size()];
 				// Initialize queue, this queue is used for checking if any node is still in the queue of activating
 				// when the defender starts disabling nodes
-				for (int i = 0; i < attCandidateList.length; i++) {
+				for (int i = 0; i < attActionList.length; i++) {
 					for (int j = 0; j < depGraph.vertexSet().size(); j++) {
 						isInCurrentQueue[i][j] = isInQueue[i][j];
 					}
@@ -481,7 +477,7 @@ public final class RandomWalkVsDefender extends Defender {
 		final DependencyGraph depGraph
 		, final DefenderBelief dBelief
 		, final RandomWalkTuple[][][] rwTuplesLists
-		, final AttackCandidate[][] attCandidateLists
+		, final AttackerAction[][] attActionLists
 		, final double[][] attProbs
 		, final DefenderAction defAction
 		, final int curTimeStep, final int numTimeStep
@@ -500,10 +496,10 @@ public final class RandomWalkVsDefender extends Defender {
 			Double gameStateProb = entry.getValue(); // corresponding state probability
 			depGraph.setState(gameState); // temporarily set game state to the graph
 			RandomWalkTuple[][] rwTuplesList =  rwTuplesLists[idx];
-			AttackCandidate[] attCandidateList = attCandidateLists[idx];
+			AttackerAction[] attActionList = attActionLists[idx];
 			double[] attProb = attProbs[idx];
 			
-			dValue += gameStateProb * computeDValue(depGraph, rwTuplesList, attCandidateList, attProb
+			dValue += gameStateProb * computeDValue(depGraph, rwTuplesList, attActionList, attProb
 					, defAction, curTimeStep, numTimeStep, discFact);
 			idx++;
 		}
@@ -518,7 +514,7 @@ public final class RandomWalkVsDefender extends Defender {
 	// depGraph has current game state the defender is examining
 	public static double computeDValue(final DependencyGraph depGraph
 		, final RandomWalkTuple[][] rwTuplesList
-		, final AttackCandidate[] attCandidateList
+		, final AttackerAction[] attActionList
 		, final double[] attProb
 		, final DefenderAction defAction
 		, final int curTimeStep, final int numTimeStep
@@ -534,10 +530,10 @@ public final class RandomWalkVsDefender extends Defender {
 		}
 		for(Node node : defAction.getAction())
 			isBlock[node.getId() - 1] = true;
-		boolean[][] isInQueue = new boolean[attCandidateList.length][depGraph.vertexSet().size()];
+		boolean[][] isInQueue = new boolean[attActionList.length][depGraph.vertexSet().size()];
 		// Initialize queue, this queue is used for checking if any node is still in the queue of activating
 		// when the defender starts disabling nodes
-		for(int i = 0; i < attCandidateList.length; i++)
+		for(int i = 0; i < attActionList.length; i++)
 		{
 			for(int j = 0; j < depGraph.vertexSet().size(); j++)
 			{
@@ -546,22 +542,17 @@ public final class RandomWalkVsDefender extends Defender {
 		}
 		
 		int idx = 0;
-		for(AttackCandidate attCandidate : attCandidateList)
+		for(AttackerAction attAction : attActionList)
 		{
-			for(Node node : attCandidate.getNodeCandidateSet())
+			for(Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet())
 			{
+				Node node = entry.getKey();
 				if(!isBlock[node.getId() - 1])
 					isInQueue[idx][node.getId() - 1] = true;
 			}
-			for(Edge edge : attCandidate.getEdgeCandidateSet())
-			{
-				Node postNode = edge.gettarget();
-				if(!isBlock[postNode.getId() - 1])
-					isInQueue[idx][postNode.getId() - 1] = true;
-			}
 			idx++;
 		}
-		for(idx = 0; idx < attCandidateList.length; idx++)
+		for(idx = 0; idx < attActionList.length; idx++)
 		{
 			RandomWalkTuple[] rwTuples = rwTuplesList[idx];
 			for(int i = 0; i < depGraph.vertexSet().size(); i++)
