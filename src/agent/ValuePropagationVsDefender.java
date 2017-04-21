@@ -16,7 +16,6 @@ import java.util.Map.Entry;
 import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 import org.apache.commons.math3.random.RandomGenerator;
 
-import game.GameSimulation;
 import model.AttackCandidate;
 import model.DefenderAction;
 import model.DefenderBelief;

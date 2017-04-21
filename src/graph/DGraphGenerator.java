@@ -211,16 +211,24 @@ public final class DGraphGenerator {
 		) {
 			throw new IllegalArgumentException();
 		}
-		double posActiveProb = minPosActiveProb;
-		if (minPosActiveProb < maxPosActiveProb) {
-			posActiveProb = rand.nextUniform(minPosActiveProb, maxPosActiveProb, true);
-		}
-		double posInactiveProb = minPosInactiveProb;
-		if (minPosInactiveProb < maxPosInactiveProb) {
-			posInactiveProb = rand.nextUniform(minPosInactiveProb, maxPosInactiveProb, true);
-		}
+		final double posActiveProb = safeUniform(minPosActiveProb, maxPosActiveProb, rand);
+		final double posInactiveProb = safeUniform(minPosInactiveProb, maxPosInactiveProb, rand);
 		node.setPosActiveProb(posActiveProb);
 		node.setPosInactiveProb(posInactiveProb);
+	}
+	
+	private static double safeUniform(
+		final double low,
+		final double high,
+		final RandomDataGenerator rand
+	) {
+		if (low > high) {
+			throw new IllegalArgumentException();
+		}
+		if (low == high) {
+			return low;
+		}
+		return rand.nextUniform(low, high, true);
 	}
 	
 	private static void genNodePayoffRandom(
@@ -241,38 +249,38 @@ public final class DGraphGenerator {
 		) {
 			throw new IllegalArgumentException();
 		}
-		double aReward = rand.nextUniform(aRewardLB, aRewardUB, true);
-		double dPenalty = rand.nextUniform(dPenaltyLB, dPenaltyUB, true);
+		double aReward = safeUniform(aRewardLB, aRewardUB, rand);
+		double dPenalty = safeUniform(dPenaltyLB, dPenaltyUB, rand);
 		node.setAReward(aReward);
 		node.setDPenalty(dPenalty);
 		
 //		if (node.getType() == NodeType.TARGET) {
-//			double aCost = 2 * rand.nextUniform(aCostLB, aCostUB, true);
-//			double dCost = 2 * rand.nextUniform(dCostLB, dCostUB, true);
+//			double aCost = 2 * safeUniform(aCostLB, aCostUB, rand);
+//			double dCost = 2 * safeUniform(dCostLB, dCostUB, rand);
 //			node.setACost(aCost);
 //			node.setDCost(dCost);
 //		} else 
-		double aCost = rand.nextUniform(aCostLB, aCostUB, true);
-		double dCost = rand.nextUniform(dCostLB, dCostUB, true);
+		double aCost = safeUniform(aCostLB, aCostUB, rand);
+		double dCost = safeUniform(dCostLB, dCostUB, rand);
 		node.setACost(aCost);
 		node.setDCost(dCost);		
 	}
 	
 	private static void genEdgePayoffRandom(final Edge edge, final RandomDataGenerator rand
 		, final double aCostLB, final double aCostUB) {
-		double aCost = rand.nextUniform(aCostLB, aCostUB, true);
+		double aCost = safeUniform(aCostLB, aCostUB, rand);
 		edge.setACost(aCost);
 	}
 	
 	private static void genActivationProbRandom(final Node node, final RandomDataGenerator rand
 		, final double aActProbLB, final double aActProbUB) {
-		double aActProb = rand.nextUniform(aActProbLB, aActProbUB, true);
+		double aActProb = safeUniform(aActProbLB, aActProbUB, rand);
 		node.setActProb(aActProb);
 	}
 	
 	private static void genActivationProbRandom(final Edge edge, final RandomDataGenerator rand
 		, final double aActProbLB, final double aActProbUB) {
-		double aActProb = rand.nextUniform(aActProbLB, aActProbUB, true);
+		double aActProb = safeUniform(aActProbLB, aActProbUB, rand);
 		edge.setActProb(aActProb);
 	}
 	

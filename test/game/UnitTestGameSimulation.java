@@ -38,7 +38,7 @@ public final class UnitTestGameSimulation {
 		final int numTarget = 40;
 		final double nodeActTypeRatio = 0.5;
 		final double aRewardLB = 2.0;
-		final double aRewardUB = 10.0;
+		final double aRewardUB = 2.0;
 		final double dPenaltyLB = -10.0;
 		final double dPenaltyUB = -2.0;
 		final double aNodeCostLB = -0.5;
@@ -86,5 +86,8 @@ public final class UnitTestGameSimulation {
 		final double tolerance = 0.01;
 		assertTrue(Math.abs(curSimResult.getAttPayoff()) < tolerance);
 		assertTrue(Math.abs(curSimResult.getDefPayoff()) < tolerance);
+		
+		gameSim.runSimulation();
+		curSimResult = gameSim.getSimulationResult();
 	}
 }

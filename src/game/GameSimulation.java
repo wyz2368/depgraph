@@ -149,8 +149,9 @@ public final class GameSimulation {
 			GameSample gameSample = new GameSample(t, gameState, dObservation, defAction, attAction);
 			this.simResult.addGameSample(gameSample);
 		}
-		if (this.simResult.getGameSampleList().size() != this.numTimeStep) {
-			throw new IllegalStateException();
+		if (this.simResult.getGameSampleList().size() != this.numTimeStep + 1) {
+			throw new IllegalStateException(
+				this.simResult.getGameSampleList().size() + "\t" + (this.numTimeStep + 1));
 		}
 		this.computePayoff();
 	}
