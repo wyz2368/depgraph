@@ -45,7 +45,7 @@ public abstract class Defender {
 	public enum DefenderParam {
 		maxNumRes, minNumRes, numResRatio, 
 		maxNumAttCandidate, minNumAttCandidate, numAttCandidateRatio, 
-		logisParam, bThres, 
+		logisParam, bThres, isRandomized,
 		qrParam, 
 		numRWSample;
 		
@@ -62,6 +62,7 @@ public abstract class Defender {
 			
 			case logisParam: return "logisParam";
 			case bThres: return "bThres";
+			case isRandomized: return "isRandomized";
 			
 			case qrParam: return "qrParam";
 			case numRWSample: return "numRWSample";
@@ -135,8 +136,7 @@ public abstract class Defender {
 			final Attacker attacker,
 			final int numAttActionSample) {
 		if (depGraph == null || dBelief == null || curTimeStep < 0 || numTimeStep < curTimeStep
-			|| discountFactor < 0.0 || discountFactor > 1.0 || rng == null
-		) {
+			|| discountFactor < 0.0 || discountFactor > 1.0 || rng == null) {
 			throw new IllegalArgumentException();
 		}
 		Map<Node, Double> dValueMap = new HashMap<Node, Double>();
@@ -154,10 +154,19 @@ public abstract class Defender {
 			Double curStateProb = entry.getValue();
 			
 			depGraph.setState(gameState); // for each possible state
-			List<AttackerAction> attActionList = attacker.sampleAction(depGraph, curTimeStep, numTimeStep
-				, rng, numAttActionSample, false); // Sample attacker actions
-			Map<Node, Double> curDValueMap = computeCandidateValueTopo(depGraph, attActionList
-				, curTimeStep, numTimeStep, discountFactor);
+			List<AttackerAction> attActionList = attacker.sampleAction(
+															depGraph, 
+															curTimeStep, 
+															numTimeStep, 
+															rng, 
+															numAttActionSample, 
+															false); // Sample attacker actions
+			Map<Node, Double> curDValueMap = computeCandidateValueTopo(
+															depGraph, 
+															attActionList, 
+															curTimeStep, 
+															numTimeStep, 
+															discountFactor);
 			for (Entry<Node, Double> dEntry : curDValueMap.entrySet()) {
 				Node node = dEntry.getKey();
 				Double value = dEntry.getValue();
@@ -190,8 +199,7 @@ public abstract class Defender {
 		final int numTimeStep,
 		final double discountFactor) {
 		if (depGraph == null || attActionList == null || curTimeStep < 0 || numTimeStep < curTimeStep
-			|| discountFactor < 0.0 || discountFactor > 1.0
-		) {
+			|| discountFactor < 0.0 || discountFactor > 1.0) {
 			throw new IllegalArgumentException();
 		}
 		Map<Node, Double> dValueMap = new HashMap<Node, Double>();
@@ -225,7 +233,7 @@ public abstract class Defender {
 			if (edgeSet != null && !edgeSet.isEmpty()) { // if non-leaf
 				for (Edge edge : edgeSet) {
 					Node postNode = edge.gettarget();
-					if (postNode.getState() != NodeState.ACTIVE) {
+					if (postNode.getState() != NodeState.ACTIVE) { // consider non-active postconditions only
 						for (int i = 0; i < targetList.size(); i++) {
 							if (targetList.get(i).getState() != NodeState.ACTIVE) {
 								for (int j = 1; j <= numTimeStep - curTimeStep; j++) {
@@ -236,7 +244,7 @@ public abstract class Defender {
 										rHat = r[i][j - 1][postNode.getId() - 1] * postNode.getActProb();
 									}
 									if (r[i][j][node.getId() - 1] > discountFactor * rHat) {
-										r[i][j][node.getId() - 1] = discountFactor * rHat;
+										r[i][j][node.getId() - 1] = discountFactor * rHat; // find the worst case scenario
 									}
 								}
 							}
@@ -246,7 +254,7 @@ public abstract class Defender {
 			}
 		
 		}
-		// Sum of value for candidates
+		// Min of value for candidates
 		double[] rSum = new double[depGraph.vertexSet().size()];
 		for (int i = 0; i < depGraph.vertexSet().size(); i++) {
 			rSum[i] = Double.POSITIVE_INFINITY;
@@ -295,7 +303,7 @@ public abstract class Defender {
 			entry.setValue(value / attActionList.size());
 		}
 		for (Node target : depGraph.getTargetSet()) {
-			if (target.getState() == NodeState.ACTIVE) {
+			if (target.getState() == NodeState.ACTIVE) { // Examine active targets
 				double dValue = target.getDPenalty();
 				if (rSum[target.getId() - 1] != Double.POSITIVE_INFINITY) {
 					dValue += rSum[target.getId() - 1];

@@ -10,20 +10,11 @@ import model.DependencyGraph;
 import org.apache.commons.math3.random.RandomDataGenerator;
 
 import agent.Attacker;
-import agent.Attacker.AttackerType;
-import agent.Defender.DefenderType;
 import agent.Defender;
 import agent.GoalOnlyDefender;
-import agent.MinCutDefender;
 import agent.RandomWalkAttacker;
 import agent.RandomWalkVsDefender;
-import agent.RandomWalkVsDefenderALT;
-import agent.RootOnlyDefender;
-import agent.UniformAttacker;
-import agent.UniformDefender;
-import agent.UniformVsDefender;
 import agent.ValuePropagationAttacker;
-import agent.ValuePropagationVsDefenderALT;
 
 public final class TestRWvsDefender {
 
@@ -78,31 +69,30 @@ public final class TestRWvsDefender {
 		
 		
 		final double logisParam = 5.0;
-		final double thres = 1e-2;
+		final double thres = 1e-3 * 0.5;
 		final int maxNumRes = 10;
 		final int minNumRes = 2;
 		final double numResRatio = 0.7;
 		
 		final double qrParamDef = 5.0;
-		final int numRWSampleDef = 50;
-		final int maxNumSelectCandidateDef = 10;
-		final int minNumSelectCandidateDef = 2;
-		final double numSelectCandidateRatioDef = 0.7;
+		final int numRWSampleDef = 30;
 		
 		final double qrParam = 5.0;
 		final double discFact = 0.9;
-		final int numRWSample = 50;
+		final int numRWSample = 100;
 		final int maxNumSelectCandidate = 10;
 		final int minNumSelectCandidate = 2;
 		final double numSelectCandidateRatio = 0.7;
 		
 		final int numTimeStep = 10;
-		final int numSim = 10;
+		final int numSim = 1;
+		
+//		boolean isRandomized = true;
 		
 		
 		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
-		RandomWalkVsDefender rwDefender = new RandomWalkVsDefender(logisParam, discFact, thres, qrParam, numRWSample);
-		RandomWalkVsDefenderALT rwDefenderAlternative = new RandomWalkVsDefenderALT(logisParam, discFact, thres, qrParam, numRWSample);
+		RandomWalkVsDefender rwDefenderRandomized = new RandomWalkVsDefender(logisParam, discFact, thres, qrParamDef, numRWSampleDef, 1.0);
+		RandomWalkVsDefender rwDefenderStatic = new RandomWalkVsDefender(logisParam, discFact, thres, qrParamDef, numRWSampleDef, 0.0);
 		
 		Attacker rwAttacker = new RandomWalkAttacker(numRWSample, qrParam, discFact);
 		Attacker vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate
@@ -110,7 +100,7 @@ public final class TestRWvsDefender {
 				, qrParam, discFact);
 		
 		long start = System.currentTimeMillis();
-		GameSimulation gameSimRWvsRW = new GameSimulation(depGraph, rwAttacker, rwDefender, rnd, numTimeStep, discFact);
+		GameSimulation gameSimRWvsRW = new GameSimulation(depGraph, rwAttacker, rwDefenderRandomized, rnd, numTimeStep, discFact);
 		double defPayoffRWvsRW = 0.0;
 		double attPayoffRWvsRW = 0.0;
 		double timeRWvsRW = 0.0;
@@ -152,7 +142,7 @@ public final class TestRWvsDefender {
 		timeRWvsGO = (end - start) / 1000.0 / numSim;
 		
 		start = System.currentTimeMillis();
-		GameSimulation gameSimVPvsRW = new GameSimulation(depGraph, vpAttacker, rwDefender, rnd, numTimeStep, discFact);
+		GameSimulation gameSimVPvsRW = new GameSimulation(depGraph, vpAttacker, rwDefenderRandomized, rnd, numTimeStep, discFact);
 		double defPayoffVPvsRW = 0.0;
 		double attPayoffVPvsRW = 0.0;
 		double timeVPvsRW = 0.9;
@@ -171,7 +161,7 @@ public final class TestRWvsDefender {
 		timeVPvsRW = (end - start) / 1000.0 / numSim;
 		
 		start = System.currentTimeMillis();
-		GameSimulation gameSimRWvsRWAlt = new GameSimulation(depGraph, rwAttacker, rwDefenderAlternative, rnd, numTimeStep, discFact);
+		GameSimulation gameSimRWvsRWAlt = new GameSimulation(depGraph, rwAttacker, rwDefenderStatic, rnd, numTimeStep, discFact);
 		double defPayoffRWvsRWAlt = 0.0;
 		double attPayoffRWvsRWAlt = 0.0;
 		double timeRWvsRWAlt = 0.0;

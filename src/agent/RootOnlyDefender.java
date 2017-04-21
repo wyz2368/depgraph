@@ -10,7 +10,6 @@ import model.DefenderBelief;
 import model.DefenderObservation;
 import model.DependencyGraph;
 
-import org.apache.commons.math3.distribution.AbstractIntegerDistribution;
 import org.apache.commons.math3.distribution.UniformIntegerDistribution;
 import org.apache.commons.math3.random.RandomGenerator;
 
@@ -19,7 +18,10 @@ public final class RootOnlyDefender extends Defender {
 	private int minNumRes;
 	private double numResRatio;
 	
-	public RootOnlyDefender(final double maxNumRes, final double minNumRes, final double numResRatio) {
+	public RootOnlyDefender(
+			final double maxNumRes, 
+			final double minNumRes, 
+			final double numResRatio) {
 		super(DefenderType.ROOT_ONLY);
 		if (minNumRes < 1 || maxNumRes < minNumRes || numResRatio < 0.0 || numResRatio > 1.0) {
 			throw new IllegalArgumentException();
@@ -30,8 +32,12 @@ public final class RootOnlyDefender extends Defender {
 	}
 	
 	@Override
-	public DefenderAction sampleAction(final DependencyGraph depGraph,
-		final int curTimeStep, final int numTimeStep, final DefenderBelief dBelief, final RandomGenerator rng) {
+	public DefenderAction sampleAction(
+			final DependencyGraph depGraph,
+			final int curTimeStep, 
+			final int numTimeStep, 
+			final DefenderBelief dBelief, 
+			final RandomGenerator rng) {
 		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null) {
 			throw new IllegalArgumentException();
 		}
@@ -48,38 +54,19 @@ public final class RootOnlyDefender extends Defender {
 		}
 		// Sample nodes
 		UniformIntegerDistribution rnd = new UniformIntegerDistribution(rng, 0, dCandidateNodeList.size() - 1);
-		return sampleAction(dCandidateNodeList, numNodetoProtect, rnd);	
+		return simpleSampleAction(dCandidateNodeList, numNodetoProtect, rnd);	
 	}
 	
 	@Override
-	public DefenderBelief updateBelief(final DependencyGraph depGraph,
-		final DefenderBelief currentBelief, final DefenderAction dAction,
-		final DefenderObservation dObservation, final int curTimeStep, final int numTimeStep,
-		final RandomGenerator rng) {
+	public DefenderBelief updateBelief(
+			final DependencyGraph depGraph,
+			final DefenderBelief currentBelief, 
+			final DefenderAction dAction,
+			final DefenderObservation dObservation, 
+			final int curTimeStep, 
+			final int numTimeStep,
+			final RandomGenerator rng) {
 		return new DefenderBelief();
 	}
 	
-	private static DefenderAction sampleAction(final List<Node> dCandidateNodeList, final int numNodetoProtect,
-		final AbstractIntegerDistribution rnd) {
-		if (dCandidateNodeList == null || numNodetoProtect < 0 || rnd == null) {
-			throw new IllegalArgumentException();
-		}
-		DefenderAction action = new DefenderAction();
-		
-		boolean[] isChosen = new boolean[dCandidateNodeList.size()];
-		for (int i = 0; i < dCandidateNodeList.size(); i++) {
-			isChosen[i] = false;
-		}
-		int count = 0;
-		while (count < numNodetoProtect) {
-			int idx = rnd.sample();
-			if (!isChosen[idx]) {
-				action.addNodetoProtect(dCandidateNodeList.get(idx));
-				isChosen[idx] = true;
-				count++;
-			}
-				
-		}
-		return action;
-	}
 }

@@ -105,12 +105,14 @@ public final class AgentFactory {
 			assert defenderParams.containsKey(DefenderParam.logisParam.toString())
 			&& defenderParams.containsKey(DefenderParam.bThres.toString())
 			&& defenderParams.containsKey(DefenderParam.qrParam.toString())
-			&& defenderParams.containsKey(DefenderParam.numRWSample.toString());
-			return new RandomWalkVsDefenderALT(defenderParams.get(DefenderParam.logisParam.toString())
+			&& defenderParams.containsKey(DefenderParam.numRWSample.toString())
+			&& defenderParams.containsKey(DefenderParam.isRandomized.toString());
+			return new RandomWalkVsDefender(defenderParams.get(DefenderParam.logisParam.toString())
 				, discFact
 				, defenderParams.get(DefenderParam.bThres.toString())
 				, defenderParams.get(DefenderParam.qrParam.toString())
-				, defenderParams.get(DefenderParam.numRWSample.toString()));
+				, defenderParams.get(DefenderParam.numRWSample.toString())
+				, defenderParams.get(DefenderParam.isRandomized.toString()));
 		}
 		else if(defType == DefenderType.vsUNIFORM)
 		{

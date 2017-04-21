@@ -9,7 +9,6 @@ import model.DefenderBelief;
 import model.DefenderObservation;
 import model.DependencyGraph;
 
-import org.apache.commons.math3.distribution.AbstractIntegerDistribution;
 import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 import org.apache.commons.math3.random.RandomGenerator;
 
@@ -20,9 +19,12 @@ public final class GoalOnlyDefender extends Defender {
 	private double logisParam;
 	private double discFact;
 	
-	public GoalOnlyDefender(final double maxNumRes,
-		final double minNumRes, final double numResRatio,
-		final double logisParam, final double discFact) {
+	public GoalOnlyDefender(
+			final double maxNumRes,
+			final double minNumRes, 
+			final double numResRatio,
+			final double logisParam, 
+			final double discFact) {
 		super(DefenderType.GOAL_ONLY);
 		if (maxNumRes < minNumRes || minNumRes < 0 || !isProb(numResRatio)
 			|| discFact <= 0.0 || discFact > 1.0) {
@@ -36,11 +38,15 @@ public final class GoalOnlyDefender extends Defender {
 	}
 	
 	@Override
-	public DefenderAction sampleAction(final DependencyGraph depGraph,
-		final int curTimeStep, final int numTimeStep, final DefenderBelief dBelief, final RandomGenerator rng) {
+	public DefenderAction sampleAction(
+			final DependencyGraph depGraph,
+			final int curTimeStep, 
+			final int numTimeStep, 
+			final DefenderBelief dBelief, 
+			final RandomGenerator rng) {
 		List<Node> dCandidateNodeList = new ArrayList<Node>(depGraph.getTargetSet());
 		double[] candidateValue = computeCandidateValue(dCandidateNodeList, this.discFact, curTimeStep);
-		double[] probabilities = computeCandidateProb(dCandidateNodeList.size(), candidateValue);
+		double[] probabilities = computeCandidateProb(dCandidateNodeList.size(), candidateValue, this.logisParam);
 		
 		int[] nodeIndexes = new int[dCandidateNodeList.size()];
 		for (int i = 0; i < dCandidateNodeList.size(); i++) {
@@ -59,8 +65,7 @@ public final class GoalOnlyDefender extends Defender {
 			return new DefenderAction();
 		}
 		// Sample nodes
-		// System.out.println(numNodetoProtect);
-		return sampleAction(dCandidateNodeList, numNodetoProtect, rnd);	
+		return simpleSampleAction(dCandidateNodeList, numNodetoProtect, rnd);	
 	}
 	
 	@Override
@@ -68,14 +73,17 @@ public final class GoalOnlyDefender extends Defender {
 		final DefenderBelief currentBelief, final DefenderAction dAction,
 		final DefenderObservation dObservation, final int curTimeStep, final int numTimeStep,
 		final RandomGenerator rng) {
-		return new DefenderBelief();
+		return new DefenderBelief(); // an empty belief
 	}
 	
 	private static boolean isProb(final double i) {
 		return i >= 0.0 && i <= 1.0;
 	}
 	
-	private double[] computeCandidateProb(final int totalNumCandidate, final double[] candidateValue) {
+	private static double[] computeCandidateProb(
+			final int totalNumCandidate, 
+			final double[] candidateValue, 
+			double logisParam) {
 		if (totalNumCandidate < 0 || candidateValue == null) {
 			throw new IllegalArgumentException();
 		}
@@ -106,7 +114,7 @@ public final class GoalOnlyDefender extends Defender {
 		double sumProb = 0.0;
 		for (int i = 0; i < totalNumCandidate; i++) {
 			nodeList[i] = i;
-			probabilities[i] = Math.exp(this.logisParam * candidateValue[i]);
+			probabilities[i] = Math.exp(logisParam * candidateValue[i]);
 			sumProb += probabilities[i];
 		}
 		for (int i = 0; i < totalNumCandidate; i++) {
@@ -116,29 +124,10 @@ public final class GoalOnlyDefender extends Defender {
 		return probabilities;
 	}
 	
-	private static DefenderAction sampleAction(final List<Node> dCandidateNodeList, final int numNodetoProtect,
-		final AbstractIntegerDistribution rnd) {
-		DefenderAction action = new DefenderAction();
-		
-		boolean[] isChosen = new boolean[dCandidateNodeList.size()];
-		for (int i = 0; i < dCandidateNodeList.size(); i++) {
-			isChosen[i] = false;
-		}
-		int count = 0;
-		while (count < numNodetoProtect) {
-			int idx = rnd.sample();
-			if (!isChosen[idx]) {
-				action.addNodetoProtect(dCandidateNodeList.get(idx));
-				isChosen[idx] = true;
-				count++;
-			}
-				
-		}
-		return action;
-	}
-	
-	private static double[] computeCandidateValue(final List<Node> dCandidateNodeList
-		, final double discountFactor, final int curTimeStep) {
+	private static double[] computeCandidateValue(
+			final List<Node> dCandidateNodeList, 
+			final double discountFactor, 
+			final int curTimeStep) {
 		double[] candidateValue = new double[dCandidateNodeList.size()];
 		for (int i = 0; i < dCandidateNodeList.size(); i++) {
 			candidateValue[i] = Math.pow(discountFactor, curTimeStep - 1) 

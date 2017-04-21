@@ -18,7 +18,10 @@ public final class MinCutDefender extends Defender {
 	private int minNumRes;
 	private double numResRatio;
 	
-	public MinCutDefender(final double maxNumRes, final double minNumRes, final double numResRatio) {
+	public MinCutDefender(
+			final double maxNumRes, 
+			final double minNumRes, 
+			final double numResRatio) {
 		super(DefenderType.MINCUT);
 		if (maxNumRes < minNumRes || minNumRes < 0 || !isProb(numResRatio)) {
 			throw new IllegalArgumentException();
@@ -56,11 +59,15 @@ public final class MinCutDefender extends Defender {
 	}
 	
 	@Override
-	public DefenderBelief updateBelief(final DependencyGraph depGraph,
-		final DefenderBelief currentBelief, final DefenderAction dAction,
-		final DefenderObservation dObservation, final int curTimeStep, final int numTimeStep,
-		final RandomGenerator rng) {
-		return new DefenderBelief();
+	public DefenderBelief updateBelief(
+			final DependencyGraph depGraph,
+			final DefenderBelief currentBelief, 
+			final DefenderAction dAction,
+			final DefenderObservation dObservation, 
+			final int curTimeStep, 
+			final int numTimeStep,
+			final RandomGenerator rng) {
+		return new DefenderBelief(); // empty belief
 	}
 	
 	private static boolean isProb(final double i) {
