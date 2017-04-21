@@ -14,7 +14,7 @@ import agent.Defender;
 import agent.GoalOnlyDefender;
 import agent.MinCutDefender;
 import agent.RandomWalkAttacker;
-import agent.RandomWalkVsDefenderALT;
+import agent.RandomWalkVsDefender;
 import agent.RootOnlyDefender;
 import agent.UniformAttacker;
 import agent.UniformDefender;
@@ -141,7 +141,7 @@ public final class TestGameSimulation {
 						, maxNumSelectCandidateDef, minNumSelectCandidateDef, numSelectCandidateRatioDef);
 				break;
 			case vsRANDOM_WALK:
-				defList[i] = new RandomWalkVsDefenderALT(logisParam, discFact, thres, qrParamDef, numRWSampleDef);
+				defList[i] = new RandomWalkVsDefender(logisParam, discFact, thres, qrParamDef, numRWSampleDef, 1.0);
 				break;
 			case vsUNIFORM:
 				defList[i] = new UniformVsDefender(logisParam, discFact, thres, maxNumRes, minNumRes, numResRatio
