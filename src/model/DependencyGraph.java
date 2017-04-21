@@ -56,6 +56,7 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 	}
 	
 	public Set<Node> getRootSet() {
+		assert validRootSet();
 		return this.rootSet;
 	}
 	
@@ -107,5 +108,20 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 		for (Node node : this.vertexSet()) {
 			node.setState(NodeState.INACTIVE);
 		}
+	}
+	
+	private boolean validRootSet() {
+		for (Node node : vertexSet()) {
+			if (inDegreeOf(node) == 0) {
+				if (!this.rootSet.contains(node)) {
+					return false;
+				}
+			} else {
+				if (this.rootSet.contains(node)) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 }
