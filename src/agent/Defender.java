@@ -244,7 +244,8 @@ public abstract class Defender {
 										rHat = r[i][j - 1][postNode.getId() - 1] * postNode.getActProb();
 									}
 									if (r[i][j][node.getId() - 1] > discountFactor * rHat) {
-										r[i][j][node.getId() - 1] = discountFactor * rHat; // find the worst case scenario
+										// find the worst case scenario
+										r[i][j][node.getId() - 1] = discountFactor * rHat;
 									}
 								}
 							}

@@ -191,8 +191,7 @@ public final class RandomWalkAttacker extends Attacker {
 					Node curNode = sequenceList.remove(0);
 					RandomWalkTuple rwTuple = rwTuples[curNode.getId() - 1];
 					if (curNode.getActivationType() == NodeActivationType.AND) { // AND node
-						if(curNode.getState() != NodeState.ACTIVE) // not the active node
-						{
+						if (curNode.getState() != NodeState.ACTIVE) { // not the active node
 							pAct *= curNode.getActProb(); 
 							if (rwTuple.getPreAct() != null) { // not the root node
 								for (Edge edge : rwTuple.getPreAct()) {
@@ -271,7 +270,8 @@ public final class RandomWalkAttacker extends Attacker {
 		for (int j = 0; j < depGraph.vertexSet().size(); j++) {
 			isInSequence[j] = false;
 		}
-		boolean[] chosenIsInSequence = new boolean[depGraph.vertexSet().size()]; // keep track for the searching, not contains active nodes
+		// keep track for the searching, not contains active nodes
+		boolean[] chosenIsInSequence = new boolean[depGraph.vertexSet().size()];
 		boolean[] isInCurSequence = new boolean[depGraph.vertexSet().size()]; // for each iteration of greedy
 		while (!isStop) {
 			/*****************************************************************************************/

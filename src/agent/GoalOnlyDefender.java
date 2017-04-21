@@ -83,7 +83,7 @@ public final class GoalOnlyDefender extends Defender {
 	private static double[] computeCandidateProb(
 			final int totalNumCandidate, 
 			final double[] candidateValue, 
-			double logisParam) {
+			final double logisParam) {
 		if (totalNumCandidate < 0 || candidateValue == null) {
 			throw new IllegalArgumentException();
 		}

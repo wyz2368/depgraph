@@ -59,7 +59,7 @@ public final class RandomWalkVsDefender extends Defender {
 			final double thres, 
 			final double qrParam, 
 			final double numRWSample,
-			double isRandomized) {
+			final double isRandomized) {
 		super(DefenderType.vsRANDOM_WALK);
 		if (discFact <= 0.0 || discFact > 1.0 || thres < 0.0 || thres > 1.0
 			|| numRWSample < 1) {
@@ -71,9 +71,11 @@ public final class RandomWalkVsDefender extends Defender {
 		this.qrParam = qrParam;
 		this.numRWSample = (int) numRWSample;
 		
-		if(isRandomized == 0.0)
+		if (isRandomized == 0.0) {
 			this.isRandomized = false;
-		else this.isRandomized = true;
+		} else {
+			this.isRandomized = true;
+		}
 	}
 	
 	/*****************************************************************************************
@@ -95,8 +97,9 @@ public final class RandomWalkVsDefender extends Defender {
 		if (curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null) {
 			throw new IllegalArgumentException();
 		}
-		if(this.isRandomized)
+		if (this.isRandomized) {
 			return sampleActionRandomize(depGraph, curTimeStep, numTimeStep, dBelief, rng);
+		}
 		return sampleActionStatic(depGraph, curTimeStep, numTimeStep, dBelief, rng);
 	}
 	
@@ -197,12 +200,11 @@ public final class RandomWalkVsDefender extends Defender {
 		return candidates[sampleIdx];
 	}
 	public DefenderAction sampleActionStatic(
-			DependencyGraph depGraph,
-			int curTimeStep, 
-			int numTimeStep, 
-			DefenderBelief dBelief,
-			RandomGenerator rng) {
-		// TODO Auto-generated method stub
+		final DependencyGraph depGraph,
+		final int curTimeStep, 
+		final int numTimeStep, 
+		final DefenderBelief dBelief,
+		final RandomGenerator rng) {
 		if (curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null) {
 			throw new IllegalArgumentException();
 		}
@@ -353,10 +355,10 @@ public final class RandomWalkVsDefender extends Defender {
 			topoOrder[node.getTopoPosition()] = node;
 		}
 		DefenderCandidate defCandidateAll = new DefenderCandidate(); // all candidate nodes for the defender
-		for(AttackerAction attAction : attActionList)
-		{
-			for(Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet())
+		for (AttackerAction attAction : attActionList) {
+			for (Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet()) {
 				defCandidateAll.addNodeCandidate(entry.getKey());
+			}
 		}
 		for (Node target : depGraph.getTargetSet()) { // active targets
 			if (target.getState() == NodeState.ACTIVE) {
@@ -381,9 +383,8 @@ public final class RandomWalkVsDefender extends Defender {
 		
 		
 		int idx = 0;
-		for(AttackerAction attAction : attActionList){
-			for(Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet())
-			{
+		for (AttackerAction attAction : attActionList) {
+			for (Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet()) {
 				Node node = entry.getKey();
 				isInQueue[idx][node.getId() - 1] = true;
 			}
@@ -435,7 +436,8 @@ public final class RandomWalkVsDefender extends Defender {
 		}
 //		System.out.println("Initial defender value: " + value);
 		// Start greedy process----------------------------------------------------------------------------
-		boolean[][] maxQueue = new boolean[attActionList.length][depGraph.vertexSet().size()]; // corresponding best queue
+		boolean[][] maxQueue =
+			new boolean[attActionList.length][depGraph.vertexSet().size()]; // corresponding best queue
 		boolean[][] isInCurrentQueue = new boolean[attActionList.length][depGraph.vertexSet().size()];
 		boolean isStop = false;
 		while (!isStop) { // only stop when no new candidate node can increase the defender's utility
@@ -588,27 +590,25 @@ public final class RandomWalkVsDefender extends Defender {
 		for (int i = 0; i < depGraph.vertexSet().size(); i++) {
 			isBlock[i] = false;
 		}
-		for(Node node : defAction.getAction())
+		for (Node node : defAction.getAction()) {
 			isBlock[node.getId() - 1] = true;
+		}
 		boolean[][] isInQueue = new boolean[attActionList.length][depGraph.vertexSet().size()];
 		// Initialize queue, this queue is used for checking if any node is still in the queue of activating
 		// when the defender starts disabling nodes
-		for(int i = 0; i < attActionList.length; i++)
-		{
-			for(int j = 0; j < depGraph.vertexSet().size(); j++)
-			{
+		for (int i = 0; i < attActionList.length; i++) {
+			for (int j = 0; j < depGraph.vertexSet().size(); j++) {
 				isInQueue[i][j] = false;
 			}
 		}
 		
 		int idx = 0;
-		for(AttackerAction attAction : attActionList)
-		{
-			for(Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet())
-			{
+		for (AttackerAction attAction : attActionList) {
+			for (Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet()) {
 				Node node = entry.getKey();
-				if(!isBlock[node.getId() - 1])
+				if (!isBlock[node.getId() - 1]) {
 					isInQueue[idx][node.getId() - 1] = true;
+				}
 			}
 			idx++;
 		}

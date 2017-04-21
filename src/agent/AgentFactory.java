@@ -113,9 +113,7 @@ public final class AgentFactory {
 				, defenderParams.get(DefenderParam.qrParam.toString())
 				, defenderParams.get(DefenderParam.numRWSample.toString())
 				, defenderParams.get(DefenderParam.isRandomized.toString()));
-		}
-		else if(defType == DefenderType.vsUNIFORM)
-		{
+		} else if (defType == DefenderType.vsUNIFORM) {
 			assert defenderParams.containsKey(DefenderParam.maxNumRes.toString())
 			&& defenderParams.containsKey(DefenderParam.minNumRes.toString())
 			&& defenderParams.containsKey(DefenderParam.numResRatio.toString())
