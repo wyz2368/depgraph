@@ -28,7 +28,7 @@ public final class GameSimulation {
 	private Defender defender;
 	// private GameOracle gameOracle;
 	
-	private double discFact = 1.0;
+	private final double discFact;
 	
 	private RandomDataGenerator rng;
 	

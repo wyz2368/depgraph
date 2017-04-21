@@ -39,11 +39,11 @@ public final class GoalOnlyDefender extends Defender {
 	
 	@Override
 	public DefenderAction sampleAction(
-			final DependencyGraph depGraph,
-			final int curTimeStep, 
-			final int numTimeStep, 
-			final DefenderBelief dBelief, 
-			final RandomGenerator rng) {
+		final DependencyGraph depGraph,
+		final int curTimeStep, 
+		final int numTimeStep, 
+		final DefenderBelief dBelief, 
+		final RandomGenerator rng) {
 		List<Node> dCandidateNodeList = new ArrayList<Node>(depGraph.getTargetSet());
 		double[] candidateValue = computeCandidateValue(dCandidateNodeList, this.discFact, curTimeStep);
 		double[] probabilities = computeCandidateProb(dCandidateNodeList.size(), candidateValue, this.logisParam);
