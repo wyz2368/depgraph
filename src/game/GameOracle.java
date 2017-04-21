@@ -60,40 +60,31 @@ public final class GameOracle {
 	 */
 	public static DefenderObservation generateDefObservation(
 		final DependencyGraph depGraph,
-		final GameState gameState, final RandomDataGenerator rnd
+		final GameState gameState,
+		final RandomDataGenerator rnd
 	) {
 		if (depGraph == null || gameState == null || rnd == null) {
 			throw new IllegalArgumentException();
 		}
 		DefenderObservation defObservation = new DefenderObservation();
-		boolean[] isActive = new boolean[depGraph.vertexSet().size()];
+		final boolean[] isActive = new boolean[depGraph.vertexSet().size()];
 		for (int i = 0; i < depGraph.vertexSet().size(); i++) {
 			isActive[i] = false;
 		}
-		
-		for (Node node : gameState.getEnabledNodeSet()) {
+		for (final Node node : gameState.getEnabledNodeSet()) {
 			isActive[node.getId() - 1] = true;
 		}
-		for (Node node : depGraph.vertexSet()) {
-			SecurityAlert alert = null;
-			double pivot = rnd.nextUniform(0.0, 1.0, true);
+		for (final Node node : depGraph.vertexSet()) {
+			double trueAlertProb = node.getPosInactiveProb();
 			if (isActive[node.getId() - 1]) {
-				double prob = node.getPosActiveProb();
-				
-				if (pivot < prob) {
-					alert = new SecurityAlert(node, true);
-				} else {
-					alert = new SecurityAlert(node, false);	
-				}
-			} else {
-				double prob = node.getPosInactiveProb();
-				if (pivot < prob) {
-					alert = new SecurityAlert(node, true);
-				} else {
-					alert = new SecurityAlert(node, false);	
-				}
+				trueAlertProb = node.getPosActiveProb();
 			}
+			final double pivot = rnd.nextUniform(0.0, 1.0, true);
+			final SecurityAlert alert = new SecurityAlert(node, pivot < trueAlertProb);
 			defObservation.addAlert(alert);
+		}
+		if (defObservation.getAlertSet().size() != depGraph.vertexSet().size()) {
+			throw new IllegalStateException();
 		}
 		return defObservation;
 	}

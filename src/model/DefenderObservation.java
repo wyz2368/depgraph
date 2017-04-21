@@ -14,6 +14,7 @@ public final class DefenderObservation {
 		if (alert == null) {
 			throw new IllegalArgumentException();
 		}
+		assert !isDuplicateAlert(alert);
 		return this.alertSet.add(alert);
 	}
 	
@@ -33,5 +34,17 @@ public final class DefenderObservation {
 		}
 		System.out.println();
 		System.out.println("--------------------------------------------------------------------");
+	}
+	
+	private boolean isDuplicateAlert(final SecurityAlert alert) {
+		if (alert == null) {
+			throw new IllegalArgumentException();
+		}
+		for (final SecurityAlert oldAlert: this.alertSet) {
+			if (oldAlert.getNode().equals(alert.getNode())) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
