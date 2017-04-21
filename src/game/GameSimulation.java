@@ -168,7 +168,8 @@ public final class GameSimulation {
 				defPayoff += Math.pow(this.discFact, timeStep) * node.getDPenalty();
 				attPayoff += Math.pow(this.discFact, timeStep) * node.getAReward();
 			}
-			if (timeStep <= this.numTimeStep) {
+			// omit the final round's action cost, because action has no effect
+			if (timeStep < this.numTimeStep) {
 				for (final Node node : defAction.getAction()) {
 					defPayoff += node.getDCost();
 				}

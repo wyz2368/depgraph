@@ -37,16 +37,19 @@ public final class UnitTestGameSimulation {
 		final int numEdge = 0;
 		final int numTarget = 40;
 		final double nodeActTypeRatio = 0.5;
+		
 		final double aRewardLB = 2.0;
 		final double aRewardUB = 2.0;
-		final double dPenaltyLB = -10.0;
-		final double dPenaltyUB = -2.0;
-		final double aNodeCostLB = -0.5;
-		final double aNodeCostUB = -0.1;
-		final double aEdgeCostLB = -0.5;
-		final double aEdgeCostUB = -0.1;
-		final double dCostLB = -0.5;
-		final double dCostUB = -0.1;
+		final double aNodeCostLB = -0.3;
+		final double aNodeCostUB = -0.3;
+		final double aEdgeCostLB = 0.0;
+		final double aEdgeCostUB = 0.0;
+
+		final double dPenaltyLB = -5.0;
+		final double dPenaltyUB = -5.0;
+
+		final double dCostLB = -0.4;
+		final double dCostUB = -0.4;
 		final double aNodeActProbLB = 0.8;
 		final double aNodeActProbUB = 1.0;
 		final double aEdgeActProbLB = 0.6;
@@ -56,6 +59,8 @@ public final class UnitTestGameSimulation {
 		final double minPosInactiveProb = 0.0;
 		final double maxPosInactiveProb = 0.2;
 		
+		final double discFact = 1.0;
+
 		Node.resetCounter();
 		Edge.resetCounter();
 		RandomDataGenerator rnd = new RandomDataGenerator();
@@ -73,10 +78,8 @@ public final class UnitTestGameSimulation {
 			, minPosActiveProb, maxPosActiveProb
 			, minPosInactiveProb, maxPosInactiveProb);
 		DGraphGenerator.findMinCut(depGraph);
-
-		final double discFact = 0.9;
 				
-		final int numTimeStep = 10;
+		final int numTimeStep = 1;
 		final Defender uniformDefender = new UniformDefender(numNode, numNode, 1.0);
 		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0);
 				
@@ -89,5 +92,14 @@ public final class UnitTestGameSimulation {
 		
 		gameSim.runSimulation();
 		curSimResult = gameSim.getSimulationResult();
+		// attacker payoff should be:
+		// numNode * aNodeCostLB
+		final double attCostExpected = numNode * aNodeCostLB;
+		// defender payoff should be:
+		// numNode * dCostLB
+		final double defCostExpected = numNode * dCostLB;
+		System.out.println(curSimResult.getAttPayoff() + "\t" + curSimResult.getDefPayoff());
+		assertTrue(Math.abs(attCostExpected - curSimResult.getAttPayoff()) < tolerance);
+		assertTrue(Math.abs(defCostExpected - curSimResult.getDefPayoff()) < tolerance);
 	}
 }
