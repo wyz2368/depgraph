@@ -382,15 +382,13 @@ public final class RandomWalkAttacker extends Attacker {
 							}
 						}
 						if (isCandidate) {
-							attAction.addNodetoActive(node, depGraph.incomingEdgesOf(node));
+							attAction.addAndNodeAttack(node, depGraph.incomingEdgesOf(node));
 						}
 					} else {
 						RandomWalkTuple rwTuple = rwTuples[node.getId() - 1];
 						Edge edge = rwTuple.getPreAct().get(0);
 						if (edge.getsource().getState() == NodeState.ACTIVE) {
-							Set<Edge> edgeSet = new HashSet<Edge>();
-							edgeSet.add(edge);
-							attAction.addNodetoActive(edge.gettarget(), edgeSet);
+							attAction.addOrNodeAttack(node, edge);
 						}
 					}
 				}

@@ -67,16 +67,6 @@ public final class AttackerAction {
 		}
 	}
 	
-	public Set<Edge> addNodetoActive(
-		final Node node,
-		final Set<Edge> edgeSet
-	) {
-		if (node == null || edgeSet == null) {
-			throw new IllegalArgumentException();
-		}
-		return this.action.put(node, edgeSet);
-	}
-	
 	public void clear() {
 		this.action.clear();
 	}
