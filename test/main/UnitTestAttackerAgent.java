@@ -1,5 +1,7 @@
 package main;
 
+import static org.junit.Assert.assertTrue;
+
 import org.apache.commons.math3.random.RandomDataGenerator;
 
 import agent.RandomWalkAttacker;
@@ -25,6 +27,15 @@ public final class UnitTestAttackerAgent {
 	
 	public UnitTestAttackerAgent() {
 		// default constructor
+	}
+	
+	@Test
+	@SuppressWarnings("all")
+	public void assertionTest() {
+		boolean assertionsOn = false;
+		// assigns true if assertions are on.
+		assert assertionsOn = true;
+		assertTrue(assertionsOn);
 	}
 	
 	@Before

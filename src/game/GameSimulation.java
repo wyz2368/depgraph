@@ -72,13 +72,20 @@ public final class GameSimulation {
 		this.attacker = aAttacker;
 	}
 	
-	public void runSimulation() {
-		// Get initial state
+	private boolean isAllInactive() {
 		for (Node node : this.depGraph.vertexSet()) {
 			if (node.getState() == NodeState.ACTIVE) {
-				this.simResult.addEnabledNodetoInitialState(node);
+				return false;
 			}
 		}
+		return true;
+	}
+	
+	public void runSimulation() {
+		if (!isAllInactive()) {
+			throw new IllegalStateException();
+		}
+
 		// Start simulation
 		DefenderObservation dObservation = new DefenderObservation();
 		GameState gameState = new GameState();

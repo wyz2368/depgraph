@@ -57,7 +57,7 @@ public final class UnitTestMainGameSimulation {
 		RandomDataGenerator rnd = new RandomDataGenerator();
 		rnd.reSeed(System.currentTimeMillis());
 	 
-		final int numSample = 3;
+		final int numSample = 5;
 		for (int idx = 0; idx < numSample; idx++) {
 			Node.resetCounter();
 			Edge.resetCounter();
