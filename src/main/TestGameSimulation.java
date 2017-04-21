@@ -99,15 +99,15 @@ public final class TestGameSimulation {
 		
 		AttackerType[] aTypeList = AttackerType.values();
 		Attacker[] attList = new Attacker[aTypeList.length];
-		for(int i = 0; i < aTypeList.length; i++)
-		{
+		for (int i = 0; i < aTypeList.length; i++) {
 			switch (aTypeList[i]) {
 			case UNIFORM:
 				attList[i] = new UniformAttacker(maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
 				break;
 			case VALUE_PROPAGATION:
-				attList[i] = new ValuePropagationAttacker(maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio
-						, qrParam, discFact);
+				attList[i] = new ValuePropagationAttacker(
+					maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio
+					, qrParam, discFact);
 				break;
 			case RANDOM_WALK:
 				attList[i] = new RandomWalkAttacker(numRWSample, qrParam, discFact);
@@ -119,8 +119,7 @@ public final class TestGameSimulation {
 		}
 		DefenderType[] dTypeList = DefenderType.values();
 		Defender[] defList = new Defender[dTypeList.length];
-		for(int i = 0; i < dTypeList.length; i++)
-		{
+		for (int i = 0; i < dTypeList.length; i++) {
 			switch (dTypeList[i]) {
 			case UNIFORM:
 				defList[i] = new UniformDefender(maxNumRes, minNumRes, numResRatio);
@@ -157,11 +156,9 @@ public final class TestGameSimulation {
 		double[][] defPayoffList = new double[defList.length][attList.length];
 		double[][] attPayoffList = new double[defList.length][attList.length];
 		double[][] runtimeList = new double[defList.length][attList.length];
-		for(int i = 0; i < defList.length; i++)
-		{
+		for (int i = 0; i < defList.length; i++) {
 			Defender defender = defList[i];
-			for(int j = 0; j < attList.length; j++)
-			{
+			for (int j = 0; j < attList.length; j++) {
 				Attacker attacker = attList[j];
 				gameSimList[i][j] = new GameSimulation(depGraph, attacker, defender, rnd, numTimeStep, discFact);
 				defPayoffList[i][j] = 0.0;
@@ -169,21 +166,19 @@ public final class TestGameSimulation {
 				runtimeList[i][j] = 0.0;
 			}
 		}
-		for(int i = 0; i < defList.length; i++)
-		{
-			for(int j = 0; j < attList.length; j++)
-			{
+		final double thousand = 1000.0;
+		for (int i = 0; i < defList.length; i++) {
+			for (int j = 0; j < attList.length; j++) {
 				System.out.println("Attacker type: " + aTypeList[j].toString());
 				System.out.println("Defender type: " + dTypeList[i].toString());
-				for(int k = 0; k < numSim; k++)
-				{
+				for (int k = 0; k < numSim; k++) {
 					long start = System.currentTimeMillis();
 					gameSimList[i][j].runSimulation();
 					long end = System.currentTimeMillis();
 					gameSimList[i][j].printPayoff();
 					defPayoffList[i][j] += gameSimList[i][j].getSimulationResult().getDefPayoff();
 					attPayoffList[i][j] += gameSimList[i][j].getSimulationResult().getAttPayoff();
-					runtimeList[i][j] += (end - start) / 1000.0;
+					runtimeList[i][j] += (end - start) / thousand;
 					gameSimList[i][j].reset();
 				}
 				defPayoffList[i][j] /= numSim;
@@ -191,10 +186,8 @@ public final class TestGameSimulation {
 				runtimeList[i][j] /= numSim;
 			}
 		}
-		for(int i = 0; i < defList.length; i++)
-		{
-			for(int j = 0; j < attList.length; j++)
-			{
+		for (int i = 0; i < defList.length; i++) {
+			for (int j = 0; j < attList.length; j++) {
 				System.out.println("----------------------------------------------------");
 				System.out.println("Attacker type: " + aTypeList[j].toString());
 				System.out.println("Defender type: " + dTypeList[i].toString());

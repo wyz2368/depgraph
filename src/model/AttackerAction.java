@@ -38,6 +38,11 @@ public final class AttackerAction {
 		if (targetAndNode.getActivationType() != NodeActivationType.AND) {
 			throw new IllegalArgumentException();
 		}
+		for (final Edge edge: inEdges) {
+			if (!edge.gettarget().equals(targetAndNode)) {
+				throw new IllegalArgumentException();
+			}
+		}
 		if (!this.action.containsKey(targetAndNode)) {
 			this.action.put(targetAndNode, inEdges);
 		}
