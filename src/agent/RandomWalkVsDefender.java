@@ -356,7 +356,7 @@ public final class RandomWalkVsDefender extends Defender {
 		}
 		DefenderCandidate defCandidateAll = new DefenderCandidate(); // all candidate nodes for the defender
 		for (AttackerAction attAction : attActionList) {
-			for (Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet()) {
+			for (Entry<Node, Set<Edge>> entry : attAction.getActionCopy().entrySet()) {
 				defCandidateAll.addNodeCandidate(entry.getKey());
 			}
 		}
@@ -384,7 +384,7 @@ public final class RandomWalkVsDefender extends Defender {
 		
 		int idx = 0;
 		for (AttackerAction attAction : attActionList) {
-			for (Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet()) {
+			for (Entry<Node, Set<Edge>> entry : attAction.getActionCopy().entrySet()) {
 				Node node = entry.getKey();
 				isInQueue[idx][node.getId() - 1] = true;
 			}
@@ -604,7 +604,7 @@ public final class RandomWalkVsDefender extends Defender {
 		
 		int idx = 0;
 		for (AttackerAction attAction : attActionList) {
-			for (Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet()) {
+			for (Entry<Node, Set<Edge>> entry : attAction.getActionCopy().entrySet()) {
 				Node node = entry.getKey();
 				if (!isBlock[node.getId() - 1]) {
 					isInQueue[idx][node.getId() - 1] = true;
@@ -723,7 +723,7 @@ public final class RandomWalkVsDefender extends Defender {
 					isBlock[bIdx][j][k] = true;
 				}
 				AttackerAction attAction = rwAttActionAll[bIdx][j];
-				for(Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet())
+				for(Entry<Node, Set<Edge>> entry : attAction.getActionCopy().entrySet())
 					isBlock[bIdx][j][entry.getKey().getId() - 1] = false;
 				for(int k = 0; k < depGraph.vertexSet().size(); k++) {
 					Node node = topoOrder[k];
@@ -790,7 +790,7 @@ public final class RandomWalkVsDefender extends Defender {
 				}
 				
 				AttackerAction attAction = rwAttActionAll[bIdx][j];
-				for(Entry<Node, Set<Edge>> attActionEntry : attAction.getAction().entrySet())
+				for(Entry<Node, Set<Edge>> attActionEntry : attAction.getActionCopy().entrySet())
 					defCandidate.addNodeCandidate(attActionEntry.getKey());
 			}
 			bIdx++;

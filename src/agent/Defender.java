@@ -274,7 +274,7 @@ public abstract class Defender {
 		
 		/*****************************************************************************************/
 		for (AttackerAction attAction : attActionList) {
-			for (Entry<Node, Set<Edge>> attEntry : attAction.getAction().entrySet()) {
+			for (Entry<Node, Set<Edge>> attEntry : attAction.getActionCopy().entrySet()) {
 				Node node = attEntry.getKey();
 				Set<Edge> edgeSet = attEntry.getValue();
 				

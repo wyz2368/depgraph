@@ -54,7 +54,7 @@ public final class GameSample {
 		if (!this.defAction.getAction().isEmpty()) {
 			this.defAction.clear();
 		}
-		if (!this.attAction.getAction().isEmpty()) {
+		if (!this.attAction.isEmpty()) {
 			this.attAction.clear();
 		}
 	}

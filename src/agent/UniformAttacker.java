@@ -85,13 +85,13 @@ public final class UniformAttacker extends Attacker {
 	 * @param isReplacement: sampling with replacement or not
 	 * @return type of Attacker Action: list of attack actions
 	 *****************************************************************************************/
-	public List<AttackerAction> sampleAction (
-			final DependencyGraph depGraph,
-			final int curTimeStep, 
-			final int numTimeStep, 
-			final RandomGenerator rng,
-			final int numSample, 
-			final boolean isReplacement) {
+	public List<AttackerAction> sampleAction(
+		final DependencyGraph depGraph,
+		final int curTimeStep, 
+		final int numTimeStep, 
+		final RandomGenerator rng,
+		final int numSample, 
+		final boolean isReplacement) {
 		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || rng == null
 			|| numSample < 1) {
 			throw new IllegalArgumentException();
@@ -147,20 +147,10 @@ public final class UniformAttacker extends Attacker {
 			if (!isChosen[idx]) { // if this candidate is not chosen
 				if (idx < edgeCandidateList.size()) { // select edge
 					Edge selectEdge = edgeCandidateList.get(idx);
-					// find the current edge candidates w.r.t. the OR node
-					Set<Edge> edgeSet = action.getAction().get(selectEdge.gettarget());
-					if (edgeSet != null) { // if this OR node is included in the attacker action,
-						// add new edge to the edge set associated with this node
-						edgeSet.add(selectEdge);
-					} else { // if this OR node is node included in the attacker action, create a new one
-						edgeSet = new HashSet<Edge>();
-						edgeSet.add(selectEdge);
-						action.getAction().put(selectEdge.gettarget(), edgeSet);
-					}
-						
+					action.addOrNodeAttack(selectEdge.gettarget(), selectEdge);
 				} else { // select node, this is for AND node only
 					Node selectNode = nodeCandidateList.get(idx - edgeCandidateList.size());
-					action.getAction().put(selectNode, depGraph.incomingEdgesOf(selectNode));
+					action.addAndNodeAttack(selectNode, depGraph.incomingEdgesOf(selectNode));
 				}
 				isChosen[idx] = true; // set chosen to be true
 				count++;

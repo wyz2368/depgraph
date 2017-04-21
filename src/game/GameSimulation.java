@@ -152,6 +152,7 @@ public final class GameSimulation {
 			GameSample gameSample = new GameSample(t, gameState, dObservation, defAction, attAction);
 			this.simResult.addGameSample(gameSample);
 		}
+		assert this.simResult.getGameSampleList().size() == this.numTimeStep;
 		this.computePayoff();
 	}
 	
@@ -171,7 +172,7 @@ public final class GameSimulation {
 				for (Node node : defAction.getAction()) {
 					defPayoff += node.getDCost();
 				}
-				for (Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet()) {
+				for (Entry<Node, Set<Edge>> entry : attAction.getActionCopy().entrySet()) {
 					Node node = entry.getKey();
 					if (node.getActivationType() == NodeActivationType.AND) {
 						attPayoff += Math.pow(this.discFact, timeStep) * node.getACost();
