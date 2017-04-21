@@ -10,6 +10,8 @@ import java.util.Set;
 
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 
+import game.GameSimulation;
+
 // There is a dummy node connecting to entry nodes.
 public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 	private static final long serialVersionUID = 1L; // I dont know what this is for :)))
@@ -87,24 +89,24 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 		for (Edge edge: this.edgeSet()) {
 			edge.print();
 		}
-		System.out.println("--------------------------------------------------------------------");
-		System.out.println("Target set: ");
+		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("Target set: ");
 		for (Node target : this.targetSet) {
-			System.out.print(target.getId() + "\t");
+			GameSimulation.printIfDebug(target.getId() + "\t");
 		}
-		System.out.println();
-		System.out.println("--------------------------------------------------------------------");
-		System.out.println("Root set: ");
+		GameSimulation.printIfDebug("");
+		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("Root set: ");
 		for (Node root : this.rootSet) {
-			System.out.print(root.getId() + "\t");
+			GameSimulation.printIfDebug(root.getId() + "\t");
 		}
-		System.out.println("--------------------------------------------------------------------");
-		System.out.println("Mincut set: ");
+		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("Mincut set: ");
 		for (Node node : this.minCut) {
-			System.out.print(node.getId() + "\t");
+			GameSimulation.printIfDebug(node.getId() + "\t");
 		}
-		System.out.println();
-		System.out.println("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("");
+		GameSimulation.printIfDebug("--------------------------------------------------------------------");
 	}
 	
 	private void resetState() {

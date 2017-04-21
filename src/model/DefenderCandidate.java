@@ -5,6 +5,8 @@ import graph.Node;
 import java.util.HashSet;
 import java.util.Set;
 
+import game.GameSimulation;
+
 public final class DefenderCandidate {
 	private final Set<Node> nodeCandidateSet; // for AND node
 	
@@ -23,12 +25,12 @@ public final class DefenderCandidate {
 		return this.nodeCandidateSet;
 	}
 	public void print() {
-		System.out.println("--------------------------------------------------------------------");
-		System.out.println("Defender Candidate...");
+		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("Defender Candidate...");
 		for (Node node : this.nodeCandidateSet) {
-			System.out.println("Candidate node: " + node.getId()
+			GameSimulation.printIfDebug("Candidate node: " + node.getId()
 				+ "\t Node type: " + node.getType() + "\t Activation Type: " + node.getActivationType().toString());
 		}
-		System.out.println("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("--------------------------------------------------------------------");
 	}
 }

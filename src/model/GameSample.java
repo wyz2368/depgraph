@@ -1,5 +1,7 @@
 package model;
 
+import game.GameSimulation;
+
 // The initial state is not saved since it is empty by default
 
 public final class GameSample {
@@ -60,14 +62,14 @@ public final class GameSample {
 	}
 	
 	public void print() {
-		System.out.println(
+		GameSimulation.printIfDebug(
 			"-------------------------------------TIME STEP "
 			+ this.timeStep + "-------------------------------------------");
 		this.defAction.print();
 		this.attAction.print();
 		this.gameState.print();
 		this.defObservation.print();
-		System.out.println(
+		GameSimulation.printIfDebug(
 			"--------------------------------------------------------------------------------------------");
 	}
 }

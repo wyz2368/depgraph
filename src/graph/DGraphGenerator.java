@@ -132,18 +132,20 @@ public final class DGraphGenerator {
         minCutAlgo.calculateMinCut(source, sink);
         /*
         Set<Edge> minCut = minCutAlgo.getCutEdges();
-        System.out.println("Min cut: ");
+        GameSimulation.printIfDebug("Min cut: ");
         for (Edge edge : minCut) {
         	if (edge.getsource().getId() != source.getId()) {
         		depGraph.addMinCut(edge.getsource());
         	} else if (edge.gettarget().getId() != sink.getId()) {
         		depGraph.addMinCut(edge.gettarget());
         	}
-        	System.out.println(edge.getsource().getId() + "\t" + edge.gettarget().getId() + "\t" + edge.getweight());
+        	GameSimulation.printIfDebug(edge.getsource().getId() + "\t" 
+        		+ edge.gettarget().getId() + "\t" + edge.getweight());
         }
-        System.out.println("Edges of new graph clone: ");
+        GameSimulation.printIfDebug("Edges of new graph clone: ");
         for (Edge edge : cloneGraph.edgeSet()) {
-        	System.out.println(edge.getsource().getId() + "\t" + edge.gettarget().getId() + "\t" + edge.getweight());
+        	GameSimulation.printIfDebug(edge.getsource().getId() + "\t"
+        		+ edge.gettarget().getId() + "\t" + edge.getweight());
         }
         */
 	}

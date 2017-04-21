@@ -434,14 +434,12 @@ public final class RandomWalkVsDefender extends Defender {
 				}
 			}
 		}
-//		System.out.println("Initial defender value: " + value);
 		// Start greedy process----------------------------------------------------------------------------
 		boolean[][] maxQueue =
 			new boolean[attActionList.length][depGraph.vertexSet().size()]; // corresponding best queue
 		boolean[][] isInCurrentQueue = new boolean[attActionList.length][depGraph.vertexSet().size()];
 		boolean isStop = false;
 		while (!isStop) { // only stop when no new candidate node can increase the defender's utility
-//			System.out.println("Adding new node to protect....");
 			isStop = true;
 			int candidateIdx = 0;
 			
@@ -475,12 +473,10 @@ public final class RandomWalkVsDefender extends Defender {
 											Node preNode =
 												rwTuples[postNode.getId() - 1].getPreAct().get(0).getsource();
 											if (preNode.getId() == node.getId()) {
-//												System.out.println("Adding new nodes");
 												isInCurrentQueue[idx][postNode.getId() - 1] = false;
 												queue.add(postNode);
 											}
 										} else {
-//											System.out.println("Adding new nodes");
 											isInCurrentQueue[idx][postNode.getId() - 1] = false;
 											queue.add(postNode);
 										}
@@ -812,7 +808,6 @@ public final class RandomWalkVsDefender extends Defender {
 		boolean[][][] maxIsBlock =
 			new boolean[dBelief.getGameStateMap().size()][this.numRWSample][depGraph.vertexSet().size()];
 		while (!isStop) {
-			System.out.println("Greedy process....");
 			int dCandidateIdx = 0;
 			double maxValue = 0.0;
 			int maxNodeIdx = -1;

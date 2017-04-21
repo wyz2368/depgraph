@@ -5,6 +5,8 @@ import graph.Node;
 import java.util.HashSet;
 import java.util.Set;
 
+import game.GameSimulation;
+
 public final class DefenderAction {
 	private final Set<Node> action;
 	
@@ -35,12 +37,12 @@ public final class DefenderAction {
 	}
 	
 	public void print() {
-		System.out.println("--------------------------------------------------------------------");
-		System.out.println("Defender Action...");
+		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("Defender Action...");
 		for (Node node : this.action) {
-			System.out.println("Protect node: " + node.getId() + "\t Node type: " + node.getType()
+			GameSimulation.printIfDebug("Protect node: " + node.getId() + "\t Node type: " + node.getType()
 				+ "\t Activation Type: " + node.getActivationType().toString());
 		}
-		System.out.println("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("--------------------------------------------------------------------");
 	}
 }

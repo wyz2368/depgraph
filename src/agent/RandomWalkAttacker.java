@@ -87,7 +87,6 @@ public final class RandomWalkAttacker extends Attacker {
 			RandomWalkTuple[] rwSample = randomWalk(depGraph, curTimeStep, rng);
 			AttackerAction attAction = new AttackerAction();
 			actionValues[i] = greedyAction(depGraph, rwSample, attAction, numTimeStep, this.discFact);
-			// System.out.println(candidateValues[i]);
 			actions[i] = attAction;
 		}
 		
@@ -395,7 +394,7 @@ public final class RandomWalkAttacker extends Attacker {
 			}
 		}
 		if (Double.isNaN(value)) {
-			System.out.println("Wrong");
+			throw new IllegalStateException();
 		}
 		return value;
 	}

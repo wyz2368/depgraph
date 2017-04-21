@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import game.GameSimulation;
+
 import java.util.Set;
 
 public final class AttackerAction {
@@ -72,21 +75,21 @@ public final class AttackerAction {
 	}
 	
 	public void print() {
-		System.out.println("--------------------------------------------------------------------");
-		System.out.println("Attacker Action...");
+		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("Attacker Action...");
 		for (Entry<Node, Set<Edge>> entry : this.action.entrySet()) {
-			System.out.println("Activating node: " + entry.getKey().getId() 
+			GameSimulation.printIfDebug("Activating node: " + entry.getKey().getId() 
 				+ "\t Node type: " + entry.getKey().getType().toString()
 				+ "\t Activation Type: " + entry.getKey().getActivationType().toString());
 			if (entry.getKey().getActivationType() == NodeActivationType.OR) {
-				System.out.println("Via edge: ");
+				GameSimulation.printIfDebug("Via edge: ");
 				for (Edge edge : entry.getValue()) {
-					System.out.println(edge.getsource().getId() + "(" + edge.getsource().getState().toString() 
+					GameSimulation.printIfDebug(edge.getsource().getId() + "(" + edge.getsource().getState().toString() 
 						+ ")-->" + edge.gettarget().getId());
 				}
-				System.out.println();
+				GameSimulation.printIfDebug("");
 			}
 		}
-		System.out.println("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("--------------------------------------------------------------------");
 	}
 }

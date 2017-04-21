@@ -87,8 +87,8 @@ public final class GameSimulationResult {
 	}
 	
 	public void printPayoff() {
-		System.out.println("Defender payoff: " + this.defPayoff);
-		System.out.println("Attacker payoff: " + this.attPayoff);
+		GameSimulation.printIfDebug("Defender payoff: " + this.defPayoff);
+		GameSimulation.printIfDebug("Attacker payoff: " + this.attPayoff);
 	}
 	
 	public void clear() {

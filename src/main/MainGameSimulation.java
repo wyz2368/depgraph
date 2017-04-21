@@ -35,7 +35,7 @@ public final class MainGameSimulation {
 		final long endTime = System.nanoTime();
 		final long diff = endTime - startTime;
 		final long millis = diff / 1000000;
-		System.out.println("time taken in millis: " + millis);
+		GameSimulation.printIfDebug("time taken in millis: " + millis);
 	}
 	
 	/**
@@ -96,7 +96,7 @@ public final class MainGameSimulation {
 		final int thousand = 1000;
 		for (int i = 0; i < numSim; i++) {
 			if (i % thousand == 0) {
-				System.out.println("Simulation: " + i);
+				GameSimulation.printIfDebug("Simulation: " + i);
 			}
 			gameSim.runSimulation();
 			meanGameSimResult.updateMeanSimulationResult(gameSim.getSimulationResult());

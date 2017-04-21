@@ -216,7 +216,6 @@ public final class UniformVsDefender extends Defender {
 		for (Entry<GameState, Double> entry : revisedBelief.getGameStateMap().entrySet()) {
 			entry.setValue(entry.getValue() / sumProb); 
 		}
-		System.out.println("Belief size: " + revisedBelief.getGameStateMap().size());
 		return revisedBelief;
 	}
 	

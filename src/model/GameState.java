@@ -5,6 +5,8 @@ import graph.Node;
 import java.util.HashSet;
 import java.util.Set;
 
+import game.GameSimulation;
+
 public final class GameState {
 	private String id;
 	private final Set<Node> enabledNodeSet;
@@ -36,13 +38,13 @@ public final class GameState {
 	}
 	
 	public void print() {
-		System.out.println("--------------------------------------------------------------------");
-		System.out.println("Active Nodes");
+		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("Active Nodes");
 		for (Node node : this.enabledNodeSet) {
-			System.out.println(node.getId() + "\t" + node.getType());
+			GameSimulation.printIfDebug(node.getId() + "\t" + node.getType());
 		}
-		System.out.println();
-		System.out.println("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("");
+		GameSimulation.printIfDebug("--------------------------------------------------------------------");
 	}
 	
 	public void createID() {
