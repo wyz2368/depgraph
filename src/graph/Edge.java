@@ -93,7 +93,8 @@ public final class Edge extends DefaultWeightedEdge {
 	public Node gettarget() {
 		return (Node) this.getTarget();
 	}
-	public double getweight(){
+	
+	public double getweight() {
 		return this.getWeight();
 	}
 
@@ -137,7 +138,8 @@ public final class Edge extends DefaultWeightedEdge {
 	
 	public void print() {
 		System.out.println("--------------------------------------------------------------------");
-		System.out.println("ID: " + this.getId() + "\t" + "Source: " + this.getsource().getId() + "\t" + "Des: " + this.gettarget().getId());
+		System.out.println("ID: " + this.getId() + "\t" + "Source: "
+			+ this.getsource().getId() + "\t" + "Des: " + this.gettarget().getId());
 		System.out.println("Type: " + this.getType().toString());
 		System.out.println("aCost: " + this.getACost());
 		System.out.println("actProb: " + this.getActProb());

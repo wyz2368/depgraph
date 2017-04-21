@@ -14,10 +14,10 @@ public final class AttackCandidate {
 		this.nodeCandidateSet = new HashSet<Node>();
 		this.edgeCandidateSet = new HashSet<Edge>();
 	}
-	public boolean isEmpty()
-	{
-		if(this.nodeCandidateSet.isEmpty() && this.edgeCandidateSet.isEmpty())
+	public boolean isEmpty() {
+		if (this.nodeCandidateSet.isEmpty() && this.edgeCandidateSet.isEmpty()) {
 			return true;
+		}
 		return false;
 	}
 	

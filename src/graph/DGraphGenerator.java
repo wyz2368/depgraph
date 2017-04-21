@@ -98,10 +98,10 @@ public final class DGraphGenerator {
 			throw new IllegalArgumentException();
 		}
 		SimpleDirectedWeightedGraph<Node, Edge> cloneGraph = new SimpleDirectedWeightedGraph<Node, Edge>(Edge.class);
-        for(Node node : depGraph.vertexSet())
+        for (Node node : depGraph.vertexSet()) {
         	cloneGraph.addVertex(node);
-        for(Edge edge : depGraph.edgeSet())
-        {
+        }
+        for (Edge edge : depGraph.edgeSet()) {
         	Edge newEdge = new Edge();
         	cloneGraph.addEdge(edge.getsource(), edge.gettarget(), newEdge);
         	cloneGraph.setEdgeWeight(newEdge, 1.0);
@@ -112,22 +112,20 @@ public final class DGraphGenerator {
         cloneGraph.addVertex(source);
         cloneGraph.addVertex(sink);
         
-        for(Node node : cloneGraph.vertexSet())
-        {
-        	if(node.getTopoPosition() != -1 && cloneGraph.inDegreeOf(node) == 0)
-        	{
+        final double high = 1E10;
+        for (Node node : cloneGraph.vertexSet()) {
+        	if (node.getTopoPosition() != -1 && cloneGraph.inDegreeOf(node) == 0) {
         		Edge newEdge = new Edge();
     			cloneGraph.addEdge(source, node, newEdge);
 //	    			cloneGraph.setEdgeWeight(newEdge, Double.POSITIVE_INFINITY);
-    			cloneGraph.setEdgeWeight(newEdge, 1E10);
+    			cloneGraph.setEdgeWeight(newEdge, high);
         	}
         		
-        	if (node.getTopoPosition() != -1 && cloneGraph.outDegreeOf(node) == 0)
-        	{
+        	if (node.getTopoPosition() != -1 && cloneGraph.outDegreeOf(node) == 0) {
         		Edge newEdge = new Edge();
         		cloneGraph.addEdge(node, sink, newEdge);
 //	        		cloneGraph.setEdgeWeight(newEdge, Double.POSITIVE_INFINITY);
-        		cloneGraph.setEdgeWeight(newEdge, 1E10);
+        		cloneGraph.setEdgeWeight(newEdge, high);
         		
         	}
         }
@@ -137,15 +135,15 @@ public final class DGraphGenerator {
         
         System.out.println("Min cut: ");
         for (Edge edge : minCut) {
-        	if (edge.getsource().getId() != source.getId())
+        	if (edge.getsource().getId() != source.getId()) {
         		depGraph.addMinCut(edge.getsource());
-        	else if (edge.gettarget().getId() != sink.getId())
+        	} else if (edge.gettarget().getId() != sink.getId()) {
         		depGraph.addMinCut(edge.gettarget());
+        	}
         	System.out.println(edge.getsource().getId() + "\t" + edge.gettarget().getId() + "\t" + edge.getweight());
         }
         System.out.println("Edges of new graph clone: ");
-        for(Edge edge : cloneGraph.edgeSet())
-        {
+        for (Edge edge : cloneGraph.edgeSet()) {
         	System.out.println(edge.getsource().getId() + "\t" + edge.gettarget().getId() + "\t" + edge.getweight());
         }
 	}
@@ -246,13 +244,10 @@ public final class DGraphGenerator {
 //			node.setACost(aCost);
 //			node.setDCost(dCost);
 //		} else 
-		{
-			double aCost = rand.nextUniform(aCostLB, aCostUB, true);
-			double dCost = rand.nextUniform(dCostLB, dCostUB, true);
-			node.setACost(aCost);
-			node.setDCost(dCost);
-		}
-		
+		double aCost = rand.nextUniform(aCostLB, aCostUB, true);
+		double dCost = rand.nextUniform(dCostLB, dCostUB, true);
+		node.setACost(aCost);
+		node.setDCost(dCost);		
 	}
 	
 	private static void genEdgePayoffRandom(final Edge edge, final RandomDataGenerator rand

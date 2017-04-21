@@ -97,8 +97,7 @@ public final class RandomWalkVsDefender extends Defender {
 		}
 		if(this.isRandomized)
 			return sampleActionRandomize(depGraph, curTimeStep, numTimeStep, dBelief, rng);
-		else 
-			return sampleActionStatic(depGraph, curTimeStep, numTimeStep, dBelief, rng);
+		return sampleActionStatic(depGraph, curTimeStep, numTimeStep, dBelief, rng);
 	}
 	
 	public DefenderAction sampleActionRandomize(
@@ -449,9 +448,6 @@ public final class RandomWalkVsDefender extends Defender {
 			int maxIdx = -1;
 			for (Node dCandidateNode : defCandidateListAll) { // iterate over candidate nodes of the defender
 				double curValue = 0.0;
-				if (isInQueue == null) {
-					throw new IllegalStateException();
-				}
 				// Initialize queue, this queue is used for checking if any node is still in the queue of activating
 				// when the defender starts disabling nodes
 				for (int i = 0; i < attActionList.length; i++) {

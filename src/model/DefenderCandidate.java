@@ -26,7 +26,8 @@ public final class DefenderCandidate {
 		System.out.println("--------------------------------------------------------------------");
 		System.out.println("Defender Candidate...");
 		for (Node node : this.nodeCandidateSet) {
-			System.out.println("Candidate node: " + node.getId() + "\t Node type: " + node.getType() + "\t Activation Type: " + node.getActivationType().toString());
+			System.out.println("Candidate node: " + node.getId()
+				+ "\t Node type: " + node.getType() + "\t Activation Type: " + node.getActivationType().toString());
 		}
 		System.out.println("--------------------------------------------------------------------");
 	}
