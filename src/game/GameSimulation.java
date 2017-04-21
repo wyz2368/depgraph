@@ -42,6 +42,9 @@ public final class GameSimulation {
 			|| rng == null || numTimeStep < 1 || discFact <= 0.0 || discFact > 1.0) {
 			throw new IllegalArgumentException();
 		}
+		if (!depGraph.isValid()) {
+			throw new IllegalArgumentException();
+		}
 		this.depGraph = depGraph;
 		this.numTimeStep = numTimeStep;
 		this.discFact = discFact;

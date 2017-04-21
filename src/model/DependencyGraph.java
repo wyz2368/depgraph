@@ -23,6 +23,16 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 		this.rootSet = new HashSet<Node>();
 	}
 	
+	public boolean isValid() {
+		if (this.vertexSet().isEmpty()) {
+			return false;
+		}
+		if (this.edgeSet().isEmpty()) {
+			return false;
+		}
+		return true;
+	}
+	
 	public boolean addTarget(final Node node) {
 		if (node == null) {
 			throw new IllegalArgumentException();
