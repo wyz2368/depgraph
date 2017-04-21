@@ -2,6 +2,8 @@ package main;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.junit.Test;
+import static org.junit.Assert.assertTrue;
+
 
 import graph.DGraphGenerator;
 import graph.DagGenerator;
@@ -14,6 +16,15 @@ public final class UnitTestMainGameSimulation {
 
 	public UnitTestMainGameSimulation() {
 		// default constuctor
+	}
+	
+	@Test
+	@SuppressWarnings("all")
+	public void assertionTest() {
+		boolean assertionsOn = false;
+		// assigns true if assertions are on.
+		assert assertionsOn = true;
+		assertTrue(assertionsOn);
 	}
 
 	@Test

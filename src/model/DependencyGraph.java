@@ -1,6 +1,7 @@
 package model;
 
 import graph.Edge;
+import graph.INode;
 import graph.INode.NodeState;
 import graph.Node;
 
@@ -29,6 +30,11 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 		}
 		if (this.edgeSet().isEmpty()) {
 			return false;
+		}
+		for (final Node root: getRootSet()) {
+			if (root.getActivationType() != INode.NodeActivationType.AND) {
+				return false;
+			}
 		}
 		return true;
 	}
