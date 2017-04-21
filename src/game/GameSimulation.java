@@ -26,7 +26,6 @@ public final class GameSimulation {
 	
 	private Attacker attacker;
 	private Defender defender;
-	// private GameOracle gameOracle;
 	
 	private final double discFact;
 	
@@ -54,7 +53,6 @@ public final class GameSimulation {
 		
 		this.rng = rng;
 		
-		//Outcome
 		this.simResult = new GameSimulationResult();
 	}
 	
@@ -106,7 +104,6 @@ public final class GameSimulation {
 			);
 			end = System.currentTimeMillis();
 			System.out.println("Elapsed time: " + (end - start) / thousand);
-			// attAction.print();
 			
 			System.out.println("Sample defender action...");
 			start = System.currentTimeMillis();
@@ -119,14 +116,12 @@ public final class GameSimulation {
 			);
 			end = System.currentTimeMillis();
 			System.out.println("Elapsed time: " + (end - start) / thousand);
-			// defAction.print();
 			
 			System.out.println("Sample game state...");
 			start = System.currentTimeMillis();
 			gameState = GameOracle.generateStateSample(gameState, attAction, defAction, this.rng); // new game state
 			end = System.currentTimeMillis();
 			System.out.println("Elapsed time: " + (end - start) / thousand);
-			// gameState.print();
 			
 			System.out.println("Sample observation...");
 			start = System.currentTimeMillis();
@@ -186,7 +181,6 @@ public final class GameSimulation {
 					}
 				}
 			}
-			
 		}
 		this.simResult.setAttPayoff(attPayoff);
 		this.simResult.setDefPayoff(defPayoff);
