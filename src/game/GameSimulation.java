@@ -152,33 +152,35 @@ public final class GameSimulation {
 			GameSample gameSample = new GameSample(t, gameState, dObservation, defAction, attAction);
 			this.simResult.addGameSample(gameSample);
 		}
-		assert this.simResult.getGameSampleList().size() == this.numTimeStep;
+		if (this.simResult.getGameSampleList().size() != this.numTimeStep) {
+			throw new IllegalStateException();
+		}
 		this.computePayoff();
 	}
 	
 	public void computePayoff() {
 		double defPayoff = 0.0;
 		double attPayoff = 0.0;
-		for (GameSample gameSample : this.simResult.getGameSampleList()) {
-			int timeStep = gameSample.getTimeStep();
-			GameState gameState = gameSample.getGameState();
-			DefenderAction defAction = gameSample.getDefAction();
-			AttackerAction attAction = gameSample.getAttAction();
-			for (Node node : gameState.getEnabledNodeSet()) {
+		for (final GameSample gameSample : this.simResult.getGameSampleList()) {
+			final int timeStep = gameSample.getTimeStep();
+			final GameState gameState = gameSample.getGameState();
+			final DefenderAction defAction = gameSample.getDefAction();
+			final AttackerAction attAction = gameSample.getAttAction();
+			for (final Node node : gameState.getEnabledNodeSet()) {
 				defPayoff += Math.pow(this.discFact, timeStep) * node.getDPenalty();
 				attPayoff += Math.pow(this.discFact, timeStep) * node.getAReward();
 			}
 			if (timeStep <= this.numTimeStep) {
-				for (Node node : defAction.getAction()) {
+				for (final Node node : defAction.getAction()) {
 					defPayoff += node.getDCost();
 				}
-				for (Entry<Node, Set<Edge>> entry : attAction.getActionCopy().entrySet()) {
-					Node node = entry.getKey();
+				for (final Entry<Node, Set<Edge>> entry : attAction.getActionCopy().entrySet()) {
+					final Node node = entry.getKey();
 					if (node.getActivationType() == NodeActivationType.AND) {
 						attPayoff += Math.pow(this.discFact, timeStep) * node.getACost();
 					} else {
-						Set<Edge> edgeSet = entry.getValue();
-						for (Edge edge : edgeSet) {
+						final Set<Edge> edgeSet = entry.getValue();
+						for (final Edge edge : edgeSet) {
 							attPayoff += Math.pow(this.discFact, timeStep) * edge.getACost();
 						}
 					}
