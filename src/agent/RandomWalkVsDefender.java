@@ -807,7 +807,7 @@ public final class RandomWalkVsDefender extends Defender {
 		boolean[][][] maxIsBlock = new boolean[dBelief.getGameStateMap().size()][this.numRWSample][depGraph.vertexSet().size()];
 		while(!isStop)
 		{
-			System.out.println("Greedy process....");
+//			System.out.println("Greedy process....");
 			int dCandidateIdx = 0;
 			double maxValue = 0.0;
 			int maxNodeIdx = -1;

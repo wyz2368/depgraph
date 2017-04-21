@@ -41,7 +41,9 @@ public final class GameSimulationResult {
 		assert aInitialState != null;
 		this.initialState = aInitialState;
 	}
-	
+	public GameState getInitialState() {
+		return this.initialState;
+	}
 	public void setGameSampleList(final List<GameSample> aGameSampleList) {
 		assert aGameSampleList != null;
 		this.gameSampleList = aGameSampleList;
@@ -97,5 +99,7 @@ public final class GameSimulationResult {
 			gameSample.clear();
 		}
 		this.gameSampleList.clear();
+		this.defPayoff = 0.0;
+		this.attPayoff = 0.0;
 	}
 }

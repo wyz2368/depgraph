@@ -85,7 +85,7 @@ public final class TestRWvsDefender {
 		final double numSelectCandidateRatio = 0.7;
 		
 		final int numTimeStep = 10;
-		final int numSim = 1;
+		final int numSim = 10;
 		
 //		boolean isRandomized = true;
 		
@@ -107,6 +107,7 @@ public final class TestRWvsDefender {
 		for(int i = 0; i < numSim; i++)
 		{
 			System.out.println("Simulation " + i);
+			rnd.reSeed(System.currentTimeMillis());
 			gameSimRWvsRW.runSimulation();
 			gameSimRWvsRW.printPayoff();
 			defPayoffRWvsRW += gameSimRWvsRW.getSimulationResult().getDefPayoff();
@@ -129,6 +130,7 @@ public final class TestRWvsDefender {
 		for(int i = 0; i < numSim; i++)
 		{
 			System.out.println("Simulation " + i);
+			rnd.reSeed(System.currentTimeMillis());
 			gameSimRWvsGO.runSimulation();
 			gameSimRWvsGO.printPayoff();
 			defPayoffRWvsGO += gameSimRWvsGO.getSimulationResult().getDefPayoff();
@@ -148,6 +150,7 @@ public final class TestRWvsDefender {
 		double timeVPvsRW = 0.9;
 		for(int i = 0; i < numSim; i++){
 			System.out.println("Simulation " + i);
+			rnd.reSeed(System.currentTimeMillis());
 			gameSimVPvsRW.runSimulation();
 			gameSimVPvsRW.printPayoff();
 			defPayoffVPvsRW += gameSimVPvsRW.getSimulationResult().getDefPayoff();
@@ -167,6 +170,7 @@ public final class TestRWvsDefender {
 		double timeRWvsRWAlt = 0.0;
 		for(int i = 0; i < numSim; i++){
 			System.out.println("Simulation " + i);
+			rnd.reSeed(System.currentTimeMillis());
 			gameSimRWvsRWAlt.runSimulation();
 			gameSimRWvsRWAlt.printPayoff();
 			defPayoffRWvsRWAlt += gameSimRWvsRWAlt.getSimulationResult().getDefPayoff();
