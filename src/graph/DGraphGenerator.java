@@ -209,8 +209,14 @@ public final class DGraphGenerator {
 		) {
 			throw new IllegalArgumentException();
 		}
-		double posActiveProb = rand.nextUniform(minPosActiveProb, maxPosActiveProb, true);
-		double posInactiveProb = rand.nextUniform(minPosInactiveProb, maxPosInactiveProb, true);
+		double posActiveProb = minPosActiveProb;
+		if (minPosActiveProb < maxPosActiveProb) {
+			posActiveProb = rand.nextUniform(minPosActiveProb, maxPosActiveProb, true);
+		}
+		double posInactiveProb = minPosInactiveProb;
+		if (minPosInactiveProb < maxPosInactiveProb) {
+			posInactiveProb = rand.nextUniform(minPosInactiveProb, maxPosInactiveProb, true);
+		}
 		node.setPosActiveProb(posActiveProb);
 		node.setPosInactiveProb(posInactiveProb);
 	}

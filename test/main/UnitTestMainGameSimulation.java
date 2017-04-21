@@ -2,6 +2,9 @@ package main;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.junit.Test;
+
+import game.GameSimulation;
+
 import static org.junit.Assert.assertTrue;
 
 
