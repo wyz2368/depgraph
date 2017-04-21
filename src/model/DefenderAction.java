@@ -16,11 +16,11 @@ public final class DefenderAction {
 		return this.action;
 	}
 	
-	public boolean addNodetoProtect(final Node node) {
+	public void addNodetoProtect(final Node node) {
 		if (node == null) {
 			throw new IllegalArgumentException();
 		}
-		return this.action.add(node);
+		this.action.add(node);
 	}
 	
 	public boolean containsNode(final Node node) {
