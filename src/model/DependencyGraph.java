@@ -28,9 +28,6 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 		if (this.vertexSet().isEmpty()) {
 			return false;
 		}
-		if (this.edgeSet().isEmpty()) {
-			return false;
-		}
 		for (final Node root: getRootSet()) {
 			if (root.getActivationType() != INode.NodeActivationType.AND) {
 				return false;

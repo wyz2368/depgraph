@@ -18,9 +18,9 @@ public final class UniformDefender extends Defender {
 	private double numResRatio;
 	
 	public UniformDefender(
-			final double maxNumRes, 
-			final double minNumRes, 
-			final double numResRatio) {
+		final double maxNumRes, 
+		final double minNumRes, 
+		final double numResRatio) {
 		super(DefenderType.UNIFORM);
 		if (maxNumRes < 1 || minNumRes > maxNumRes || numResRatio < 0.0 || numResRatio > 1.0) {
 			throw new IllegalArgumentException();
@@ -54,13 +54,13 @@ public final class UniformDefender extends Defender {
 
 	@Override
 	public DefenderBelief updateBelief(
-			final DependencyGraph depGraph,
-			final DefenderBelief currentBelief, 
-			final DefenderAction dAction,
-			final DefenderObservation dObservation, 
-			final int curTimeStep, 
-			final int numTimeStep,
-			final RandomGenerator rng) {
+		final DependencyGraph depGraph,
+		final DefenderBelief currentBelief, 
+		final DefenderAction dAction,
+		final DefenderObservation dObservation, 
+		final int curTimeStep, 
+		final int numTimeStep,
+		final RandomGenerator rng) {
 		return new DefenderBelief();
 	}
 }

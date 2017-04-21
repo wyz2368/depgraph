@@ -2,7 +2,6 @@ package graph;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import graph.INode.NodeActivationType;
 import graph.INode.NodeState;
@@ -131,8 +130,8 @@ public final class DGraphGenerator {
         }
         EdmondsKarpMFImpl<Node, Edge> minCutAlgo = new EdmondsKarpMFImpl<Node, Edge>(cloneGraph);
         minCutAlgo.calculateMinCut(source, sink);
+        /*
         Set<Edge> minCut = minCutAlgo.getCutEdges();
-        
         System.out.println("Min cut: ");
         for (Edge edge : minCut) {
         	if (edge.getsource().getId() != source.getId()) {
@@ -146,6 +145,7 @@ public final class DGraphGenerator {
         for (Edge edge : cloneGraph.edgeSet()) {
         	System.out.println(edge.getsource().getId() + "\t" + edge.gettarget().getId() + "\t" + edge.getweight());
         }
+        */
 	}
 	
 	private static void selectTargetRandom(
