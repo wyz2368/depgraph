@@ -64,8 +64,8 @@ public final class DGraphGenerator {
 			genAlertProbRandom(node, rand, minPosActiveProb, maxPosActiveProb, minPosInactiveProb, maxPosInactiveProb);
 		}
 		for (Edge edge : depGraph.edgeSet()) {
-			genEdgePayoffRandom(edge, rand, aEdgeCostLB, aEdgeCostUB);
 			if (edge.gettarget().getActivationType() == NodeActivationType.OR) {
+				genEdgePayoffRandom(edge, rand, aEdgeCostLB, aEdgeCostUB);
 				genActivationProbRandom(edge, rand, aEdgeActProbLB, aEdgeActProbUB);
 			}
 		}
