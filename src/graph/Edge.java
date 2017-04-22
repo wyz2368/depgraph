@@ -38,7 +38,8 @@ public final class Edge extends DefaultWeightedEdge {
 		final double aCost,
 		final double curActProb
 	) {
-		if (aType == null || !isProb(curActProb)) {
+		super();
+		if (aType == null || !isProb(curActProb) || aCost > 0.0) {
 			throw new IllegalArgumentException();
 		}
 		this.id = counter;

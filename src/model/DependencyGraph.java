@@ -2,6 +2,7 @@ package model;
 
 import graph.Edge;
 import graph.INode;
+import graph.INode.NodeActivationType;
 import graph.INode.NodeState;
 import graph.Node;
 
@@ -32,6 +33,42 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 		}
 		for (final Node root: getRootSet()) {
 			if (root.getActivationType() != INode.NodeActivationType.AND) {
+				System.out.println("Root not type AND");
+				return false;
+			}
+		}
+		final Set<Integer> nodeIds = new HashSet<Integer>();
+		final Set<Integer> topoPositions = new HashSet<Integer>();
+		for (final Node node: vertexSet()) {
+			if (nodeIds.contains(node.getId())) {
+				System.out.println("Duplicate Node id");
+				return false;
+			}
+			if (topoPositions.contains(node.getTopoPosition())) {
+				System.out.println("Duplicate Node topo position");
+				return false;
+			}
+			nodeIds.add(node.getId());
+			topoPositions.add(node.getTopoPosition());
+		}
+		final Set<Integer> edgeIds = new HashSet<Integer>();
+		for (final Edge edge: edgeSet()) {
+			if (edgeIds.contains(edge.getId())) {
+				System.out.println("Duplicate Edge id");
+				return false;
+			}
+			edgeIds.add(edge.getId());
+			if (edge.gettarget().equals(edge.getsource())) {
+				System.out.println("Self-edge");
+				return false;
+			}
+			if (edge.gettarget().getActivationType() == NodeActivationType.AND
+				&& (edge.getActProb() != 0.0 || edge.getACost() != 0.0)) {
+				// edges to AND nodes must have placeholder actProb and aCost of 0.0
+				System.out.println("Edge to AND node with nonzero actProb or aCost");
+				System.out.println(edge);
+				System.out.println(edge.getActProb() + "\t" + edge.getACost());
+				System.out.println(edge.gettarget());
 				return false;
 			}
 		}

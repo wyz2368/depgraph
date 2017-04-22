@@ -46,6 +46,13 @@ public final class Node implements INode {
 		) {
 			throw new IllegalArgumentException();
 		}
+		if (aReward < 0.0 || dPenalty > 0.0 || dCost > 0.0 || aCost > 0.0) {
+			throw new IllegalArgumentException();
+		}
+		if (eType == NodeActivationType.OR && (aCost != 0.0 || actProb != 0.0)) {
+			// OR nodes must have placeholder aCost and actProb of 0.0
+			throw new IllegalArgumentException();
+		}
 		this.id = id;
 		this.type = type; 
 		this.eType = eType;

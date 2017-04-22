@@ -57,6 +57,7 @@ public final class MainGameSimulation {
 			+ simSpec.getNumTarget() + "T"
 			+ simSpec.getGraphID() + JsonUtils.JSON_SUFFIX;
 		DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
+		System.out.println(filePathName);
 				
 		// Load players
 		final String attackerString = JsonUtils.getAttackerString(simspecFolderName);
