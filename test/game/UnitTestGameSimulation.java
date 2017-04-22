@@ -98,7 +98,6 @@ public final class UnitTestGameSimulation {
 		// defender payoff should be:
 		// numNode * dCostLB
 		final double defCostExpected = numNode * dCostLB;
-		System.out.println(curSimResult.getAttPayoff() + "\t" + curSimResult.getDefPayoff());
 		assertTrue(Math.abs(attCostExpected - curSimResult.getAttPayoff()) < tolerance);
 		assertTrue(Math.abs(defCostExpected - curSimResult.getDefPayoff()) < tolerance);
 	}
