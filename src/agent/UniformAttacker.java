@@ -27,7 +27,7 @@ public final class UniformAttacker extends Attacker {
 		final double minNumSelectCandidate, 
 		final double numSelectCandidateRatio) {
 		super(AttackerType.UNIFORM);
-		if (minNumSelectCandidate < 1 || maxNumSelectCandidate < minNumSelectCandidate
+		if (minNumSelectCandidate < 0 || maxNumSelectCandidate < minNumSelectCandidate
 			|| numSelectCandidateRatio < 0.0 || numSelectCandidateRatio > 1.0) {
 			throw new IllegalArgumentException();
 		}
@@ -45,10 +45,10 @@ public final class UniformAttacker extends Attacker {
 	 *****************************************************************************************/
 	@Override
 	public AttackerAction sampleAction(
-			final DependencyGraph depGraph, 
-			final int curTimeStep,
-			final int numTimeStep, 
-			final RandomGenerator rng) {
+		final DependencyGraph depGraph, 
+		final int curTimeStep,
+		final int numTimeStep, 
+		final RandomGenerator rng) {
 		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || rng == null) {
 			throw new IllegalArgumentException();
 		}
@@ -57,7 +57,7 @@ public final class UniformAttacker extends Attacker {
 		
 		// Sample number of nodes
 		int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size()
-									+ attackCandidate.getNodeCandidateSet().size();
+			+ attackCandidate.getNodeCandidateSet().size();
 		// Compute number of candidates to select
 		int numSelectCandidate = 0;
 		if (totalNumCandidate < this.minNumSelectCandidate) {
@@ -67,6 +67,7 @@ public final class UniformAttacker extends Attacker {
 				(int) (totalNumCandidate * this.numSelectCandidateRatio));
 			numSelectCandidate = Math.min(this.maxNumSelectCandidate, numSelectCandidate);
 		}
+		// System.out.println(numSelectCandidate + " attacker strikes");
 		if (numSelectCandidate == 0) { // if there is no candidate
 			return new AttackerAction();
 		}
@@ -125,10 +126,10 @@ public final class UniformAttacker extends Attacker {
 	* @return type of AttackerAction: an action for the attacker
 	*****************************************************************************************/
 	private static AttackerAction sampleAction(
-			final DependencyGraph depGraph,
-			final AttackCandidate attackCandidate, 
-			final int numSelectCandidate, 
-			final AbstractIntegerDistribution rnd) {
+		final DependencyGraph depGraph,
+		final AttackCandidate attackCandidate, 
+		final int numSelectCandidate, 
+		final AbstractIntegerDistribution rnd) {
 		if (depGraph == null || numSelectCandidate < 0 || rnd == null || attackCandidate == null) {
 			throw new IllegalArgumentException();
 		}
@@ -216,5 +217,12 @@ public final class UniformAttacker extends Attacker {
 			}
 		}
 		return aCandidate;
+	}
+
+	@Override
+	public String toString() {
+		return "UniformAttacker [maxNumSelectCandidate=" + this.maxNumSelectCandidate
+			+ ", minNumSelectCandidate=" + this.minNumSelectCandidate
+			+ ", numSelectCandidateRatio=" + this.numSelectCandidateRatio + "]";
 	}
 }

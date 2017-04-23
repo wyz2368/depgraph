@@ -32,7 +32,7 @@ public final class UnitTestGameSimulation {
 	}
 	
 	@Test
-	public void testing() {
+	public void testAttackDefendAll() {
 		final int numNode = 40;
 		final int numEdge = 0;
 		final int numTarget = 40;
@@ -98,6 +98,77 @@ public final class UnitTestGameSimulation {
 		// defender payoff should be:
 		// numNode * dCostLB
 		final double defCostExpected = numNode * dCostLB;
+		assertTrue(Math.abs(attCostExpected - curSimResult.getAttPayoff()) < tolerance);
+		assertTrue(Math.abs(defCostExpected - curSimResult.getDefPayoff()) < tolerance);
+	}
+	
+	@Test
+	public void testAttackAllDefendNone() {
+		final int numNode = 40;
+		final int numEdge = 0;
+		final int numTarget = 40;
+		final double nodeActTypeRatio = 0.5;
+		
+		final double aRewardLB = 2.0;
+		final double aRewardUB = 2.0;
+		final double aNodeCostLB = -0.3;
+		final double aNodeCostUB = -0.3;
+		final double aEdgeCostLB = 0.0;
+		final double aEdgeCostUB = 0.0;
+
+		final double dPenaltyLB = -5.0;
+		final double dPenaltyUB = -5.0;
+
+		final double dCostLB = -0.4;
+		final double dCostUB = -0.4;
+		final double aNodeActProbLB = 1.0;
+		final double aNodeActProbUB = 1.0;
+		final double aEdgeActProbLB = 1.0;
+		final double aEdgeActProbUB = 1.0;
+		final double minPosActiveProb = 1.0;
+		final double maxPosActiveProb = 1.0;
+		final double minPosInactiveProb = 1.0;
+		final double maxPosInactiveProb = 1.0;
+		
+		final double discFact = 1.0;
+
+		Node.resetCounter();
+		Edge.resetCounter();
+		RandomDataGenerator rnd = new RandomDataGenerator();
+		rnd.reSeed(System.currentTimeMillis());
+		DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rnd);
+		DGraphGenerator.genGraph(depGraph, rnd
+			, numTarget, nodeActTypeRatio
+			, aRewardLB, aRewardUB
+			, dPenaltyLB, dPenaltyUB
+			, aNodeCostLB, aNodeCostUB
+			, aEdgeCostLB, aEdgeCostUB
+			, dCostLB, dCostUB
+			, aNodeActProbLB, aNodeActProbUB
+			, aEdgeActProbLB, aEdgeActProbUB
+			, minPosActiveProb, maxPosActiveProb
+			, minPosInactiveProb, maxPosInactiveProb);
+		DGraphGenerator.findMinCut(depGraph);
+				
+		final int numTimeStep = 1;
+		final Defender uniformDefender = new UniformDefender(0, 0, 1.0);
+		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0);
+				
+		final GameSimulation gameSim =
+			new GameSimulation(depGraph, uniformAttacker, uniformDefender, rnd, numTimeStep, discFact);
+		GameSimulationResult curSimResult = gameSim.getSimulationResult();
+		final double tolerance = 0.01;
+		assertTrue(Math.abs(curSimResult.getAttPayoff()) < tolerance);
+		assertTrue(Math.abs(curSimResult.getDefPayoff()) < tolerance);
+		
+		gameSim.runSimulation();
+		curSimResult = gameSim.getSimulationResult();
+		// attacker payoff should be:
+		// numNode * (aNodeCostLB + aRewardLB)
+		final double attCostExpected = numNode * (aNodeCostLB + aRewardLB);
+		// defender payoff should be:
+		// numNode * dPenaltyLB
+		final double defCostExpected = numNode * dPenaltyLB;
 		assertTrue(Math.abs(attCostExpected - curSimResult.getAttPayoff()) < tolerance);
 		assertTrue(Math.abs(defCostExpected - curSimResult.getDefPayoff()) < tolerance);
 	}

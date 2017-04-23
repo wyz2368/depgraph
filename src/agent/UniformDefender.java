@@ -22,7 +22,7 @@ public final class UniformDefender extends Defender {
 		final double minNumRes, 
 		final double numResRatio) {
 		super(DefenderType.UNIFORM);
-		if (maxNumRes < 1 || minNumRes > maxNumRes || numResRatio < 0.0 || numResRatio > 1.0) {
+		if (maxNumRes < 0 || minNumRes > maxNumRes || numResRatio < 0.0 || numResRatio > 1.0) {
 			throw new IllegalArgumentException();
 		}
 		this.maxNumRes = (int) maxNumRes;
@@ -44,7 +44,8 @@ public final class UniformDefender extends Defender {
 			numNodetoProtect = Math.max(this.minNumRes, (int) (this.numResRatio * dCandidateNodeList.size()));
 			numNodetoProtect = Math.min(this.maxNumRes, numNodetoProtect);
 		}
-		if (dCandidateNodeList.size() == 0) {
+		// System.out.println(numNodetoProtect + " defender blocks");
+		if (dCandidateNodeList.size() == 0 || numNodetoProtect == 0) {
 			return new DefenderAction();
 		}
 		// Sample nodes
@@ -62,5 +63,11 @@ public final class UniformDefender extends Defender {
 		final int numTimeStep,
 		final RandomGenerator rng) {
 		return new DefenderBelief();
+	}
+
+	@Override
+	public String toString() {
+		return "UniformDefender [maxNumRes=" + this.maxNumRes + ", minNumRes="
+			+ this.minNumRes + ", numResRatio=" + this.numResRatio + "]";
 	}
 }

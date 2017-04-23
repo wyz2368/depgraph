@@ -94,7 +94,7 @@ public final class GameSimulation {
 		dBelief.addState(gameState, 1.0); // initial belief of the defender
 		long start, end;
 		final double thousand = 1000.0;
-		for (int t = 0; t <= this.numTimeStep; t++) {
+		for (int t = 1; t <= this.numTimeStep; t++) {
 			printIfDebug("Time step: " + t);
 			start = System.currentTimeMillis();
 			printIfDebug("Sample attacker action...");
@@ -149,9 +149,9 @@ public final class GameSimulation {
 			GameSample gameSample = new GameSample(t, gameState, dObservation, defAction, attAction);
 			this.simResult.addGameSample(gameSample);
 		}
-		if (this.simResult.getGameSampleList().size() != this.numTimeStep + 1) {
+		if (this.simResult.getGameSampleList().size() != this.numTimeStep) {
 			throw new IllegalStateException(
-				this.simResult.getGameSampleList().size() + "\t" + (this.numTimeStep + 1));
+				this.simResult.getGameSampleList().size() + "\t" + this.numTimeStep);
 		}
 		this.computePayoff();
 	}
@@ -169,7 +169,7 @@ public final class GameSimulation {
 				attPayoff += Math.pow(this.discFact, timeStep) * node.getAReward();
 			}
 			// omit the final round's action cost, because action has no effect
-			if (timeStep < this.numTimeStep) {
+			if (timeStep <= this.numTimeStep) {
 				for (final Node node : defAction.getAction()) {
 					defPayoff += node.getDCost();
 				}
