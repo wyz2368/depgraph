@@ -79,7 +79,7 @@ public final class TestAttackerAgent {
 		final int numRWSample = 100;
 		
 		final int numTimeStep = 10;
-		final int numSim = 1000;
+		final int numSim = 50;
 		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
 		
 		Attacker vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate, minNumSelectCandidate

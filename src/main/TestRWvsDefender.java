@@ -23,8 +23,8 @@ public final class TestRWvsDefender {
 	}
 	
 	public static void main(final String[] args) {
-		final int numNode = 50;
-		final int numEdge = 150;
+		final int numNode = 30;
+		final int numEdge = 90;
 		final int numTarget = 10;
 		final double nodeActTypeRatio = 0.3;
 		final double aRewardLB = 5.0;
@@ -65,8 +65,6 @@ public final class TestRWvsDefender {
 		DGraphGenerator.findMinCut(depGraph);
 		depGraph.print();
 		
-		
-		
 		final double logisParam = 5.0;
 		final double thres = 1e-3 * 0.5;
 		final int maxNumRes = 10;
@@ -85,10 +83,7 @@ public final class TestRWvsDefender {
 		
 		final int numTimeStep = 10;
 		final int numSim = 1;
-		
-//		boolean isRandomized = true;
-		
-		
+
 		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
 		RandomWalkVsDefender rwDefenderRandomized =
 			new RandomWalkVsDefender(logisParam, discFact, thres, qrParamDef, numRWSampleDef, 1.0);

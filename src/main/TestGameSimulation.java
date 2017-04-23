@@ -31,8 +31,8 @@ public final class TestGameSimulation {
 	}
 	
 	public static void main(final String[] args) {
-		final int numNode = 100;
-		final int numEdge = 300;
+		final int numNode = 30;
+		final int numEdge = 90;
 		final int numTarget = 10;
 		final double nodeActTypeRatio = 0.3;
 		final double aRewardLB = 5.0;
@@ -60,20 +60,18 @@ public final class TestGameSimulation {
 		rnd.reSeed(System.currentTimeMillis());
 		DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rnd);
 		DGraphGenerator.genGraph(depGraph, rnd
-				, numTarget, nodeActTypeRatio
-				, aRewardLB, aRewardUB
-				, dPenaltyLB, dPenaltyUB
-				, aNodeCostLB, aNodeCostUB
-				, aEdgeCostLB, aEdgeCostUB
-				, dCostLB, dCostUB
-				, aNodeActProbLB, aNodeActProbUB
-				, aEdgeActProbLB, aEdgeActProbUB
-				, minPosActiveProb, maxPosActiveProb
-				, minPosInactiveProb, maxPosInactiveProb);
+			, numTarget, nodeActTypeRatio
+			, aRewardLB, aRewardUB
+			, dPenaltyLB, dPenaltyUB
+			, aNodeCostLB, aNodeCostUB
+			, aEdgeCostLB, aEdgeCostUB
+			, dCostLB, dCostUB
+			, aNodeActProbLB, aNodeActProbUB
+			, aEdgeActProbLB, aEdgeActProbUB
+			, minPosActiveProb, maxPosActiveProb
+			, minPosInactiveProb, maxPosInactiveProb);
 		DGraphGenerator.findMinCut(depGraph);
 		depGraph.print();
-		
-		
 		
 		final double logisParam = 5.0;
 		final double thres = 1e-2;
@@ -135,16 +133,16 @@ public final class TestGameSimulation {
 				break;
 			case vsVALUE_PROPAGATION:
 				defList[i] = new ValuePropagationVsDefenderALT(maxNumRes, minNumRes, numResRatio
-						, logisParam, discFact, thres
-						, qrParamDef
-						, maxNumSelectCandidateDef, minNumSelectCandidateDef, numSelectCandidateRatioDef);
+					, logisParam, discFact, thres
+					, qrParamDef
+					, maxNumSelectCandidateDef, minNumSelectCandidateDef, numSelectCandidateRatioDef);
 				break;
 			case vsRANDOM_WALK:
 				defList[i] = new RandomWalkVsDefender(logisParam, discFact, thres, qrParamDef, numRWSampleDef, 1.0);
 				break;
 			case vsUNIFORM:
 				defList[i] = new UniformVsDefender(logisParam, discFact, thres, maxNumRes, minNumRes, numResRatio
-						, maxNumSelectCandidateDef, minNumSelectCandidateDef, numSelectCandidateRatioDef);
+					, maxNumSelectCandidateDef, minNumSelectCandidateDef, numSelectCandidateRatioDef);
 				break;
 			default:
 				System.out.println("Defender type does not exist");
@@ -197,6 +195,5 @@ public final class TestGameSimulation {
 				System.out.println("----------------------------------------------------");
 			}
 		}
-		
 	}
 }
