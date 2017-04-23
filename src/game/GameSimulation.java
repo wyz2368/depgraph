@@ -164,23 +164,24 @@ public final class GameSimulation {
 			final GameState gameState = gameSample.getGameState();
 			final DefenderAction defAction = gameSample.getDefAction();
 			final AttackerAction attAction = gameSample.getAttAction();
+			final double discFactPow = Math.pow(this.discFact, timeStep - 1);
 			for (final Node node : gameState.getEnabledNodeSet()) {
-				defPayoff += Math.pow(this.discFact, timeStep - 1) * node.getDPenalty();
-				attPayoff += Math.pow(this.discFact, timeStep - 1) * node.getAReward();
+				defPayoff += discFactPow * node.getDPenalty();
+				attPayoff += discFactPow * node.getAReward();
 			}
 			// omit the final round's action cost, because action has no effect
 			if (timeStep <= this.numTimeStep) {
 				for (final Node node : defAction.getAction()) {
-					defPayoff += Math.pow(this.discFact, timeStep - 1) * node.getDCost();
+					defPayoff += discFactPow * node.getDCost();
 				}
 				for (final Entry<Node, Set<Edge>> entry : attAction.getActionCopy().entrySet()) {
 					final Node node = entry.getKey();
 					if (node.getActivationType() == NodeActivationType.AND) {
-						attPayoff += Math.pow(this.discFact, timeStep - 1) * node.getACost();
+						attPayoff += discFactPow * node.getACost();
 					} else {
 						final Set<Edge> edgeSet = entry.getValue();
 						for (final Edge edge : edgeSet) {
-							attPayoff += Math.pow(this.discFact, timeStep - 1) * edge.getACost();
+							attPayoff += discFactPow * edge.getACost();
 						}
 					}
 				}

@@ -130,7 +130,7 @@ public final class UnitTestGameSimulation {
 		final double minPosInactiveProb = 1.0;
 		final double maxPosInactiveProb = 1.0;
 		
-		final double discFact = 1.0;
+		final double discFact = 0.9;
 
 		Node.resetCounter();
 		Edge.resetCounter();
@@ -150,7 +150,7 @@ public final class UnitTestGameSimulation {
 			, minPosInactiveProb, maxPosInactiveProb);
 		DGraphGenerator.findMinCut(depGraph);
 				
-		final int numTimeStep = 1;
+		final int numTimeStep = 4;
 		final Defender uniformDefender = new UniformDefender(0, 0, 1.0);
 		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0);
 				
@@ -163,18 +163,19 @@ public final class UnitTestGameSimulation {
 		
 		gameSim.runSimulation();
 		curSimResult = gameSim.getSimulationResult();
+		final double discountTotal = 1.0 + discFact + discFact * discFact + discFact * discFact * discFact;
 		// attacker payoff should be:
-		// numNode * (aNodeCostLB + aRewardLB)
-		final double attCostExpected = numNode * (aNodeCostLB + aRewardLB);
+		// numNode * (aNodeCostLB + aRewardLB * discountTotal)
+		final double attCostExpected = numNode * (aNodeCostLB + aRewardLB * discountTotal);
 		// defender payoff should be:
-		// numNode * dPenaltyLB
-		final double defCostExpected = numNode * dPenaltyLB;
+		// numNode * dPenaltyLB * discountTotal
+		final double defCostExpected = numNode * dPenaltyLB * discountTotal;
 		assertTrue(Math.abs(attCostExpected - curSimResult.getAttPayoff()) < tolerance);
 		assertTrue(Math.abs(defCostExpected - curSimResult.getDefPayoff()) < tolerance);
 	}
 	
 	@Test
-	public void testDiscounting() {
+	public void testDiscountingAttackDefendAll() {
 		final int numNode = 40;
 		final int numEdge = 0;
 		final int numTarget = 40;
