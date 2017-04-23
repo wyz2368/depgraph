@@ -123,6 +123,7 @@ public final class DGraphUtils {
 			depGraph.addMinCut(nodeArray[nodeID - 1]);
 		}
 		/************************************************************************************/
+		setRootSet(depGraph);
 		return depGraph;
 	}
 	
@@ -197,6 +198,14 @@ public final class DGraphUtils {
 			output.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	private static void setRootSet(final DependencyGraph depGraph) {
+		for (Node node : depGraph.vertexSet()) {
+			if (depGraph.inDegreeOf(node) == 0) {
+				depGraph.addRoot(node);
+			}
 		}
 	}
 }

@@ -4,15 +4,22 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 import org.junit.Test;
 
 import game.GameSimulation;
+import game.GameSimulationSpec;
+import game.MeanGameSimulationResult;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.util.Map;
 
 import graph.DGraphGenerator;
 import graph.DagGenerator;
 import graph.Edge;
 import graph.Node;
 import model.DependencyGraph;
+import utils.DGraphUtils;
+import utils.EncodingUtils;
+import utils.JsonUtils;
 
 @SuppressWarnings("static-method")
 public final class UnitTestMainGameSimulation {
@@ -78,5 +85,38 @@ public final class UnitTestMainGameSimulation {
 				, minPosInactiveProb, maxPosInactiveProb);
 			DGraphGenerator.findMinCut(depGraph);
 		}
+	}
+	
+	@Test
+	public void testFromSimSpec() {
+		final String simspecFolderName = "simspecs";
+		final String graphFolderName = "graphs";
+  
+		final GameSimulationSpec simSpec =
+			JsonUtils.getSimSpecOrDefaults(simspecFolderName);
+		// Load graph
+		String filePathName = graphFolderName + File.separator
+			+ "RandomGraph" + simSpec.getNumNode() + "N" + simSpec.getNumEdge() + "E" 
+			+ simSpec.getNumTarget() + "T"
+			+ simSpec.getGraphID() + JsonUtils.JSON_SUFFIX;
+		DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
+		GameSimulation.printIfDebug(filePathName);
+
+		// Load players
+		final String attackerString = JsonUtils.getAttackerString(simspecFolderName);
+		final String defenderString = JsonUtils.getDefenderString(simspecFolderName);
+		final String attackerName = EncodingUtils.getStrategyName(attackerString);
+		final String defenderName = EncodingUtils.getStrategyName(defenderString);
+		final Map<String, Double> attackerParams =
+			EncodingUtils.getStrategyParams(attackerString);
+		final Map<String, Double> defenderParams =
+			EncodingUtils.getStrategyParams(defenderString);
+		
+		final MeanGameSimulationResult simResult = MainGameSimulation.runSimulations(
+			depGraph, simSpec, attackerName,
+			attackerParams, defenderName, defenderParams,
+			simSpec.getNumSim());
+		JsonUtils.getObservationString(
+			simResult, attackerString, defenderString, simSpec);
 	}
 }

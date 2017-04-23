@@ -156,10 +156,12 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 		for (Node node : vertexSet()) {
 			if (inDegreeOf(node) == 0) {
 				if (!this.rootSet.contains(node)) {
+					System.out.println("Root set omits Node with 0 in-degree");
 					return false;
 				}
 			} else {
 				if (this.rootSet.contains(node)) {
+					System.out.println("Root set contains node with nonzero in-degree");
 					return false;
 				}
 			}
