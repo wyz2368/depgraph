@@ -123,6 +123,7 @@ public final class DGraphUtils {
 			depGraph.addMinCut(nodeArray[nodeID - 1]);
 		}
 		/************************************************************************************/
+		// add root set
 		setRootSet(depGraph);
 		return depGraph;
 	}

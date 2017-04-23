@@ -65,6 +65,18 @@ public final class UniformDefender extends Defender {
 		return new DefenderBelief();
 	}
 
+	public int getMaxNumRes() {
+		return this.maxNumRes;
+	}
+
+	public int getMinNumRes() {
+		return this.minNumRes;
+	}
+
+	public double getNumResRatio() {
+		return this.numResRatio;
+	}
+
 	@Override
 	public String toString() {
 		return "UniformDefender [maxNumRes=" + this.maxNumRes + ", minNumRes="

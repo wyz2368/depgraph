@@ -219,6 +219,18 @@ public final class UniformAttacker extends Attacker {
 		return aCandidate;
 	}
 
+	public int getMaxNumSelectCandidate() {
+		return this.maxNumSelectCandidate;
+	}
+
+	public int getMinNumSelectCandidate() {
+		return this.minNumSelectCandidate;
+	}
+
+	public double getNumSelectCandidateRatio() {
+		return this.numSelectCandidateRatio;
+	}
+
 	@Override
 	public String toString() {
 		return "UniformAttacker [maxNumSelectCandidate=" + this.maxNumSelectCandidate

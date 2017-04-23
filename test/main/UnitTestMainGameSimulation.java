@@ -3,6 +3,9 @@ package main;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.junit.Test;
 
+import agent.AgentFactory;
+import agent.GoalOnlyDefender;
+import agent.UniformAttacker;
 import game.GameSimulation;
 import game.GameSimulationSpec;
 import game.MeanGameSimulationResult;
@@ -118,5 +121,55 @@ public final class UnitTestMainGameSimulation {
 			simSpec.getNumSim());
 		JsonUtils.getObservationString(
 			simResult, attackerString, defenderString, simSpec);
+	}
+	
+	@Test
+	public void testReadSimSpec() {
+		final String simspecFolderName = "testDirs/simSpec0";
+		final String graphFolderName = "graphs";
+  
+		final GameSimulationSpec simSpec =
+			JsonUtils.getSimSpecOrDefaults(simspecFolderName);
+		// Load graph
+		String filePathName = graphFolderName + File.separator
+			+ "RandomGraph" + simSpec.getNumNode() + "N" + simSpec.getNumEdge() + "E" 
+			+ simSpec.getNumTarget() + "T"
+			+ simSpec.getGraphID() + JsonUtils.JSON_SUFFIX;
+		// DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
+		GameSimulation.printIfDebug(filePathName);
+
+		// Load players
+		final String attackerString = JsonUtils.getAttackerString(simspecFolderName);
+		final String defenderString = JsonUtils.getDefenderString(simspecFolderName);
+		final Map<String, Double> attackerParams =
+			EncodingUtils.getStrategyParams(attackerString);
+		final Map<String, Double> defenderParams =
+			EncodingUtils.getStrategyParams(defenderString);
+		
+		final UniformAttacker testAttacker =
+			(UniformAttacker) AgentFactory.createAttacker("UNIFORM", attackerParams, simSpec.getDiscFact());
+		final GoalOnlyDefender testDefender =
+			(GoalOnlyDefender) AgentFactory.createDefender("GOAL_ONLY", defenderParams, simSpec.getDiscFact());
+		
+		final double tolerance = 0.01;
+		// UNIFORM:maxNumSelectCandidate_4.0_minNumSelectCandidate_3.0_numSelectCandidateRatio_0.6_qrParam_2.0
+		final double maxNumSelectCand = 4.0;
+		final double minNumSelectCand = 3.0;
+		final double numSelectCandidateRatio = 0.6;
+		assertTrue(Math.abs(testAttacker.getMaxNumSelectCandidate() - maxNumSelectCand) < tolerance);
+		assertTrue(Math.abs(testAttacker.getMinNumSelectCandidate() - minNumSelectCand) < tolerance);
+		assertTrue(Math.abs(testAttacker.getNumSelectCandidateRatio() - numSelectCandidateRatio) < tolerance);
+		
+		// GOAL_ONLY:maxNumRes_5.0_minNumRes_2.0_numResRatio_0.8_logisParam_6.0
+		final double maxNumRes = 5.0;
+		final double minNumRes = 2.0;
+		final double numResRatio = 0.8;
+		final double logisParam = 6.0;
+		final double discFact = 0.4;
+		assertTrue(Math.abs(testDefender.getMaxNumRes() - maxNumRes) < tolerance);
+		assertTrue(Math.abs(testDefender.getMinNumRes() - minNumRes) < tolerance);
+		assertTrue(Math.abs(testDefender.getNumResRatio() - numResRatio) < tolerance);
+		assertTrue(Math.abs(testDefender.getLogisParam() - logisParam) < tolerance);
+		assertTrue(Math.abs(testDefender.getDiscFact() - discFact) < tolerance);
 	}
 }

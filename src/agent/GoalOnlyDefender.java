@@ -76,6 +76,26 @@ public final class GoalOnlyDefender extends Defender {
 		return new DefenderBelief(); // an empty belief
 	}
 	
+	public int getMaxNumRes() {
+		return this.maxNumRes;
+	}
+
+	public int getMinNumRes() {
+		return this.minNumRes;
+	}
+
+	public double getNumResRatio() {
+		return this.numResRatio;
+	}
+
+	public double getLogisParam() {
+		return this.logisParam;
+	}
+
+	public double getDiscFact() {
+		return this.discFact;
+	}
+
 	private static boolean isProb(final double i) {
 		return i >= 0.0 && i <= 1.0;
 	}
