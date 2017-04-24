@@ -167,7 +167,7 @@ public final class GameSimulation {
 			final AttackerAction attAction = gameSample.getAttAction();
 			final double discFactPow = Math.pow(this.discFact, timeStep - 1);
 			for (final Node node : gameState.getEnabledNodeSet()) {
-				if(node.getType() == NodeType.TARGET) {
+				if (node.getType() == NodeType.TARGET) {
 					defPayoff += discFactPow * node.getDPenalty();
 					attPayoff += discFactPow * node.getAReward();
 				}
