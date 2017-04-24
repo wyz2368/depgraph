@@ -160,7 +160,6 @@ public final class JsonUtils {
 		final String defenderStratString = defenderJson.get("strategy").toString().replaceAll("\"", "");
 		final String attackerName = EncodingUtils.getStrategyName(attackerStratString);
 		final String defenderName = EncodingUtils.getStrategyName(defenderStratString);
-
 		final Map<String, Double> attackerParams =
 			EncodingUtils.getStrategyParams(attackerStratString);
 		final Map<String, Double> defenderParams =
@@ -171,8 +170,15 @@ public final class JsonUtils {
 		final Defender defender =
 			AgentFactory.createDefender(
 				defenderName, defenderParams, gameSimSpec.getDiscFact());
-		// TODO
-		return null;
+		
+		final double meanAttPayoff = attackerJson.get("payoff").getAsDouble();
+		final double meanDefPayoff = defenderJson.get("payoff").getAsDouble();
+		final int numSim = gameSimSpec.getNumSim();
+		final int numTimeStep = gameSimSpec.getNumTimeStep();
+		final MeanGameSimulationResult gameSimResult =
+			new MeanGameSimulationResult(meanDefPayoff, meanAttPayoff, numSim, numTimeStep);
+		
+		return new ObservationStruct(gameSimResult, attacker, defender, gameSimSpec);
 	}
 
 	public static String getObservationString(
@@ -243,8 +249,9 @@ public final class JsonUtils {
 		assert fileName != null;
 		final StringBuilder builder = new StringBuilder();
 		try {
+			File file = new File(fileName);
 			 final BufferedReader br =
-				new BufferedReader(new FileReader(new File(fileName)));
+				new BufferedReader(new FileReader(file));
 			String line = null;
 			while ((line = br.readLine()) != null) {
 				builder.append(line);
@@ -292,28 +299,29 @@ public final class JsonUtils {
 	
 	public static void main(final String[] args) {
 		final String pathName = "simspecs/observation0.json";
-		fromObservationFile(pathName);
+		final ObservationStruct obs = fromObservationFile(pathName);
+		System.out.println(obs);
 	}
 	
-	public final class ObservationStruct {
+	public static final class ObservationStruct {
 		private final MeanGameSimulationResult simResult;
-		private final String attackerStrategyString;
-		private final String defenderStrategyString;
+		private final Attacker attacker;
+		private final Defender defender;
 		private final GameSimulationSpec simSpec;
 		
 		public ObservationStruct(final MeanGameSimulationResult aSimResult,
-			final String aAttackerStrategyString,
-			final String aDefenderStrategyString,
+			final Attacker aAttacker,
+			final Defender aDefender,
 			final GameSimulationSpec aSimSpec
 		) {
-			if (aSimResult == null || aAttackerStrategyString == null
-				|| aDefenderStrategyString == null || aSimSpec == null
+			if (aSimResult == null || aAttacker == null
+				|| aDefender == null || aSimSpec == null
 			) {
 				throw new IllegalArgumentException();
 			}
 			this.simResult = aSimResult;
-			this.attackerStrategyString = aAttackerStrategyString;
-			this.defenderStrategyString = aDefenderStrategyString;
+			this.attacker = aAttacker;
+			this.defender = aDefender;
 			this.simSpec = aSimSpec;
 		}
 
@@ -321,16 +329,23 @@ public final class JsonUtils {
 			return this.simResult;
 		}
 
-		public String getAttackerStrategyString() {
-			return this.attackerStrategyString;
+		public Attacker getAttacker() {
+			return this.attacker;
 		}
 
-		public String getDefenderStrategyString() {
-			return this.defenderStrategyString;
+		public Defender getDefender() {
+			return this.defender;
 		}
 
 		public GameSimulationSpec getSimSpec() {
 			return this.simSpec;
+		}
+
+		@Override
+		public String toString() {
+			return "ObservationStruct [\n\tsimResult=" + this.simResult + ",\n\tattacker="
+				+ this.attacker + ",\n\tdefender=" + this.defender + ",\n\tsimSpec="
+				+ this.simSpec + "\n]";
 		}
 	}
 }

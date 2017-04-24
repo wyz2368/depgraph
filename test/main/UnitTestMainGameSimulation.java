@@ -32,7 +32,7 @@ import utils.JsonUtils;
 public final class UnitTestMainGameSimulation {
 
 	public UnitTestMainGameSimulation() {
-		// default constuctor
+		// default constructor
 	}
 	
 	@Test
