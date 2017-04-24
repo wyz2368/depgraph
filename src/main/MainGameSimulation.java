@@ -35,7 +35,7 @@ public final class MainGameSimulation {
 		final long endTime = System.nanoTime();
 		final long diff = endTime - startTime;
 		final long millis = diff / 1000000;
-		System.out.println("time taken in millis: " + millis);
+		GameSimulation.printIfDebug("time taken in millis: " + millis);
 	}
 	
 	/**
@@ -57,6 +57,7 @@ public final class MainGameSimulation {
 			+ simSpec.getNumTarget() + "T"
 			+ simSpec.getGraphID() + JsonUtils.JSON_SUFFIX;
 		DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
+		GameSimulation.printIfDebug(filePathName);
 				
 		// Load players
 		final String attackerString = JsonUtils.getAttackerString(simspecFolderName);
@@ -78,7 +79,7 @@ public final class MainGameSimulation {
 		JsonUtils.printObservationToFile(simspecFolderName, obsString);
 	}
 	
-	private static MeanGameSimulationResult runSimulations(final DependencyGraph depGraph,
+	static MeanGameSimulationResult runSimulations(final DependencyGraph depGraph,
 		final GameSimulationSpec simSpec, final String attackerName,
 		final Map<String, Double> attackerParams, final String defenderName,
 		final Map<String, Double> defenderParams, final int numSim) {
@@ -96,7 +97,7 @@ public final class MainGameSimulation {
 		final int thousand = 1000;
 		for (int i = 0; i < numSim; i++) {
 			if (i % thousand == 0) {
-				System.out.println("Simulation: " + i);
+				GameSimulation.printIfDebug("Simulation: " + i);
 			}
 			gameSim.runSimulation();
 			meanGameSimResult.updateMeanSimulationResult(gameSim.getSimulationResult());

@@ -39,7 +39,8 @@ public final class UniformVsDefender extends Defender {
 	
 	public UniformVsDefender(final double logisParam, final double discFact, final double thres
 		, final double maxNumRes, final double minNumRes, final double numResRatio
-		, final double maxNumSelectACandidate, final double minNumSelectACandidate, final double numSelectACandidateRatio) {
+		, final double maxNumSelectACandidate,
+		final double minNumSelectACandidate, final double numSelectACandidateRatio) {
 		super(DefenderType.vsUNIFORM);
 		if (discFact <= 0.0 || discFact > 1.0 || thres < 0.0 || thres > 1.0
 			|| minNumRes < 1 || maxNumRes < minNumRes || numResRatio < 0.0 || numResRatio > 1.0
@@ -52,12 +53,12 @@ public final class UniformVsDefender extends Defender {
 		this.discFact = discFact;
 		this.thres = thres;
 		
-		this.maxNumRes = (int)maxNumRes;
-		this.minNumRes = (int)minNumRes;
-		this.numResRatio = (int)numResRatio;
+		this.maxNumRes = (int) maxNumRes;
+		this.minNumRes = (int) minNumRes;
+		this.numResRatio = (int) numResRatio;
 		
-		this.maxNumSelectACandidate = (int)maxNumSelectACandidate;
-		this.minNumSelectACandidate = (int)minNumSelectACandidate;
+		this.maxNumSelectACandidate = (int) maxNumSelectACandidate;
+		this.minNumSelectACandidate = (int) minNumSelectACandidate;
 		this.numSelectACandidateRatio = numSelectACandidateRatio;
 	}
 	
@@ -215,7 +216,6 @@ public final class UniformVsDefender extends Defender {
 		for (Entry<GameState, Double> entry : revisedBelief.getGameStateMap().entrySet()) {
 			entry.setValue(entry.getValue() / sumProb); 
 		}
-		System.out.println("Belief size: " + revisedBelief.getGameStateMap().size());
 		return revisedBelief;
 	}
 	

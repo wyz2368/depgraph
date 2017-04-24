@@ -11,22 +11,6 @@ public final class GameSimulationSpec {
 	private final int numTarget; // minimum number of targets
 	
 	private final double discFact; // for computing payoff
-
-	// private double aRewardLB;
-	//	private double aRewardUB;
-	//	private double dPenaltyLB;
-	//	private double dPenaltyUB;
-	//	
-	//	private int totalNumAlert; // total number of security alerts
-	//	private int minNumAlert; // minimum number of alerts for each node
-	//	private int maxNumAlert; // maximum number of alerts for each node
-	
-	// For strategy generation
-	// Note: should we use uniform distribution to generate number of nodes to enable or disable each time step???
-	//	private double fixPoissonParam; // used if fixed mean is used
-	//	private double adaptPoissonRatio; // used if mean is chosen according to the number of available nodes
-	//	private double qrParam; // for attacker 
-	//	private double logisParam; // for defender
 	
 	public GameSimulationSpec(final int numTimeStep, final int numSim,
 		final int graphID, final int numNode,
@@ -71,5 +55,13 @@ public final class GameSimulationSpec {
 	
 	public double getDiscFact() {
 		return this.discFact;
+	}
+
+	@Override
+	public String toString() {
+		return "GameSimulationSpec [numTimeStep=" + this.numTimeStep + ", numSim="
+			+ this.numSim + ", graphID=" + this.graphID + ", numNode=" + this.numNode
+			+ ", numEdge=" + this.numEdge + ", numTarget=" + this.numTarget
+			+ ", discFact=" + this.discFact + "]";
 	}
 }

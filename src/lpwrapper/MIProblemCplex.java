@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import game.GameSimulation;
+
 public abstract class MIProblemCplex extends AMIProblem {
 	protected IloCplex cplex;
 	// IloObjective objectiveFunction;
@@ -74,7 +76,7 @@ public abstract class MIProblemCplex extends AMIProblem {
 			} else if (cplexStat == CplexStatus.Unbounded) {
 				return StatusType.UNBOUNDED;
 			} else {
-				// System.out.println("Cplex Status: " + cplex.getCplexStatus());
+				// GameSimulation.printIfDebug("Cplex Status: " + cplex.getCplexStatus());
 				return StatusType.UNKNOWN;
 			}
 		} catch (IloException e) {
@@ -496,9 +498,9 @@ public abstract class MIProblemCplex extends AMIProblem {
 			}
 			this.rows.get(rowNo - 1).setExpr(constraintExpr);
 		} catch (Exception e) {	
-			// System.out.println("rowNo: " + rowNo);
-			// System.out.println(rows.size());
-			// System.out.println(rows.get(rowNo - 1));
+			// GameSimulation.printIfDebug("rowNo: " + rowNo);
+			// GameSimulation.printIfDebug(rows.size());
+			// GameSimulation.printIfDebug(rows.get(rowNo - 1));
 			
 			e.printStackTrace();
 			

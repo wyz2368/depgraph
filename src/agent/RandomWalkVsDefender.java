@@ -356,7 +356,7 @@ public final class RandomWalkVsDefender extends Defender {
 		}
 		DefenderCandidate defCandidateAll = new DefenderCandidate(); // all candidate nodes for the defender
 		for (AttackerAction attAction : attActionList) {
-			for (Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet()) {
+			for (Entry<Node, Set<Edge>> entry : attAction.getActionCopy().entrySet()) {
 				defCandidateAll.addNodeCandidate(entry.getKey());
 			}
 		}
@@ -384,7 +384,7 @@ public final class RandomWalkVsDefender extends Defender {
 		
 		int idx = 0;
 		for (AttackerAction attAction : attActionList) {
-			for (Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet()) {
+			for (Entry<Node, Set<Edge>> entry : attAction.getActionCopy().entrySet()) {
 				Node node = entry.getKey();
 				isInQueue[idx][node.getId() - 1] = true;
 			}
@@ -434,14 +434,12 @@ public final class RandomWalkVsDefender extends Defender {
 				}
 			}
 		}
-//		System.out.println("Initial defender value: " + value);
 		// Start greedy process----------------------------------------------------------------------------
 		boolean[][] maxQueue =
 			new boolean[attActionList.length][depGraph.vertexSet().size()]; // corresponding best queue
 		boolean[][] isInCurrentQueue = new boolean[attActionList.length][depGraph.vertexSet().size()];
 		boolean isStop = false;
 		while (!isStop) { // only stop when no new candidate node can increase the defender's utility
-//			System.out.println("Adding new node to protect....");
 			isStop = true;
 			int candidateIdx = 0;
 			
@@ -475,12 +473,10 @@ public final class RandomWalkVsDefender extends Defender {
 											Node preNode =
 												rwTuples[postNode.getId() - 1].getPreAct().get(0).getsource();
 											if (preNode.getId() == node.getId()) {
-//												System.out.println("Adding new nodes");
 												isInCurrentQueue[idx][postNode.getId() - 1] = false;
 												queue.add(postNode);
 											}
 										} else {
-//											System.out.println("Adding new nodes");
 											isInCurrentQueue[idx][postNode.getId() - 1] = false;
 											queue.add(postNode);
 										}
@@ -604,7 +600,7 @@ public final class RandomWalkVsDefender extends Defender {
 		
 		int idx = 0;
 		for (AttackerAction attAction : attActionList) {
-			for (Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet()) {
+			for (Entry<Node, Set<Edge>> entry : attAction.getActionCopy().entrySet()) {
 				Node node = entry.getKey();
 				if (!isBlock[node.getId() - 1]) {
 					isInQueue[idx][node.getId() - 1] = true;
@@ -612,99 +608,100 @@ public final class RandomWalkVsDefender extends Defender {
 			}
 			idx++;
 		}
-		for(idx = 0; idx < attActionList.length; idx++)
-		{
+		for (idx = 0; idx < attActionList.length; idx++) {
 			RandomWalkTuple[] rwTuples = rwTuplesList[idx];
-			for(int i = 0; i < depGraph.vertexSet().size(); i++)
-			{
+			for (int i = 0; i < depGraph.vertexSet().size(); i++) {
 				Node node = topoOrder[i];
 				List<Edge> preEdgeList = rwTuples[node.getId() - 1].getPreAct();
-				if(!isInQueue[idx][node.getId() - 1] && preEdgeList != null) // if not set in queue yet, not root or active nodes
-				{
-					if(node.getActivationType() == NodeActivationType.OR) // if OR node
-					{
+				// if not set in queue yet, not root or active nodes
+				if (!isInQueue[idx][node.getId() - 1] && preEdgeList != null) {
+					if (node.getActivationType() == NodeActivationType.OR) { // if OR node
 						Node preNode = preEdgeList.get(0).getsource();
-						if(isInQueue[idx][preNode.getId() - 1] && !isBlock[node.getId() - 1])
+						if (isInQueue[idx][preNode.getId() - 1] && !isBlock[node.getId() - 1]) {					
 							isInQueue[idx][node.getId() - 1] = true;
-					}
-					else
-					{
+						}
+					} else {
 						boolean temp = true;
-						for(Edge preEdge : preEdgeList)
-						{
+						for (Edge preEdge : preEdgeList) {
 							Node preNode = preEdge.getsource();
-							if(!isInQueue[idx][preNode.getId() - 1] || isBlock[preNode.getId() - 1])
-							{
+							if (!isInQueue[idx][preNode.getId() - 1] || isBlock[preNode.getId() - 1]) {
 								temp = false;
 								break;
 							}
 						}
-						if(temp)
+						if (temp) {
 							isInQueue[idx][node.getId() - 1] = true;
+						}
 					}
 				}
 			}
 			
-			for(Node target : depGraph.getTargetSet())
-			{
+			for (Node target : depGraph.getTargetSet()) {
 				int actTime = rwTuples[target.getId() - 1].getTAct();
-				if(actTime <= numTimeStep && isInQueue[idx][target.getId() - 1])
+				if (actTime <= numTimeStep && isInQueue[idx][target.getId() - 1]) {
 					dValue += attProb[idx] * rwTuples[target.getId() - 1].getPAct() * target.getDPenalty() 
-									* Math.pow(discFact, actTime - 1);
+						* Math.pow(discFact, actTime - 1);
+				}
 			}
 		}
-		for(Node target : depGraph.getTargetSet())
-			if(target.getState() == NodeState.ACTIVE && !isBlock[target.getId() - 1])
+		for (Node target : depGraph.getTargetSet()) {
+			if (target.getState() == NodeState.ACTIVE && !isBlock[target.getId() - 1]) {
 				dValue += target.getDPenalty() * Math.pow(discFact, curTimeStep - 1);
+			}
+		}
 		return dValue;
 	}
 	
 	public double greedyAction(
-			DependencyGraph depGraph, 
-			int curTimeStep, 
-			int numTimeStep, 
-			DefenderBelief dBelief, 
-			RandomGenerator rng, 
-			DefenderAction defAction){ // this is outcome
+		final DependencyGraph depGraph, 
+		final int curTimeStep, 
+		final int numTimeStep, 
+		final DefenderBelief dBelief, 
+		final RandomGenerator rng, 
+		final DefenderAction defAction) { // this is outcome
 		double greedyValue = 0.0;
 		RandomWalkAttacker rwAttacker = new RandomWalkAttacker(this.numRWSample, this.qrParam, this.discFact);
 		// True game state
 		GameState savedGameState = new GameState();
-		for(Node node : depGraph.vertexSet())
-		{
-			if(node.getState() == NodeState.ACTIVE)
+		for (Node node : depGraph.vertexSet()) {
+			if (node.getState() == NodeState.ACTIVE) {
 				savedGameState.addEnabledNode(node);
+			}
 		}
 		// Get topological order, starting from zero
 		Node[] topoOrder = new Node[depGraph.vertexSet().size()];
-		for(Node node : depGraph.vertexSet())
+		for (Node node : depGraph.vertexSet()) {
 			topoOrder[node.getTopoPosition()] = node;
-		
+		}
 		int beliefSize = dBelief.getGameStateMap().size();
 		RandomWalkTuple[][][] rwTuplesAll = new RandomWalkTuple[beliefSize][][];
 		AttackerAction[][] rwAttActionAll = new AttackerAction[beliefSize][];
 		double[][] rwAttProbAll = new double[beliefSize][];
 		int bIdx = 0;
-		for(Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()){ // iterate over all possible game states
+		// iterate over all possible game states
+		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) {
 			GameState gameState = entry.getKey(); // a possible game state
 			depGraph.setState(gameState); // temporarily set game state to the graph
 			
-			RandomWalkTuple[][] rwTuplesList = new RandomWalkTuple[this.numRWSample][]; // list of all random walk tuples sampled
-			AttackerAction[] attActionList = new AttackerAction[this.numRWSample]; // corresponding list of attack candidates
+			// list of all random walk tuples sampled
+			RandomWalkTuple[][] rwTuplesList = new RandomWalkTuple[this.numRWSample][];
+			// corresponding list of attack candidates
+			AttackerAction[] attActionList = new AttackerAction[this.numRWSample];
 			double[] attValue = new double[this.numRWSample]; // values of corresponding action of the attacker
-			for(int i = 0; i < this.numRWSample; i++){
+			for (int i = 0; i < this.numRWSample; i++) {
 				RandomWalkTuple[] rwTuples = rwAttacker.randomWalk(depGraph, curTimeStep, rng); // sample random walk
 				AttackerAction attAction = new AttackerAction();
 				attValue[i] = RandomWalkAttacker.greedyAction(
-									depGraph, // greedy attack
-									rwTuples, 
-									attAction, // attAction is an outcome as well
-									numTimeStep, 
-									this.discFact); 
-				rwTuplesList[i]= rwTuples;
+					depGraph, // greedy attack
+					rwTuples, 
+					attAction, // attAction is an outcome as well
+					numTimeStep, 
+					this.discFact); 
+				rwTuplesList[i] = rwTuples;
 				attActionList[i] = attAction;
 			}
-			double[] attProb = RandomWalkAttacker.computeCandidateProb(this.numRWSample, attValue, this.qrParam); // attack probability
+			// attack probability
+			double[] attProb = RandomWalkAttacker.computeCandidateProb(this.numRWSample, attValue, this.qrParam);
 			
 			rwTuplesAll[bIdx] = rwTuplesList;
 			rwAttActionAll[bIdx] = attActionList;
@@ -717,33 +714,34 @@ public final class RandomWalkVsDefender extends Defender {
 		// Initialize block status of nodes in the graph
 		boolean[][][] isBlock = new boolean[beliefSize][this.numRWSample][depGraph.vertexSet().size()];
 		bIdx = 0;
-		for(bIdx = 0; bIdx < beliefSize; bIdx++) { // iterate over all possible game states
-			for(int j = 0; j < this.numRWSample; j++) {
-				for(int k = 0; k < depGraph.vertexSet().size(); k++){
+		for (bIdx = 0; bIdx < beliefSize; bIdx++) { // iterate over all possible game states
+			for (int j = 0; j < this.numRWSample; j++) {
+				for (int k = 0; k < depGraph.vertexSet().size(); k++) {
 					isBlock[bIdx][j][k] = true;
 				}
 				AttackerAction attAction = rwAttActionAll[bIdx][j];
-				for(Entry<Node, Set<Edge>> entry : attAction.getAction().entrySet())
+				for (Entry<Node, Set<Edge>> entry : attAction.getActionCopy().entrySet()) {
 					isBlock[bIdx][j][entry.getKey().getId() - 1] = false;
-				for(int k = 0; k < depGraph.vertexSet().size(); k++) {
+				}
+				for (int k = 0; k < depGraph.vertexSet().size(); k++) {
 					Node node = topoOrder[k];
 					List<Edge> preEdgeList = rwTuplesAll[bIdx][j][node.getId() - 1].getPreAct();
-					if(preEdgeList != null && isBlock[bIdx][j][node.getId() - 1]
+					if (preEdgeList != null && isBlock[bIdx][j][node.getId() - 1]
 							&& rwTuplesAll[bIdx][j][node.getId() - 1].getTAct() <= numTimeStep) {
-						if(node.getActivationType() == NodeActivationType.OR) {
+						if (node.getActivationType() == NodeActivationType.OR) {
 							Node preNode = preEdgeList.get(0).getsource();
-							if(!isBlock[bIdx][j][preNode.getId() - 1])
+							if (!isBlock[bIdx][j][preNode.getId() - 1]) {
 								isBlock[bIdx][j][node.getId() - 1] = false;
-						}
-						else {
+							}
+						} else {
 							boolean tempBlock = false;
-							for(Edge edge : preEdgeList) {
-								if(isBlock[bIdx][j][edge.getsource().getId() - 1]) {
+							for (Edge edge : preEdgeList) {
+								if (isBlock[bIdx][j][edge.getsource().getId() - 1]) {
 									tempBlock = true;
 									break;
 								}
 							}
-							if(!tempBlock) {
+							if (!tempBlock) {
 								isBlock[bIdx][j][node.getId() - 1] = false;
 							}
 						}
@@ -754,18 +752,19 @@ public final class RandomWalkVsDefender extends Defender {
 		}
 		// Compute current value of the defender
 		bIdx = 0;
-		for(Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) {
-			for(int j = 0; j < this.numRWSample; j++) {
-				for(Node target : depGraph.getTargetSet())
-				if(!isBlock[bIdx][j][target.getId() - 1]) {
-					greedyValue += entry.getValue() 
-							* rwAttProbAll[bIdx][j]
-							* target.getDPenalty() 
-							* Math.pow(this.discFact, rwTuplesAll[bIdx][j][target.getId() - 1].getTAct() - 1);
+		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) {
+			for (int j = 0; j < this.numRWSample; j++) {
+				for (Node target : depGraph.getTargetSet()) {
+					if (!isBlock[bIdx][j][target.getId() - 1]) {
+						greedyValue += entry.getValue() 
+								* rwAttProbAll[bIdx][j]
+								* target.getDPenalty() 
+								* Math.pow(this.discFact, rwTuplesAll[bIdx][j][target.getId() - 1].getTAct() - 1);
+					}
 				}
 			}
-			for(Node node : entry.getKey().getEnabledNodeSet()) {
-				if(node.getType() == NodeType.TARGET) {
+			for (Node node : entry.getKey().getEnabledNodeSet()) {
+				if (node.getType() == NodeType.TARGET) {
 					greedyValue += entry.getValue() 
 							* node.getDPenalty() 
 							* Math.pow(this.discFact, curTimeStep - 1);
@@ -778,81 +777,75 @@ public final class RandomWalkVsDefender extends Defender {
 		// Defender candidates
 		DefenderCandidate defCandidate = new DefenderCandidate();
 		bIdx = 0;
-		for(Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) // iterate over all possible game states
-		{
+		// iterate over all possible game states
+		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) {
 			GameState gameState = entry.getKey(); // a possible game state
-			for(int j = 0; j < this.numRWSample; j++)
-			{
-				for(Node node : gameState.getEnabledNodeSet())
-				{
-					if(node.getType() == NodeType.TARGET)
+			for (int j = 0; j < this.numRWSample; j++) {
+				for (Node node : gameState.getEnabledNodeSet()) {
+					if (node.getType() == NodeType.TARGET) {
 						defCandidate.addNodeCandidate(node);
+					}
 				}
 				
 				AttackerAction attAction = rwAttActionAll[bIdx][j];
-				for(Entry<Node, Set<Edge>> attActionEntry : attAction.getAction().entrySet())
+				for (Entry<Node, Set<Edge>> attActionEntry : attAction.getActionCopy().entrySet()) {
 					defCandidate.addNodeCandidate(attActionEntry.getKey());
+				}
 			}
 			bIdx++;
 		}
 //		defCandidate.print();
 		List<Node> defCandidateList = new ArrayList<Node>(defCandidate.getNodeCandidateSet());
 		boolean[] isGreedyChosen = new boolean[defCandidateList.size()];
-		for(int i = 0; i < defCandidateList.size(); i++)
+		for (int i = 0; i < defCandidateList.size(); i++) {
 			isGreedyChosen[i] = false;
+		}
 		
 		// Start greedy
 		boolean isStop = false;
-		boolean[][][] isBlockClone = new boolean[dBelief.getGameStateMap().size()][this.numRWSample][depGraph.vertexSet().size()];
-		boolean[][][] maxIsBlock = new boolean[dBelief.getGameStateMap().size()][this.numRWSample][depGraph.vertexSet().size()];
-		while(!isStop)
-		{
-//			System.out.println("Greedy process....");
+		boolean[][][] isBlockClone =
+			new boolean[dBelief.getGameStateMap().size()][this.numRWSample][depGraph.vertexSet().size()];
+		boolean[][][] maxIsBlock =
+			new boolean[dBelief.getGameStateMap().size()][this.numRWSample][depGraph.vertexSet().size()];
+		while (!isStop) {
 			int dCandidateIdx = 0;
 			double maxValue = 0.0;
 			int maxNodeIdx = -1;
-//			boolean[][][] maxIsBlock = null;
-			for(Node dCandidateNode : defCandidateList)
-			{
-				if(!isGreedyChosen[dCandidateIdx]) // Examining this node
-				{
+			for (Node dCandidateNode : defCandidateList) {
+				if (!isGreedyChosen[dCandidateIdx]) { // Examining this node
 					double curValue = dCandidateNode.getDCost() * Math.pow(this.discFact, curTimeStep - 1);
-//					boolean[][][] isBlockClone = new boolean[dBelief.getGameStateMap().size()][this.numRWSample][depGraph.vertexSet().size()];
-					for(int i = 0; i < dBelief.getGameStateMap().size(); i++)
-						for(int j = 0; j < this.numRWSample; j++)
-							for(int k = 0; k < depGraph.vertexSet().size(); k++)
+					for (int i = 0; i < dBelief.getGameStateMap().size(); i++) {
+						for (int j = 0; j < this.numRWSample; j++) {
+							for (int k = 0; k < depGraph.vertexSet().size(); k++) {
 								isBlockClone[i][j][k] = isBlock[i][j][k];
+							}
+						}
+					}
 					bIdx = 0;
-					for(Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) // iterate over all possible game states
-					{
+					// iterate over all possible game states
+					for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) {
 						GameState gameState = entry.getKey();
 						Double gameStateProb = entry.getValue();
-						if(dCandidateNode.getType() == NodeType.TARGET && gameState.containsNode(dCandidateNode))
+						if (dCandidateNode.getType() == NodeType.TARGET && gameState.containsNode(dCandidateNode)) {
 							curValue -= dCandidateNode.getDPenalty() 
 								* Math.pow(this.discFact, curTimeStep - 1)
 								* gameStateProb;
-						for(int j = 0; j < this.numRWSample; j++)
-						{
+						}
+						for (int j = 0; j < this.numRWSample; j++) {
 							isBlockClone[bIdx][j][dCandidateNode.getId() - 1] = true;
-							for(int k = 0; k < depGraph.vertexSet().size(); k++)
-							{
+							for (int k = 0; k < depGraph.vertexSet().size(); k++) {
 								Node node = topoOrder[k];
 								List<Edge> preEdgeList = rwTuplesAll[bIdx][j][node.getId() - 1].getPreAct();
-								if(preEdgeList != null && !isBlockClone[bIdx][j][node.getId() - 1]
-										&& rwTuplesAll[bIdx][j][node.getId() - 1].getTAct() <= numTimeStep)
-								{
-									if(node.getActivationType() == NodeActivationType.OR) // OR nodes
-									{
+								if (preEdgeList != null && !isBlockClone[bIdx][j][node.getId() - 1]
+									&& rwTuplesAll[bIdx][j][node.getId() - 1].getTAct() <= numTimeStep) {
+									if (node.getActivationType() == NodeActivationType.OR) { // OR nodes
 										Node preNode = preEdgeList.get(0).getsource();
-										if(isBlockClone[bIdx][j][preNode.getId() - 1])
+										if (isBlockClone[bIdx][j][preNode.getId() - 1]) {
 											isBlockClone[bIdx][j][node.getId() - 1] = true;
-									}
-									else // AND nodes
-									{
-										for(Edge edge : preEdgeList)
-										{
-											if(isBlockClone[bIdx][j][edge.getsource().getId() - 1])
-											{
+										}
+									} else { // AND nodes
+										for (Edge edge : preEdgeList) {
+											if (isBlockClone[bIdx][j][edge.getsource().getId() - 1]) {
 												isBlockClone[bIdx][j][node.getId() - 1] = true;
 												break;
 											}
@@ -861,13 +854,11 @@ public final class RandomWalkVsDefender extends Defender {
 								}
 							}
 							
-							for(Node target : depGraph.getTargetSet())
-							{
+							for (Node target : depGraph.getTargetSet()) {
 								RandomWalkTuple rwTuple = rwTuplesAll[bIdx][j][target.getId() - 1]; 
-								if(isBlockClone[bIdx][j][target.getId() - 1] 
-										&& !isBlock[bIdx][j][target.getId() - 1]
-												&& rwTuple.getTAct() <= numTimeStep)
-								{
+								if (isBlockClone[bIdx][j][target.getId() - 1] 
+									&& !isBlock[bIdx][j][target.getId() - 1]
+										&& rwTuple.getTAct() <= numTimeStep) {
 									curValue -= gameStateProb * rwAttProbAll[bIdx][j]
 											* rwTuple.getPAct() 
 											* Math.pow(this.discFact, rwTuple.getTAct() - 1)
@@ -878,32 +869,35 @@ public final class RandomWalkVsDefender extends Defender {
 						
 						bIdx++;
 					}
-//					System.out.println(curValue);
-					if(curValue > maxValue)
-					{
+					if (curValue > maxValue) {
 						maxValue = curValue;
 						maxNodeIdx = dCandidateIdx;
-						for(int i = 0; i < dBelief.getGameStateMap().size(); i++)
-							for(int j = 0; j < this.numRWSample; j++)
-								for(int k = 0; k < depGraph.vertexSet().size(); k++)
+						for (int i = 0; i < dBelief.getGameStateMap().size(); i++) {
+							for (int j = 0; j < this.numRWSample; j++) {
+								for (int k = 0; k < depGraph.vertexSet().size(); k++) {
 									maxIsBlock[i][j][k] = isBlockClone[i][j][k];
+								}
+							}
+						}
 					}
 					
 				}
 				dCandidateIdx++;
 			}
-			if(maxNodeIdx != -1)
-			{
+			if (maxNodeIdx != -1) {
 				greedyValue += maxValue;
 				isGreedyChosen[maxNodeIdx] = true;
-				for(int i = 0; i < dBelief.getGameStateMap().size(); i++)
-					for(int j = 0; j < this.numRWSample; j++)
-						for(int k = 0; k < depGraph.vertexSet().size(); k++)
+				for (int i = 0; i < dBelief.getGameStateMap().size(); i++) {
+					for (int j = 0; j < this.numRWSample; j++) {
+						for (int k = 0; k < depGraph.vertexSet().size(); k++) {
 							isBlock[i][j][k] = maxIsBlock[i][j][k];
+						}
+					}
+				}
 				defAction.addNodetoProtect(defCandidateList.get(maxNodeIdx));
-			}
-			else
+			} else {
 				isStop = true;
+			}
 		}
 		
 		return greedyValue;

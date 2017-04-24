@@ -87,7 +87,6 @@ public final class RandomWalkAttacker extends Attacker {
 			RandomWalkTuple[] rwSample = randomWalk(depGraph, curTimeStep, rng);
 			AttackerAction attAction = new AttackerAction();
 			actionValues[i] = greedyAction(depGraph, rwSample, attAction, numTimeStep, this.discFact);
-			// System.out.println(candidateValues[i]);
 			actions[i] = attAction;
 		}
 		
@@ -382,22 +381,20 @@ public final class RandomWalkAttacker extends Attacker {
 							}
 						}
 						if (isCandidate) {
-							attAction.addNodetoActive(node, depGraph.incomingEdgesOf(node));
+							attAction.addAndNodeAttack(node, depGraph.incomingEdgesOf(node));
 						}
 					} else {
 						RandomWalkTuple rwTuple = rwTuples[node.getId() - 1];
 						Edge edge = rwTuple.getPreAct().get(0);
 						if (edge.getsource().getState() == NodeState.ACTIVE) {
-							Set<Edge> edgeSet = new HashSet<Edge>();
-							edgeSet.add(edge);
-							attAction.addNodetoActive(edge.gettarget(), edgeSet);
+							attAction.addOrNodeAttack(node, edge);
 						}
 					}
 				}
 			}
 		}
 		if (Double.isNaN(value)) {
-			System.out.println("Wrong");
+			throw new IllegalStateException();
 		}
 		return value;
 	}

@@ -27,7 +27,7 @@ public final class UniformAttacker extends Attacker {
 		final double minNumSelectCandidate, 
 		final double numSelectCandidateRatio) {
 		super(AttackerType.UNIFORM);
-		if (minNumSelectCandidate < 1 || maxNumSelectCandidate < minNumSelectCandidate
+		if (minNumSelectCandidate < 0 || maxNumSelectCandidate < minNumSelectCandidate
 			|| numSelectCandidateRatio < 0.0 || numSelectCandidateRatio > 1.0) {
 			throw new IllegalArgumentException();
 		}
@@ -45,10 +45,10 @@ public final class UniformAttacker extends Attacker {
 	 *****************************************************************************************/
 	@Override
 	public AttackerAction sampleAction(
-			final DependencyGraph depGraph, 
-			final int curTimeStep,
-			final int numTimeStep, 
-			final RandomGenerator rng) {
+		final DependencyGraph depGraph, 
+		final int curTimeStep,
+		final int numTimeStep, 
+		final RandomGenerator rng) {
 		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || rng == null) {
 			throw new IllegalArgumentException();
 		}
@@ -57,7 +57,7 @@ public final class UniformAttacker extends Attacker {
 		
 		// Sample number of nodes
 		int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size()
-									+ attackCandidate.getNodeCandidateSet().size();
+			+ attackCandidate.getNodeCandidateSet().size();
 		// Compute number of candidates to select
 		int numSelectCandidate = 0;
 		if (totalNumCandidate < this.minNumSelectCandidate) {
@@ -67,6 +67,7 @@ public final class UniformAttacker extends Attacker {
 				(int) (totalNumCandidate * this.numSelectCandidateRatio));
 			numSelectCandidate = Math.min(this.maxNumSelectCandidate, numSelectCandidate);
 		}
+		// System.out.println(numSelectCandidate + " attacker strikes");
 		if (numSelectCandidate == 0) { // if there is no candidate
 			return new AttackerAction();
 		}
@@ -85,13 +86,13 @@ public final class UniformAttacker extends Attacker {
 	 * @param isReplacement: sampling with replacement or not
 	 * @return type of Attacker Action: list of attack actions
 	 *****************************************************************************************/
-	public List<AttackerAction> sampleAction (
-			final DependencyGraph depGraph,
-			final int curTimeStep, 
-			final int numTimeStep, 
-			final RandomGenerator rng,
-			final int numSample, 
-			final boolean isReplacement) {
+	public List<AttackerAction> sampleAction(
+		final DependencyGraph depGraph,
+		final int curTimeStep, 
+		final int numTimeStep, 
+		final RandomGenerator rng,
+		final int numSample, 
+		final boolean isReplacement) {
 		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || rng == null
 			|| numSample < 1) {
 			throw new IllegalArgumentException();
@@ -125,10 +126,10 @@ public final class UniformAttacker extends Attacker {
 	* @return type of AttackerAction: an action for the attacker
 	*****************************************************************************************/
 	private static AttackerAction sampleAction(
-			final DependencyGraph depGraph,
-			final AttackCandidate attackCandidate, 
-			final int numSelectCandidate, 
-			final AbstractIntegerDistribution rnd) {
+		final DependencyGraph depGraph,
+		final AttackCandidate attackCandidate, 
+		final int numSelectCandidate, 
+		final AbstractIntegerDistribution rnd) {
 		if (depGraph == null || numSelectCandidate < 0 || rnd == null || attackCandidate == null) {
 			throw new IllegalArgumentException();
 		}
@@ -147,20 +148,10 @@ public final class UniformAttacker extends Attacker {
 			if (!isChosen[idx]) { // if this candidate is not chosen
 				if (idx < edgeCandidateList.size()) { // select edge
 					Edge selectEdge = edgeCandidateList.get(idx);
-					// find the current edge candidates w.r.t. the OR node
-					Set<Edge> edgeSet = action.getAction().get(selectEdge.gettarget());
-					if (edgeSet != null) { // if this OR node is included in the attacker action,
-						// add new edge to the edge set associated with this node
-						edgeSet.add(selectEdge);
-					} else { // if this OR node is node included in the attacker action, create a new one
-						edgeSet = new HashSet<Edge>();
-						edgeSet.add(selectEdge);
-						action.getAction().put(selectEdge.gettarget(), edgeSet);
-					}
-						
+					action.addOrNodeAttack(selectEdge.gettarget(), selectEdge);
 				} else { // select node, this is for AND node only
 					Node selectNode = nodeCandidateList.get(idx - edgeCandidateList.size());
-					action.getAction().put(selectNode, depGraph.incomingEdgesOf(selectNode));
+					action.addAndNodeAttack(selectNode, depGraph.incomingEdgesOf(selectNode));
 				}
 				isChosen[idx] = true; // set chosen to be true
 				count++;
@@ -226,5 +217,24 @@ public final class UniformAttacker extends Attacker {
 			}
 		}
 		return aCandidate;
+	}
+
+	public int getMaxNumSelectCandidate() {
+		return this.maxNumSelectCandidate;
+	}
+
+	public int getMinNumSelectCandidate() {
+		return this.minNumSelectCandidate;
+	}
+
+	public double getNumSelectCandidateRatio() {
+		return this.numSelectCandidateRatio;
+	}
+
+	@Override
+	public String toString() {
+		return "UniformAttacker [maxNumSelectCandidate=" + this.maxNumSelectCandidate
+			+ ", minNumSelectCandidate=" + this.minNumSelectCandidate
+			+ ", numSelectCandidateRatio=" + this.numSelectCandidateRatio + "]";
 	}
 }

@@ -1,5 +1,7 @@
 package graph;
 
+import game.GameSimulation;
+
 public final class Node implements INode {
 	private int id; // starting from 1
 	private NodeType type = NodeType.NONTARGET;
@@ -42,6 +44,13 @@ public final class Node implements INode {
 			|| !isProb(posActiveProb) || !isProb(posInactiveProb)
 			|| !isProb(actProb)
 		) {
+			throw new IllegalArgumentException();
+		}
+		if (aReward < 0.0 || dPenalty > 0.0 || dCost > 0.0 || aCost > 0.0) {
+			throw new IllegalArgumentException();
+		}
+		if (eType == NodeActivationType.OR && (aCost != 0.0 || actProb != 0.0)) {
+			// OR nodes must have placeholder aCost and actProb of 0.0
 			throw new IllegalArgumentException();
 		}
 		this.id = id;
@@ -228,16 +237,16 @@ public final class Node implements INode {
 	}
 	
 	public void print() {
-		System.out.println("--------------------------------------------------------------------");
-		System.out.println("ID: " + this.getId());
-		System.out.println("State: " + this.getState().toString());
-		System.out.println("Type: " + this.getType().toString());
-		System.out.println("Exploit Type: " + this.getActivationType().toString());
-		System.out.println("aReward: " + this.getAReward() + "\t" + "dPenalty: " + this.getDPenalty());
-		System.out.println("aCost: " + this.getACost() + "\t" + "dCost: " + this.getDCost());
-		System.out.println("Probability of positive signal given active: " + this.posActiveProb);
-		System.out.println("Probability of positive signal given inactive: " + this.posInactiveProb);
-		System.out.println("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("ID: " + this.getId());
+		GameSimulation.printIfDebug("State: " + this.getState().toString());
+		GameSimulation.printIfDebug("Type: " + this.getType().toString());
+		GameSimulation.printIfDebug("Exploit Type: " + this.getActivationType().toString());
+		GameSimulation.printIfDebug("aReward: " + this.getAReward() + "\t" + "dPenalty: " + this.getDPenalty());
+		GameSimulation.printIfDebug("aCost: " + this.getACost() + "\t" + "dCost: " + this.getDCost());
+		GameSimulation.printIfDebug("Probability of positive signal given active: " + this.posActiveProb);
+		GameSimulation.printIfDebug("Probability of positive signal given inactive: " + this.posInactiveProb);
+		GameSimulation.printIfDebug("--------------------------------------------------------------------");
 	}
 
 	@Override

@@ -31,8 +31,8 @@ public final class TestGameSimulation {
 	}
 	
 	public static void main(final String[] args) {
-		final int numNode = 50;
-		final int numEdge = 150;
+		final int numNode = 30;
+		final int numEdge = 90;
 		final int numTarget = 10;
 		final double nodeActTypeRatio = 0.3;
 		final double aRewardLB = 5.0;
@@ -60,20 +60,18 @@ public final class TestGameSimulation {
 		rnd.reSeed(System.currentTimeMillis());
 		DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rnd);
 		DGraphGenerator.genGraph(depGraph, rnd
-				, numTarget, nodeActTypeRatio
-				, aRewardLB, aRewardUB
-				, dPenaltyLB, dPenaltyUB
-				, aNodeCostLB, aNodeCostUB
-				, aEdgeCostLB, aEdgeCostUB
-				, dCostLB, dCostUB
-				, aNodeActProbLB, aNodeActProbUB
-				, aEdgeActProbLB, aEdgeActProbUB
-				, minPosActiveProb, maxPosActiveProb
-				, minPosInactiveProb, maxPosInactiveProb);
+			, numTarget, nodeActTypeRatio
+			, aRewardLB, aRewardUB
+			, dPenaltyLB, dPenaltyUB
+			, aNodeCostLB, aNodeCostUB
+			, aEdgeCostLB, aEdgeCostUB
+			, dCostLB, dCostUB
+			, aNodeActProbLB, aNodeActProbUB
+			, aEdgeActProbLB, aEdgeActProbUB
+			, minPosActiveProb, maxPosActiveProb
+			, minPosInactiveProb, maxPosInactiveProb);
 		DGraphGenerator.findMinCut(depGraph);
 		depGraph.print();
-		
-		
 		
 		final double logisParam = 5.0;
 		final double thres = 0.01;
@@ -99,15 +97,15 @@ public final class TestGameSimulation {
 		
 		AttackerType[] aTypeList = AttackerType.values();
 		Attacker[] attList = new Attacker[aTypeList.length];
-		for(int i = 0; i < aTypeList.length; i++)
-		{
+		for (int i = 0; i < aTypeList.length; i++) {
 			switch (aTypeList[i]) {
 			case UNIFORM:
 				attList[i] = new UniformAttacker(maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
 				break;
 			case VALUE_PROPAGATION:
-				attList[i] = new ValuePropagationAttacker(maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio
-						, qrParam, discFact);
+				attList[i] = new ValuePropagationAttacker(
+					maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio
+					, qrParam, discFact);
 				break;
 			case RANDOM_WALK:
 				attList[i] = new RandomWalkAttacker(numRWSample, qrParam, discFact);
@@ -119,8 +117,7 @@ public final class TestGameSimulation {
 		}
 		DefenderType[] dTypeList = DefenderType.values();
 		Defender[] defList = new Defender[dTypeList.length];
-		for(int i = 0; i < dTypeList.length; i++)
-		{
+		for (int i = 0; i < dTypeList.length; i++) {
 			switch (dTypeList[i]) {
 			case UNIFORM:
 				defList[i] = new UniformDefender(maxNumRes, minNumRes, numResRatio);
@@ -136,16 +133,16 @@ public final class TestGameSimulation {
 				break;
 			case vsVALUE_PROPAGATION:
 				defList[i] = new ValuePropagationVsDefenderALT(maxNumRes, minNumRes, numResRatio
-						, logisParam, discFact, thres
-						, qrParamDef
-						, maxNumSelectCandidateDef, minNumSelectCandidateDef, numSelectCandidateRatioDef);
+					, logisParam, discFact, thres
+					, qrParamDef
+					, maxNumSelectCandidateDef, minNumSelectCandidateDef, numSelectCandidateRatioDef);
 				break;
 			case vsRANDOM_WALK:
 				defList[i] = new RandomWalkVsDefender(logisParam, discFact, thres, qrParamDef, numRWSampleDef, 1.0);
 				break;
 			case vsUNIFORM:
 				defList[i] = new UniformVsDefender(logisParam, discFact, thres, maxNumRes, minNumRes, numResRatio
-						, maxNumSelectCandidateDef, minNumSelectCandidateDef, numSelectCandidateRatioDef);
+					, maxNumSelectCandidateDef, minNumSelectCandidateDef, numSelectCandidateRatioDef);
 				break;
 			default:
 				System.out.println("Defender type does not exist");
@@ -157,11 +154,9 @@ public final class TestGameSimulation {
 		double[][] defPayoffList = new double[defList.length][attList.length];
 		double[][] attPayoffList = new double[defList.length][attList.length];
 		double[][] runtimeList = new double[defList.length][attList.length];
-		for(int i = 0; i < defList.length; i++)
-		{
+		for (int i = 0; i < defList.length; i++) {
 			Defender defender = defList[i];
-			for(int j = 0; j < attList.length; j++)
-			{
+			for (int j = 0; j < attList.length; j++) {
 				Attacker attacker = attList[j];
 				gameSimList[i][j] = new GameSimulation(depGraph, attacker, defender, rnd, numTimeStep, discFact);
 				defPayoffList[i][j] = 0.0;
@@ -169,21 +164,19 @@ public final class TestGameSimulation {
 				runtimeList[i][j] = 0.0;
 			}
 		}
-		for(int i = 0; i < defList.length; i++)
-		{
-			for(int j = 0; j < attList.length; j++)
-			{
+		final double thousand = 1000.0;
+		for (int i = 0; i < defList.length; i++) {
+			for (int j = 0; j < attList.length; j++) {
 				System.out.println("Attacker type: " + aTypeList[j].toString());
 				System.out.println("Defender type: " + dTypeList[i].toString());
-				for(int k = 0; k < numSim; k++)
-				{
+				for (int k = 0; k < numSim; k++) {
 					long start = System.currentTimeMillis();
 					gameSimList[i][j].runSimulation();
 					long end = System.currentTimeMillis();
 					gameSimList[i][j].printPayoff();
 					defPayoffList[i][j] += gameSimList[i][j].getSimulationResult().getDefPayoff();
 					attPayoffList[i][j] += gameSimList[i][j].getSimulationResult().getAttPayoff();
-					runtimeList[i][j] += (end - start) / 1000.0;
+					runtimeList[i][j] += (end - start) / thousand;
 					gameSimList[i][j].reset();
 				}
 				defPayoffList[i][j] /= numSim;
@@ -191,10 +184,8 @@ public final class TestGameSimulation {
 				runtimeList[i][j] /= numSim;
 			}
 		}
-		for(int i = 0; i < defList.length; i++)
-		{
-			for(int j = 0; j < attList.length; j++)
-			{
+		for (int i = 0; i < defList.length; i++) {
+			for (int j = 0; j < attList.length; j++) {
 				System.out.println("----------------------------------------------------");
 				System.out.println("Attacker type: " + aTypeList[j].toString());
 				System.out.println("Defender type: " + dTypeList[i].toString());
@@ -204,6 +195,5 @@ public final class TestGameSimulation {
 				System.out.println("----------------------------------------------------");
 			}
 		}
-		
 	}
 }

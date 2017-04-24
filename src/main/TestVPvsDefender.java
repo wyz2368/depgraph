@@ -23,8 +23,8 @@ public final class TestVPvsDefender {
 	}
 
 	public static void main(final String[] args) {
-		final int numNode = 100;
-		final int numEdge = 300;
+		final int numNode = 30;
+		final int numEdge = 90;
 		final int numTarget = 10;
 		final double nodeActTypeRatio = 0.5;
 		final double aRewardLB = 2.0;

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import game.GameSimulation;
+
 public final class DefenderBelief {
 	private final Map<GameState, Double> gameStateMap;
 	
@@ -29,7 +31,7 @@ public final class DefenderBelief {
 	public void print() {
 		for (Entry<GameState, Double> entry : this.gameStateMap.entrySet()) {
 			entry.getKey().print();
-			System.out.println("State Prob:" + entry.getValue());
+			GameSimulation.printIfDebug("State Prob:" + entry.getValue());
 		}
 	}
 }

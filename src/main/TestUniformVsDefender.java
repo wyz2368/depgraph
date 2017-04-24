@@ -22,8 +22,8 @@ public final class TestUniformVsDefender {
 	}
 
 	public static void main(final String[] args) {
-		final int numNode = 100;
-		final int numEdge = 300;
+		final int numNode = 30;
+		final int numEdge = 90;
 		final int numTarget = 20;
 		final double nodeActTypeRatio = 0.5;
 		final double aRewardLB = 2.0;
@@ -76,7 +76,7 @@ public final class TestUniformVsDefender {
 		final double thres = 1e-3;
 		
 		final int numTimeStep = 6;
-		final int numSim = 200;
+		final int numSim = 50;
 		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
 		Defender uniformvsDefender = new UniformVsDefender(logisParam, discFact, thres
 			, maxNumRes, minNumRes, numResRatio

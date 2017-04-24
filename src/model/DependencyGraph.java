@@ -1,6 +1,8 @@
 package model;
 
 import graph.Edge;
+import graph.INode;
+import graph.INode.NodeActivationType;
 import graph.INode.NodeState;
 import graph.Node;
 
@@ -8,6 +10,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
+
+import game.GameSimulation;
 
 // There is a dummy node connecting to entry nodes.
 public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
@@ -21,6 +25,54 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 		this.targetSet = new HashSet<Node>();
 		this.minCut = new HashSet<Node>();
 		this.rootSet = new HashSet<Node>();
+	}
+	
+	public boolean isValid() {
+		if (this.vertexSet().isEmpty()) {
+			return false;
+		}
+		for (final Node root: getRootSet()) {
+			if (root.getActivationType() != INode.NodeActivationType.AND) {
+				System.out.println("Root not type AND");
+				return false;
+			}
+		}
+		final Set<Integer> nodeIds = new HashSet<Integer>();
+		final Set<Integer> topoPositions = new HashSet<Integer>();
+		for (final Node node: vertexSet()) {
+			if (nodeIds.contains(node.getId())) {
+				System.out.println("Duplicate Node id");
+				return false;
+			}
+			if (topoPositions.contains(node.getTopoPosition())) {
+				System.out.println("Duplicate Node topo position");
+				return false;
+			}
+			nodeIds.add(node.getId());
+			topoPositions.add(node.getTopoPosition());
+		}
+		final Set<Integer> edgeIds = new HashSet<Integer>();
+		for (final Edge edge: edgeSet()) {
+			if (edgeIds.contains(edge.getId())) {
+				System.out.println("Duplicate Edge id");
+				return false;
+			}
+			edgeIds.add(edge.getId());
+			if (edge.gettarget().equals(edge.getsource())) {
+				System.out.println("Self-edge");
+				return false;
+			}
+			if (edge.gettarget().getActivationType() == NodeActivationType.AND
+				&& (edge.getActProb() != 0.0 || edge.getACost() != 0.0)) {
+				// edges to AND nodes must have placeholder actProb and aCost of 0.0
+				System.out.println("Edge to AND node with nonzero actProb or aCost");
+				System.out.println(edge);
+				System.out.println(edge.getActProb() + "\t" + edge.getACost());
+				System.out.println(edge.gettarget());
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	public boolean addTarget(final Node node) {
@@ -45,7 +97,26 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 		this.minCut.add(node);
 	}
 	
+	public Node getNodeById(final int id) {
+		for (final Node node: vertexSet()) {
+			if (node.getId() == id) {
+				return node;
+			}
+		}
+		return null;
+	}
+	
+	public Edge getEdgeById(final int id) {
+		for (final Edge edge: edgeSet()) {
+			if (edge.getId() == id) {
+				return edge;
+			}
+		}
+		return null;
+	}
+	
 	public Set<Node> getRootSet() {
+		assert validRootSet();
 		return this.rootSet;
 	}
 	
@@ -73,29 +144,46 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 		for (Edge edge: this.edgeSet()) {
 			edge.print();
 		}
-		System.out.println("--------------------------------------------------------------------");
-		System.out.println("Target set: ");
+		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("Target set: ");
 		for (Node target : this.targetSet) {
-			System.out.print(target.getId() + "\t");
+			GameSimulation.printIfDebug(target.getId() + "\t");
 		}
-		System.out.println();
-		System.out.println("--------------------------------------------------------------------");
-		System.out.println("Root set: ");
+		GameSimulation.printIfDebug("");
+		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("Root set: ");
 		for (Node root : this.rootSet) {
-			System.out.print(root.getId() + "\t");
+			GameSimulation.printIfDebug(root.getId() + "\t");
 		}
-		System.out.println("--------------------------------------------------------------------");
-		System.out.println("Mincut set: ");
+		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("Mincut set: ");
 		for (Node node : this.minCut) {
-			System.out.print(node.getId() + "\t");
+			GameSimulation.printIfDebug(node.getId() + "\t");
 		}
-		System.out.println();
-		System.out.println("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("");
+		GameSimulation.printIfDebug("--------------------------------------------------------------------");
 	}
 	
 	private void resetState() {
 		for (Node node : this.vertexSet()) {
 			node.setState(NodeState.INACTIVE);
 		}
+	}
+	
+	private boolean validRootSet() {
+		for (Node node : vertexSet()) {
+			if (inDegreeOf(node) == 0) {
+				if (!this.rootSet.contains(node)) {
+					System.out.println("Root set omits Node with 0 in-degree");
+					return false;
+				}
+			} else {
+				if (this.rootSet.contains(node)) {
+					System.out.println("Root set contains node with nonzero in-degree");
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 }

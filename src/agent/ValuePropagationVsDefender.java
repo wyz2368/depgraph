@@ -169,7 +169,7 @@ public final class ValuePropagationVsDefender extends ValuePropVsDefSuper {
 				, curTimeStep, numTimeStep, this.qrParam, discountFactor, propagationParamCur
 				, this.maxNumAttCandidate, this.minNumAttCandidate, this.numAttCandidateRatio, this.isBest);
 			// for(int i = 0; i < curACandidateProb.length; i++)
-				// System.out.println(curACandidateProb[i]);
+				// GameSimulation.printIfDebug(curACandidateProb[i]);
 			
 			DefenderCandidate curDefCandidate = selectDCandidate(curGameState, curAttCandidate);
 			double[] curDCandidateValue = computeCandidateValueTopo(depGraph
@@ -177,7 +177,7 @@ public final class ValuePropagationVsDefender extends ValuePropVsDefSuper {
 					, curTimeStep, numTimeStep
 					, discountFactor);
 			// for(int i = 0; i < curDCandidateValue.length; i++)
-				// System.out.println(curDCandidateValue[i]);
+				// GameSimulation.printIfDebug(curDCandidateValue[i]);
 			
 			List<Node> curDefCandidateList = new ArrayList<Node>(curDefCandidate.getNodeCandidateSet());
 			List<Edge> curEdgeACandidateList = new ArrayList<Edge>(curAttCandidate.getEdgeCandidateSet());
@@ -239,17 +239,16 @@ public final class ValuePropagationVsDefender extends ValuePropVsDefSuper {
 		for (Edge edge : attCandidate.getEdgeCandidateSet()) { // post-conditions of OR nodes
 			dCandidate.addNodeCandidate(edge.gettarget());
 			// if(edge.gettarget().getType() == NODE_TYPE.TARGET)
-				// System.out.println("Candidate has targets");
+				// GameSimulation.printIfDebug("Candidate has targets");
 		}
 		for (Node node : attCandidate.getNodeCandidateSet()) { // AND nodes 
 			dCandidate.addNodeCandidate(node);
 			// if(node.getType() == NODE_TYPE.TARGET)
-				// System.out.println("Candidate has targets");
+				// GameSimulation.printIfDebug("Candidate has targets");
 		}
 		for (Node node : gameState.getEnabledNodeSet()) { // active target nodes
 			if (node.getType() == NodeType.TARGET) {
 				dCandidate.addNodeCandidate(node);
-				// System.out.println("Candidate has active target");
 			}
 		}
 		return dCandidate;
@@ -366,7 +365,6 @@ public final class ValuePropagationVsDefender extends ValuePropVsDefSuper {
 					dCandidateValue[idx] -= node.getActProb() * rSum[node.getId() - 1];
 				}
 			} else { // if this is active target 
-				// System.out.println("Active targets");
 				dCandidateValue[idx] -= node.getDPenalty();
 				if (rSum[node.getId() - 1] != Double.POSITIVE_INFINITY) {
 					dCandidateValue[idx] -= rSum[node.getId() - 1];

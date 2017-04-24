@@ -18,11 +18,11 @@ public final class UniformDefender extends Defender {
 	private double numResRatio;
 	
 	public UniformDefender(
-			final double maxNumRes, 
-			final double minNumRes, 
-			final double numResRatio) {
+		final double maxNumRes, 
+		final double minNumRes, 
+		final double numResRatio) {
 		super(DefenderType.UNIFORM);
-		if (maxNumRes < 1 || minNumRes > maxNumRes || numResRatio < 0.0 || numResRatio > 1.0) {
+		if (maxNumRes < 0 || minNumRes > maxNumRes || numResRatio < 0.0 || numResRatio > 1.0) {
 			throw new IllegalArgumentException();
 		}
 		this.maxNumRes = (int) maxNumRes;
@@ -44,7 +44,8 @@ public final class UniformDefender extends Defender {
 			numNodetoProtect = Math.max(this.minNumRes, (int) (this.numResRatio * dCandidateNodeList.size()));
 			numNodetoProtect = Math.min(this.maxNumRes, numNodetoProtect);
 		}
-		if (dCandidateNodeList.size() == 0) {
+		// System.out.println(numNodetoProtect + " defender blocks");
+		if (dCandidateNodeList.size() == 0 || numNodetoProtect == 0) {
 			return new DefenderAction();
 		}
 		// Sample nodes
@@ -54,13 +55,31 @@ public final class UniformDefender extends Defender {
 
 	@Override
 	public DefenderBelief updateBelief(
-			final DependencyGraph depGraph,
-			final DefenderBelief currentBelief, 
-			final DefenderAction dAction,
-			final DefenderObservation dObservation, 
-			final int curTimeStep, 
-			final int numTimeStep,
-			final RandomGenerator rng) {
+		final DependencyGraph depGraph,
+		final DefenderBelief currentBelief, 
+		final DefenderAction dAction,
+		final DefenderObservation dObservation, 
+		final int curTimeStep, 
+		final int numTimeStep,
+		final RandomGenerator rng) {
 		return new DefenderBelief();
+	}
+
+	public int getMaxNumRes() {
+		return this.maxNumRes;
+	}
+
+	public int getMinNumRes() {
+		return this.minNumRes;
+	}
+
+	public double getNumResRatio() {
+		return this.numResRatio;
+	}
+
+	@Override
+	public String toString() {
+		return "UniformDefender [maxNumRes=" + this.maxNumRes + ", minNumRes="
+			+ this.minNumRes + ", numResRatio=" + this.numResRatio + "]";
 	}
 }

@@ -23,9 +23,8 @@ public final class TestRWvsDefender {
 	}
 	
 	public static void main(final String[] args) {
-		// TODO Auto-generated method stub
-		final int numNode = 50;
-		final int numEdge = 150;
+		final int numNode = 30;
+		final int numEdge = 90;
 		final int numTarget = 10;
 		final double nodeActTypeRatio = 0.3;
 		final double aRewardLB = 5.0;
@@ -53,20 +52,18 @@ public final class TestRWvsDefender {
 		rnd.reSeed(System.currentTimeMillis());
 		DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rnd);
 		DGraphGenerator.genGraph(depGraph, rnd
-				, numTarget, nodeActTypeRatio
-				, aRewardLB, aRewardUB
-				, dPenaltyLB, dPenaltyUB
-				, aNodeCostLB, aNodeCostUB
-				, aEdgeCostLB, aEdgeCostUB
-				, dCostLB, dCostUB
-				, aNodeActProbLB, aNodeActProbUB
-				, aEdgeActProbLB, aEdgeActProbUB
-				, minPosActiveProb, maxPosActiveProb
-				, minPosInactiveProb, maxPosInactiveProb);
+			, numTarget, nodeActTypeRatio
+			, aRewardLB, aRewardUB
+			, dPenaltyLB, dPenaltyUB
+			, aNodeCostLB, aNodeCostUB
+			, aEdgeCostLB, aEdgeCostUB
+			, dCostLB, dCostUB
+			, aNodeActProbLB, aNodeActProbUB
+			, aEdgeActProbLB, aEdgeActProbUB
+			, minPosActiveProb, maxPosActiveProb
+			, minPosInactiveProb, maxPosInactiveProb);
 		DGraphGenerator.findMinCut(depGraph);
 		depGraph.print();
-		
-		
 		
 		final double logisParam = 5.0;
 		final double thres = 1e-3 * 0.5;
@@ -85,14 +82,14 @@ public final class TestRWvsDefender {
 		final double numSelectCandidateRatio = 0.7;
 		
 		final int numTimeStep = 10;
-		final int numSim = 10;
-		
-//		boolean isRandomized = true;
-		
-		
+
+		final int numSim = 1;
+
 		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
-		RandomWalkVsDefender rwDefenderRandomized = new RandomWalkVsDefender(logisParam, discFact, thres, qrParamDef, numRWSampleDef, 1.0);
-		RandomWalkVsDefender rwDefenderStatic = new RandomWalkVsDefender(logisParam, discFact, thres, qrParamDef, numRWSampleDef, 0.0);
+		RandomWalkVsDefender rwDefenderRandomized =
+			new RandomWalkVsDefender(logisParam, discFact, thres, qrParamDef, numRWSampleDef, 1.0);
+		RandomWalkVsDefender rwDefenderStatic =
+			new RandomWalkVsDefender(logisParam, discFact, thres, qrParamDef, numRWSampleDef, 0.0);
 		
 		Attacker rwAttacker = new RandomWalkAttacker(numRWSample, qrParam, discFact);
 		Attacker vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate
@@ -100,12 +97,12 @@ public final class TestRWvsDefender {
 				, qrParam, discFact);
 		
 		long start = System.currentTimeMillis();
-		GameSimulation gameSimRWvsRW = new GameSimulation(depGraph, rwAttacker, rwDefenderRandomized, rnd, numTimeStep, discFact);
+		GameSimulation gameSimRWvsRW =
+			new GameSimulation(depGraph, rwAttacker, rwDefenderRandomized, rnd, numTimeStep, discFact);
 		double defPayoffRWvsRW = 0.0;
 		double attPayoffRWvsRW = 0.0;
 		double timeRWvsRW = 0.0;
-		for(int i = 0; i < numSim; i++)
-		{
+		for (int i = 0; i < numSim; i++) {
 			System.out.println("Simulation " + i);
 			rnd.reSeed(System.currentTimeMillis());
 			gameSimRWvsRW.runSimulation();
@@ -113,22 +110,22 @@ public final class TestRWvsDefender {
 			defPayoffRWvsRW += gameSimRWvsRW.getSimulationResult().getDefPayoff();
 			attPayoffRWvsRW += gameSimRWvsRW.getSimulationResult().getAttPayoff();
 			gameSimRWvsRW.reset();
-//			System.out.println();
 		}
+		final double thousand = 1000.0;
 		long end = System.currentTimeMillis();
 		defPayoffRWvsRW /= numSim;
 		attPayoffRWvsRW /= numSim;
-		timeRWvsRW = (end - start) / 1000.0 / numSim;
+		timeRWvsRW = (end - start) / thousand / numSim;
 		
 		
 		
 		start = System.currentTimeMillis();
-		GameSimulation gameSimRWvsGO = new GameSimulation(depGraph, rwAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
+		GameSimulation gameSimRWvsGO =
+			new GameSimulation(depGraph, rwAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
 		double defPayoffRWvsGO = 0.0;
 		double attPayoffRWvsGO = 0.0;
 		double timeRWvsGO = 0.0;
-		for(int i = 0; i < numSim; i++)
-		{
+		for (int i = 0; i < numSim; i++) {
 			System.out.println("Simulation " + i);
 			rnd.reSeed(System.currentTimeMillis());
 			gameSimRWvsGO.runSimulation();
@@ -136,19 +133,20 @@ public final class TestRWvsDefender {
 			defPayoffRWvsGO += gameSimRWvsGO.getSimulationResult().getDefPayoff();
 			attPayoffRWvsGO += gameSimRWvsGO.getSimulationResult().getAttPayoff();
 			gameSimRWvsGO.reset();
-//			System.out.println();
 		}
 		end = System.currentTimeMillis();
 		defPayoffRWvsGO /= numSim;
 		attPayoffRWvsGO /= numSim;
-		timeRWvsGO = (end - start) / 1000.0 / numSim;
+		timeRWvsGO = (end - start) / thousand / numSim;
 		
 		start = System.currentTimeMillis();
-		GameSimulation gameSimVPvsRW = new GameSimulation(depGraph, vpAttacker, rwDefenderRandomized, rnd, numTimeStep, discFact);
+		GameSimulation gameSimVPvsRW =
+			new GameSimulation(depGraph, vpAttacker, rwDefenderRandomized, rnd, numTimeStep, discFact);
 		double defPayoffVPvsRW = 0.0;
 		double attPayoffVPvsRW = 0.0;
-		double timeVPvsRW = 0.9;
-		for(int i = 0; i < numSim; i++){
+		final double initialTimeVPvsRW = 0.9;
+		double timeVPvsRW = initialTimeVPvsRW;
+		for (int i = 0; i < numSim; i++) {
 			System.out.println("Simulation " + i);
 			rnd.reSeed(System.currentTimeMillis());
 			gameSimVPvsRW.runSimulation();
@@ -156,19 +154,19 @@ public final class TestRWvsDefender {
 			defPayoffVPvsRW += gameSimVPvsRW.getSimulationResult().getDefPayoff();
 			attPayoffVPvsRW += gameSimVPvsRW.getSimulationResult().getAttPayoff();
 			gameSimVPvsRW.reset();
-//			System.out.println();
 		}
 		end = System.currentTimeMillis();
 		defPayoffVPvsRW /= numSim;
 		attPayoffVPvsRW /= numSim;
-		timeVPvsRW = (end - start) / 1000.0 / numSim;
+		timeVPvsRW = (end - start) / thousand / numSim;
 		
 		start = System.currentTimeMillis();
-		GameSimulation gameSimRWvsRWAlt = new GameSimulation(depGraph, rwAttacker, rwDefenderStatic, rnd, numTimeStep, discFact);
+		GameSimulation gameSimRWvsRWAlt =
+			new GameSimulation(depGraph, rwAttacker, rwDefenderStatic, rnd, numTimeStep, discFact);
 		double defPayoffRWvsRWAlt = 0.0;
 		double attPayoffRWvsRWAlt = 0.0;
 		double timeRWvsRWAlt = 0.0;
-		for(int i = 0; i < numSim; i++){
+		for (int i = 0; i < numSim; i++) {
 			System.out.println("Simulation " + i);
 			rnd.reSeed(System.currentTimeMillis());
 			gameSimRWvsRWAlt.runSimulation();
@@ -176,12 +174,11 @@ public final class TestRWvsDefender {
 			defPayoffRWvsRWAlt += gameSimRWvsRWAlt.getSimulationResult().getDefPayoff();
 			attPayoffRWvsRWAlt += gameSimRWvsRWAlt.getSimulationResult().getAttPayoff();
 			gameSimRWvsRWAlt.reset();
-//			System.out.println();
 		}
 		end = System.currentTimeMillis();
 		defPayoffRWvsRWAlt /= numSim;
 		attPayoffRWvsRWAlt /= numSim;
-		timeRWvsRWAlt = (end - start) / 1000.0 / numSim;
+		timeRWvsRWAlt = (end - start) / thousand / numSim;
 		
 		System.out.println("Final result: ");
 		System.out.println("Defender random walk payoff: " + defPayoffRWvsRW);

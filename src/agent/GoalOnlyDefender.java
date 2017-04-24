@@ -39,11 +39,11 @@ public final class GoalOnlyDefender extends Defender {
 	
 	@Override
 	public DefenderAction sampleAction(
-			final DependencyGraph depGraph,
-			final int curTimeStep, 
-			final int numTimeStep, 
-			final DefenderBelief dBelief, 
-			final RandomGenerator rng) {
+		final DependencyGraph depGraph,
+		final int curTimeStep, 
+		final int numTimeStep, 
+		final DefenderBelief dBelief, 
+		final RandomGenerator rng) {
 		List<Node> dCandidateNodeList = new ArrayList<Node>(depGraph.getTargetSet());
 		double[] candidateValue = computeCandidateValue(dCandidateNodeList, this.discFact, curTimeStep);
 		double[] probabilities = computeCandidateProb(dCandidateNodeList.size(), candidateValue, this.logisParam);
@@ -76,6 +76,26 @@ public final class GoalOnlyDefender extends Defender {
 		return new DefenderBelief(); // an empty belief
 	}
 	
+	public int getMaxNumRes() {
+		return this.maxNumRes;
+	}
+
+	public int getMinNumRes() {
+		return this.minNumRes;
+	}
+
+	public double getNumResRatio() {
+		return this.numResRatio;
+	}
+
+	public double getLogisParam() {
+		return this.logisParam;
+	}
+
+	public double getDiscFact() {
+		return this.discFact;
+	}
+
 	private static boolean isProb(final double i) {
 		return i >= 0.0 && i <= 1.0;
 	}

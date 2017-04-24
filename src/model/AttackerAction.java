@@ -5,8 +5,12 @@ import graph.Node;
 import graph.INode.NodeActivationType;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import game.GameSimulation;
+
 import java.util.Set;
 
 public final class AttackerAction {
@@ -16,18 +20,54 @@ public final class AttackerAction {
 		this.action = new HashMap<Node, Set<Edge>>();
 	}
 	
-	public Map<Node, Set<Edge>> getAction() {
-		return this.action;
+	public Map<Node, Set<Edge>> getActionCopy() {
+		final Map<Node, Set<Edge>> result = new HashMap<Node, Set<Edge>>();
+		for (Entry<Node, Set<Edge>> entry: this.action.entrySet()) {
+			final Set<Edge> setCopy = new HashSet<Edge>();
+			setCopy.addAll(entry.getValue());
+			result.put(entry.getKey(), setCopy);
+		}
+		return result;
 	}
 	
-	public Set<Edge> addNodetoActive(
-		final Node node,
-		final Set<Edge> edgeSet
-	) {
-		if (node == null || edgeSet == null) {
+	public boolean isEmpty() {
+		return this.action.isEmpty();
+	}
+	
+	public void addAndNodeAttack(final Node targetAndNode, final Set<Edge> inEdges) {
+		if (targetAndNode == null || inEdges == null) {
 			throw new IllegalArgumentException();
 		}
-		return this.action.put(node, edgeSet);
+		if (targetAndNode.getActivationType() != NodeActivationType.AND) {
+			throw new IllegalArgumentException();
+		}
+		for (final Edge edge: inEdges) {
+			if (!edge.gettarget().equals(targetAndNode)) {
+				throw new IllegalArgumentException();
+			}
+		}
+		if (!this.action.containsKey(targetAndNode)) {
+			this.action.put(targetAndNode, inEdges);
+		}
+	}
+	
+	public void addOrNodeAttack(final Node targetOrNode, final Edge edge) {
+		if (targetOrNode == null || edge == null) {
+			throw new IllegalArgumentException();
+		}
+		if (targetOrNode.getActivationType() != NodeActivationType.OR) {
+			throw new IllegalArgumentException();
+		}
+		if (!edge.gettarget().equals(targetOrNode)) {
+			throw new IllegalArgumentException();
+		}
+		if (this.action.containsKey(targetOrNode)) {
+			this.action.get(targetOrNode).add(edge);
+		} else {
+			final Set<Edge> newSet = new HashSet<Edge>();
+			newSet.add(edge);
+			this.action.put(targetOrNode, newSet);
+		}
 	}
 	
 	public void clear() {
@@ -35,21 +75,21 @@ public final class AttackerAction {
 	}
 	
 	public void print() {
-		System.out.println("--------------------------------------------------------------------");
-		System.out.println("Attacker Action...");
+		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("Attacker Action...");
 		for (Entry<Node, Set<Edge>> entry : this.action.entrySet()) {
-			System.out.println("Activating node: " + entry.getKey().getId() 
+			GameSimulation.printIfDebug("Activating node: " + entry.getKey().getId() 
 				+ "\t Node type: " + entry.getKey().getType().toString()
 				+ "\t Activation Type: " + entry.getKey().getActivationType().toString());
 			if (entry.getKey().getActivationType() == NodeActivationType.OR) {
-				System.out.println("Via edge: ");
+				GameSimulation.printIfDebug("Via edge: ");
 				for (Edge edge : entry.getValue()) {
-					System.out.println(edge.getsource().getId() + "(" + edge.getsource().getState().toString() 
+					GameSimulation.printIfDebug(edge.getsource().getId() + "(" + edge.getsource().getState().toString() 
 						+ ")-->" + edge.gettarget().getId());
 				}
-				System.out.println();
+				GameSimulation.printIfDebug("");
 			}
 		}
-		System.out.println("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("--------------------------------------------------------------------");
 	}
 }

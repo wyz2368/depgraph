@@ -89,8 +89,8 @@ public final class GameSimulationResult {
 	}
 	
 	public void printPayoff() {
-		System.out.println("Defender payoff: " + this.defPayoff);
-		System.out.println("Attacker payoff: " + this.attPayoff);
+		GameSimulation.printIfDebug("Defender payoff: " + this.defPayoff);
+		GameSimulation.printIfDebug("Attacker payoff: " + this.attPayoff);
 	}
 	
 	public void clear() {
@@ -101,5 +101,11 @@ public final class GameSimulationResult {
 		this.gameSampleList.clear();
 		this.defPayoff = 0.0;
 		this.attPayoff = 0.0;
+	}
+
+	@Override
+	public String toString() {
+		return "GameSimulationResult [initialState=" + this.initialState
+			+ ", defPayoff=" + this.defPayoff + ", attPayoff=" + this.attPayoff + "]";
 	}
 }

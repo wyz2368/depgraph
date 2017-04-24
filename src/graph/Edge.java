@@ -2,6 +2,8 @@ package graph;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
 
+import game.GameSimulation;
+
 public final class Edge extends DefaultWeightedEdge {
 	
 	public enum EdgeType { 
@@ -36,7 +38,8 @@ public final class Edge extends DefaultWeightedEdge {
 		final double aCost,
 		final double curActProb
 	) {
-		if (aType == null || !isProb(curActProb)) {
+		super();
+		if (aType == null || !isProb(curActProb) || aCost > 0.0) {
 			throw new IllegalArgumentException();
 		}
 		this.id = counter;
@@ -137,13 +140,13 @@ public final class Edge extends DefaultWeightedEdge {
 	}
 	
 	public void print() {
-		System.out.println("--------------------------------------------------------------------");
-		System.out.println("ID: " + this.getId() + "\t" + "Source: "
+		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("ID: " + this.getId() + "\t" + "Source: "
 			+ this.getsource().getId() + "\t" + "Des: " + this.gettarget().getId());
-		System.out.println("Type: " + this.getType().toString());
-		System.out.println("aCost: " + this.getACost());
-		System.out.println("actProb: " + this.getActProb());
-		System.out.println("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("Type: " + this.getType().toString());
+		GameSimulation.printIfDebug("aCost: " + this.getACost());
+		GameSimulation.printIfDebug("actProb: " + this.getActProb());
+		GameSimulation.printIfDebug("--------------------------------------------------------------------");
 	}
 	
 	private static boolean isProb(final double i) {

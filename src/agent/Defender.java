@@ -46,8 +46,7 @@ public abstract class Defender {
 		maxNumRes, minNumRes, numResRatio, 
 		maxNumAttCandidate, minNumAttCandidate, numAttCandidateRatio, 
 		logisParam, bThres, isRandomized,
-		qrParam, 
-		numRWSample;
+		qrParam, numRWSample;
 		
 		@Override
 		public String toString() {
@@ -85,20 +84,20 @@ public abstract class Defender {
 	}
 	
 	public abstract DefenderAction sampleAction(
-			DependencyGraph depGraph,
-			int curTimeStep, 
-			int numTimeStep, 
-			DefenderBelief dBelief, 
-			RandomGenerator rng);
+		DependencyGraph depGraph,
+		int curTimeStep, 
+		int numTimeStep, 
+		DefenderBelief dBelief, 
+		RandomGenerator rng);
 	
 	public abstract DefenderBelief updateBelief(
-			DependencyGraph depGraph,
-			DefenderBelief currentBelief, 
-			DefenderAction dAction,
-			DefenderObservation dObservation, 
-			int curTimeStep, 
-			int numTimeStep,
-			RandomGenerator rng);
+		DependencyGraph depGraph,
+		DefenderBelief currentBelief, 
+		DefenderAction dAction,
+		DefenderObservation dObservation, 
+		int curTimeStep, 
+		int numTimeStep,
+		RandomGenerator rng);
 	
 	public static final DefenderAction simpleSampleAction(
 		final List<Node> dCandidateNodeList,
@@ -127,14 +126,14 @@ public abstract class Defender {
 	}
 	
 	public static Map<Node, Double> computeCandidateValueTopo(
-			final DependencyGraph depGraph,
-			final DefenderBelief dBelief,
-			final int curTimeStep,
-			final int numTimeStep,
-			final double discountFactor,
-			final RandomGenerator rng,
-			final Attacker attacker,
-			final int numAttActionSample) {
+		final DependencyGraph depGraph,
+		final DefenderBelief dBelief,
+		final int curTimeStep,
+		final int numTimeStep,
+		final double discountFactor,
+		final RandomGenerator rng,
+		final Attacker attacker,
+		final int numAttActionSample) {
 		if (depGraph == null || dBelief == null || curTimeStep < 0 || numTimeStep < curTimeStep
 			|| discountFactor < 0.0 || discountFactor > 1.0 || rng == null) {
 			throw new IllegalArgumentException();
@@ -155,18 +154,18 @@ public abstract class Defender {
 			
 			depGraph.setState(gameState); // for each possible state
 			List<AttackerAction> attActionList = attacker.sampleAction(
-															depGraph, 
-															curTimeStep, 
-															numTimeStep, 
-															rng, 
-															numAttActionSample, 
-															false); // Sample attacker actions
+				depGraph, 
+				curTimeStep, 
+				numTimeStep, 
+				rng, 
+				numAttActionSample, 
+				false); // Sample attacker actions
 			Map<Node, Double> curDValueMap = computeCandidateValueTopo(
-															depGraph, 
-															attActionList, 
-															curTimeStep, 
-															numTimeStep, 
-															discountFactor);
+				depGraph, 
+				attActionList, 
+				curTimeStep, 
+				numTimeStep, 
+				discountFactor);
 			for (Entry<Node, Double> dEntry : curDValueMap.entrySet()) {
 				Node node = dEntry.getKey();
 				Double value = dEntry.getValue();
@@ -274,7 +273,7 @@ public abstract class Defender {
 		
 		/*****************************************************************************************/
 		for (AttackerAction attAction : attActionList) {
-			for (Entry<Node, Set<Edge>> attEntry : attAction.getAction().entrySet()) {
+			for (Entry<Node, Set<Edge>> attEntry : attAction.getActionCopy().entrySet()) {
 				Node node = attEntry.getKey();
 				Set<Edge> edgeSet = attEntry.getValue();
 				
