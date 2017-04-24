@@ -201,13 +201,13 @@ public final class ValuePropagationAttacker extends Attacker {
 			throw new IllegalArgumentException();
 		}
 		double[] candidateValue = computeCandidateValueTopo(
-			depGraph, 
-			attackCandidate, 
-			curTimeStep, 
-			numTimeStep,
-			discFact, 
-			propagationParam,
-			isBest);
+										depGraph, 
+										attackCandidate, 
+										curTimeStep, 
+										numTimeStep,
+										discFact, 
+										propagationParam,
+										isBest);
 		int totalNumCandidate =
 			attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
 		
