@@ -1,19 +1,15 @@
 package agent;
 
 import graph.Node;
-import graph.INode.NodeState;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import model.AttackerAction;
 import model.DefenderAction;
 import model.DefenderBelief;
 import model.DependencyGraph;
-import model.GameState;
 
 import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 import org.apache.commons.math3.random.RandomGenerator;
@@ -84,8 +80,10 @@ public final class ValuePropagationVsDefenderALT extends ValuePropVsDefSuper {
 		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null) {
 			throw new IllegalArgumentException();
 		}
+		Attacker attacker = new ValuePropagationAttacker(this.maxNumAttCandidate, this.minNumAttCandidate
+				, this.numAttCandidateRatio, this.qrParam, this.discFact); // assumption about the attacker
 		Map<Node, Double> dValueMap = computeCandidateValueTopo(depGraph, dBelief, curTimeStep, numTimeStep
-			, this.discFact, rng);
+			, this.discFact, rng, attacker, this.numAttActionSample);
 		List<Node> dCandidateNodeList = new ArrayList<Node>();
 		double[] candidateValue = new double[dValueMap.size()];
 		
@@ -133,107 +131,6 @@ public final class ValuePropagationVsDefenderALT extends ValuePropVsDefSuper {
 		EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
 
 		return simpleSampleAction(dCandidateNodeList, numNodetoProtect, rnd);
-	}
-	
-	private Map<Node, Double> computeCandidateValueTopo(
-		final DependencyGraph depGraph,
-		final DefenderBelief dBelief,
-		final int curTimeStep,
-		final int numTimeStep,
-		final double discountFactor,
-		final RandomGenerator rng) {
-		if (depGraph == null || dBelief == null || curTimeStep < 0 || numTimeStep < curTimeStep
-			|| discountFactor < 0.0 || discountFactor > 1.0
-		) {
-			throw new IllegalArgumentException();
-		}
-		Map<Node, Double> dValueMap = new HashMap<Node, Double>();
-		
-		Attacker attacker = new ValuePropagationAttacker(this.maxNumAttCandidate, this.minNumAttCandidate
-			, this.numAttCandidateRatio, this.qrParam, this.discFact); // assumption about the attacker
-		
-		// Used for storing true game state of the game
-		GameState savedGameState = new GameState();
-		for (Node node : depGraph.vertexSet()) {
-			if (node.getState() == NodeState.ACTIVE) {
-				savedGameState.addEnabledNode(node);
-			}
-		}
-		// iterate over current belief of the defender
-		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) {
-			GameState gameState = entry.getKey();
-			Double curStateProb = entry.getValue();
-			
-			depGraph.setState(gameState); // for each possible state
-			List<AttackerAction> attActionList = attacker.sampleAction(depGraph, curTimeStep, numTimeStep
-				, rng, this.numAttActionSample, false); // Sample attacker actions
-			Map<Node, Double> curDValueMap = computeCandidateValueTopo(depGraph, attActionList
-				, curTimeStep, numTimeStep, discountFactor);
-			for (Entry<Node, Double> dEntry : curDValueMap.entrySet()) {
-				Node node = dEntry.getKey();
-				Double value = dEntry.getValue();
-				
-				Double curDValue = dValueMap.get(node);
-				if (curDValue == null) {
-					curDValue = value * curStateProb;
-				} else {
-					curDValue += value * curStateProb;
-				}
-				dValueMap.put(node, curDValue);
-			}
-		}
-		for (Entry<Node, Double> entry : dValueMap.entrySet()) {
-			Node node = entry.getKey();
-			Double value = entry.getValue();
-			if (value == Double.POSITIVE_INFINITY) {
-				value = 0.0;
-			}
-			entry.setValue((-value + node.getDCost()) * Math.pow(discountFactor, curTimeStep - 1));
-		}
-		depGraph.setState(savedGameState);
-		return dValueMap;
-	}
-	
-	private static double[] computeCandidateProb(
-		final int totalNumCandidate, final double[] candidateValue, final double logisParam) {
-		if (totalNumCandidate < 0 || candidateValue == null) {
-			throw new IllegalArgumentException();
-		}
-		//Normalize candidate value
-		double minValue = Double.POSITIVE_INFINITY;
-		double maxValue = Double.NEGATIVE_INFINITY;
-		for (int i = 0; i < totalNumCandidate; i++) {
-			if (minValue > candidateValue[i]) {
-				minValue = candidateValue[i];
-			}
-			if (maxValue < candidateValue[i]) {
-				maxValue = candidateValue[i];
-			}
-		}
-		if (maxValue > minValue) {
-			for (int i = 0; i < totalNumCandidate; i++) {
-				candidateValue[i] = (candidateValue[i] - minValue) / (maxValue - minValue);
-			}
-		} else  {
-			for (int i = 0; i < totalNumCandidate; i++) {
-				candidateValue[i] = 0.0;
-			}
-		}
-		
-		// Compute probability
-		double[] probabilities = new double[totalNumCandidate];
-		int[] nodeList = new int[totalNumCandidate];
-		double sumProb = 0.0;
-		for (int i = 0; i < totalNumCandidate; i++) {
-			nodeList[i] = i;
-			probabilities[i] = Math.exp(logisParam * candidateValue[i]);
-			sumProb += probabilities[i];
-		}
-		for (int i = 0; i < totalNumCandidate; i++) {
-			probabilities[i] /= sumProb;
-		}
-		
-		return probabilities;
 	}
 	
 	private static boolean isProb(final double i) {
