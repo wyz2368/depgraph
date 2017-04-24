@@ -16,7 +16,7 @@ import utils.JsonUtils;
 public final class MainGraphGen {
 	
 	private MainGraphGen() {
-		// private constuctor
+		// private constructor
 	}
 
 	public static void main(final String[] args) {

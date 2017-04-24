@@ -20,6 +20,7 @@ import model.DefenderObservation;
 import model.DependencyGraph;
 import model.GameState;
 import model.SecurityAlert;
+import utils.DGraphUtils;
 
 @SuppressWarnings("static-method")
 public final class UnitTestGameOracle {
@@ -47,7 +48,130 @@ public final class UnitTestGameOracle {
 	}
 	
 	@Test
-	public void testTransitionAttackDefendAll() {
+	public void testOrRand() {
+		final int numNode = 40;
+		
+		// Load graph
+		DependencyGraph depGraph = DGraphUtils.loadGraph("testDirs/graphs1/RandomGraph4N3E2T0.json");
+
+		RandomDataGenerator rnd = new RandomDataGenerator();
+		final int numTimeStep = 4;
+		GameState gameState = new GameState();
+		gameState.createID();
+		
+		
+		DefenderBelief dBelief = new DefenderBelief();
+		dBelief.addState(gameState, 1.0);
+		depGraph.setState(gameState);
+		int timeStep = 0;
+		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0);
+		AttackerAction attAction = uniformAttacker.sampleAction(
+			depGraph, 
+			timeStep, 
+			numTimeStep,
+			rnd.getRandomGenerator()
+		);
+		DefenderAction doNothingDefAction = new DefenderAction();
+		final GameState oldGameState = GameOracle.generateStateSample(gameState, attAction, doNothingDefAction, rnd);
+		final int initialActive = 3;
+		assertTrue(oldGameState.getEnabledNodeSet().size() == initialActive);
+		
+		depGraph.setState(oldGameState);
+		attAction = uniformAttacker.sampleAction(
+			depGraph, 
+			timeStep, 
+			numTimeStep,
+			rnd.getRandomGenerator()
+		);
+		
+		int totalGoalActives = 0;
+		final int trials = 5000;
+		for (int i = 0; i < trials; i++) {
+			GameState tempGameState = GameOracle.generateStateSample(oldGameState, attAction, doNothingDefAction, rnd);
+			totalGoalActives += tempGameState.getEnabledNodeSet().size() - initialActive;
+		}
+		final double meanGoalActives = totalGoalActives * 1.0 / trials;
+		final double prob1 = 0.4;
+		final double prob2 = 0.3;
+		final double prob3 = 0.5;
+		final double expectedMeanGoalActives = 1 - (1 - prob1) * (1 - prob2) * (1 - prob3);
+		final double tolerance = 0.05;
+		assertTrue(Math.abs(meanGoalActives - expectedMeanGoalActives) < tolerance);
+	}
+	
+	@Test
+	public void testAllRootRand() {
+		final int numNode = 40;
+		final int numEdge = 0;
+		final int numTarget = 40;
+		final double nodeActTypeRatio = 0.5;
+		
+		final double aRewardLB = 2.0;
+		final double aRewardUB = 2.0;
+		final double aNodeCostLB = -0.3;
+		final double aNodeCostUB = -0.3;
+		final double aEdgeCostLB = 0.0;
+		final double aEdgeCostUB = 0.0;
+
+		final double dPenaltyLB = -5.0;
+		final double dPenaltyUB = -5.0;
+
+		final double dCostLB = -0.4;
+		final double dCostUB = -0.4;
+		final double aNodeActProbLB = 0.5;
+		final double aNodeActProbUB = 0.5;
+		final double aEdgeActProbLB = 1.0;
+		final double aEdgeActProbUB = 1.0;
+		final double minPosActiveProb = 0.8;
+		final double maxPosActiveProb = 1.0;
+		final double minPosInactiveProb = 0.0;
+		final double maxPosInactiveProb = 0.2;
+		
+		// Load graph
+		RandomDataGenerator rnd = new RandomDataGenerator();
+		DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rnd);
+		DGraphGenerator.genGraph(depGraph, rnd
+			, numTarget, nodeActTypeRatio
+			, aRewardLB, aRewardUB
+			, dPenaltyLB, dPenaltyUB
+			, aNodeCostLB, aNodeCostUB
+			, aEdgeCostLB, aEdgeCostUB
+			, dCostLB, dCostUB
+			, aNodeActProbLB, aNodeActProbUB
+			, aEdgeActProbLB, aEdgeActProbUB
+			, minPosActiveProb, maxPosActiveProb
+			, minPosInactiveProb, maxPosInactiveProb);
+		
+		final int numTimeStep = 4;
+		GameState gameState = new GameState();
+		gameState.createID();
+		DefenderBelief dBelief = new DefenderBelief();
+		dBelief.addState(gameState, 1.0);
+		depGraph.setState(gameState);
+		int timeStep = 0;
+		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0);
+		AttackerAction attAction = uniformAttacker.sampleAction(
+			depGraph, 
+			timeStep, 
+			numTimeStep,
+			rnd.getRandomGenerator()
+		);
+		DefenderAction doNothingDefAction = new DefenderAction();
+		int totalActives = 0;
+		final int trials = 1000;
+		for (int i = 0; i < trials; i++) {
+			GameState tempGameState = GameOracle.generateStateSample(gameState, attAction, doNothingDefAction, rnd);
+			totalActives += tempGameState.getEnabledNodeSet().size();
+		}
+		final double meanActives = totalActives * 1.0 / trials;
+		
+		final double tolerance = 0.4;
+		final double expectedMeanActives = numNode * aNodeActProbLB;
+		assertTrue(Math.abs(meanActives - expectedMeanActives) < tolerance);
+	}
+	
+	@Test
+	public void testAllRootNoRand() {
 		final int numNode = 40;
 		final int numEdge = 0;
 		final int numTarget = 40;

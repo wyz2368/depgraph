@@ -92,4 +92,19 @@ public final class AttackerAction {
 		}
 		GameSimulation.printIfDebug("--------------------------------------------------------------------");
 	}
+	
+	public String getActionString() {
+		final StringBuilder builder = new StringBuilder();
+		builder.append("[");
+		for (Node node : this.action.keySet()) {
+			builder.append(node.getId()).append(",").append(node.getType()).append("\t");
+		}
+		builder.append("]");
+		return builder.toString();
+	}
+
+	@Override
+	public String toString() {
+		return "AttackerAction [action=" + getActionString() + "]";
+	}
 }
