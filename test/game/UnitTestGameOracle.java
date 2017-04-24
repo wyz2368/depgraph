@@ -65,10 +65,10 @@ public final class UnitTestGameOracle {
 
 		final double dCostLB = -0.4;
 		final double dCostUB = -0.4;
-		final double aNodeActProbLB = 0.8;
+		final double aNodeActProbLB = 1.0;
 		final double aNodeActProbUB = 1.0;
-		final double aEdgeActProbLB = 0.6;
-		final double aEdgeActProbUB = 0.8;
+		final double aEdgeActProbLB = 1.0;
+		final double aEdgeActProbUB = 1.0;
 		final double minPosActiveProb = 0.8;
 		final double maxPosActiveProb = 1.0;
 		final double minPosInactiveProb = 0.0;
@@ -93,41 +93,82 @@ public final class UnitTestGameOracle {
 		final Defender uniformDefender = new UniformDefender(numNode, numNode, 1.0);
 		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0);
 		
-		final int numTimeStep = 2;
+		final int numTimeStep = 4;
 		GameState gameState = new GameState();
 		gameState.createID();
 		DefenderBelief dBelief = new DefenderBelief();
 		dBelief.addState(gameState, 1.0);
+		depGraph.setState(gameState);
+		int timeStep = 0;
 		AttackerAction attAction = uniformAttacker.sampleAction(
 			depGraph, 
-			0, 
+			timeStep, 
 			numTimeStep,
 			rnd.getRandomGenerator()
 		);
 		DefenderAction defAction = uniformDefender.sampleAction(
 			depGraph,
-			0,
+			timeStep,
 			numTimeStep,
 			dBelief,
 			rnd.getRandomGenerator()
 		);
+		
+		timeStep++;
 		gameState = GameOracle.generateStateSample(gameState, attAction, defAction, rnd);
+		// if defender protects all, and attacker attacks all, and all were inactive, all remain inactive
 		assertTrue(gameState.getEnabledNodeSet().size() == 0);
 		dBelief.addState(gameState, 2.0);
+		depGraph.setState(gameState);
 		attAction = uniformAttacker.sampleAction(
 			depGraph, 
-			1, 
+			timeStep, 
 			numTimeStep,
 			rnd.getRandomGenerator()
 		);
 		defAction = uniformDefender.sampleAction(
 			depGraph,
-			1,
+			timeStep,
 			numTimeStep,
 			dBelief,
 			rnd.getRandomGenerator()
 		);
 		gameState = GameOracle.generateStateSample(gameState, attAction, defAction, rnd);
+		// if defender protects all, and attacker attacks all, and all were inactive, all remain inactive
+		assertTrue(gameState.getEnabledNodeSet().size() == 0);
+		
+		timeStep++;
+		DefenderAction doNothingDefAction = new DefenderAction();
+		depGraph.setState(gameState);
+		attAction = uniformAttacker.sampleAction(
+			depGraph, 
+			timeStep, 
+			numTimeStep,
+			rnd.getRandomGenerator()
+		);
+		gameState = GameOracle.generateStateSample(gameState, attAction, doNothingDefAction, rnd);
+		// if defender does nothing, and attacker attacks all, and all were inactive, all remain inactive
+		assertTrue(gameState.getEnabledNodeSet().size() == numNode);
+		
+		AttackerAction doNothingAttAction = new AttackerAction();
+		gameState = GameOracle.generateStateSample(gameState, doNothingAttAction, doNothingDefAction, rnd);
+		// if defender does nothing, and attacker does nothing, all nodes remain same
+		assertTrue(gameState.getEnabledNodeSet().size() == numNode);
+		
+		timeStep++;
+		depGraph.setState(gameState);
+		attAction = uniformAttacker.sampleAction(
+			depGraph, 
+			timeStep,
+			numTimeStep,
+			rnd.getRandomGenerator()
+		);
+		gameState = GameOracle.generateStateSample(gameState, attAction, defAction, rnd);
+		// if defender protects all, and attacker attacks all, and all were active, all become inactive
+		assertTrue(gameState.getEnabledNodeSet().size() == 0);
+		
+		gameState = GameOracle.generateStateSample(gameState, doNothingAttAction, doNothingDefAction, rnd);
+		// if defender does nothing, and attacker does nothing, all nodes remain same
 		assertTrue(gameState.getEnabledNodeSet().size() == 0);
 	}
 	
