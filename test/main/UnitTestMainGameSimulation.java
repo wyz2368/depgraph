@@ -126,7 +126,7 @@ public final class UnitTestMainGameSimulation {
 	@Test
 	public void testReadSimSpec() {
 		final String simspecFolderName = "testDirs/simSpec0";
-		final String graphFolderName = "graphs";
+		final String graphFolderName = "testDirs/graphs0";
   
 		final GameSimulationSpec simSpec =
 			JsonUtils.getSimSpecOrDefaults(simspecFolderName);
@@ -171,5 +171,31 @@ public final class UnitTestMainGameSimulation {
 		assertTrue(Math.abs(testDefender.getNumResRatio() - numResRatio) < tolerance);
 		assertTrue(Math.abs(testDefender.getLogisParam() - logisParam) < tolerance);
 		assertTrue(Math.abs(testDefender.getDiscFact() - discFact) < tolerance);
+		
+		final DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
+		final String attackerName = EncodingUtils.getStrategyName(attackerString);
+		final String defenderName = EncodingUtils.getStrategyName(defenderString);
+		final MeanGameSimulationResult simResult = MainGameSimulation.runSimulations(
+			depGraph, simSpec, attackerName,
+			attackerParams, defenderName, defenderParams,
+			simSpec.getNumSim());
+		JsonUtils.getObservationString(
+			simResult, attackerString, defenderString, simSpec);
+
+		final int numSim = 7;
+		assertTrue(simSpec.getNumSim() == numSim);
+		assertTrue(simResult.getNumSims() == numSim);
+		final int numTimeStep = 11;
+		assertTrue(simSpec.getNumTimeStep() == numTimeStep);
+		assertTrue(simResult.getNumTimeStep() == numTimeStep);
+		final int graphId = 0;
+		assertTrue(simSpec.getGraphID() == graphId);
+		final int numNode = 5;
+		assertTrue(simSpec.getNumNode() == numNode);
+		final int numEdge = 3;
+		assertTrue(simSpec.getNumEdge() == numEdge);
+		final int numTarget = 2;
+		assertTrue(simSpec.getNumTarget() == numTarget);
+		assertTrue(simSpec.getDiscFact() == discFact);		
 	}
 }
