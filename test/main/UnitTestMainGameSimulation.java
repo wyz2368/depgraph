@@ -27,6 +27,7 @@ import model.DependencyGraph;
 import utils.DGraphUtils;
 import utils.EncodingUtils;
 import utils.JsonUtils;
+import utils.JsonUtils.ObservationStruct;
 
 @SuppressWarnings("static-method")
 public final class UnitTestMainGameSimulation {
@@ -125,6 +126,43 @@ public final class UnitTestMainGameSimulation {
 			simSpec.getNumSim());
 		JsonUtils.getObservationString(
 			simResult, attackerString, defenderString, simSpec);
+	}
+	
+	@Test
+	public void testObservationWrite() {
+		final String simspecFolderName = "testDirs/simSpec0";
+		final String graphFolderName = "testDirs/graphs0";
+		
+		final GameSimulationSpec simSpec =
+			JsonUtils.getSimSpecOrDefaults(simspecFolderName);
+		// Load graph
+		String filePathName = graphFolderName + File.separator
+			+ "RandomGraph" + simSpec.getNumNode() + "N" + simSpec.getNumEdge() + "E" 
+			+ simSpec.getNumTarget() + "T"
+			+ simSpec.getGraphID() + JsonUtils.JSON_SUFFIX;
+		DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
+		GameSimulation.printIfDebug(filePathName);
+
+		// Load players
+		final String attackerString = JsonUtils.getAttackerString(simspecFolderName);
+		final String defenderString = JsonUtils.getDefenderString(simspecFolderName);
+		final Map<String, Double> attackerParams =
+			EncodingUtils.getStrategyParams(attackerString);
+		final Map<String, Double> defenderParams =
+			EncodingUtils.getStrategyParams(defenderString);
+		final String attackerName = EncodingUtils.getStrategyName(attackerString);
+		final String defenderName = EncodingUtils.getStrategyName(defenderString);
+		final MeanGameSimulationResult simResult = MainGameSimulation.runSimulations(
+			depGraph, simSpec, attackerName,
+			attackerParams, defenderName, defenderParams,
+			simSpec.getNumSim());
+		final String obsStringToWrite = JsonUtils.getObservationString(
+			simResult, attackerString, defenderString, simSpec);
+		final String obsFileName = JsonUtils.printObservationToFile(simspecFolderName, obsStringToWrite);
+		assertTrue(obsFileName != null);
+		
+		final ObservationStruct obsFromFile = JsonUtils.fromObservationFile(obsFileName);
+		System.out.println(obsFromFile);
 	}
 	
 	@Test

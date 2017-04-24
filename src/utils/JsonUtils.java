@@ -228,7 +228,8 @@ public final class JsonUtils {
 		return gson.toJson(obsObject).toString();
 	}
 	
-	public static void printObservationToFile(final String folderName, final String obsString) {
+	// return file name written to if successful, else return null.
+	public static String printObservationToFile(final String folderName, final String obsString) {
 		assert folderName != null && obsString != null;
 		final int maxSuffixValue =
 			maxSuffixValue(folderName, OBS_FILE_PREFIX);
@@ -242,7 +243,9 @@ public final class JsonUtils {
 			output.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+			return null;
 		}
+		return fileName;
 	}
 	
 	public static String linesAsString(final String fileName) {
@@ -297,11 +300,13 @@ public final class JsonUtils {
 		return result;
 	 }
 	
+	/*
 	public static void main(final String[] args) {
 		final String pathName = "simspecs/observation0.json";
 		final ObservationStruct obs = fromObservationFile(pathName);
 		System.out.println(obs);
 	}
+	*/
 	
 	public static final class ObservationStruct {
 		private final MeanGameSimulationResult simResult;
