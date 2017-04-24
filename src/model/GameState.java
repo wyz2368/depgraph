@@ -47,6 +47,16 @@ public final class GameState {
 		GameSimulation.printIfDebug("--------------------------------------------------------------------");
 	}
 	
+	public String getEnabledSetString() {
+		final StringBuilder builder = new StringBuilder();
+		builder.append("[");
+		for (Node node : this.enabledNodeSet) {
+			builder.append(node.getId()).append(",").append(node.getType()).append("\t");
+		}
+		builder.append("]");
+		return builder.toString();
+	}
+	
 	public void createID() {
 		int maxNodeID = 1;
 		for (Node node : this.enabledNodeSet) {
@@ -92,5 +102,11 @@ public final class GameState {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "GameState [\n\tid=" + this.id + ",\n\tenabledNodeSet=" + getEnabledSetString()
+			+ "\n]";
 	}
 }

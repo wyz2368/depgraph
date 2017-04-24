@@ -5,10 +5,17 @@ import static org.junit.Assert.assertTrue;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.junit.Test;
 
+import agent.Attacker;
+import agent.Defender;
+import agent.UniformAttacker;
+import agent.UniformDefender;
 import graph.DGraphGenerator;
 import graph.DagGenerator;
 import graph.Edge;
 import graph.Node;
+import model.AttackerAction;
+import model.DefenderAction;
+import model.DefenderBelief;
 import model.DefenderObservation;
 import model.DependencyGraph;
 import model.GameState;
@@ -37,6 +44,91 @@ public final class UnitTestGameOracle {
 		testAlertProbs(threeQuarters, quarter);
 		testAlertProbs(1.0, 1.0);
 		testAlertProbs(0.0, 0.0);
+	}
+	
+	@Test
+	public void testTransitionAttackDefendAll() {
+		final int numNode = 40;
+		final int numEdge = 0;
+		final int numTarget = 40;
+		final double nodeActTypeRatio = 0.5;
+		
+		final double aRewardLB = 2.0;
+		final double aRewardUB = 2.0;
+		final double aNodeCostLB = -0.3;
+		final double aNodeCostUB = -0.3;
+		final double aEdgeCostLB = 0.0;
+		final double aEdgeCostUB = 0.0;
+
+		final double dPenaltyLB = -5.0;
+		final double dPenaltyUB = -5.0;
+
+		final double dCostLB = -0.4;
+		final double dCostUB = -0.4;
+		final double aNodeActProbLB = 0.8;
+		final double aNodeActProbUB = 1.0;
+		final double aEdgeActProbLB = 0.6;
+		final double aEdgeActProbUB = 0.8;
+		final double minPosActiveProb = 0.8;
+		final double maxPosActiveProb = 1.0;
+		final double minPosInactiveProb = 0.0;
+		final double maxPosInactiveProb = 0.2;
+		
+		// Load graph
+		RandomDataGenerator rnd = new RandomDataGenerator();
+		DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rnd);
+		DGraphGenerator.genGraph(depGraph, rnd
+			, numTarget, nodeActTypeRatio
+			, aRewardLB, aRewardUB
+			, dPenaltyLB, dPenaltyUB
+			, aNodeCostLB, aNodeCostUB
+			, aEdgeCostLB, aEdgeCostUB
+			, dCostLB, dCostUB
+			, aNodeActProbLB, aNodeActProbUB
+			, aEdgeActProbLB, aEdgeActProbUB
+			, minPosActiveProb, maxPosActiveProb
+			, minPosInactiveProb, maxPosInactiveProb);
+
+		// Load players
+		final Defender uniformDefender = new UniformDefender(numNode, numNode, 1.0);
+		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0);
+		
+		final int numTimeStep = 2;
+		GameState gameState = new GameState();
+		gameState.createID();
+		DefenderBelief dBelief = new DefenderBelief();
+		dBelief.addState(gameState, 1.0);
+		AttackerAction attAction = uniformAttacker.sampleAction(
+			depGraph, 
+			0, 
+			numTimeStep,
+			rnd.getRandomGenerator()
+		);
+		DefenderAction defAction = uniformDefender.sampleAction(
+			depGraph,
+			0,
+			numTimeStep,
+			dBelief,
+			rnd.getRandomGenerator()
+		);
+		gameState = GameOracle.generateStateSample(gameState, attAction, defAction, rnd);
+		assertTrue(gameState.getEnabledNodeSet().size() == 0);
+		dBelief.addState(gameState, 2.0);
+		attAction = uniformAttacker.sampleAction(
+			depGraph, 
+			1, 
+			numTimeStep,
+			rnd.getRandomGenerator()
+		);
+		defAction = uniformDefender.sampleAction(
+			depGraph,
+			1,
+			numTimeStep,
+			dBelief,
+			rnd.getRandomGenerator()
+		);
+		gameState = GameOracle.generateStateSample(gameState, attAction, defAction, rnd);
+		assertTrue(gameState.getEnabledNodeSet().size() == 0);
 	}
 	
 	private void testAlertProbs(

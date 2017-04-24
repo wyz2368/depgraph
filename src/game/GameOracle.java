@@ -190,9 +190,9 @@ public final class GameOracle {
 			throw new IllegalArgumentException();
 		}
 		Map<Node, Double> enableProbMap = new HashMap<Node, Double>(); // probability each node is active
-		// Check if the defender disables any previously active nodes
 		for (Node node : pastState.getEnabledNodeSet()) {
 			if (!defAction.containsNode(node)) {
+				// nodes currently enabled and not protected by defender remain enabled
 				enableProbMap.put(node, 1.0);
 			}
 		}
@@ -200,7 +200,10 @@ public final class GameOracle {
 		// Iterate over all nodes the attacker aims at activating
 		for (Entry<Node, Set<Edge>> entry : attAction.getActionCopy().entrySet()) {
 			Node node = entry.getKey();
-			assert !pastState.containsNode(node); // if node is already enabled, the attacker should not enable it again
+			if (pastState.containsNode(node)) {
+				// if node is already enabled, the attacker must not be allowed to enable it again
+				throw new IllegalStateException();
+			}
 			if (!defAction.getAction().contains(node)) { // if the defender is not protecting this node
 				double enableProb = 1.0;
 				if (node.getActivationType() == NodeActivationType.AND) {
@@ -244,7 +247,7 @@ public final class GameOracle {
 			}
 			return new ArrayList<GameState>(gameStateSet); // return the new set of samples
 		}
-		 // not check if this is correctly coded, temporarily ignored :D
+		
 		List<GameState> gameStateList = new ArrayList<GameState>();
 		for (int i = 0; i < numStateSample; i++) {
 			GameState gameState = new GameState();

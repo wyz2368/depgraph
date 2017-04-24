@@ -79,7 +79,7 @@ public final class MainGameSimulation {
 		JsonUtils.printObservationToFile(simspecFolderName, obsString);
 	}
 	
-	static MeanGameSimulationResult runSimulations(final DependencyGraph depGraph,
+	public static MeanGameSimulationResult runSimulations(final DependencyGraph depGraph,
 		final GameSimulationSpec simSpec, final String attackerName,
 		final Map<String, Double> attackerParams, final String defenderName,
 		final Map<String, Double> defenderParams, final int numSim) {

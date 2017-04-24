@@ -148,7 +148,6 @@ public final class UnitTestGameSimulation {
 			, aEdgeActProbLB, aEdgeActProbUB
 			, minPosActiveProb, maxPosActiveProb
 			, minPosInactiveProb, maxPosInactiveProb);
-		DGraphGenerator.findMinCut(depGraph);
 				
 		final int numTimeStep = 4;
 		final Defender uniformDefender = new UniformDefender(0, 0, 1.0);
