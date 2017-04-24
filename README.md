@@ -30,4 +30,5 @@ The code was written by Thanh Nguyen with help from Mason Wright.
     * Into folder: depgraph/simspecs -> Finish
 10. File -> Import -> General -> File System -> depgraph -> defaults.json (select 1 file only)
     * Into folder: depgraph -> Finish
-
+11. File -> Import -> General -> File System -> depgraph/testDirs
+    * Into folder: depgraph/testDirs -> Finish
