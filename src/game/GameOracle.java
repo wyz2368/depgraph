@@ -199,12 +199,18 @@ public final class GameOracle {
 		
 		// Iterate over all nodes the attacker aims at activating
 		for (Entry<Node, Set<Edge>> entry : attAction.getActionCopy().entrySet()) {
-			Node node = entry.getKey();
+			final Node node = entry.getKey();
+			final Set<Edge> edges = entry.getValue();
 			if (pastState.containsNode(node)) {
 				// if node is already enabled, the attacker must not be allowed to enable it again
 				throw new IllegalStateException();
 			}
 			if (!defAction.getAction().contains(node)) { // if the defender is not protecting this node
+				for (final Edge inEdge: edges) {
+					if (!pastState.containsNode(inEdge.getsource())) {
+						throw new IllegalStateException("attacked over edge with inactive source");
+					}
+				}
 				double enableProb = 1.0;
 				if (node.getActivationType() == NodeActivationType.AND) {
 					enableProb = node.getActProb();
