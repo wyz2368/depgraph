@@ -58,7 +58,7 @@ public final class JsonUtils {
 		// read in the input file
 		final String inputString = linesAsString(inputPath);
 		final JsonObject inputJson = 
-				new JsonParser().parse(inputString).getAsJsonObject();
+			new JsonParser().parse(inputString).getAsJsonObject();
 		// get JsonObject of input file's appropriate field
 		final JsonObject inputConfig =
 			(JsonObject) inputJson.get(SIMSPEC_FIELD_NAME);
@@ -122,6 +122,33 @@ public final class JsonUtils {
 			(JsonArray) assignmentObject.get(defender);
 		final JsonElement defenderElement = defenderArray.get(0);
 		return defenderElement.toString().replaceAll("\"", "");
+	}
+	
+	public static ObservationStruct fromObservationFile(final String pathName) {
+		if (pathName == null) {
+			throw new IllegalArgumentException();
+		}
+		// read in the observation file
+		final String obsString = linesAsString(pathName);
+		return fromObservationString(obsString);
+	}
+	
+	public static ObservationStruct fromObservationString(final String obsString) {
+		if (obsString == null) {
+			throw new IllegalArgumentException();
+		}
+		final JsonObject obsJson = 
+			new JsonParser().parse(obsString).getAsJsonObject();
+		final JsonObject simSpecJson = (JsonObject) obsJson.get("features");
+		final Gson gson = new Gson();
+		// build object from input, with missing fields added from default.
+		final GameSimulationSpec gameSimSpec =
+			gson.fromJson(
+				simSpecJson,
+				GameSimulationSpec.class
+			);
+		// TODO
+		return null;
 	}
 
 	public static String getObservationString(
@@ -238,4 +265,48 @@ public final class JsonUtils {
 		}
 		return result;
 	 }
+	
+	public static void main(final String[] args) {
+		final String pathName = "simspecs/observation0.json";
+		fromObservationFile(pathName);
+	}
+	
+	public final class ObservationStruct {
+		private final MeanGameSimulationResult simResult;
+		private final String attackerStrategyString;
+		private final String defenderStrategyString;
+		private final GameSimulationSpec simSpec;
+		
+		public ObservationStruct(final MeanGameSimulationResult aSimResult,
+			final String aAttackerStrategyString,
+			final String aDefenderStrategyString,
+			final GameSimulationSpec aSimSpec
+		) {
+			if (aSimResult == null || aAttackerStrategyString == null
+				|| aDefenderStrategyString == null || aSimSpec == null
+			) {
+				throw new IllegalArgumentException();
+			}
+			this.simResult = aSimResult;
+			this.attackerStrategyString = aAttackerStrategyString;
+			this.defenderStrategyString = aDefenderStrategyString;
+			this.simSpec = aSimSpec;
+		}
+
+		public MeanGameSimulationResult getSimResult() {
+			return this.simResult;
+		}
+
+		public String getAttackerStrategyString() {
+			return this.attackerStrategyString;
+		}
+
+		public String getDefenderStrategyString() {
+			return this.defenderStrategyString;
+		}
+
+		public GameSimulationSpec getSimSpec() {
+			return this.simSpec;
+		}
+	}
 }

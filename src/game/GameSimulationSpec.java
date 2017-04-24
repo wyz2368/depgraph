@@ -56,4 +56,12 @@ public final class GameSimulationSpec {
 	public double getDiscFact() {
 		return this.discFact;
 	}
+
+	@Override
+	public String toString() {
+		return "GameSimulationSpec [numTimeStep=" + this.numTimeStep + ", numSim="
+			+ this.numSim + ", graphID=" + this.graphID + ", numNode=" + this.numNode
+			+ ", numEdge=" + this.numEdge + ", numTarget=" + this.numTarget
+			+ ", discFact=" + this.discFact + "]";
+	}
 }

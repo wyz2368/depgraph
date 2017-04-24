@@ -220,4 +220,11 @@ public final class GameSimulation {
 			System.out.println(toPrint);
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "GameSimulation [numTimeStep=" + this.numTimeStep + ", attacker="
+			+ this.attacker + ", defender=" + this.defender + ", discFact=" + this.discFact
+			+ ", rng=" + this.rng + "]";
+	}
 }

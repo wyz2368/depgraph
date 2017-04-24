@@ -98,4 +98,10 @@ public final class GameSimulationResult {
 		}
 		this.gameSampleList.clear();
 	}
+
+	@Override
+	public String toString() {
+		return "GameSimulationResult [initialState=" + this.initialState
+			+ ", defPayoff=" + this.defPayoff + ", attPayoff=" + this.attPayoff + "]";
+	}
 }

@@ -30,4 +30,11 @@ public final class MeanGameSimulationResult {
 	public int getNumTimeStep() {
 		return this.numTimeStep;
 	}
+
+	@Override
+	public String toString() {
+		return "MeanGameSimulationResult [meanDefPayoff=" + this.meanDefPayoff
+			+ ", meanAttPayoff=" + this.meanAttPayoff + ", numSimulation="
+			+ this.numSimulation + ", numTimeStep=" + this.numTimeStep + "]";
+	}
 }
