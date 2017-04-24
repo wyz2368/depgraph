@@ -97,6 +97,24 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 		this.minCut.add(node);
 	}
 	
+	public Node getNodeById(final int id) {
+		for (final Node node: vertexSet()) {
+			if (node.getId() == id) {
+				return node;
+			}
+		}
+		return null;
+	}
+	
+	public Edge getEdgeById(final int id) {
+		for (final Edge edge: edgeSet()) {
+			if (edge.getId() == id) {
+				return edge;
+			}
+		}
+		return null;
+	}
+	
 	public Set<Node> getRootSet() {
 		assert validRootSet();
 		return this.rootSet;

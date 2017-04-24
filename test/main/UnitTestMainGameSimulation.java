@@ -18,6 +18,10 @@ import java.util.Map;
 import graph.DGraphGenerator;
 import graph.DagGenerator;
 import graph.Edge;
+import graph.Edge.EdgeType;
+import graph.INode.NodeActivationType;
+import graph.INode.NodeState;
+import graph.INode.NodeType;
 import graph.Node;
 import model.DependencyGraph;
 import utils.DGraphUtils;
@@ -196,6 +200,49 @@ public final class UnitTestMainGameSimulation {
 		assertTrue(simSpec.getNumEdge() == numEdge);
 		final int numTarget = 2;
 		assertTrue(simSpec.getNumTarget() == numTarget);
-		assertTrue(simSpec.getDiscFact() == discFact);		
+		assertTrue(simSpec.getDiscFact() == discFact);
+		
+		final int nodeId = 1;
+		final Node node = depGraph.getNodeById(nodeId);
+		assertTrue(node.getId() == nodeId);
+		assertTrue(node.getTopoPosition() == 0);
+		assertTrue(node.getType() == NodeType.NONTARGET);
+		assertTrue(depGraph.getRootSet().contains(node));
+		assertTrue(node.getActivationType() == NodeActivationType.AND);
+		assertTrue(node.getState() == NodeState.INACTIVE);
+		assertTrue(Math.abs(node.getAReward()) < tolerance);
+		assertTrue(Math.abs(node.getDPenalty()) < tolerance);
+		final double dCost = -1.06;
+		assertTrue(Math.abs(node.getDCost() - dCost) < tolerance);
+		final double posActiveProb = 0.86;
+		assertTrue(Math.abs(node.getPosActiveProb() - posActiveProb) < tolerance);
+		final double posInactiveProb = 0.13;
+		assertTrue(Math.abs(node.getPosInactiveProb() - posInactiveProb) < tolerance);
+		final double aActivationCost = -0.58;
+		assertTrue(Math.abs(node.getACost() - aActivationCost) < tolerance);
+		final double aActivationProb = 0.95;
+		assertTrue(Math.abs(node.getActProb() - aActivationProb) < tolerance);
+		
+		final int targetId = 4;
+		final Node target = depGraph.getNodeById(targetId);
+		assertTrue(target.getType() == NodeType.TARGET);
+		assertTrue(!depGraph.getRootSet().contains(target));
+		final double targetAReward = 4.0;
+		assertTrue(Math.abs(target.getAReward() - targetAReward) < tolerance);
+		final double targetDPenalty = -3.0;
+		assertTrue(Math.abs(target.getDPenalty() - targetDPenalty) < tolerance);
+		
+		final int edgeId = 1;
+		final Edge edge = depGraph.getEdgeById(edgeId);
+		assertTrue(edge.getId() == edgeId);
+		final int srcId = 2;
+		assertTrue(edge.getsource().getId() == srcId);
+		final int desId = 4;
+		assertTrue(edge.gettarget().getId() == desId);
+		assertTrue(edge.getType() == EdgeType.NORMAL);
+		final double edgeActivationCost = 0.5;
+		assertTrue(Math.abs(edge.getACost() - edgeActivationCost) < tolerance);
+		final double edgeActivationProb = 0.4;
+		assertTrue(Math.abs(edge.getActProb() - edgeActivationProb) < tolerance);
 	}
 }
