@@ -124,14 +124,14 @@ public final class AgentFactory {
 			&& defenderParams.containsKey(DefenderParam.numAttCandidateRatio.toString());
 			
 			return new UniformVsDefender(defenderParams.get(DefenderParam.logisParam.toString())
-					, discFact
-					, defenderParams.get(DefenderParam.bThres.toString())
-					, defenderParams.get(DefenderParam.maxNumRes.toString())
-					, defenderParams.get(DefenderParam.minNumRes.toString())
-					, defenderParams.get(DefenderParam.numResRatio.toString())
-					, defenderParams.get(DefenderParam.maxNumAttCandidate.toString())
-					, defenderParams.get(DefenderParam.minNumAttCandidate.toString())
-					, defenderParams.get(DefenderParam.numAttCandidateRatio.toString()));
+				, discFact
+				, defenderParams.get(DefenderParam.bThres.toString())
+				, defenderParams.get(DefenderParam.maxNumRes.toString())
+				, defenderParams.get(DefenderParam.minNumRes.toString())
+				, defenderParams.get(DefenderParam.numResRatio.toString())
+				, defenderParams.get(DefenderParam.maxNumAttCandidate.toString())
+				, defenderParams.get(DefenderParam.minNumAttCandidate.toString())
+				, defenderParams.get(DefenderParam.numAttCandidateRatio.toString()));
 		}
 
 		return null;

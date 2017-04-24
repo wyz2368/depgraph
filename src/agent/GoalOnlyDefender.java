@@ -96,6 +96,13 @@ public final class GoalOnlyDefender extends Defender {
 		return this.discFact;
 	}
 
+	@Override
+	public String toString() {
+		return "GoalOnlyDefender [maxNumRes=" + this.maxNumRes + ", minNumRes="
+			+ this.minNumRes + ", numResRatio=" + this.numResRatio + ", logisParam="
+			+ this.logisParam + ", discFact=" + this.discFact + "]";
+	}
+
 	private static boolean isProb(final double i) {
 		return i >= 0.0 && i <= 1.0;
 	}

@@ -10,6 +10,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
@@ -19,6 +20,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import agent.AgentFactory;
+import agent.Attacker;
+import agent.Defender;
 
 public final class JsonUtils {
 	/**
@@ -147,6 +152,25 @@ public final class JsonUtils {
 				simSpecJson,
 				GameSimulationSpec.class
 			);
+		
+		final JsonArray playersJson = (JsonArray) obsJson.get("players");
+		final JsonObject attackerJson = (JsonObject) playersJson.get(0);
+		final JsonObject defenderJson = (JsonObject) playersJson.get(1);
+		final String attackerStratString = attackerJson.get("strategy").toString().replaceAll("\"", "");
+		final String defenderStratString = defenderJson.get("strategy").toString().replaceAll("\"", "");
+		final String attackerName = EncodingUtils.getStrategyName(attackerStratString);
+		final String defenderName = EncodingUtils.getStrategyName(defenderStratString);
+
+		final Map<String, Double> attackerParams =
+			EncodingUtils.getStrategyParams(attackerStratString);
+		final Map<String, Double> defenderParams =
+			EncodingUtils.getStrategyParams(defenderStratString);
+		final Attacker attacker =
+			AgentFactory.createAttacker(
+				attackerName, attackerParams, gameSimSpec.getDiscFact());
+		final Defender defender =
+			AgentFactory.createDefender(
+				defenderName, defenderParams, gameSimSpec.getDiscFact());
 		// TODO
 		return null;
 	}
