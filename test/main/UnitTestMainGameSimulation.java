@@ -6,6 +6,8 @@ import org.junit.Test;
 import agent.AgentFactory;
 import agent.GoalOnlyDefender;
 import agent.UniformAttacker;
+import agent.Attacker.AttackerType;
+import agent.Defender.DefenderType;
 import game.GameSimulation;
 import game.GameSimulationSpec;
 import game.MeanGameSimulationResult;
@@ -162,7 +164,30 @@ public final class UnitTestMainGameSimulation {
 		assertTrue(obsFileName != null);
 		
 		final ObservationStruct obsFromFile = JsonUtils.fromObservationFile(obsFileName);
-		System.out.println(obsFromFile);
+		final GameSimulationSpec obsSimSpec = obsFromFile.getSimSpec();
+		final int numTimeStep = 11;
+		assertTrue(obsSimSpec.getNumTimeStep() == numTimeStep);
+		final int numSim = 7;
+		assertTrue(obsSimSpec.getNumSim() == numSim);
+		final int graphId = 0;
+		assertTrue(obsSimSpec.getGraphID() == graphId);
+		final int numNode = 5;
+		assertTrue(obsSimSpec.getNumNode() == numNode);
+		final int numEdge = 3;
+		assertTrue(obsSimSpec.getNumEdge() == numEdge);
+		final int numTarget = 2;
+		assertTrue(obsSimSpec.getNumTarget() == numTarget);
+		final double discFact = 0.4;
+		final double tolerance = 0.01;
+		assertTrue(Math.abs(obsSimSpec.getDiscFact() - discFact) < tolerance);
+		final UniformAttacker obsAttacker = (UniformAttacker) obsFromFile.getAttacker();
+		assertTrue(obsAttacker.getAType() == AttackerType.UNIFORM);
+		final double maxNumSelectCandidate = 4.0;
+		assertTrue(Math.abs(obsAttacker.getMaxNumSelectCandidate() - maxNumSelectCandidate) < tolerance);
+		final GoalOnlyDefender obsDefender = (GoalOnlyDefender) obsFromFile.getDefender();
+		assertTrue(obsDefender.getDType() == DefenderType.GOAL_ONLY);
+		final double maxNumRes = 5.0;
+		assertTrue(Math.abs(obsDefender.getMaxNumRes() - maxNumRes) < tolerance);
 	}
 	
 	@Test
