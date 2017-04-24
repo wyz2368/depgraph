@@ -33,7 +33,7 @@ public final class UniformVsDefender extends Defender {
 	private int minNumSelectACandidate;
 	private double numSelectACandidateRatio;
 	
-	private static final int DEFAULT_NUM_STATE_SAMPLE = 50;
+	private static final int DEFAULT_NUM_STATE_SAMPLE = 30;
 	private int numStateSample = DEFAULT_NUM_STATE_SAMPLE; // number of states to sample
 	private int numAttActionSample = DEFAULT_NUM_STATE_SAMPLE; // number of attack actions to sample
 	

@@ -30,7 +30,7 @@ public abstract class ValuePropVsDefSuper extends Defender {
 	private double numAttCandidateRatio;
 	
 	// number of simulations to approximate update
-	private static final int DEFAULT_NUM_STATE_SAMPLE = 50;
+	private static final int DEFAULT_NUM_STATE_SAMPLE = 30;
 	private int numStateSample = DEFAULT_NUM_STATE_SAMPLE;
 	private int numAttActionSample = DEFAULT_NUM_STATE_SAMPLE;
 	
