@@ -1,6 +1,7 @@
 package game;
 
 import graph.Edge;
+import graph.INode.NodeType;
 import graph.Node;
 import graph.INode.NodeActivationType;
 import graph.INode.NodeState;
@@ -85,7 +86,6 @@ public final class GameSimulation {
 		if (!isAllInactive()) {
 			throw new IllegalStateException();
 		}
-
 		// Start simulation
 		DefenderObservation dObservation = new DefenderObservation();
 		GameState gameState = new GameState();
@@ -159,6 +159,7 @@ public final class GameSimulation {
 	public void computePayoff() {
 		double defPayoff = 0.0;
 		double attPayoff = 0.0;
+
 		for (final GameSample gameSample : this.simResult.getGameSampleList()) {
 			final int timeStep = gameSample.getTimeStep();
 			final GameState gameState = gameSample.getGameState();
@@ -166,23 +167,22 @@ public final class GameSimulation {
 			final AttackerAction attAction = gameSample.getAttAction();
 			final double discFactPow = Math.pow(this.discFact, timeStep - 1);
 			for (final Node node : gameState.getEnabledNodeSet()) {
-				defPayoff += discFactPow * node.getDPenalty();
-				attPayoff += discFactPow * node.getAReward();
-			}
-			// omit the final round's action cost, because action has no effect
-			if (timeStep <= this.numTimeStep) {
-				for (final Node node : defAction.getAction()) {
-					defPayoff += discFactPow * node.getDCost();
+				if(node.getType() == NodeType.TARGET) {
+					defPayoff += discFactPow * node.getDPenalty();
+					attPayoff += discFactPow * node.getAReward();
 				}
-				for (final Entry<Node, Set<Edge>> entry : attAction.getActionCopy().entrySet()) {
-					final Node node = entry.getKey();
-					if (node.getActivationType() == NodeActivationType.AND) {
-						attPayoff += discFactPow * node.getACost();
-					} else {
-						final Set<Edge> edgeSet = entry.getValue();
-						for (final Edge edge : edgeSet) {
-							attPayoff += discFactPow * edge.getACost();
-						}
+			}
+			for (final Node node : defAction.getAction()) {
+				defPayoff += discFactPow * node.getDCost();
+			}
+			for (final Entry<Node, Set<Edge>> entry : attAction.getActionCopy().entrySet()) {
+				final Node node = entry.getKey();
+				if (node.getActivationType() == NodeActivationType.AND) {
+					attPayoff += discFactPow * node.getACost();
+				} else {
+					final Set<Edge> edgeSet = entry.getValue();
+					for (final Edge edge : edgeSet) {
+						attPayoff += discFactPow * edge.getACost();
 					}
 				}
 			}

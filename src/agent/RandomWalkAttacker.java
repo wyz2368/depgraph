@@ -189,19 +189,19 @@ public final class RandomWalkAttacker extends Attacker {
 				while (!sequenceList.isEmpty()) {
 					Node curNode = sequenceList.remove(0);
 					RandomWalkTuple rwTuple = rwTuples[curNode.getId() - 1];
-					if (curNode.getActivationType() == NodeActivationType.AND) { // AND node
-						if (curNode.getState() != NodeState.ACTIVE) { // not the active node
-							pAct *= curNode.getActProb(); 
-							if (rwTuple.getPreAct() != null) { // not the root node
-								for (Edge edge : rwTuple.getPreAct()) {
-									Node preNode = edge.getsource();
-									if (!isInSequence[preNode.getId() - 1]) {
-										sequenceList.add(preNode);
-										isInSequence[preNode.getId() - 1] = true;
-									}
+					if (curNode.getActivationType() == NodeActivationType.AND 
+							&& curNode.getState() != NodeState.ACTIVE) { // AND node and not active
+						pAct *= curNode.getActProb(); 
+						if (rwTuple.getPreAct() != null) { // not the root node
+							for (Edge edge : rwTuple.getPreAct()) {
+								Node preNode = edge.getsource();
+								if (!isInSequence[preNode.getId() - 1]) {
+									sequenceList.add(preNode);
+									isInSequence[preNode.getId() - 1] = true;
 								}
 							}
 						}
+						
 					} else { // OR node
 						if (rwTuple.getPreAct() != null) {  // not the active node
 							Edge edge = rwTuple.getPreAct().get(0);
@@ -304,7 +304,7 @@ public final class RandomWalkAttacker extends Attacker {
 						/*****************************************************************************************/
 						// Start finding sequence of the target
 						List<Node> sequence = new ArrayList<Node>();
-						if (rwTuple.getPreAct() != null) {
+						if (rwTuple.getPreAct() != null) { // this target is not a root node
 							for (Edge edge : rwTuple.getPreAct()) {
 								if (edge.getsource().getState() != NodeState.ACTIVE) {
 									sequence.add(edge.getsource());

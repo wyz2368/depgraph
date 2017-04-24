@@ -74,7 +74,7 @@ public final class TestGameSimulation {
 		depGraph.print();
 		
 		final double logisParam = 5.0;
-		final double thres = 1e-2;
+		final double thres = 0.01;
 		final int maxNumRes = 10;
 		final int minNumRes = 2;
 		final double numResRatio = 0.7;

@@ -82,6 +82,7 @@ public final class TestRWvsDefender {
 		final double numSelectCandidateRatio = 0.7;
 		
 		final int numTimeStep = 10;
+
 		final int numSim = 1;
 
 		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
@@ -103,6 +104,7 @@ public final class TestRWvsDefender {
 		double timeRWvsRW = 0.0;
 		for (int i = 0; i < numSim; i++) {
 			System.out.println("Simulation " + i);
+			rnd.reSeed(System.currentTimeMillis());
 			gameSimRWvsRW.runSimulation();
 			gameSimRWvsRW.printPayoff();
 			defPayoffRWvsRW += gameSimRWvsRW.getSimulationResult().getDefPayoff();
@@ -125,6 +127,7 @@ public final class TestRWvsDefender {
 		double timeRWvsGO = 0.0;
 		for (int i = 0; i < numSim; i++) {
 			System.out.println("Simulation " + i);
+			rnd.reSeed(System.currentTimeMillis());
 			gameSimRWvsGO.runSimulation();
 			gameSimRWvsGO.printPayoff();
 			defPayoffRWvsGO += gameSimRWvsGO.getSimulationResult().getDefPayoff();
@@ -145,6 +148,7 @@ public final class TestRWvsDefender {
 		double timeVPvsRW = initialTimeVPvsRW;
 		for (int i = 0; i < numSim; i++) {
 			System.out.println("Simulation " + i);
+			rnd.reSeed(System.currentTimeMillis());
 			gameSimVPvsRW.runSimulation();
 			gameSimVPvsRW.printPayoff();
 			defPayoffVPvsRW += gameSimVPvsRW.getSimulationResult().getDefPayoff();
@@ -164,6 +168,7 @@ public final class TestRWvsDefender {
 		double timeRWvsRWAlt = 0.0;
 		for (int i = 0; i < numSim; i++) {
 			System.out.println("Simulation " + i);
+			rnd.reSeed(System.currentTimeMillis());
 			gameSimRWvsRWAlt.runSimulation();
 			gameSimRWvsRWAlt.printPayoff();
 			defPayoffRWvsRWAlt += gameSimRWvsRWAlt.getSimulationResult().getDefPayoff();
