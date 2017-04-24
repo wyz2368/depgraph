@@ -31,9 +31,9 @@ public final class TestGameSimulation {
 	}
 	
 	public static void main(final String[] args) {
-		final int numNode = 30;
-		final int numEdge = 100;
-		final int numTarget = 2;
+		final int numNode = 50;
+		final int numEdge = 150;
+		final int numTarget = 10;
 		final double nodeActTypeRatio = 0.3;
 		final double aRewardLB = 5.0;
 		final double aRewardUB = 10.0;

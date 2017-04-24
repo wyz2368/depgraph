@@ -23,8 +23,8 @@ public final class TestVPvsDefender {
 	}
 
 	public static void main(final String[] args) {
-		final int numNode = 30;
-		final int numEdge = 90;
+		final int numNode = 50;
+		final int numEdge = 150;
 		final int numTarget = 10;
 		final double nodeActTypeRatio = 0.5;
 		final double aRewardLB = 2.0;
@@ -77,7 +77,7 @@ public final class TestVPvsDefender {
 		final double logisParam = 5.0;
 		final double thres = 1e-3;
 		
-		final int numTimeStep = 6;
+		final int numTimeStep = 10;
 		final int numSim = 10;
 		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
 		
