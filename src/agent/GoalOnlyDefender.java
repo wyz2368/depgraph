@@ -107,49 +107,6 @@ public final class GoalOnlyDefender extends Defender {
 		return i >= 0.0 && i <= 1.0;
 	}
 	
-	private static double[] computeCandidateProb(
-			final int totalNumCandidate, 
-			final double[] candidateValue, 
-			final double logisParam) {
-		if (totalNumCandidate < 0 || candidateValue == null) {
-			throw new IllegalArgumentException();
-		}
-		//Normalize candidate value
-		double minValue = Double.POSITIVE_INFINITY;
-		double maxValue = Double.NEGATIVE_INFINITY;
-		for (int i = 0; i < totalNumCandidate; i++) {
-			if (minValue > candidateValue[i]) {
-				minValue = candidateValue[i];
-			}
-			if (maxValue < candidateValue[i]) {
-				maxValue = candidateValue[i];
-			}
-		}
-		if (maxValue > minValue) {
-			for (int i = 0; i < totalNumCandidate; i++) {
-				candidateValue[i] = (candidateValue[i] - minValue) / (maxValue - minValue);
-			}
-		} else {
-			for (int i = 0; i < totalNumCandidate; i++) {
-				candidateValue[i] = 0.0;
-			}
-		}
-		
-		// Compute probability
-		double[] probabilities = new double[totalNumCandidate];
-		int[] nodeList = new int[totalNumCandidate];
-		double sumProb = 0.0;
-		for (int i = 0; i < totalNumCandidate; i++) {
-			nodeList[i] = i;
-			probabilities[i] = Math.exp(logisParam * candidateValue[i]);
-			sumProb += probabilities[i];
-		}
-		for (int i = 0; i < totalNumCandidate; i++) {
-			probabilities[i] /= sumProb;
-		}
-		
-		return probabilities;
-	}
 	
 	private static double[] computeCandidateValue(
 			final List<Node> dCandidateNodeList, 

@@ -15,8 +15,10 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.commons.math3.distribution.AbstractIntegerDistribution;
+import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
 
+import game.GameOracle;
 import graph.Edge;
 import graph.Node;
 import graph.INode.NodeActivationType;
@@ -42,6 +44,7 @@ public abstract class Defender {
 		}
 	}
 	
+	// isRandomized is for the vs-random walk defender only
 	public enum DefenderParam {
 		maxNumRes, minNumRes, numResRatio, 
 		maxNumAttCandidate, minNumAttCandidate, numAttCandidateRatio, 
@@ -103,7 +106,8 @@ public abstract class Defender {
 		final List<Node> dCandidateNodeList,
 		final int numNodetoProtect,
 		final AbstractIntegerDistribution rnd) {
-		if (dCandidateNodeList == null || numNodetoProtect < 0 || rnd == null) {
+		if (dCandidateNodeList == null || numNodetoProtect < 0 
+				|| numNodetoProtect > dCandidateNodeList.size() || rnd == null) {
 			throw new IllegalArgumentException();
 		}
 		DefenderAction action = new DefenderAction();
@@ -123,6 +127,105 @@ public abstract class Defender {
 				
 		}
 		return action;
+	}
+	public DefenderBelief updateBelief(final DependencyGraph depGraph
+		, final DefenderBelief dBelief
+		, final DefenderAction dAction
+		, final DefenderObservation dObservation
+		, final int curTimeStep, final int numTimeStep
+		, final RandomGenerator rng
+		, Attacker attacker
+		, int numAttActionSample
+		, int numStateSample
+		, double thres) {
+		if (depGraph == null || dBelief == null || dAction == null || dObservation == null 
+			|| curTimeStep < 0 || numTimeStep < curTimeStep || rng == null
+		) {
+			throw new IllegalArgumentException();
+		}
+		
+		RandomDataGenerator rnd = new RandomDataGenerator(rng);
+		
+		// Used for storing true game state of the game
+		GameState savedGameState = new GameState();
+		for (Node node : depGraph.vertexSet()) {
+			if (node.getState() == NodeState.ACTIVE) {
+				savedGameState.addEnabledNode(node);
+			}
+		}
+		
+		DefenderBelief newBelief = new DefenderBelief(); // new belief of the defender
+		// probability of observation given game state
+		Map<GameState, Double> observationProbMap = new HashMap<GameState, Double>();
+		
+		// iterate over current belief of the defender
+		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) {
+			GameState gameState = entry.getKey(); // one of possible game state
+			Double curStateProb = entry.getValue(); // probability of the game state
+		
+			depGraph.setState(gameState); // for each possible state
+			
+			List<AttackerAction> attActionList = attacker.sampleAction(depGraph, curTimeStep, numTimeStep
+				, rng, numAttActionSample, false); // Sample attacker actions
+			
+			for (int attActionSample = 0; attActionSample < numAttActionSample; attActionSample++) {
+				// Iterate over all samples of attack actions
+				AttackerAction attAction = attActionList.get(attActionSample); // current sample of attack action
+				List<GameState> gameStateList = GameOracle.generateStateSample(gameState, attAction, dAction
+					, rnd, numStateSample, true); // s' <- s, a, d, // Sample new game states
+				int curNumStateSample = gameStateList.size();
+				for (int stateSample = 0; stateSample < curNumStateSample; stateSample++) {
+					GameState newGameState = gameStateList.get(stateSample);
+					// check if this new game state is already generated
+					Double curProb = newBelief.getProbability(newGameState);
+					double observationProb = 0.0;
+					if (curProb == null) { // new game state
+						observationProb = GameOracle.computeObservationProb(newGameState, dObservation);
+						observationProbMap.put(newGameState, observationProb);
+						curProb = 0.0;
+					} else { // already generated
+						observationProb = observationProbMap.get(newGameState);
+					}
+					double addedProb = observationProb * curStateProb 
+						* GameOracle.computeStateTransitionProb(
+							dAction, 
+							attAction, 
+							gameState, 
+							newGameState);
+					
+					newBelief.addState(newGameState, curProb + addedProb);
+				}
+			}
+		}
+		
+		// Restore game state
+		depGraph.setState(savedGameState);
+		
+		// Normalization
+		double sumProb = 0.0;
+		for (Entry<GameState, Double> entry : newBelief.getGameStateMap().entrySet()) {
+			sumProb += entry.getValue();
+		}
+		for (Entry<GameState, Double> entry : newBelief.getGameStateMap().entrySet()) {
+			entry.setValue(entry.getValue() / sumProb); 
+		}
+		
+		// Belief revision
+		DefenderBelief revisedBelief = new DefenderBelief();
+		for (Entry<GameState, Double> entry : newBelief.getGameStateMap().entrySet()) {
+			if (entry.getValue() > thres) {
+				revisedBelief.addState(entry.getKey(), entry.getValue());
+			}
+		}
+		//Re-normalize again
+		sumProb = 0.0;
+		for (Entry<GameState, Double> entry : revisedBelief.getGameStateMap().entrySet()) {
+			sumProb += entry.getValue();
+		}
+		for (Entry<GameState, Double> entry : revisedBelief.getGameStateMap().entrySet()) {
+			entry.setValue(entry.getValue() / sumProb); 
+		}
+		return revisedBelief;
 	}
 	
 	public static Map<Node, Double> computeCandidateValueTopo(
@@ -312,5 +415,47 @@ public abstract class Defender {
 			}
 		}
 		return dValueMap;
+	}
+	
+	public static double[] computeCandidateProb(
+		final int totalNumCandidate, final double[] candidateValue, final double logisParam) {
+		if (totalNumCandidate < 0 || candidateValue == null) {
+			throw new IllegalArgumentException();
+		}
+		//Normalize candidate value
+		double minValue = Double.POSITIVE_INFINITY;
+		double maxValue = Double.NEGATIVE_INFINITY;
+		for (int i = 0; i < totalNumCandidate; i++) {
+			if (minValue > candidateValue[i]) {
+				minValue = candidateValue[i];
+			}
+			if (maxValue < candidateValue[i]) {
+				maxValue = candidateValue[i];
+			}
+		}
+		if (maxValue > minValue) {
+			for (int i = 0; i < totalNumCandidate; i++) {
+				candidateValue[i] = (candidateValue[i] - minValue) / (maxValue - minValue);
+			}
+		} else  {
+			for (int i = 0; i < totalNumCandidate; i++) {
+				candidateValue[i] = 0.0;
+			}
+		}
+		
+		// Compute probability
+		double[] probabilities = new double[totalNumCandidate];
+		int[] nodeList = new int[totalNumCandidate];
+		double sumProb = 0.0;
+		for (int i = 0; i < totalNumCandidate; i++) {
+			nodeList[i] = i;
+			probabilities[i] = Math.exp(logisParam * candidateValue[i]);
+			sumProb += probabilities[i];
+		}
+		for (int i = 0; i < totalNumCandidate; i++) {
+			probabilities[i] /= sumProb;
+		}
+		
+		return probabilities;
 	}
 }
