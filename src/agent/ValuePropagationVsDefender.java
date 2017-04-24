@@ -1,7 +1,6 @@
 package agent;
 
 import graph.Edge;
-import graph.INode.NodeType;
 import graph.Node;
 import graph.INode.NodeActivationType;
 import graph.INode.NodeState;
@@ -13,18 +12,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
-import org.apache.commons.math3.random.RandomGenerator;
-
-import model.AttackCandidate;
+import model.AttackerAction;
 import model.DefenderAction;
 import model.DefenderBelief;
-import model.DefenderCandidate;
+import model.DefenderObservation;
 import model.DependencyGraph;
 import model.GameState;
 
-public final class ValuePropagationVsDefender extends ValuePropVsDefSuper {
-	
+import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
+import org.apache.commons.math3.random.RandomGenerator;
+
+public final class ValuePropagationVsDefender extends Defender {
 	private int maxNumRes;
 	private int minNumRes;
 	private double numResRatio;
@@ -37,29 +35,42 @@ public final class ValuePropagationVsDefender extends ValuePropVsDefSuper {
 	private int maxNumAttCandidate; 
 	private int minNumAttCandidate;
 	private double numAttCandidateRatio;
-	private static final double DEFAULT_PROP_PARAM = 0.5;
-	private double propagationParam = DEFAULT_PROP_PARAM;
-	private boolean isBest = true;
 	
-	public ValuePropagationVsDefender(
-		final double maxNumRes, final double minNumRes, final double numResRatio,
+	// number of simulation to approximate update
+	private static final int DEFAULT_NUM_STATE_SAMPLE = 30;
+	private int numStateSample = DEFAULT_NUM_STATE_SAMPLE;
+	private int numAttActionSample = DEFAULT_NUM_STATE_SAMPLE;
+	
+	/*****************************************************************************************
+	 * 
+	 * @param maxNumRes
+	 * @param minNumRes
+	 * @param numResRatio
+	 * @param logisParam
+	 * @param discFact
+	 * @param thres
+	 * @param qrParam
+	 * @param maxNumAttCandidate
+	 * @param minNumAttCandidate
+	 * @param numAttCandidateRatio
+	 *****************************************************************************************/
+	public ValuePropagationVsDefender(final double maxNumRes, final double minNumRes, final double numResRatio,
 		final double logisParam, final double discFact, final double thres,
 		final double qrParam, final double maxNumAttCandidate, final double minNumAttCandidate,
 		final double numAttCandidateRatio) {
-		super(DefenderType.vsVALUE_PROPAGATION, discFact, thres, qrParam,
-			(int) maxNumAttCandidate, (int) minNumAttCandidate, numAttCandidateRatio);
+		super(DefenderType.vsVALUE_PROPAGATION);
 		if (
-			minNumRes < 1 || minNumRes < maxNumRes || !isProb(numResRatio)
+			discFact < 0.0 || discFact > 1.0 || !isProb(thres)
+			|| minNumAttCandidate < 1 || maxNumAttCandidate < minNumAttCandidate
+			|| !isProb(numAttCandidateRatio)
+			|| minNumRes < 1 || minNumRes > maxNumRes || !isProb(numResRatio)
 			|| discFact < 0.0 || discFact > 1.0 || !isProb(thres)
 			|| minNumAttCandidate < 1 || maxNumAttCandidate < minNumAttCandidate
 			|| !isProb(numAttCandidateRatio)
 		) {
 			throw new IllegalArgumentException();
 		}
-		this.maxNumRes = (int) maxNumRes;
-		this.minNumRes = (int) minNumRes;
-		this.numResRatio = numResRatio;
-		this.logisParam = logisParam;
+		
 		this.discFact = discFact;
 		this.thres = thres;
 		
@@ -67,32 +78,36 @@ public final class ValuePropagationVsDefender extends ValuePropVsDefSuper {
 		this.maxNumAttCandidate = (int) maxNumAttCandidate;
 		this.minNumAttCandidate = (int) minNumAttCandidate;
 		this.numAttCandidateRatio = numAttCandidateRatio;
+		
+		this.maxNumRes = (int) maxNumRes;
+		this.minNumRes = (int) minNumRes;
+		this.numResRatio = numResRatio;
+		this.logisParam = logisParam;
 	}
-	
+
 	@Override
-	public DefenderAction sampleAction(final DependencyGraph depGraph,
-		final int curTimeStep, final int numTimeStep, final DefenderBelief dBelief, final RandomGenerator rng) {
+	public DefenderAction sampleAction(
+		final DependencyGraph depGraph, final int curTimeStep, final int numTimeStep,
+		final DefenderBelief dBelief, final RandomGenerator rng) {
 		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null) {
 			throw new IllegalArgumentException();
 		}
-		
-		// Compute value of each candidate node for the defender
-		Map<Node, Double> dCandidateValueMap = computeCandidateValueTopo(depGraph, dBelief
-				, curTimeStep, numTimeStep, this.discFact, this.propagationParam);
-		
+		Attacker attacker = new ValuePropagationAttacker(this.maxNumAttCandidate, this.minNumAttCandidate
+				, this.numAttCandidateRatio, this.qrParam, this.discFact); // assumption about the attacker
+		Map<Node, Double> dValueMap = computeCandidateValueTopo(depGraph, dBelief, curTimeStep, numTimeStep
+			, this.discFact, rng, attacker, this.numAttActionSample);
 		List<Node> dCandidateNodeList = new ArrayList<Node>();
-		double[] candidateValue = new double[dCandidateValueMap.size()];
+		double[] candidateValue = new double[dValueMap.size()];
 		
 		// Get candidate list with values for sampling
 		int idx = 0;
-		for (Entry<Node, Double> entry : dCandidateValueMap.entrySet()) {
+		for (Entry<Node, Double> entry : dValueMap.entrySet()) {
 			dCandidateNodeList.add(entry.getKey());
 			candidateValue[idx] = entry.getValue();
 			idx++;
 		}
 		
-		int totalNumCandidate = dCandidateValueMap.size();
-		
+		int totalNumCandidate = dValueMap.size();
 		
 		// Compute probability to choose each node
 		double[] probabilities = computeCandidateProb(totalNumCandidate, candidateValue, this.logisParam);
@@ -115,6 +130,7 @@ public final class ValuePropagationVsDefender extends ValuePropVsDefSuper {
 		if (numNodetoProtect > numGoodCandidate) {
 			numNodetoProtect = numGoodCandidate;
 		}
+		
 		if (numNodetoProtect == 0) { // if there is no candidate
 			return new DefenderAction();
 		}
@@ -128,158 +144,113 @@ public final class ValuePropagationVsDefender extends ValuePropVsDefSuper {
 
 		return simpleSampleAction(dCandidateNodeList, numNodetoProtect, rnd);
 	}
-
-	/*****************************************************************************************
-	* 
-	* @param depGraph: dependency graph
-	* @param dBelief: belief of the defender
-	* @param curTimeStep: current time step
-	* @param numTimeStep: total number of time step
-	* @param discountFactor: reward discount factor
-	* @param propagationParam: for the AND node
-	* @return: nodes and corresponding values
-	*****************************************************************************************/
-	private Map<Node, Double> computeCandidateValueTopo(
-		final DependencyGraph depGraph, final DefenderBelief dBelief,
-		final int curTimeStep, final int numTimeStep,
-		final double discountFactor, final double propagationParamCur) {
-		if (
-			depGraph == null || dBelief == null || curTimeStep < 0 || numTimeStep < curTimeStep
-			|| discountFactor < 0.0 || discountFactor > 1.0
-		) {
+	@Override
+	public final DefenderBelief updateBelief(
+		final DependencyGraph depGraph,
+		final DefenderBelief dBelief, 
+		final DefenderAction dAction,
+		final DefenderObservation dObservation, 
+		final int curTimeStep, 
+		final int numTimeStep,
+		final RandomGenerator rng) {
+		if (curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null
+				|| dObservation == null || dAction == null
+			) {
+				throw new IllegalArgumentException();
+			}
+		
+		Attacker attacker = new ValuePropagationAttacker(this.maxNumAttCandidate, this.minNumAttCandidate
+			, this.numAttCandidateRatio, this.qrParam, this.discFact);
+		
+		return updateBelief(depGraph
+				, dBelief
+				, dAction
+				, dObservation
+				, curTimeStep, numTimeStep
+				, rng
+				, attacker
+				, this.numAttActionSample
+				, this.numStateSample
+				, this.thres); 
+	}
+	public static Map<Node, Double> computeCandidateValueTopo(
+		final DependencyGraph depGraph,
+		final DefenderBelief dBelief,
+		final int curTimeStep,
+		final int numTimeStep,
+		final double discountFactor,
+		final RandomGenerator rng,
+		final Attacker attacker,
+		final int numAttActionSample) {
+		if (depGraph == null || dBelief == null || curTimeStep < 0 || numTimeStep < curTimeStep
+			|| discountFactor < 0.0 || discountFactor > 1.0 || rng == null) {
 			throw new IllegalArgumentException();
 		}
-		Map<Node, Double> dCandidateMap = new HashMap<Node, Double>();
+		Map<Node, Double> dValueMap = new HashMap<Node, Double>();
 		
+		// Used for storing true game state of the game
 		GameState savedGameState = new GameState();
 		for (Node node : depGraph.vertexSet()) {
 			if (node.getState() == NodeState.ACTIVE) {
 				savedGameState.addEnabledNode(node);
 			}
 		}
-
+		// iterate over current belief of the defender
 		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) {
-			GameState curGameState = entry.getKey();
-			double stateProb = entry.getValue();
-			depGraph.setState(curGameState);
+			GameState gameState = entry.getKey();
+			Double curStateProb = entry.getValue();
 			
-			AttackCandidate curAttCandidate = ValuePropagationAttacker.selectCandidate(depGraph);
-			
-			double[] curACandidateProb = ValuePropagationAttacker.computeCandidateProb(depGraph, curAttCandidate
-				, curTimeStep, numTimeStep, this.qrParam, discountFactor, propagationParamCur
-				, this.maxNumAttCandidate, this.minNumAttCandidate, this.numAttCandidateRatio, this.isBest);
-			// for(int i = 0; i < curACandidateProb.length; i++)
-				// GameSimulation.printIfDebug(curACandidateProb[i]);
-			
-			DefenderCandidate curDefCandidate = selectDCandidate(curGameState, curAttCandidate);
-			double[] curDCandidateValue = computeCandidateValueTopo(depGraph
-					, curAttCandidate, curDefCandidate
-					, curTimeStep, numTimeStep
-					, discountFactor);
-			// for(int i = 0; i < curDCandidateValue.length; i++)
-				// GameSimulation.printIfDebug(curDCandidateValue[i]);
-			
-			List<Node> curDefCandidateList = new ArrayList<Node>(curDefCandidate.getNodeCandidateSet());
-			List<Edge> curEdgeACandidateList = new ArrayList<Edge>(curAttCandidate.getEdgeCandidateSet());
-			List<Node> curNodeACandidateList = new ArrayList<Node>(curAttCandidate.getNodeCandidateSet());
-			int dIdx = 0;
-			for (Node node : curDefCandidateList) {
-				double tempValue = 0.0;
-				double tempAttProb = 1.0;
-				if (node.getType() != NodeType.TARGET || node.getState() != NodeState.ACTIVE) {
-					if (node.getActivationType() == NodeActivationType.AND) {
-						int idx = curNodeACandidateList.indexOf(node);
-						tempAttProb = curACandidateProb[idx + curEdgeACandidateList.size()];
-						tempValue += tempAttProb * curDCandidateValue[dIdx];
-						// tempValue += tempAttProb;
-					} else { // OR candidate
-						int idx = 0;
-						for (Edge edge : curEdgeACandidateList) {
-							if (edge.gettarget().getId() == node.getId()) {
-								tempAttProb = curACandidateProb[idx];
-								tempValue += tempAttProb * curDCandidateValue[dIdx];
-								// tempValue += tempAttProb;
-							}
-							idx++;
-						}
-					}
-				} else { // active targets
-					tempValue += curDCandidateValue[dIdx];
-				}
-				Double curValue = dCandidateMap.get(node);
-				if (curValue == null) { // if this is a new candidate
-					 dCandidateMap.put(node, tempValue * stateProb);
+			depGraph.setState(gameState); // for each possible state
+			List<AttackerAction> attActionList = attacker.sampleAction(
+				depGraph, 
+				curTimeStep, 
+				numTimeStep, 
+				rng, 
+				numAttActionSample, 
+				false); // Sample attacker actions
+			Map<Node, Double> curDValueMap = computeCandidateValueTopo(
+				depGraph, 
+				attActionList, 
+				curTimeStep, 
+				numTimeStep, 
+				discountFactor);
+			for (Entry<Node, Double> dEntry : curDValueMap.entrySet()) {
+				Node node = dEntry.getKey();
+				Double value = dEntry.getValue();
+				
+				Double curDValue = dValueMap.get(node);
+				if (curDValue == null) {
+					curDValue = value * curStateProb;
 				} else {
-					dCandidateMap.replace(node, curValue + tempValue * stateProb);
+					curDValue += value * curStateProb;
 				}
-				dIdx++;
+				dValueMap.put(node, curDValue);
 			}
 		}
-		for (Entry<Node, Double> entry : dCandidateMap.entrySet()) {
+		for (Entry<Node, Double> entry : dValueMap.entrySet()) {
 			Node node = entry.getKey();
 			Double value = entry.getValue();
-			entry.setValue(value + node.getDCost() * Math.pow(discountFactor, curTimeStep - 1));
+			if (value == Double.POSITIVE_INFINITY) {
+				value = 0.0;
+			}
+			entry.setValue((-value + node.getDCost()) * Math.pow(discountFactor, curTimeStep - 1));
 		}
 		depGraph.setState(savedGameState);
-		
-		return dCandidateMap;
+		return dValueMap;
 	}
 	
-	/*****************************************************************************************
-	* 
-	* @param gameState: game state
-	* @param attCandidate: attack candidate
-	* @return defender candidate
-	*****************************************************************************************/
-	private static DefenderCandidate selectDCandidate(final GameState gameState, final AttackCandidate attCandidate) {
-		if (gameState == null || attCandidate == null) {
+	public static final Map<Node, Double> computeCandidateValueTopo(
+		final DependencyGraph depGraph,
+		final List<AttackerAction> attActionList,
+		final int curTimeStep,
+		final int numTimeStep,
+		final double discountFactor) {
+		if (depGraph == null || attActionList == null || curTimeStep < 0 || numTimeStep < curTimeStep
+			|| discountFactor < 0.0 || discountFactor > 1.0) {
 			throw new IllegalArgumentException();
 		}
-		DefenderCandidate dCandidate = new DefenderCandidate();
-		for (Edge edge : attCandidate.getEdgeCandidateSet()) { // post-conditions of OR nodes
-			dCandidate.addNodeCandidate(edge.gettarget());
-			// if(edge.gettarget().getType() == NODE_TYPE.TARGET)
-				// GameSimulation.printIfDebug("Candidate has targets");
-		}
-		for (Node node : attCandidate.getNodeCandidateSet()) { // AND nodes 
-			dCandidate.addNodeCandidate(node);
-			// if(node.getType() == NODE_TYPE.TARGET)
-				// GameSimulation.printIfDebug("Candidate has targets");
-		}
-		for (Node node : gameState.getEnabledNodeSet()) { // active target nodes
-			if (node.getType() == NodeType.TARGET) {
-				dCandidate.addNodeCandidate(node);
-			}
-		}
-		return dCandidate;
-	}
-	
-	/*****************************************************************************************
-	* 
-	* @param depGraph: dependency graph with current game state the defender is examining 
-	* @param attackCandidate: candidate of the attacker
-	* @param dCandidate: candidate of the defender
-	* @param curTimeStep: current time step
-	* @param numTimeStep: total number of time steps
-	* @param discountFactor: reward discount factor
-	* @param propagationParam: for propagating value over AND nodes
-	* @return value for each candidate of the defender
-	*****************************************************************************************/
-	private static double[] computeCandidateValueTopo(final DependencyGraph depGraph
-		, final AttackCandidate attackCandidate, final DefenderCandidate dCandidate
-		, final int curTimeStep, final int numTimeStep, final double discountFactor) {
-		if (depGraph == null || attackCandidate == null
-			|| curTimeStep < 0 || numTimeStep < curTimeStep
-			|| discountFactor < 0.0 || discountFactor > 1.0
-		) {
-			throw new IllegalArgumentException();
-		}
-		List<Node> dCandidateList = new ArrayList<Node>(dCandidate.getNodeCandidateSet());
+		Map<Node, Double> dValueMap = new HashMap<Node, Double>();
 		
-		double[] dCandidateValue = new double[dCandidateList.size()];
-		for (int i = 0; i < dCandidateList.size(); i++) {
-			dCandidateValue[i] = 0.0; // initialize value of candidate nodes for the defender
-		}
 		// Compute values for each node in the graph
 		List<Node> targetList = new ArrayList<Node>(depGraph.getTargetSet()); // list of targets
 		Node[] topoOrder = new Node[depGraph.vertexSet().size()]; // topological order of nodes in the graph
@@ -309,7 +280,7 @@ public final class ValuePropagationVsDefender extends ValuePropVsDefSuper {
 			if (edgeSet != null && !edgeSet.isEmpty()) { // if non-leaf
 				for (Edge edge : edgeSet) {
 					Node postNode = edge.gettarget();
-					if (postNode.getState() != NodeState.ACTIVE) {
+					if (postNode.getState() != NodeState.ACTIVE) { // consider non-active postconditions only
 						for (int i = 0; i < targetList.size(); i++) {
 							if (targetList.get(i).getState() != NodeState.ACTIVE) {
 								for (int j = 1; j <= numTimeStep - curTimeStep; j++) {
@@ -320,6 +291,7 @@ public final class ValuePropagationVsDefender extends ValuePropVsDefSuper {
 										rHat = r[i][j - 1][postNode.getId() - 1] * postNode.getActProb();
 									}
 									if (r[i][j][node.getId() - 1] > discountFactor * rHat) {
+										// find the worst case scenario
 										r[i][j][node.getId() - 1] = discountFactor * rHat;
 									}
 								}
@@ -330,7 +302,7 @@ public final class ValuePropagationVsDefender extends ValuePropVsDefSuper {
 			}
 		
 		}
-		// Sum of value for candidates
+		// Min of value for candidates
 		double[] rSum = new double[depGraph.vertexSet().size()];
 		for (int i = 0; i < depGraph.vertexSet().size(); i++) {
 			rSum[i] = Double.POSITIVE_INFINITY;
@@ -348,36 +320,47 @@ public final class ValuePropagationVsDefender extends ValuePropVsDefSuper {
 		}
 		
 		/*****************************************************************************************/
-		int idx = 0;
-		for (Node node : dCandidateList) {
-			dCandidateValue[idx] += node.getDCost();
-			if (node.getState() != NodeState.ACTIVE) { // not active targets, then belonging to attack candidate set
-				if (node.getActivationType() == NodeActivationType.OR) { // OR nodes, then belong to attack edge set
-					double prob = 1.0;
-					for (Edge edge : attackCandidate.getEdgeCandidateSet()) {
-						if (edge.gettarget().getId() == node.getId()) {
-							prob *= (1 - edge.getActProb());
-						}
+		for (AttackerAction attAction : attActionList) {
+			for (Entry<Node, Set<Edge>> attEntry : attAction.getActionCopy().entrySet()) {
+				Node node = attEntry.getKey();
+				Set<Edge> edgeSet = attEntry.getValue();
+				
+				double addedDValue = rSum[node.getId() - 1];
+				double actProb = 1.0;
+				if (node.getActivationType() == NodeActivationType.OR) {
+					for (Edge edge : edgeSet) {
+						actProb *= (1 - edge.getActProb());
 					}
-					prob = 1.0 - prob;
-					dCandidateValue[idx] -= prob * rSum[node.getId() - 1];
-				} else { // AND nodes, then belong to attack node set
-					dCandidateValue[idx] -= node.getActProb() * rSum[node.getId() - 1];
+					actProb = 1 - actProb;
+				} else {
+					actProb *= node.getActProb();
 				}
-			} else { // if this is active target 
-				dCandidateValue[idx] -= node.getDPenalty();
-				if (rSum[node.getId() - 1] != Double.POSITIVE_INFINITY) {
-					dCandidateValue[idx] -= rSum[node.getId() - 1];
+				addedDValue *= actProb;
+				
+				Double curDValue = dValueMap.get(node);
+				if (curDValue == null) { // if this is new
+					curDValue = addedDValue;
+				} else {
+					curDValue += addedDValue;
 				}
+				dValueMap.put(node, curDValue);
 			}
-			dCandidateValue[idx] *= Math.pow(discountFactor, curTimeStep - 1); 
-			idx++;
 		}
-		dCandidateList.clear();
-		targetList.clear();
-		return dCandidateValue;
+		for (Entry<Node, Double> entry : dValueMap.entrySet()) {
+			double value = entry.getValue();
+			entry.setValue(value / attActionList.size());
+		}
+		for (Node target : depGraph.getTargetSet()) {
+			if (target.getState() == NodeState.ACTIVE) { // Examine active targets
+				double dValue = target.getDPenalty();
+				if (rSum[target.getId() - 1] != Double.POSITIVE_INFINITY) {
+					dValue += rSum[target.getId() - 1];
+				}
+				dValueMap.put(target, dValue);
+			}
+		}
+		return dValueMap;
 	}
-	
 	private static boolean isProb(final double i) {
 		return i >= 0.0 && i <= 1.0;
 	}

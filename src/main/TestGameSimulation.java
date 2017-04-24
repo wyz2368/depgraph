@@ -20,7 +20,7 @@ import agent.UniformAttacker;
 import agent.UniformDefender;
 import agent.UniformVsDefender;
 import agent.ValuePropagationAttacker;
-import agent.ValuePropagationVsDefenderALT;
+import agent.ValuePropagationVsDefender;
 import agent.Attacker.AttackerType;
 import agent.Defender.DefenderType;
 
@@ -32,8 +32,8 @@ public final class TestGameSimulation {
 	
 	public static void main(final String[] args) {
 		final int numNode = 30;
-		final int numEdge = 90;
-		final int numTarget = 10;
+		final int numEdge = 100;
+		final int numTarget = 2;
 		final double nodeActTypeRatio = 0.3;
 		final double aRewardLB = 5.0;
 		final double aRewardUB = 10.0;
@@ -132,7 +132,7 @@ public final class TestGameSimulation {
 				defList[i] = new RootOnlyDefender(maxNumRes, minNumRes, numResRatio);
 				break;
 			case vsVALUE_PROPAGATION:
-				defList[i] = new ValuePropagationVsDefenderALT(maxNumRes, minNumRes, numResRatio
+				defList[i] = new ValuePropagationVsDefender(maxNumRes, minNumRes, numResRatio
 					, logisParam, discFact, thres
 					, qrParamDef
 					, maxNumSelectCandidateDef, minNumSelectCandidateDef, numSelectCandidateRatioDef);

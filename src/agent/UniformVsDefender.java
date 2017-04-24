@@ -66,7 +66,8 @@ public final class UniformVsDefender extends Defender {
 		}
 		Attacker attacker = new UniformAttacker(
 				this.maxNumSelectACandidate, this.minNumSelectACandidate, this.numSelectACandidateRatio);
-		Map<Node, Double> dValueMap = computeCandidateValueTopo(depGraph, dBelief, curTimeStep, numTimeStep, this.discFact, rng,
+		Map<Node, Double> dValueMap = ValuePropagationVsDefender.computeCandidateValueTopo(depGraph, dBelief, 
+				curTimeStep, numTimeStep, this.discFact, rng,
 				attacker, this.numAttActionSample);
 		List<Node> dCandidateNodeList = new ArrayList<Node>();
 		double[] candidateValue = new double[dValueMap.size()];

@@ -91,7 +91,7 @@ public final class AgentFactory {
 			&& defenderParams.containsKey(DefenderParam.maxNumAttCandidate.toString())
 			&& defenderParams.containsKey(DefenderParam.minNumAttCandidate.toString())
 			&& defenderParams.containsKey(DefenderParam.numAttCandidateRatio.toString());
-			return new ValuePropagationVsDefenderALT(defenderParams.get(DefenderParam.maxNumRes.toString())
+			return new ValuePropagationVsDefender(defenderParams.get(DefenderParam.maxNumRes.toString())
 				, defenderParams.get(DefenderParam.minNumRes.toString())
 				, defenderParams.get(DefenderParam.numResRatio.toString())
 				, defenderParams.get(DefenderParam.logisParam.toString())
