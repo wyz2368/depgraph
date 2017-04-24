@@ -8,7 +8,7 @@ import java.util.Set;
 
 public final class AttackCandidate {
 	private final Set<Node> nodeCandidateSet; // for AND node
-	private final Set<Edge> edgeCandidateSet; // for OR edge
+	private final Set<Edge> edgeCandidateSet; // for edge to OR node
 	
 	public AttackCandidate() {
 		this.nodeCandidateSet = new HashSet<Node>();

@@ -212,7 +212,6 @@ public final class UniformAttacker extends Attacker {
 							}
 						}
 					}
-					
 				}
 			}
 		}

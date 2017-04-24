@@ -54,10 +54,10 @@ public final class ValuePropagationAttacker extends Attacker {
 	 * @return type of Attacker Action: an attack action
 	 *****************************************************************************************/
 	public AttackerAction sampleAction(
-			final DependencyGraph depGraph, 
-			final int curTimeStep,
-			final int numTimeStep, 
-			final RandomGenerator rng) {	
+		final DependencyGraph depGraph, 
+		final int curTimeStep,
+		final int numTimeStep, 
+		final RandomGenerator rng) {	
 		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || rng == null) {
 			throw new IllegalArgumentException();
 		}
@@ -65,13 +65,13 @@ public final class ValuePropagationAttacker extends Attacker {
 		AttackCandidate attackCandidate = selectCandidate(depGraph);
 		// Compute candidate value
 		double[] candidateValue = computeCandidateValueTopo(
-									depGraph, 
-									attackCandidate, 
-									curTimeStep, 
-									numTimeStep, 
-									this.discFact, 
-									this.propagationParam,
-									this.isBest);
+			depGraph, 
+			attackCandidate, 
+			curTimeStep, 
+			numTimeStep, 
+			this.discFact, 
+			this.propagationParam,
+			this.isBest);
 		int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size() 
 			+ attackCandidate.getNodeCandidateSet().size();
 		
@@ -112,12 +112,12 @@ public final class ValuePropagationAttacker extends Attacker {
 	 * @return Samples of attacker action
 	 *****************************************************************************************/
 	public List<AttackerAction> sampleAction(
-			final DependencyGraph depGraph,
-			final int curTimeStep, 
-			final int numTimeStep, 
-			final RandomGenerator rng,
-			final int numSample, 
-			final boolean isReplacement) {
+		final DependencyGraph depGraph,
+		final int curTimeStep, 
+		final int numTimeStep, 
+		final RandomGenerator rng,
+		final int numSample, 
+		final boolean isReplacement) {
 		if (depGraph == null || numTimeStep < 0 || rng == null || numSample < 1) {
 			throw new IllegalArgumentException();
 		}
@@ -125,13 +125,13 @@ public final class ValuePropagationAttacker extends Attacker {
 		AttackCandidate attackCandidate = selectCandidate(depGraph);
 		// Compute candidate value
 		double[] candidateValue = computeCandidateValueTopo(
-										depGraph, 
-										attackCandidate, 
-										curTimeStep, 
-										numTimeStep, 
-										this.discFact, 
-										this.propagationParam,
-										this.isBest);
+			depGraph, 
+			attackCandidate, 
+			curTimeStep, 
+			numTimeStep, 
+			this.discFact, 
+			this.propagationParam,
+			this.isBest);
 		int totalNumCandidate =
 			attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
 		
@@ -201,13 +201,13 @@ public final class ValuePropagationAttacker extends Attacker {
 			throw new IllegalArgumentException();
 		}
 		double[] candidateValue = computeCandidateValueTopo(
-										depGraph, 
-										attackCandidate, 
-										curTimeStep, 
-										numTimeStep,
-										discFact, 
-										propagationParam,
-										isBest);
+			depGraph, 
+			attackCandidate, 
+			curTimeStep, 
+			numTimeStep,
+			discFact, 
+			propagationParam,
+			isBest);
 		int totalNumCandidate =
 			attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
 		
