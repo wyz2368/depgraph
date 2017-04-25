@@ -2,10 +2,16 @@ package agent;
 
 import java.util.List;
 
+import model.AttackCandidate;
 import model.AttackerAction;
 import model.DependencyGraph;
 
 import org.apache.commons.math3.random.RandomGenerator;
+
+import graph.Edge;
+import graph.Node;
+import graph.INode.NodeActivationType;
+import graph.INode.NodeState;
 
 public abstract class Attacker {
 	public enum AttackerType {
@@ -65,4 +71,64 @@ public abstract class Attacker {
 		RandomGenerator rng, 
 		int numSample, 
 		boolean isReplacement);
+	
+	/*****************************************************************************************
+	* @param depGraph: dependency graph
+	* @param curTimeStep: current time step 
+	* @param numTimeStep: total number of time step
+	* @return type of AttackCandidate: candidate set for the attacker
+	*****************************************************************************************/
+	public static final AttackCandidate selectCandidate(final DependencyGraph depGraph) {
+		if (depGraph == null) {
+			throw new IllegalArgumentException();
+		}
+		AttackCandidate aCandidate = new AttackCandidate();
+		
+		// Check if all targets are already active, then the attacker doesn't need to do anything
+		boolean isAllTargetActive = true;
+		for (Node target : depGraph.getTargetSet()) {
+			if (target.getState() != NodeState.ACTIVE) {
+				isAllTargetActive = false;
+				break;
+			}
+		}
+		// Start selecting candidate when some targets are inactive
+		if (!isAllTargetActive) {
+			for (Node node : depGraph.vertexSet()) {
+				if (node.getState() == NodeState.INACTIVE) { // only check inactive nodes
+					boolean isCandidate = false;
+					if (node.getActivationType() == NodeActivationType.AND) { // if this node is AND type
+						isCandidate = true;
+						for (Edge inEdge : depGraph.incomingEdgesOf(node)) {
+							if (inEdge.getsource().getState() == NodeState.INACTIVE) {
+								isCandidate = false;
+								break;
+							}
+						}
+					} else { // if this node is OR type
+						for (Edge inEdge : depGraph.incomingEdgesOf(node)) {
+							if (inEdge.getsource().getState() != NodeState.INACTIVE) {
+								isCandidate = true;
+								break;
+							}
+						}
+					}
+					
+					if (isCandidate) { // if this node is a candidate
+						// if AND node, then add node to the candidate set
+						if (node.getActivationType() == NodeActivationType.AND) {
+							aCandidate.addNodeCandidate(node);
+						} else { // if OR node, then add edges to the candidate set
+							for (Edge inEdge : depGraph.incomingEdgesOf(node)) {
+								if (inEdge.getsource().getState() == NodeState.ACTIVE) {
+									aCandidate.addEdgeCandidate(inEdge);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return aCandidate;
+	}
 }

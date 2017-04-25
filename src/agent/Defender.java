@@ -124,16 +124,17 @@ public abstract class Defender {
 		}
 		return action;
 	}
-	public DefenderBelief updateBelief(final DependencyGraph depGraph
+	
+	public static DefenderBelief updateBelief(final DependencyGraph depGraph
 		, final DefenderBelief dBelief
 		, final DefenderAction dAction
 		, final DefenderObservation dObservation
 		, final int curTimeStep, final int numTimeStep
 		, final RandomGenerator rng
-		, Attacker attacker
-		, int numAttActionSample
-		, int numStateSample
-		, double thres) {
+		, final Attacker attacker
+		, final int numAttActionSample
+		, final int numStateSample
+		, final double thres) {
 		if (depGraph == null || dBelief == null || dAction == null || dObservation == null 
 			|| curTimeStep < 0 || numTimeStep < curTimeStep || rng == null
 		) {

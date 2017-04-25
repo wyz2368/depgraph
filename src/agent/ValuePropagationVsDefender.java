@@ -145,7 +145,7 @@ public final class ValuePropagationVsDefender extends Defender {
 		return simpleSampleAction(dCandidateNodeList, numNodetoProtect, rnd);
 	}
 	@Override
-	public final DefenderBelief updateBelief(
+	public DefenderBelief updateBelief(
 		final DependencyGraph depGraph,
 		final DefenderBelief dBelief, 
 		final DefenderAction dAction,
@@ -239,7 +239,7 @@ public final class ValuePropagationVsDefender extends Defender {
 		return dValueMap;
 	}
 	
-	public static final Map<Node, Double> computeCandidateValueTopo(
+	public static Map<Node, Double> computeCandidateValueTopo(
 		final DependencyGraph depGraph,
 		final List<AttackerAction> attActionList,
 		final int curTimeStep,

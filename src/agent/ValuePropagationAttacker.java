@@ -228,66 +228,6 @@ public final class ValuePropagationAttacker extends Attacker {
 	}
 	
 	/*****************************************************************************************
-	* @param depGraph: dependency graph
-	* @param curTimeStep: current time step 
-	* @param numTimeStep: total number of time step
-	* @return type of AttackCandidate: candidate set for the attacker
-	*****************************************************************************************/
-	static AttackCandidate selectCandidate(final DependencyGraph depGraph) {
-		if (depGraph == null) {
-			throw new IllegalArgumentException();
-		}
-		AttackCandidate aCandidate = new AttackCandidate();
-		
-		// Check if all targets are already active, then the attacker doesn't need to do anything
-		boolean isAllTargetActive = true;
-		for (Node target : depGraph.getTargetSet()) {
-			if (target.getState() != NodeState.ACTIVE) {
-				isAllTargetActive = false;
-				break;
-			}
-		}
-		// Start selecting candidate when some targets are inactive
-		if (!isAllTargetActive) {
-			for (Node node : depGraph.vertexSet()) {
-				if (node.getState() == NodeState.INACTIVE) { // only check inactive nodes
-					boolean isCandidate = false;
-					if (node.getActivationType() == NodeActivationType.AND) { // if this node is AND type
-						isCandidate = true;
-						for (Edge inEdge : depGraph.incomingEdgesOf(node)) {
-							if (inEdge.getsource().getState() == NodeState.INACTIVE) {
-								isCandidate = false;
-								break;
-							}
-						}
-					} else { // if this node is OR type
-						for (Edge inEdge : depGraph.incomingEdgesOf(node)) {
-							if (inEdge.getsource().getState() != NodeState.INACTIVE) {
-								isCandidate = true;
-								break;
-							}
-						}
-					}
-					
-					if (isCandidate) { // if this node is a candidate
-						// if AND node, then add node to the candidate set
-						if (node.getActivationType() == NodeActivationType.AND) {
-							aCandidate.addNodeCandidate(node);
-						} else { // if OR node, then add edges to the  candidate set
-							for (Edge inEdge : depGraph.incomingEdgesOf(node)) {
-								if (inEdge.getsource().getState() == NodeState.ACTIVE) {
-									aCandidate.addEdgeCandidate(inEdge);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		return aCandidate;
-	}
-	
-	/*****************************************************************************************
 	 * @param totalNumCandidate: total number of candidates
 	 * @param candidateValue: corresponding candidate values
 	 * @return QR distribution over candidates
