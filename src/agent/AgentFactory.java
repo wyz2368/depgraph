@@ -72,6 +72,13 @@ public final class AgentFactory {
 			return new MinCutDefender(defenderParams.get(DefenderParam.maxNumRes.toString())
 				, defenderParams.get(DefenderParam.minNumRes.toString())
 				, defenderParams.get(DefenderParam.numResRatio.toString()));
+		} else if (defType == DefenderType.ROOT_ONLY) {
+			assert defenderParams.containsKey(DefenderParam.maxNumRes.toString())
+			&& defenderParams.containsKey(DefenderParam.minNumRes.toString())
+			&& defenderParams.containsKey(DefenderParam.numResRatio.toString());
+			return new RootOnlyDefender(defenderParams.get(DefenderParam.maxNumRes.toString())
+				, defenderParams.get(DefenderParam.minNumRes.toString())
+				, defenderParams.get(DefenderParam.numResRatio.toString()));
 		} else if (defType == DefenderType.GOAL_ONLY) {
 			assert defenderParams.containsKey(DefenderParam.maxNumRes.toString())
 			&& defenderParams.containsKey(DefenderParam.minNumRes.toString())
