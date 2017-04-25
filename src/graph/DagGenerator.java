@@ -88,16 +88,17 @@ public final class DagGenerator {
 			final int numLayer,
 			final int numNode1Layer, // first layer, assuming largest number of nodes
 			final double numNodeRatio, // decreased number of nodes in deeper layers
-			final double numEdgeRatio, // number of edges between consecutive layers, with ratio w.r.t. #nodes of these layers
+			// number of edges between consecutive layers, with ratio w.r.t. #nodes of these layers
+			final double numEdgeRatio,
 			final RandomDataGenerator rand
 		) {
-		if(numLayer < 1) {
+		if (numLayer < 1) {
 			throw new IllegalArgumentException("Invalid numLayer");
 		}
 		if (numNode1Layer < 1 || rand == null) {
 			throw new IllegalArgumentException();
 		}
-		if(numNodeRatio < 1.0) {
+		if (numNodeRatio < 1.0) {
 			throw new IllegalArgumentException("Invalid numNodeRatio");
 		}
 		if (numEdgeRatio > 1.0 || numEdgeRatio < 0.0) {
@@ -106,29 +107,29 @@ public final class DagGenerator {
 		DependencyGraph depGraph = new DependencyGraph();
 			
 		Node[][] nodeList = new Node[numLayer][];
-		for(int i = 0; i < numLayer; i++) {
+		for (int i = 0; i < numLayer; i++) {
 			int curNumNode = (int) (numNode1Layer * Math.pow(numNodeRatio, i));
 			nodeList[i] = new Node[curNumNode];
-			for(int j = 0; j < curNumNode; j++) {
+			for (int j = 0; j < curNumNode; j++) {
 				Node node = new Node();
 				depGraph.addVertex(node);
 				nodeList[i][j] = node;
 			}
 		}
-		for(int i = 1; i < numLayer; i++) {
+		for (int i = 1; i < numLayer; i++) {
 			int prevNumNode = (int) (numNode1Layer * Math.pow(numNodeRatio, i - 1));
 			int nextNumNode = (int) (numNode1Layer * Math.pow(numNodeRatio, i));
 			int numEdge = (int) (prevNumNode * nextNumNode * numEdgeRatio);
 			
 			// Start randomly generating
 			boolean[][] isExist = new boolean[prevNumNode][nextNumNode];
-			for(int prevIdx = 0; prevIdx < prevNumNode; prevIdx++) {
-				for(int nextIdx = 0; nextIdx < nextNumNode; nextIdx++) {
+			for (int prevIdx = 0; prevIdx < prevNumNode; prevIdx++) {
+				for (int nextIdx = 0; nextIdx < nextNumNode; nextIdx++) {
 					isExist[prevIdx][nextIdx] = false;
 				}
 			}
 			int count = 0;
-			while(count < numEdge) {
+			while (count < numEdge) {
 				int prevIdx = rand.nextInt(0, prevNumNode - 1);
 				int nextIdx = rand.nextInt(0, nextNumNode - 1);
 				if (!isExist[prevIdx][nextIdx]) {
