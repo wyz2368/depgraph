@@ -21,19 +21,30 @@ public final class AgentFactory {
 			throw new IllegalArgumentException();
 		}
 		AttackerType attType = AttackerType.valueOf(attackerName);
-		
 		if (attType == AttackerType.UNIFORM) {
-			assert attackerParams.containsKey(AttackerParam.MAX_NUM_SELECT_CAND.toString())
-				&& attackerParams.containsKey(AttackerParam.MIN_NUM_SELECT_CAND.toString())
-				&& attackerParams.containsKey(AttackerParam.NUM_SELECT_CAND_RATIO.toString());
+			if (!attackerParams.containsKey(AttackerParam.MAX_NUM_SELECT_CAND.toString())
+				|| !attackerParams.containsKey(AttackerParam.MIN_NUM_SELECT_CAND.toString())
+				|| !attackerParams.containsKey(AttackerParam.NUM_SELECT_CAND_RATIO.toString())) {
+				throw new IllegalArgumentException();
+			}
+			final int expectedKeys = 3;
+			if (attackerParams.keySet().size() != expectedKeys) {
+				throw new IllegalArgumentException();
+			}
 			return new UniformAttacker(attackerParams.get(AttackerParam.MAX_NUM_SELECT_CAND.toString())
 				, attackerParams.get(AttackerParam.MIN_NUM_SELECT_CAND.toString())
 				, attackerParams.get(AttackerParam.NUM_SELECT_CAND_RATIO.toString()));
 		} else if (attType == AttackerType.VALUE_PROPAGATION) {
-			assert attackerParams.containsKey(AttackerParam.MAX_NUM_SELECT_CAND.toString()) 
-			&& attackerParams.containsKey(AttackerParam.MIN_NUM_SELECT_CAND.toString())
-			&& attackerParams.containsKey(AttackerParam.NUM_SELECT_CAND_RATIO.toString())
-			&& attackerParams.containsKey(AttackerParam.QR_PARAM.toString());
+			if (!attackerParams.containsKey(AttackerParam.MAX_NUM_SELECT_CAND.toString())
+			|| !attackerParams.containsKey(AttackerParam.MIN_NUM_SELECT_CAND.toString())
+			|| !attackerParams.containsKey(AttackerParam.NUM_SELECT_CAND_RATIO.toString())
+			|| !attackerParams.containsKey(AttackerParam.QR_PARAM.toString())) {
+				throw new IllegalArgumentException();
+			}
+			final int expectedKeys = 4;
+			if (attackerParams.keySet().size() != expectedKeys) {
+				throw new IllegalArgumentException();
+			}
 			return new ValuePropagationAttacker(
 				attackerParams.get(AttackerParam.MAX_NUM_SELECT_CAND.toString())
 				, attackerParams.get(AttackerParam.MIN_NUM_SELECT_CAND.toString())
@@ -41,12 +52,18 @@ public final class AgentFactory {
 				, attackerParams.get(AttackerParam.QR_PARAM.toString())
 				, discFact);
 		} else if (attType == AttackerType.RANDOM_WALK) {
-			assert attackerParams.containsKey(AttackerParam.NUM_RW_SAMPLE.toString()) 
-			&& attackerParams.containsKey(AttackerParam.QR_PARAM.toString());
+			if (!attackerParams.containsKey(AttackerParam.NUM_RW_SAMPLE.toString()) 
+			|| !attackerParams.containsKey(AttackerParam.QR_PARAM.toString())) {
+				throw new IllegalArgumentException();
+			}
+			final int expectedKeys = 2;
+			if (attackerParams.keySet().size() != expectedKeys) {
+				throw new IllegalArgumentException();
+			}
 			return new RandomWalkAttacker(attackerParams.get(AttackerParam.NUM_RW_SAMPLE.toString())
 				, attackerParams.get(AttackerParam.QR_PARAM.toString()), discFact);
 		}
-		return null;
+		throw new IllegalArgumentException();
 	}
 	
 	public static Defender createDefender(final String defenderName,
@@ -59,38 +76,62 @@ public final class AgentFactory {
 		DefenderType defType = DefenderType.valueOf(defenderName);
 		
 		if (defType == DefenderType.UNIFORM) {
-			assert defenderParams.containsKey(DefenderParam.maxNumRes.toString())
-			&& defenderParams.containsKey(DefenderParam.minNumRes.toString())
-			&& defenderParams.containsKey(DefenderParam.numResRatio.toString());
+			if (!defenderParams.containsKey(DefenderParam.maxNumRes.toString())
+			|| !defenderParams.containsKey(DefenderParam.minNumRes.toString())
+			|| !defenderParams.containsKey(DefenderParam.numResRatio.toString())) {
+				throw new IllegalArgumentException();
+			}
+			final int expectedKeys = 3;
+			if (defenderParams.keySet().size() != expectedKeys) {
+				throw new IllegalArgumentException();
+			}
 			return new UniformDefender(defenderParams.get(DefenderParam.maxNumRes.toString())
 				, defenderParams.get(DefenderParam.minNumRes.toString())
 				, defenderParams.get(DefenderParam.numResRatio.toString()));
 		} else if (defType == DefenderType.MINCUT) {
-			assert defenderParams.containsKey(DefenderParam.maxNumRes.toString())
-			&& defenderParams.containsKey(DefenderParam.minNumRes.toString())
-			&& defenderParams.containsKey(DefenderParam.numResRatio.toString());
+			if (!defenderParams.containsKey(DefenderParam.maxNumRes.toString())
+			|| !defenderParams.containsKey(DefenderParam.minNumRes.toString())
+			|| !defenderParams.containsKey(DefenderParam.numResRatio.toString())) {
+				throw new IllegalArgumentException();
+			}
+			final int expectedKeys = 3;
+			if (defenderParams.keySet().size() != expectedKeys) {
+				throw new IllegalArgumentException();
+			}
 			return new MinCutDefender(defenderParams.get(DefenderParam.maxNumRes.toString())
 				, defenderParams.get(DefenderParam.minNumRes.toString())
 				, defenderParams.get(DefenderParam.numResRatio.toString()));
 		} else if (defType == DefenderType.GOAL_ONLY) {
-			assert defenderParams.containsKey(DefenderParam.maxNumRes.toString())
-			&& defenderParams.containsKey(DefenderParam.minNumRes.toString())
-			&& defenderParams.containsKey(DefenderParam.numResRatio.toString())
-			&& defenderParams.containsKey(DefenderParam.logisParam.toString());
+			if (!defenderParams.containsKey(DefenderParam.maxNumRes.toString())
+			|| !defenderParams.containsKey(DefenderParam.minNumRes.toString())
+			|| !defenderParams.containsKey(DefenderParam.numResRatio.toString())
+			|| !defenderParams.containsKey(DefenderParam.logisParam.toString())) {
+				throw new IllegalArgumentException();
+			}
+			final int expectedKeys = 4;
+			if (defenderParams.keySet().size() != expectedKeys) {
+				throw new IllegalArgumentException();
+			}
 			return new GoalOnlyDefender(defenderParams.get(DefenderParam.maxNumRes.toString())
 				, defenderParams.get(DefenderParam.minNumRes.toString())
 				, defenderParams.get(DefenderParam.numResRatio.toString())
 				, defenderParams.get(DefenderParam.logisParam.toString()), discFact);
 		} else if (defType == DefenderType.vsVALUE_PROPAGATION) {
-			assert defenderParams.containsKey(DefenderParam.maxNumRes.toString())
-			&& defenderParams.containsKey(DefenderParam.minNumRes.toString())
-			&& defenderParams.containsKey(DefenderParam.numResRatio.toString())
-			&& defenderParams.containsKey(DefenderParam.logisParam.toString())
-			&& defenderParams.containsKey(DefenderParam.bThres.toString())
-			&& defenderParams.containsKey(DefenderParam.qrParam.toString())
-			&& defenderParams.containsKey(DefenderParam.maxNumAttCandidate.toString())
-			&& defenderParams.containsKey(DefenderParam.minNumAttCandidate.toString())
-			&& defenderParams.containsKey(DefenderParam.numAttCandidateRatio.toString());
+			if (!defenderParams.containsKey(DefenderParam.maxNumRes.toString())
+			|| !defenderParams.containsKey(DefenderParam.minNumRes.toString())
+			|| !defenderParams.containsKey(DefenderParam.numResRatio.toString())
+			|| !defenderParams.containsKey(DefenderParam.logisParam.toString())
+			|| !defenderParams.containsKey(DefenderParam.bThres.toString())
+			|| !defenderParams.containsKey(DefenderParam.qrParam.toString())
+			|| !defenderParams.containsKey(DefenderParam.maxNumAttCandidate.toString())
+			|| !defenderParams.containsKey(DefenderParam.minNumAttCandidate.toString())
+			|| !defenderParams.containsKey(DefenderParam.numAttCandidateRatio.toString())) {
+				throw new IllegalArgumentException();
+			}
+			final int expectedKeys = 9;
+			if (defenderParams.keySet().size() != expectedKeys) {
+				throw new IllegalArgumentException();
+			}
 			return new ValuePropagationVsDefender(defenderParams.get(DefenderParam.maxNumRes.toString())
 				, defenderParams.get(DefenderParam.minNumRes.toString())
 				, defenderParams.get(DefenderParam.numResRatio.toString())
@@ -102,11 +143,17 @@ public final class AgentFactory {
 				, defenderParams.get(DefenderParam.minNumAttCandidate.toString())
 				, defenderParams.get(DefenderParam.numAttCandidateRatio.toString()));
 		} else if (defType == DefenderType.vsRANDOM_WALK) {
-			assert defenderParams.containsKey(DefenderParam.logisParam.toString())
-			&& defenderParams.containsKey(DefenderParam.bThres.toString())
-			&& defenderParams.containsKey(DefenderParam.qrParam.toString())
-			&& defenderParams.containsKey(DefenderParam.numRWSample.toString())
-			&& defenderParams.containsKey(DefenderParam.isRandomized.toString());
+			if (!defenderParams.containsKey(DefenderParam.logisParam.toString())
+			|| !defenderParams.containsKey(DefenderParam.bThres.toString())
+			|| !defenderParams.containsKey(DefenderParam.qrParam.toString())
+			|| !defenderParams.containsKey(DefenderParam.numRWSample.toString())
+			|| !defenderParams.containsKey(DefenderParam.isRandomized.toString())) {
+				throw new IllegalArgumentException();
+			}
+			final int expectedKeys = 5;
+			if (defenderParams.keySet().size() != expectedKeys) {
+				throw new IllegalArgumentException();
+			}
 			return new RandomWalkVsDefender(defenderParams.get(DefenderParam.logisParam.toString())
 				, discFact
 				, defenderParams.get(DefenderParam.bThres.toString())
@@ -114,15 +161,20 @@ public final class AgentFactory {
 				, defenderParams.get(DefenderParam.numRWSample.toString())
 				, defenderParams.get(DefenderParam.isRandomized.toString()));
 		} else if (defType == DefenderType.vsUNIFORM) {
-			assert defenderParams.containsKey(DefenderParam.maxNumRes.toString())
-			&& defenderParams.containsKey(DefenderParam.minNumRes.toString())
-			&& defenderParams.containsKey(DefenderParam.numResRatio.toString())
-			&& defenderParams.containsKey(DefenderParam.logisParam.toString())
-			&& defenderParams.containsKey(DefenderParam.bThres.toString())
-			&& defenderParams.containsKey(DefenderParam.maxNumAttCandidate.toString())
-			&& defenderParams.containsKey(DefenderParam.minNumAttCandidate.toString())
-			&& defenderParams.containsKey(DefenderParam.numAttCandidateRatio.toString());
-			
+			if (!defenderParams.containsKey(DefenderParam.maxNumRes.toString())
+			|| !defenderParams.containsKey(DefenderParam.minNumRes.toString())
+			|| !defenderParams.containsKey(DefenderParam.numResRatio.toString())
+			|| !defenderParams.containsKey(DefenderParam.logisParam.toString())
+			|| !defenderParams.containsKey(DefenderParam.bThres.toString())
+			|| !defenderParams.containsKey(DefenderParam.maxNumAttCandidate.toString())
+			|| !defenderParams.containsKey(DefenderParam.minNumAttCandidate.toString())
+			|| !defenderParams.containsKey(DefenderParam.numAttCandidateRatio.toString())) {
+				throw new IllegalArgumentException();
+			}
+			final int expectedKeys = 8;
+			if (defenderParams.keySet().size() != expectedKeys) {
+				throw new IllegalArgumentException();
+			}
 			return new UniformVsDefender(defenderParams.get(DefenderParam.logisParam.toString())
 				, discFact
 				, defenderParams.get(DefenderParam.bThres.toString())
@@ -133,7 +185,6 @@ public final class AgentFactory {
 				, defenderParams.get(DefenderParam.minNumAttCandidate.toString())
 				, defenderParams.get(DefenderParam.numAttCandidateRatio.toString()));
 		}
-
-		return null;
+		throw new IllegalArgumentException();
 	 }
 }

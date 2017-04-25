@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -76,6 +77,7 @@ public final class JsonUtils {
 		final JsonObject defaultConfig =
 			(JsonObject) defaultAsJson.get(SIMSPEC_FIELD_NAME);
 		
+		final Set<String> validKeys = new HashSet<String>(Arrays.asList("assignment"));
 		// fill in any missing entries in inputConfig,
 		// with data from the defaultConfig
 		for (final Entry<String, JsonElement> entry: defaultConfig.entrySet()) {
@@ -83,6 +85,11 @@ public final class JsonUtils {
 			if (!inputConfig.has(entry.getKey())) {
 				// missing from input. add to input.
 				inputConfig.add(entry.getKey(), entry.getValue());
+			}
+		}
+		for (final Entry<String, JsonElement> entry: inputConfig.entrySet()) {
+			if (!defaultConfig.has(entry.getKey()) && !validKeys.contains(entry.getKey())) {
+				throw new IllegalStateException("unexpected config key: " + entry.getKey());
 			}
 		}
 		final Gson gson = new Gson();

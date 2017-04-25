@@ -3,6 +3,9 @@ package main;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.junit.Test;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import agent.AgentFactory;
 import agent.GoalOnlyDefender;
 import agent.UniformAttacker;
@@ -96,7 +99,84 @@ public final class UnitTestMainGameSimulation {
 			DGraphGenerator.findMinCut(depGraph);
 		}
 	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testExtraAttParam() {
+		String simspecFolderName = "testDirs/simSpecExtraAttParam";  
+		final GameSimulationSpec simSpec =
+			JsonUtils.getSimSpecOrDefaults(simspecFolderName);
+		final String attackerString = JsonUtils.getAttackerString(simspecFolderName);
+		final String attackerName = EncodingUtils.getStrategyName(attackerString);
+		final Map<String, Double> attackerParams =
+			EncodingUtils.getStrategyParams(attackerString);
+		AgentFactory.createAttacker(attackerName, attackerParams, simSpec.getDiscFact());
+	}
 	
+	@Test(expected = IllegalArgumentException.class)
+	public void testMissingAttParam() {
+		String simspecFolderName = "testDirs/simSpecMissingAttParam";  
+		final GameSimulationSpec simSpec =
+			JsonUtils.getSimSpecOrDefaults(simspecFolderName);
+		final String attackerString = JsonUtils.getAttackerString(simspecFolderName);
+		final String attackerName = EncodingUtils.getStrategyName(attackerString);
+		final Map<String, Double> attackerParams =
+			EncodingUtils.getStrategyParams(attackerString);
+		AgentFactory.createAttacker(attackerName, attackerParams, simSpec.getDiscFact());
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testWrongAttParam() {
+		String simspecFolderName = "testDirs/simSpecWrongAttParam";  
+		final GameSimulationSpec simSpec =
+			JsonUtils.getSimSpecOrDefaults(simspecFolderName);
+		final String attackerString = JsonUtils.getAttackerString(simspecFolderName);
+		final String attackerName = EncodingUtils.getStrategyName(attackerString);
+		final Map<String, Double> attackerParams =
+			EncodingUtils.getStrategyParams(attackerString);
+		AgentFactory.createAttacker(attackerName, attackerParams, simSpec.getDiscFact());
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testWrongAttType() {
+		String simspecFolderName = "testDirs/simSpecWrongAttType";  
+		final GameSimulationSpec simSpec =
+			JsonUtils.getSimSpecOrDefaults(simspecFolderName);
+		final String attackerString = JsonUtils.getAttackerString(simspecFolderName);
+		final String attackerName = EncodingUtils.getStrategyName(attackerString);
+		final Map<String, Double> attackerParams =
+			EncodingUtils.getStrategyParams(attackerString);
+		AgentFactory.createAttacker(attackerName, attackerParams, simSpec.getDiscFact());
+	}
+	
+	@Test(expected = IllegalStateException.class)
+	public void testExtraConfigParam() {
+		String simspecFolderName = "testDirs/simSpecExtraConfigParam";  
+		JsonUtils.getSimSpecOrDefaults(simspecFolderName);
+	}
+	
+	@Test
+	public void testMissingConfigParam() {
+		String simspecFolderName = "testDirs/simSpecMissingConfigParam";
+		// should get defaults for missing value
+		final GameSimulationSpec simSpec = JsonUtils.getSimSpecOrDefaults(simspecFolderName);
+		
+		// read in the default file
+		final String defaultJsonString = JsonUtils.linesAsString(JsonUtils.DEFAULT_FILE_NAME);
+		final JsonObject defaultAsJson = 
+			new JsonParser().parse(defaultJsonString).getAsJsonObject();
+		// get JsonObject of default file's appropriate field
+		final JsonObject defaultConfig =
+			(JsonObject) defaultAsJson.get(JsonUtils.SIMSPEC_FIELD_NAME);
+		final String numSim = "numSim";
+		assertTrue(defaultConfig.get(numSim).getAsInt() == simSpec.getNumSim());
+	}
+	
+	@Test(expected = IllegalStateException.class)
+	public void testWrongConfigParam() {
+		String simspecFolderName = "testDirs/simSpecWrongConfigParam";  
+		JsonUtils.getSimSpecOrDefaults(simspecFolderName);
+	}
+
 	@Test
 	public void testFromSimSpec() {
 		final String simspecFolderName = "simspecs";
