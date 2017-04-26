@@ -51,25 +51,35 @@ public final class UniformAttacker extends Attacker {
 			throw new IllegalArgumentException();
 		}
 		// Select candidate for the attacker
-		AttackCandidate attackCandidate = selectCandidate(depGraph); 
+		final AttackCandidate attackCandidate = selectCandidate(depGraph); 
 		
-		// Sample number of nodes
-		int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size()
+		// Sample number of AND-nodes and OR-edges in attackCandidate sets
+		final int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size()
 			+ attackCandidate.getNodeCandidateSet().size();
 		// Compute number of candidates to select
 		int numSelectCandidate = 0;
 		if (totalNumCandidate < this.minNumSelectCandidate) {
+			// it is legal to retain all candidates
 			numSelectCandidate = totalNumCandidate;
 		} else  {
+			// cannot retain all candidates
 			numSelectCandidate = Math.max(this.minNumSelectCandidate,
 				(int) (totalNumCandidate * this.numSelectCandidateRatio));
 			numSelectCandidate = Math.min(this.maxNumSelectCandidate, numSelectCandidate);
+			// current state:
+			// if (totalNumCandidate * numSelectCandidateRatio) \in [minNumSelectCandidate, maxNumSelectCandidate]:
+			//     -> numSelectCandidate = (totalNumCandidate * numSelectCandidateRatio)
+			// elif (totalNumCandidate * numSelectCandidateRatio) > maxNumSelectCandidate:
+			//     -> numSelectCandidate = maxNumSelectCandidate
+			// else:
+			//     -> numSelectCandidate = minNumSelectCandidate
 		}
-		// System.out.println(numSelectCandidate + " attacker strikes");
 		if (numSelectCandidate == 0) { // if there is no candidate
 			return new AttackerAction();
 		}
 		// Sample nodes
+		// NB: lower and upper bounds of UniformIntegerDistribution constructor are both inclusive.
+		// therefore, this distribution will select a random 0-based index.
 		UniformIntegerDistribution rnd = new UniformIntegerDistribution(rng, 0, totalNumCandidate - 1);
 		return sampleAction(depGraph, attackCandidate, numSelectCandidate, rnd);
 	}
