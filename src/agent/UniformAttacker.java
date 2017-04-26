@@ -20,18 +20,22 @@ public final class UniformAttacker extends Attacker {
 	private int maxNumSelectCandidate;
 	private int minNumSelectCandidate;
 	private double numSelectCandidateRatio;
+	private double numCandStdev;
 	
 	public UniformAttacker(final double maxNumSelectCandidate,
 		final double minNumSelectCandidate, 
-		final double numSelectCandidateRatio) {
+		final double numSelectCandidateRatio,
+		final double numCandStdev) {
 		super(AttackerType.UNIFORM);
 		if (minNumSelectCandidate < 0 || maxNumSelectCandidate < minNumSelectCandidate
-			|| numSelectCandidateRatio < 0.0 || numSelectCandidateRatio > 1.0) {
+			|| numSelectCandidateRatio < 0.0 || numSelectCandidateRatio > 1.0
+			|| numCandStdev < 0.0) {
 			throw new IllegalArgumentException();
 		}
 		this.maxNumSelectCandidate = (int) maxNumSelectCandidate;
 		this.minNumSelectCandidate = (int) minNumSelectCandidate;
 		this.numSelectCandidateRatio = numSelectCandidateRatio;
+		this.numCandStdev = numCandStdev;
 	}
 	
 	/*****************************************************************************************
@@ -51,7 +55,7 @@ public final class UniformAttacker extends Attacker {
 			throw new IllegalArgumentException();
 		}
 		// Select candidate for the attacker
-		final AttackCandidate attackCandidate = selectCandidate(depGraph); 
+		final AttackCandidate attackCandidate = selectCandidate(depGraph);
 		
 		// Sample number of AND-nodes and OR-edges in attackCandidate sets
 		final int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size()
@@ -62,14 +66,15 @@ public final class UniformAttacker extends Attacker {
 			// it is legal to retain all candidates
 			numSelectCandidate = totalNumCandidate;
 		} else  {
+			final int goalCount =
+				(int) (totalNumCandidate * this.numSelectCandidateRatio + rng.nextGaussian() * this.numCandStdev);
 			// cannot retain all candidates
-			numSelectCandidate = Math.max(this.minNumSelectCandidate,
-				(int) (totalNumCandidate * this.numSelectCandidateRatio));
+			numSelectCandidate = Math.max(this.minNumSelectCandidate, goalCount);
 			numSelectCandidate = Math.min(this.maxNumSelectCandidate, numSelectCandidate);
 			// current state:
-			// if (totalNumCandidate * numSelectCandidateRatio) \in [minNumSelectCandidate, maxNumSelectCandidate]:
-			//     -> numSelectCandidate = (totalNumCandidate * numSelectCandidateRatio)
-			// elif (totalNumCandidate * numSelectCandidateRatio) > maxNumSelectCandidate:
+			// if goalCount \in [minNumSelectCandidate, maxNumSelectCandidate]:
+			//     -> numSelectCandidate = goalCount
+			// elif goalCount > maxNumSelectCandidate:
 			//     -> numSelectCandidate = maxNumSelectCandidate
 			// else:
 			//     -> numSelectCandidate = minNumSelectCandidate
@@ -163,7 +168,7 @@ public final class UniformAttacker extends Attacker {
 				}
 				isChosen[idx] = true; // set chosen to be true
 				count++;
-			}	
+			}
 		}
 		return action;
 	}
@@ -179,11 +184,16 @@ public final class UniformAttacker extends Attacker {
 	public double getNumSelectCandidateRatio() {
 		return this.numSelectCandidateRatio;
 	}
+	
+	public double getNumCandStdev() {
+		return this.numCandStdev;
+	}
 
 	@Override
 	public String toString() {
 		return "UniformAttacker [maxNumSelectCandidate=" + this.maxNumSelectCandidate
 			+ ", minNumSelectCandidate=" + this.minNumSelectCandidate
-			+ ", numSelectCandidateRatio=" + this.numSelectCandidateRatio + "]";
+			+ ", numSelectCandidateRatio=" + this.numSelectCandidateRatio
+			+ ", numCandStdev=" + this.numCandStdev + "]";
 	}
 }

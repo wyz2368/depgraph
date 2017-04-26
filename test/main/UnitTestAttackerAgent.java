@@ -92,7 +92,7 @@ public final class UnitTestAttackerAgent {
 		DGraphGenerator.randomizeInitialGraphState(depGraph, rnd, pivot);
 		
 		uniformAttacker = new UniformAttacker(
-			maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
+			maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio, 0.0);
 		vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate,
 			minNumSelectCandidate, numSelectCandidateRatio
 			, qrParam, discFact);

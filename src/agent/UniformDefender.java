@@ -44,7 +44,6 @@ public final class UniformDefender extends Defender {
 			numNodetoProtect = Math.max(this.minNumRes, (int) (this.numResRatio * dCandidateNodeList.size()));
 			numNodetoProtect = Math.min(this.maxNumRes, numNodetoProtect);
 		}
-		// System.out.println(numNodetoProtect + " defender blocks");
 		if (dCandidateNodeList.size() == 0 || numNodetoProtect == 0) {
 			return new DefenderAction();
 		}

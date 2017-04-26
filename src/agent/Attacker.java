@@ -30,7 +30,7 @@ public abstract class Attacker {
 	
 	public enum AttackerParam {
 		MAX_NUM_SELECT_CAND, MIN_NUM_SELECT_CAND,
-		NUM_SELECT_CAND_RATIO, QR_PARAM, NUM_RW_SAMPLE;
+		NUM_SELECT_CAND_RATIO, QR_PARAM, NUM_RW_SAMPLE, STDEV;
 		
 		@Override
 		public String toString() {
@@ -40,6 +40,7 @@ public abstract class Attacker {
 			case NUM_SELECT_CAND_RATIO: return "numSelectCandidateRatio";
 			case QR_PARAM: return "qrParam";
 			case NUM_RW_SAMPLE: return "numRWSample";
+			case STDEV: return "stdev";
 			default: return "";
 			}	
 		}

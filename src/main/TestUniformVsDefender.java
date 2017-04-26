@@ -83,7 +83,7 @@ public final class TestUniformVsDefender {
 			, maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
 		
 		Attacker uniformAttacker = new UniformAttacker(maxNumSelectCandidate, minNumSelectCandidate
-			, numSelectCandidateRatio);
+			, numSelectCandidateRatio, 0.0);
 		
 		GameSimulation gameSimUvsGO =
 			new GameSimulation(depGraph, uniformAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);

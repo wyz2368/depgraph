@@ -100,7 +100,8 @@ public final class TestGameSimulation {
 		for (int i = 0; i < aTypeList.length; i++) {
 			switch (aTypeList[i]) {
 			case UNIFORM:
-				attList[i] = new UniformAttacker(maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
+				attList[i] =
+					new UniformAttacker(maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio, 0.0);
 				break;
 			case VALUE_PROPAGATION:
 				attList[i] = new ValuePropagationAttacker(

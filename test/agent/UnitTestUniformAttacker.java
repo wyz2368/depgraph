@@ -94,7 +94,7 @@ public final class UnitTestUniformAttacker {
 
 		
 		final int minToAttack = 5;
-		final Attacker uniformAttacker = new UniformAttacker(minToAttack, minToAttack, 0.5);
+		final Attacker uniformAttacker = new UniformAttacker(minToAttack, minToAttack, 0.5, 0.0);
 		
 		GameState gameState = new GameState();
 		final int parentA = 2;
@@ -199,7 +199,7 @@ public final class UnitTestUniformAttacker {
 			, minPosInactiveProb, maxPosInactiveProb);
 		
 		final int minToAttack = 5;
-		final Attacker uniformAttacker = new UniformAttacker(minToAttack, minToAttack, 0.5);
+		final Attacker uniformAttacker = new UniformAttacker(minToAttack, minToAttack, 0.5, 0.0);
 		
 		GameState gameState = new GameState();
 		depGraph.setState(gameState);

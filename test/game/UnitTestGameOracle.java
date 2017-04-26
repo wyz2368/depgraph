@@ -64,7 +64,7 @@ public final class UnitTestGameOracle {
 		dBelief.addState(gameState, 1.0);
 		depGraph.setState(gameState);
 		int timeStep = 0;
-		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0);
+		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0, 0.0);
 		AttackerAction attAction = uniformAttacker.sampleAction(
 			depGraph, 
 			timeStep, 
@@ -149,7 +149,7 @@ public final class UnitTestGameOracle {
 		dBelief.addState(gameState, 1.0);
 		depGraph.setState(gameState);
 		int timeStep = 0;
-		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0);
+		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0, 0.0);
 		AttackerAction attAction = uniformAttacker.sampleAction(
 			depGraph, 
 			timeStep, 
@@ -215,7 +215,7 @@ public final class UnitTestGameOracle {
 
 		// Load players
 		final Defender uniformDefender = new UniformDefender(numNode, numNode, 1.0);
-		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0);
+		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0, 0.0);
 		
 		final int numTimeStep = 4;
 		GameState gameState = new GameState();

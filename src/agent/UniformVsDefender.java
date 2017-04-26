@@ -65,7 +65,7 @@ public final class UniformVsDefender extends Defender {
 			throw new IllegalArgumentException();
 		}
 		Attacker attacker = new UniformAttacker(
-				this.maxNumSelectACandidate, this.minNumSelectACandidate, this.numSelectACandidateRatio);
+			this.maxNumSelectACandidate, this.minNumSelectACandidate, this.numSelectACandidateRatio, 0.0);
 		Map<Node, Double> dValueMap = ValuePropagationVsDefender.computeCandidateValueTopo(depGraph, dBelief, 
 				curTimeStep, numTimeStep, this.discFact, rng,
 				attacker, this.numAttActionSample);
@@ -131,7 +131,7 @@ public final class UniformVsDefender extends Defender {
 			throw new IllegalArgumentException();
 		}
 		Attacker attacker = new UniformAttacker(
-				this.maxNumSelectACandidate, this.minNumSelectACandidate, this.numSelectACandidateRatio);
+			this.maxNumSelectACandidate, this.minNumSelectACandidate, this.numSelectACandidateRatio, 0.0);
 		return updateBelief(depGraph
 				, dBelief
 				, dAction

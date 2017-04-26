@@ -81,7 +81,7 @@ public final class UnitTestGameSimulation {
 				
 		final int numTimeStep = 1;
 		final Defender uniformDefender = new UniformDefender(numNode, numNode, 1.0);
-		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0);
+		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0, 0.0);
 				
 		final GameSimulation gameSim =
 			new GameSimulation(depGraph, uniformAttacker, uniformDefender, rnd, numTimeStep, discFact);
@@ -151,7 +151,7 @@ public final class UnitTestGameSimulation {
 				
 		final int numTimeStep = 4;
 		final Defender uniformDefender = new UniformDefender(0, 0, 1.0);
-		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0);
+		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0, 0.0);
 				
 		final GameSimulation gameSim =
 			new GameSimulation(depGraph, uniformAttacker, uniformDefender, rnd, numTimeStep, discFact);
@@ -223,7 +223,7 @@ public final class UnitTestGameSimulation {
 				
 		final int numTimeStep = 4;
 		final Defender uniformDefender = new UniformDefender(numNode, numNode, 1.0);
-		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0);
+		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0, 0.0);
 				
 		final GameSimulation gameSim =
 			new GameSimulation(depGraph, uniformAttacker, uniformDefender, rnd, numTimeStep, discFact);

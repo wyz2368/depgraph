@@ -24,16 +24,18 @@ public final class AgentFactory {
 		if (attType == AttackerType.UNIFORM) {
 			if (!attackerParams.containsKey(AttackerParam.MAX_NUM_SELECT_CAND.toString())
 				|| !attackerParams.containsKey(AttackerParam.MIN_NUM_SELECT_CAND.toString())
-				|| !attackerParams.containsKey(AttackerParam.NUM_SELECT_CAND_RATIO.toString())) {
+				|| !attackerParams.containsKey(AttackerParam.NUM_SELECT_CAND_RATIO.toString())
+				|| !attackerParams.containsKey(AttackerParam.STDEV.toString())) {
 				throw new IllegalArgumentException();
 			}
-			final int expectedKeys = 3;
+			final int expectedKeys = 4;
 			if (attackerParams.keySet().size() != expectedKeys) {
 				throw new IllegalArgumentException();
 			}
 			return new UniformAttacker(attackerParams.get(AttackerParam.MAX_NUM_SELECT_CAND.toString())
 				, attackerParams.get(AttackerParam.MIN_NUM_SELECT_CAND.toString())
-				, attackerParams.get(AttackerParam.NUM_SELECT_CAND_RATIO.toString()));
+				, attackerParams.get(AttackerParam.NUM_SELECT_CAND_RATIO.toString()),
+				attackerParams.get(AttackerParam.STDEV.toString()));
 		} else if (attType == AttackerType.VALUE_PROPAGATION) {
 			if (!attackerParams.containsKey(AttackerParam.MAX_NUM_SELECT_CAND.toString())
 			|| !attackerParams.containsKey(AttackerParam.MIN_NUM_SELECT_CAND.toString())
