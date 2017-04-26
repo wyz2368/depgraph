@@ -292,11 +292,13 @@ public final class UnitTestMainGameSimulation {
 			EncodingUtils.getStrategyParams(attackerString);
 		final Map<String, Double> defenderParams =
 			EncodingUtils.getStrategyParams(defenderString);
+		final String attackerName = EncodingUtils.getStrategyName(attackerString);
+		final String defenderName = EncodingUtils.getStrategyName(defenderString);
 		
 		final UniformAttacker testAttacker =
-			(UniformAttacker) AgentFactory.createAttacker("UNIFORM", attackerParams, simSpec.getDiscFact());
+			(UniformAttacker) AgentFactory.createAttacker(attackerName, attackerParams, simSpec.getDiscFact());
 		final GoalOnlyDefender testDefender =
-			(GoalOnlyDefender) AgentFactory.createDefender("GOAL_ONLY", defenderParams, simSpec.getDiscFact());
+			(GoalOnlyDefender) AgentFactory.createDefender(defenderName, defenderParams, simSpec.getDiscFact());
 		
 		final double tolerance = 0.01;
 		// UNIFORM:maxNumSelectCandidate_4.0_minNumSelectCandidate_3.0_numSelectCandidateRatio_0.6_qrParam_2.0
@@ -320,8 +322,6 @@ public final class UnitTestMainGameSimulation {
 		assertTrue(Math.abs(testDefender.getDiscFact() - discFact) < tolerance);
 		
 		final DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
-		final String attackerName = EncodingUtils.getStrategyName(attackerString);
-		final String defenderName = EncodingUtils.getStrategyName(defenderString);
 		final MeanGameSimulationResult simResult = MainGameSimulation.runSimulations(
 			depGraph, simSpec, attackerName,
 			attackerParams, defenderName, defenderParams,
