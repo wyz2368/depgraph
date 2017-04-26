@@ -86,9 +86,6 @@ public final class TestVPvsDefender {
 			logisParam, discFact, thres,
 			qrParam, maxNumSelectCandidate, minNumSelectCandidate,
 			numSelectCandidateRatio);
-		// Defender valuePropagationvsDefender = new ValuePropagationvsDefender(maxNumRes, minNumRes, numResRatio
-			// , logisParam, discFact, thres
-			// , qrParam, maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
 		
 		Attacker vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate, minNumSelectCandidate
 				, numSelectCandidateRatio, qrParam, discFact);
