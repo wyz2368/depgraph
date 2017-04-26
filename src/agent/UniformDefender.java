@@ -16,18 +16,22 @@ public final class UniformDefender extends Defender {
 	private int maxNumRes;
 	private int minNumRes;
 	private double numResRatio;
+	private double numCandStdev;
 	
 	public UniformDefender(
 		final double maxNumRes, 
 		final double minNumRes, 
-		final double numResRatio) {
+		final double numResRatio,
+		final double numCandStdev) {
 		super(DefenderType.UNIFORM);
-		if (maxNumRes < 0 || minNumRes > maxNumRes || numResRatio < 0.0 || numResRatio > 1.0) {
+		if (maxNumRes < 0 || minNumRes > maxNumRes || numResRatio < 0.0 || numResRatio > 1.0
+			|| numCandStdev < 0.0) {
 			throw new IllegalArgumentException();
 		}
 		this.maxNumRes = (int) maxNumRes;
 		this.minNumRes = (int) minNumRes;
 		this.numResRatio = numResRatio;
+		this.numCandStdev = numCandStdev;
 	}
 
 	@Override
@@ -41,7 +45,9 @@ public final class UniformDefender extends Defender {
 		if (dCandidateNodeList.size() < this.minNumRes) {
 			numNodetoProtect = dCandidateNodeList.size();
 		} else {
-			numNodetoProtect = Math.max(this.minNumRes, (int) (this.numResRatio * dCandidateNodeList.size()));
+			final int goalCount =
+				(int) (dCandidateNodeList.size() * this.numResRatio + rng.nextGaussian() * this.numCandStdev);
+			numNodetoProtect = Math.max(this.minNumRes, goalCount);
 			numNodetoProtect = Math.min(this.maxNumRes, numNodetoProtect);
 		}
 		if (dCandidateNodeList.size() == 0 || numNodetoProtect == 0) {
@@ -75,10 +81,15 @@ public final class UniformDefender extends Defender {
 	public double getNumResRatio() {
 		return this.numResRatio;
 	}
+	
+	public double getNumCandStdev() {
+		return this.numCandStdev;
+	}
 
 	@Override
 	public String toString() {
 		return "UniformDefender [maxNumRes=" + this.maxNumRes + ", minNumRes="
-			+ this.minNumRes + ", numResRatio=" + this.numResRatio + "]";
+			+ this.minNumRes + ", numResRatio=" + this.numResRatio 
+			+ ", numCandStdev=" + this.numCandStdev + "]";
 	}
 }

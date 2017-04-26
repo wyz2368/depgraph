@@ -80,7 +80,7 @@ public final class UnitTestGameSimulation {
 		DGraphGenerator.findMinCut(depGraph);
 				
 		final int numTimeStep = 1;
-		final Defender uniformDefender = new UniformDefender(numNode, numNode, 1.0);
+		final Defender uniformDefender = new UniformDefender(numNode, numNode, 1.0, 0.0);
 		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0, 0.0);
 				
 		final GameSimulation gameSim =
@@ -150,7 +150,7 @@ public final class UnitTestGameSimulation {
 			, minPosInactiveProb, maxPosInactiveProb);
 				
 		final int numTimeStep = 4;
-		final Defender uniformDefender = new UniformDefender(0, 0, 1.0);
+		final Defender uniformDefender = new UniformDefender(0, 0, 1.0, 0.0);
 		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0, 0.0);
 				
 		final GameSimulation gameSim =
@@ -222,7 +222,7 @@ public final class UnitTestGameSimulation {
 		DGraphGenerator.findMinCut(depGraph);
 				
 		final int numTimeStep = 4;
-		final Defender uniformDefender = new UniformDefender(numNode, numNode, 1.0);
+		final Defender uniformDefender = new UniformDefender(numNode, numNode, 1.0, 0.0);
 		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0, 0.0);
 				
 		final GameSimulation gameSim =

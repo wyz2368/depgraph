@@ -214,7 +214,7 @@ public final class UnitTestGameOracle {
 			, minPosInactiveProb, maxPosInactiveProb);
 
 		// Load players
-		final Defender uniformDefender = new UniformDefender(numNode, numNode, 1.0);
+		final Defender uniformDefender = new UniformDefender(numNode, numNode, 1.0, 0.0);
 		final Attacker uniformAttacker = new UniformAttacker(numNode, numNode, 1.0, 0.0);
 		
 		final int numTimeStep = 4;

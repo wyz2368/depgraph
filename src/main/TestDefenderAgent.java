@@ -90,7 +90,7 @@ public final class TestDefenderAgent {
 		final double prob = 0.7;
 		defBelief.addState(gameState, prob);
 		
-		UniformDefender uniformDefender = new UniformDefender(maxNumRes, minNumRes, numResRatio);
+		UniformDefender uniformDefender = new UniformDefender(maxNumRes, minNumRes, numResRatio, 0.0);
 		DefenderAction dUniformAction = uniformDefender.sampleAction(depGraph, curTimeStep, numTimeStep
 			, defBelief
 			, rnd.getRandomGenerator());

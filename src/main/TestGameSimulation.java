@@ -121,7 +121,7 @@ public final class TestGameSimulation {
 		for (int i = 0; i < dTypeList.length; i++) {
 			switch (dTypeList[i]) {
 			case UNIFORM:
-				defList[i] = new UniformDefender(maxNumRes, minNumRes, numResRatio);
+				defList[i] = new UniformDefender(maxNumRes, minNumRes, numResRatio, 0.0);
 				break;
 			case MINCUT:
 				defList[i] = new MinCutDefender(maxNumRes, minNumRes, numResRatio);

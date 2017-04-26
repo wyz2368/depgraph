@@ -80,16 +80,18 @@ public final class AgentFactory {
 		if (defType == DefenderType.UNIFORM) {
 			if (!defenderParams.containsKey(DefenderParam.maxNumRes.toString())
 			|| !defenderParams.containsKey(DefenderParam.minNumRes.toString())
-			|| !defenderParams.containsKey(DefenderParam.numResRatio.toString())) {
+			|| !defenderParams.containsKey(DefenderParam.numResRatio.toString())
+			|| !defenderParams.containsKey(AttackerParam.STDEV.toString())) {
 				throw new IllegalArgumentException();
 			}
-			final int expectedKeys = 3;
+			final int expectedKeys = 4;
 			if (defenderParams.keySet().size() != expectedKeys) {
 				throw new IllegalArgumentException();
 			}
 			return new UniformDefender(defenderParams.get(DefenderParam.maxNumRes.toString())
 				, defenderParams.get(DefenderParam.minNumRes.toString())
-				, defenderParams.get(DefenderParam.numResRatio.toString()));
+				, defenderParams.get(DefenderParam.numResRatio.toString())
+				, defenderParams.get(DefenderParam.stdev.toString()));
 		} else if (defType == DefenderType.MINCUT) {
 			if (!defenderParams.containsKey(DefenderParam.maxNumRes.toString())
 			|| !defenderParams.containsKey(DefenderParam.minNumRes.toString())
