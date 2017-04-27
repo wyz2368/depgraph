@@ -77,7 +77,7 @@ public final class TestUniformVsDefender {
 		
 		final int numTimeStep = 6;
 		final int numSim = 50;
-		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
+		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact, 0.0);
 		Defender uniformvsDefender = new UniformVsDefender(logisParam, discFact, thres
 			, maxNumRes, minNumRes, numResRatio
 			, maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);

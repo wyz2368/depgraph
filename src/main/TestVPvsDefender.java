@@ -52,6 +52,7 @@ public final class TestVPvsDefender {
 		Edge.resetCounter();
 		RandomDataGenerator rnd = new RandomDataGenerator();
 		rnd.reSeed(System.currentTimeMillis());
+
 		DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rnd);
 		DGraphGenerator.genGraph(depGraph, rnd
 			, numTarget, nodeActTypeRatio
@@ -88,6 +89,7 @@ public final class TestVPvsDefender {
 //				minPosInactiveProb, maxPosInactiveProb, 
 //				aNodeCostFactor, aEdgeCostFactor, dCostFactor);
 		
+		
 		DGraphGenerator.findMinCut(depGraph);
 		
 		final int maxNumSelectCandidate = 10;
@@ -107,7 +109,7 @@ public final class TestVPvsDefender {
 		
 		final int numTimeStep = 10;
 		final int numSim = 10;
-		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
+		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact, 0.0);
 		
 		Defender valuePropagationvsDefender = new ValuePropagationVsDefender(
 			maxNumRes, minNumRes, numResRatio,
@@ -115,7 +117,8 @@ public final class TestVPvsDefender {
 			qrParam, maxNumSelectCandidate, minNumSelectCandidate,
 			numSelectCandidateRatio);
 		
-		Defender randomWalkvsDefender = new RandomWalkVsDefender(logisParam, discFact, thres, qrParam, numRWSample, 1.0);
+		Defender randomWalkvsDefender =
+			new RandomWalkVsDefender(logisParam, discFact, thres, qrParam, numRWSample, 1.0);
 		
 		Attacker vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate, minNumSelectCandidate
 				, numSelectCandidateRatio, qrParam, discFact);

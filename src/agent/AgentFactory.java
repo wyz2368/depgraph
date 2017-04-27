@@ -128,17 +128,20 @@ public final class AgentFactory {
 			if (!defenderParams.containsKey(DefenderParam.maxNumRes.toString())
 			|| !defenderParams.containsKey(DefenderParam.minNumRes.toString())
 			|| !defenderParams.containsKey(DefenderParam.numResRatio.toString())
-			|| !defenderParams.containsKey(DefenderParam.logisParam.toString())) {
+			|| !defenderParams.containsKey(DefenderParam.logisParam.toString())
+			|| !defenderParams.containsKey(DefenderParam.stdev.toString())) {
 				throw new IllegalArgumentException();
 			}
-			final int expectedKeys = 4;
+			final int expectedKeys = 5;
 			if (defenderParams.keySet().size() != expectedKeys) {
 				throw new IllegalArgumentException();
 			}
 			return new GoalOnlyDefender(defenderParams.get(DefenderParam.maxNumRes.toString())
 				, defenderParams.get(DefenderParam.minNumRes.toString())
 				, defenderParams.get(DefenderParam.numResRatio.toString())
-				, defenderParams.get(DefenderParam.logisParam.toString()), discFact);
+				, defenderParams.get(DefenderParam.logisParam.toString()),
+				discFact,
+				defenderParams.get(DefenderParam.stdev.toString()));
 		} else if (defType == DefenderType.vsVALUE_PROPAGATION) {
 			if (!defenderParams.containsKey(DefenderParam.maxNumRes.toString())
 			|| !defenderParams.containsKey(DefenderParam.minNumRes.toString())

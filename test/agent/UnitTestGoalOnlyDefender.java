@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import game.GameSimulationSpec;
 import game.MeanGameSimulationResult;
+import graph.INode.NodeType;
 import graph.Node;
 import main.MainGameSimulation;
 import model.DefenderAction;
@@ -23,9 +24,9 @@ import utils.EncodingUtils;
 import utils.JsonUtils;
 
 @SuppressWarnings("static-method")
-public final class UnitTestRootOnlyDefender {
+public final class UnitTestGoalOnlyDefender {
 
-	public UnitTestRootOnlyDefender() {
+	public UnitTestGoalOnlyDefender() {
 		// default constructor
 	}
 	
@@ -40,7 +41,7 @@ public final class UnitTestRootOnlyDefender {
 	
 	@Test
 	public void canRunTest() {
-		final String simspecFolderName = "testDirs/simSpecRootDefPosStdev";
+		final String simspecFolderName = "testDirs/simSpecGoalDefPosStdev";
 		final String graphFolderName = "testDirs/graphs0";
   
 		final GameSimulationSpec simSpec =
@@ -62,8 +63,8 @@ public final class UnitTestRootOnlyDefender {
 		final String attackerName = EncodingUtils.getStrategyName(attackerString);
 		final String defenderName = EncodingUtils.getStrategyName(defenderString);
 		
-		final RootOnlyDefender testDefender =
-			(RootOnlyDefender) AgentFactory.createDefender(defenderName, defenderParams, simSpec.getDiscFact());
+		final GoalOnlyDefender testDefender =
+			(GoalOnlyDefender) AgentFactory.createDefender(defenderName, defenderParams, simSpec.getDiscFact());
 		final MeanGameSimulationResult simResult = MainGameSimulation.runSimulations(
 			depGraph, simSpec, attackerName,
 			attackerParams, defenderName, defenderParams,
@@ -92,14 +93,15 @@ public final class UnitTestRootOnlyDefender {
 			assertTrue(nodeCount >= stratMin);
 			assertTrue(nodeCount <= stratMax);
 			
-			for (final Node node: defAction.getAction()) {
-				assertTrue(depGraph.getRootSet().contains(node));
-			}
 			allDefendedNodes.addAll(defAction.getAction());
 		}
 		assertTrue(nodeCounts.size() > 1);
-		for (final Node node: depGraph.getRootSet()) {
-			assertTrue(allDefendedNodes.contains(node));
+		for (final Node node: depGraph.vertexSet()) {
+			if (node.getType() == NodeType.TARGET) {
+				assertTrue(allDefendedNodes.contains(node));
+			} else {
+				assertTrue(!allDefendedNodes.contains(node));
+			}
 		}
 	}
 }

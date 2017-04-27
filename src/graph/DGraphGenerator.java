@@ -38,21 +38,20 @@ public final class DGraphGenerator {
 		selectTargetRandom(depGraph, rand, numTarget);
 		setRootSet(depGraph);
 		Node[] nodeList = new Node[depGraph.vertexSet().size()];
-		for(Node node : depGraph.vertexSet()) {
+		for (Node node : depGraph.vertexSet()) {
 			nodeList[node.getTopoPosition()] = node;
 		}
 		int[] layer = new int[depGraph.vertexSet().size()];
 		for (int i = 0; i < nodeList.length; i++) {
 			Node node = nodeList[i];
-			if(depGraph.inDegreeOf(node) == 0) {
+			if (depGraph.inDegreeOf(node) == 0) {
 				layer[node.getId() - 1] = 0;
-			}
-			else {
+			} else {
 				List<Edge> edgeList = new ArrayList<Edge>(depGraph.incomingEdgesOf(node));
 				layer[node.getId() - 1] = layer[edgeList.get(0).getsource().getId() - 1] + 1;
 			}
 		}
-		for(Node node : depGraph.vertexSet()) {
+		for (Node node : depGraph.vertexSet()) {
 			int nodeLayer = layer[node.getId() - 1];
 			setNodeTypeRandom(depGraph, node, rand, nodeActTypeRatio);
 			genNodePayoffRandom(
