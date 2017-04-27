@@ -79,7 +79,7 @@ public final class TestVPvsDefender {
 		
 		final int numTimeStep = 10;
 		final int numSim = 10;
-		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
+		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact, 0.0);
 		
 		Defender valuePropagationvsDefender = new ValuePropagationVsDefender(
 			maxNumRes, minNumRes, numResRatio,

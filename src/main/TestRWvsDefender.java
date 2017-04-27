@@ -85,7 +85,7 @@ public final class TestRWvsDefender {
 
 		final int numSim = 1;
 
-		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
+		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact, 0.0);
 		RandomWalkVsDefender rwDefenderRandomized =
 			new RandomWalkVsDefender(logisParam, discFact, thres, qrParamDef, numRWSampleDef, 1.0);
 		RandomWalkVsDefender rwDefenderStatic =

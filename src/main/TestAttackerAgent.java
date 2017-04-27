@@ -81,7 +81,7 @@ public final class TestAttackerAgent {
 		final int numTimeStep = 10;
 		final int numSim = 200;
 		
-		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
+		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact, 0.0);
 		
 		UniformAttacker unAttacker =
 			new UniformAttacker(maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio, 0.0);
