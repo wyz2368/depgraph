@@ -24,6 +24,7 @@ public final class ValuePropagationAttacker extends Attacker {
 	private double numSelectCandidateRatio;
 	private double qrParam;
 	private double discFact;
+	private double numCandStdev;
 	
 	private final double propagationParam = 0.5;
 	private final boolean isBest = true;
@@ -32,10 +33,13 @@ public final class ValuePropagationAttacker extends Attacker {
 		final double maxNumSelectCandidate, 
 		final double minNumSelectCandidate,
 		final double numSelectCandidateRatio,
-		final double qrParam, final double discFact) {
+		final double qrParam,
+		final double discFact,
+		final double numCandStdev) {
 		super(AttackerType.VALUE_PROPAGATION);
 		if (minNumSelectCandidate < 1 || maxNumSelectCandidate < minNumSelectCandidate
-			|| !isProb(numSelectCandidateRatio)) {
+			|| !isProb(numSelectCandidateRatio)
+			|| numCandStdev < 0.0) {
 			throw new IllegalArgumentException();
 		}
 		this.maxNumSelectCandidate = (int) maxNumSelectCandidate;
@@ -43,6 +47,7 @@ public final class ValuePropagationAttacker extends Attacker {
 		this.numSelectCandidateRatio = numSelectCandidateRatio;
 		this.qrParam = qrParam;
 		this.discFact = discFact;
+		this.numCandStdev = numCandStdev;
 	}
 	
 	@Override
@@ -464,6 +469,49 @@ public final class ValuePropagationAttacker extends Attacker {
 		return action;
 	}
 	
+	public int getMaxNumSelectCandidate() {
+		return this.maxNumSelectCandidate;
+	}
+
+	public int getMinNumSelectCandidate() {
+		return this.minNumSelectCandidate;
+	}
+
+	public double getNumSelectCandidateRatio() {
+		return this.numSelectCandidateRatio;
+	}
+
+	public double getQrParam() {
+		return this.qrParam;
+	}
+
+	public double getDiscFact() {
+		return this.discFact;
+	}
+
+	public double getNumCandStdev() {
+		return this.numCandStdev;
+	}
+
+	public double getPropagationParam() {
+		return this.propagationParam;
+	}
+
+	public boolean isBest() {
+		return this.isBest;
+	}
+	
+	@Override
+	public String toString() {
+		return "ValuePropagationAttacker [maxNumSelectCandidate="
+			+ this.maxNumSelectCandidate + ", minNumSelectCandidate="
+			+ this.minNumSelectCandidate + ", numSelectCandidateRatio="
+			+ this.numSelectCandidateRatio + ", qrParam=" + this.qrParam
+			+ ", discFact=" + this.discFact + ", numCandStdev=" + this.numCandStdev
+			+ ", propagationParam=" + this.propagationParam + ", isBest="
+			+ this.isBest + "]";
+	}
+
 	private static boolean isProb(final double i) {
 		return i >= 0.0 && i <= 1.0;
 	}

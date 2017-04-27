@@ -94,7 +94,7 @@ public final class TestRWvsDefender {
 		Attacker rwAttacker = new RandomWalkAttacker(numRWSample, qrParam, discFact);
 		Attacker vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate
 				, minNumSelectCandidate, numSelectCandidateRatio
-				, qrParam, discFact);
+				, qrParam, discFact, 0.0);
 		
 		long start = System.currentTimeMillis();
 		GameSimulation gameSimRWvsRW =

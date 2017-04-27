@@ -40,10 +40,11 @@ public final class AgentFactory {
 			if (!attackerParams.containsKey(AttackerParam.MAX_NUM_SELECT_CAND.toString())
 			|| !attackerParams.containsKey(AttackerParam.MIN_NUM_SELECT_CAND.toString())
 			|| !attackerParams.containsKey(AttackerParam.NUM_SELECT_CAND_RATIO.toString())
-			|| !attackerParams.containsKey(AttackerParam.QR_PARAM.toString())) {
+			|| !attackerParams.containsKey(AttackerParam.QR_PARAM.toString())
+			|| !attackerParams.containsKey(AttackerParam.STDEV.toString())) {
 				throw new IllegalArgumentException();
 			}
-			final int expectedKeys = 4;
+			final int expectedKeys = 5;
 			if (attackerParams.keySet().size() != expectedKeys) {
 				throw new IllegalArgumentException();
 			}
@@ -52,7 +53,8 @@ public final class AgentFactory {
 				, attackerParams.get(AttackerParam.MIN_NUM_SELECT_CAND.toString())
 				, attackerParams.get(AttackerParam.NUM_SELECT_CAND_RATIO.toString())
 				, attackerParams.get(AttackerParam.QR_PARAM.toString())
-				, discFact);
+				, discFact
+				, attackerParams.get(AttackerParam.STDEV.toString()));
 		} else if (attType == AttackerType.RANDOM_WALK) {
 			if (!attackerParams.containsKey(AttackerParam.NUM_RW_SAMPLE.toString()) 
 			|| !attackerParams.containsKey(AttackerParam.QR_PARAM.toString())) {
@@ -151,10 +153,11 @@ public final class AgentFactory {
 			|| !defenderParams.containsKey(DefenderParam.qrParam.toString())
 			|| !defenderParams.containsKey(DefenderParam.maxNumAttCandidate.toString())
 			|| !defenderParams.containsKey(DefenderParam.minNumAttCandidate.toString())
-			|| !defenderParams.containsKey(DefenderParam.numAttCandidateRatio.toString())) {
+			|| !defenderParams.containsKey(DefenderParam.numAttCandidateRatio.toString())
+			|| !defenderParams.containsKey(DefenderParam.numAttCandStdev.toString())) {
 				throw new IllegalArgumentException();
 			}
-			final int expectedKeys = 9;
+			final int expectedKeys = 10;
 			if (defenderParams.keySet().size() != expectedKeys) {
 				throw new IllegalArgumentException();
 			}
@@ -167,7 +170,8 @@ public final class AgentFactory {
 				, defenderParams.get(DefenderParam.qrParam.toString())
 				, defenderParams.get(DefenderParam.maxNumAttCandidate.toString())
 				, defenderParams.get(DefenderParam.minNumAttCandidate.toString())
-				, defenderParams.get(DefenderParam.numAttCandidateRatio.toString()));
+				, defenderParams.get(DefenderParam.numAttCandidateRatio.toString()),
+				defenderParams.get(DefenderParam.numAttCandStdev.toString()));
 		} else if (defType == DefenderType.vsRANDOM_WALK) {
 			if (!defenderParams.containsKey(DefenderParam.logisParam.toString())
 			|| !defenderParams.containsKey(DefenderParam.bThres.toString())

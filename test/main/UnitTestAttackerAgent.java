@@ -95,7 +95,7 @@ public final class UnitTestAttackerAgent {
 			maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio, 0.0);
 		vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate,
 			minNumSelectCandidate, numSelectCandidateRatio
-			, qrParam, discFact);
+			, qrParam, discFact, 0.0);
 		rwAttacker = new RandomWalkAttacker(numRWSample, qrParam, discFact);
 	}
 

@@ -45,7 +45,7 @@ public abstract class Defender {
 		maxNumRes, minNumRes, numResRatio, 
 		maxNumAttCandidate, minNumAttCandidate, numAttCandidateRatio, 
 		logisParam, bThres, isRandomized,
-		qrParam, numRWSample, stdev;
+		qrParam, numRWSample, stdev, numAttCandStdev;
 		
 		@Override
 		public String toString() {
@@ -65,6 +65,7 @@ public abstract class Defender {
 			case qrParam: return "qrParam";
 			case numRWSample: return "numRWSample";
 			case stdev: return "stdev";
+			case numAttCandStdev: return "numAttCandStdev";
 			default: return "";
 			}	
 		}

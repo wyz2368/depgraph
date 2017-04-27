@@ -35,6 +35,7 @@ public final class ValuePropagationVsDefender extends Defender {
 	private int maxNumAttCandidate; 
 	private int minNumAttCandidate;
 	private double numAttCandidateRatio;
+	private double numAttCandStdev;
 	
 	// number of simulation to approximate update
 	private static final int DEFAULT_NUM_STATE_SAMPLE = 30;
@@ -57,7 +58,7 @@ public final class ValuePropagationVsDefender extends Defender {
 	public ValuePropagationVsDefender(final double maxNumRes, final double minNumRes, final double numResRatio,
 		final double logisParam, final double discFact, final double thres,
 		final double qrParam, final double maxNumAttCandidate, final double minNumAttCandidate,
-		final double numAttCandidateRatio) {
+		final double numAttCandidateRatio, final double numAttCandStdev) {
 		super(DefenderType.vsVALUE_PROPAGATION);
 		if (
 			discFact < 0.0 || discFact > 1.0 || !isProb(thres)
@@ -67,6 +68,7 @@ public final class ValuePropagationVsDefender extends Defender {
 			|| discFact < 0.0 || discFact > 1.0 || !isProb(thres)
 			|| minNumAttCandidate < 1 || maxNumAttCandidate < minNumAttCandidate
 			|| !isProb(numAttCandidateRatio)
+			|| numAttCandStdev < 0.0
 		) {
 			throw new IllegalArgumentException();
 		}
@@ -78,6 +80,7 @@ public final class ValuePropagationVsDefender extends Defender {
 		this.maxNumAttCandidate = (int) maxNumAttCandidate;
 		this.minNumAttCandidate = (int) minNumAttCandidate;
 		this.numAttCandidateRatio = numAttCandidateRatio;
+		this.numAttCandStdev = numAttCandStdev;
 		
 		this.maxNumRes = (int) maxNumRes;
 		this.minNumRes = (int) minNumRes;
@@ -92,8 +95,9 @@ public final class ValuePropagationVsDefender extends Defender {
 		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null) {
 			throw new IllegalArgumentException();
 		}
+		// assumption about the attacker
 		Attacker attacker = new ValuePropagationAttacker(this.maxNumAttCandidate, this.minNumAttCandidate
-				, this.numAttCandidateRatio, this.qrParam, this.discFact); // assumption about the attacker
+			, this.numAttCandidateRatio, this.qrParam, this.discFact, this.numAttCandStdev);
 		Map<Node, Double> dValueMap = computeCandidateValueTopo(depGraph, dBelief, curTimeStep, numTimeStep
 			, this.discFact, rng, attacker, this.numAttActionSample);
 		List<Node> dCandidateNodeList = new ArrayList<Node>();
@@ -160,18 +164,18 @@ public final class ValuePropagationVsDefender extends Defender {
 			}
 		
 		Attacker attacker = new ValuePropagationAttacker(this.maxNumAttCandidate, this.minNumAttCandidate
-			, this.numAttCandidateRatio, this.qrParam, this.discFact);
+			, this.numAttCandidateRatio, this.qrParam, this.discFact, this.numAttCandStdev);
 		
 		return updateBelief(depGraph
-				, dBelief
-				, dAction
-				, dObservation
-				, curTimeStep, numTimeStep
-				, rng
-				, attacker
-				, this.numAttActionSample
-				, this.numStateSample
-				, this.thres); 
+			, dBelief
+			, dAction
+			, dObservation
+			, curTimeStep, numTimeStep
+			, rng
+			, attacker
+			, this.numAttActionSample
+			, this.numStateSample
+			, this.thres); 
 	}
 	public static Map<Node, Double> computeCandidateValueTopo(
 		final DependencyGraph depGraph,
@@ -361,6 +365,73 @@ public final class ValuePropagationVsDefender extends Defender {
 		}
 		return dValueMap;
 	}
+	
+	public int getMaxNumRes() {
+		return this.maxNumRes;
+	}
+
+	public int getMinNumRes() {
+		return this.minNumRes;
+	}
+
+	public double getNumResRatio() {
+		return this.numResRatio;
+	}
+
+	public double getLogisParam() {
+		return this.logisParam;
+	}
+
+	public double getDiscFact() {
+		return this.discFact;
+	}
+
+	public double getThres() {
+		return this.thres;
+	}
+
+	public double getQrParam() {
+		return this.qrParam;
+	}
+
+	public int getMaxNumAttCandidate() {
+		return this.maxNumAttCandidate;
+	}
+
+	public int getMinNumAttCandidate() {
+		return this.minNumAttCandidate;
+	}
+
+	public double getNumAttCandidateRatio() {
+		return this.numAttCandidateRatio;
+	}
+
+	public double getNumAttCandStdev() {
+		return this.numAttCandStdev;
+	}
+
+	public int getNumStateSample() {
+		return this.numStateSample;
+	}
+
+	public int getNumAttActionSample() {
+		return this.numAttActionSample;
+	}
+	
+	@Override
+	public String toString() {
+		return "ValuePropagationVsDefender [maxNumRes=" + this.maxNumRes
+			+ ", minNumRes=" + this.minNumRes + ", numResRatio=" + this.numResRatio
+			+ ", logisParam=" + this.logisParam + ", discFact=" + this.discFact
+			+ ", thres=" + this.thres + ", qrParam=" + this.qrParam
+			+ ", maxNumAttCandidate=" + this.maxNumAttCandidate
+			+ ", minNumAttCandidate=" + this.minNumAttCandidate
+			+ ", numAttCandidateRatio=" + this.numAttCandidateRatio
+			+ ", numAttCandStdev=" + this.numAttCandStdev + ", numStateSample="
+			+ this.numStateSample + ", numAttActionSample=" + this.numAttActionSample
+			+ "]";
+	}
+
 	private static boolean isProb(final double i) {
 		return i >= 0.0 && i <= 1.0;
 	}
