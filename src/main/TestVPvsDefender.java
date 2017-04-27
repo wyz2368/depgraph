@@ -26,19 +26,18 @@ public final class TestVPvsDefender {
 	public static void main(final String[] args) {
 		final int numNode = 50;
 		final int numEdge = 150;
-		
 		final int numTarget = 10;
-		final double nodeActTypeRatio = 0.3;
-		final double aRewardLB = 2.0;
+		final double nodeActTypeRatio = 0.0;
+		final double aRewardLB = 5.0;
 		final double aRewardUB = 10.0;
 		final double dPenaltyLB = -10.0;
-		final double dPenaltyUB = -2.0;
-		final double aNodeCostLB = -0.5;
-		final double aNodeCostUB = -0.1;
-		final double aEdgeCostLB = -0.5;
-		final double aEdgeCostUB = -0.1;
-		final double dCostLB = -1.0;
-		final double dCostUB = -0.2;
+		final double dPenaltyUB = -5.0;
+		final double aNodeCostLB = -1.0;
+		final double aNodeCostUB = -0.5;
+		final double aEdgeCostLB = -1.0;
+		final double aEdgeCostUB = -0.5;
+		final double dCostLB = -2.0;
+		final double dCostUB = -1.0;
 		final double aNodeActProbLB = 0.8;
 		final double aNodeActProbUB = 1.0;
 		final double aEdgeActProbLB = 0.6;

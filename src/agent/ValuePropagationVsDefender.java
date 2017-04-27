@@ -39,7 +39,7 @@ public final class ValuePropagationVsDefender extends Defender {
 	private double numAttCandidateRatio;
 	
 	// number of simulation to approximate update
-	private static final int DEFAULT_NUM_STATE_SAMPLE = 30;
+	private static final int DEFAULT_NUM_STATE_SAMPLE = 50;
 	private int numStateSample = DEFAULT_NUM_STATE_SAMPLE;
 	private int numAttActionSample = DEFAULT_NUM_STATE_SAMPLE;
 	
@@ -96,22 +96,22 @@ public final class ValuePropagationVsDefender extends Defender {
 		}
 		Attacker attacker = new ValuePropagationAttacker(this.maxNumAttCandidate, this.minNumAttCandidate
 				, this.numAttCandidateRatio, this.qrParam, this.discFact); // assumption about the attacker
-//		int numRWSample = 50;
-//		return sampleActionRandomWalk(
-//				depGraph, 
-//				curTimeStep, 
-//				numTimeStep, 
-//				dBelief, 
-//				rng,
-//				attacker, 
-//				numRWSample);
-		return sampleActionTopo(
+		int numRWSample = 50;
+		return sampleActionRandomWalk(
 				depGraph, 
 				curTimeStep, 
 				numTimeStep, 
 				dBelief, 
-				rng, 
-				attacker);
+				rng,
+				attacker, 
+				numRWSample);
+//		return sampleActionTopo(
+//				depGraph, 
+//				curTimeStep, 
+//				numTimeStep, 
+//				dBelief, 
+//				rng, 
+//				attacker);
 	}
 	@Override
 	public DefenderBelief updateBelief(
