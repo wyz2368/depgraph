@@ -20,7 +20,70 @@ public final class DGraphGenerator {
 	private DGraphGenerator() {
 		// private constructor
 	}
-	
+	public static void genSepLayGraph(final DependencyGraph dag, final RandomDataGenerator rand
+			, final int numTarget, final double nodeActTypeRatio
+			, final double aRewardLB, final double aRewardUB // targets
+			, final double dPenaltyLB, final double dPenaltyUB // targets
+			, final double aNodeCostLB, final double aNodeCostUB // first layer
+			, final double aEdgeCostLB, final double aEdgeCostUB // between first and second layer
+			, final double dCostLB, final double dCostUB // first layer
+			, final double aNodeActProbLB, final double aNodeActProbUB // random
+			, final double aEdgeActProbLB, final double aEdgeActProbUB // random
+			, final double minPosActiveProb, final double maxPosActiveProb // random
+			, final double minPosInactiveProb, final double maxPosInactiveProb // random
+			, final double aNodeCostFactor, final double aEdgeCostFactor, final double dCostFactor) { 
+		
+		DependencyGraph depGraph = dag;
+		setTopologicalOrder(depGraph);
+		selectTargetRandom(depGraph, rand, numTarget);
+		setRootSet(depGraph);
+		Node[] nodeList = new Node[depGraph.vertexSet().size()];
+		for(Node node : depGraph.vertexSet()) {
+			nodeList[node.getTopoPosition()] = node;
+		}
+		int[] layer = new int[depGraph.vertexSet().size()];
+		for (int i = 0; i < nodeList.length; i++) {
+			Node node = nodeList[i];
+			if(depGraph.inDegreeOf(node) == 0) {
+				layer[node.getId() - 1] = 0;
+			}
+			else {
+				List<Edge> edgeList = new ArrayList<Edge>(depGraph.incomingEdgesOf(node));
+				layer[node.getId() - 1] = layer[edgeList.get(0).getsource().getId() - 1] + 1;
+			}
+		}
+		for(Node node : depGraph.vertexSet()) {
+			int nodeLayer = layer[node.getId() - 1];
+			setNodeTypeRandom(depGraph, node, rand, nodeActTypeRatio);
+			genNodePayoffRandom(
+					node, rand, aRewardLB, aRewardUB, dPenaltyLB, dPenaltyUB, 
+					Math.pow(aNodeCostFactor, nodeLayer) * aNodeCostLB , 
+					Math.pow(aNodeCostFactor, nodeLayer) * aNodeCostUB, 
+					Math.pow(dCostFactor, nodeLayer) * dCostLB, 
+					Math.pow(dCostFactor, nodeLayer) * dCostUB);
+			
+			genActivationProbRandom(node, rand, aNodeActProbLB, aNodeActProbUB);
+			if (node.getType() != NodeType.TARGET) {
+				node.setAReward(0.0);
+				node.setDPenalty(0.0);
+			}
+			
+			if (node.getActivationType() != NodeActivationType.AND) {
+				node.setActProb(0.0);
+				node.setACost(0.0);
+			}
+			genAlertProbRandom(node, rand, minPosActiveProb, maxPosActiveProb, minPosInactiveProb, maxPosInactiveProb);
+		}
+		for (Edge edge : depGraph.edgeSet()) {
+			int edgeLayer = layer[edge.getsource().getId() - 1];
+			if (edge.gettarget().getActivationType() == NodeActivationType.OR) {
+				genEdgePayoffRandom(edge, rand, 
+						Math.pow(aEdgeCostFactor, edgeLayer) * aEdgeCostLB, 
+						Math.pow(aEdgeCostFactor, edgeLayer) * aEdgeCostUB);
+				genActivationProbRandom(edge, rand, aEdgeActProbLB, aEdgeActProbUB);
+			}
+		}
+	}
 	// Number simulations per observation such that: 1-2 mins
 	// All leaf nodes are targets, all costs, reward, penalty are within [0,1]
 	public static void genGraph(final DependencyGraph dag, final RandomDataGenerator rand
