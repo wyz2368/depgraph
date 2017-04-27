@@ -103,17 +103,27 @@ public final class AgentFactory {
 			if (defenderParams.keySet().size() != expectedKeys) {
 				throw new IllegalArgumentException();
 			}
-			return new MinCutDefender(defenderParams.get(DefenderParam.maxNumRes.toString())
+			return new MinCutDefender(
+				defenderParams.get(DefenderParam.maxNumRes.toString())
 				, defenderParams.get(DefenderParam.minNumRes.toString())
 				, defenderParams.get(DefenderParam.numResRatio.toString()),
 				defenderParams.get(DefenderParam.stdev.toString()));
 		} else if (defType == DefenderType.ROOT_ONLY) {
-			assert defenderParams.containsKey(DefenderParam.maxNumRes.toString())
-			&& defenderParams.containsKey(DefenderParam.minNumRes.toString())
-			&& defenderParams.containsKey(DefenderParam.numResRatio.toString());
-			return new RootOnlyDefender(defenderParams.get(DefenderParam.maxNumRes.toString())
+			if (!defenderParams.containsKey(DefenderParam.maxNumRes.toString())
+			|| !defenderParams.containsKey(DefenderParam.minNumRes.toString())
+			|| !defenderParams.containsKey(DefenderParam.numResRatio.toString())
+			|| !defenderParams.containsKey(DefenderParam.stdev.toString())) {
+				throw new IllegalArgumentException();
+			}
+			final int expectedKeys = 4;
+			if (defenderParams.keySet().size() != expectedKeys) {
+				throw new IllegalArgumentException();
+			}
+			return new RootOnlyDefender(
+				defenderParams.get(DefenderParam.maxNumRes.toString())
 				, defenderParams.get(DefenderParam.minNumRes.toString())
-				, defenderParams.get(DefenderParam.numResRatio.toString()));
+				, defenderParams.get(DefenderParam.numResRatio.toString()),
+				defenderParams.get(DefenderParam.stdev.toString()));
 		} else if (defType == DefenderType.GOAL_ONLY) {
 			if (!defenderParams.containsKey(DefenderParam.maxNumRes.toString())
 			|| !defenderParams.containsKey(DefenderParam.minNumRes.toString())

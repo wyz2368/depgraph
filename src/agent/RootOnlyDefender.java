@@ -17,38 +17,39 @@ public final class RootOnlyDefender extends Defender {
 	private int maxNumRes;
 	private int minNumRes;
 	private double numResRatio;
+	private double numCandStdev;
 	
 	public RootOnlyDefender(
-			final double maxNumRes, 
-			final double minNumRes, 
-			final double numResRatio) {
+		final double maxNumRes, 
+		final double minNumRes, 
+		final double numResRatio,
+		final double numCandStdev) {
 		super(DefenderType.ROOT_ONLY);
-		if (minNumRes < 1 || maxNumRes < minNumRes || numResRatio < 0.0 || numResRatio > 1.0) {
+		if (minNumRes < 1 || maxNumRes < minNumRes || numResRatio < 0.0 || numResRatio > 1.0
+			|| numCandStdev < 0.0) {
 			throw new IllegalArgumentException();
 		}
 		this.maxNumRes = (int) maxNumRes;
 		this.minNumRes = (int) minNumRes;
 		this.numResRatio = numResRatio;
+		this.numCandStdev = numCandStdev;
 	}
 	
 	@Override
 	public DefenderAction sampleAction(
-			final DependencyGraph depGraph,
-			final int curTimeStep, 
-			final int numTimeStep, 
-			final DefenderBelief dBelief, 
-			final RandomGenerator rng) {
+		final DependencyGraph depGraph,
+		final int curTimeStep, 
+		final int numTimeStep, 
+		final DefenderBelief dBelief, 
+		final RandomGenerator rng) {
 		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null) {
 			throw new IllegalArgumentException();
 		}
 		List<Node> dCandidateNodeList = new ArrayList<Node>(depGraph.getRootSet());
-		int numNodetoProtect = 0;
-		if (dCandidateNodeList.size() < this.minNumRes) {
-			numNodetoProtect = dCandidateNodeList.size();
-		} else  {
-			numNodetoProtect = Math.max(this.minNumRes, (int) (this.numResRatio * dCandidateNodeList.size()));
-			numNodetoProtect = Math.min(this.maxNumRes, numNodetoProtect);
-		}
+		final int goalCount =
+			(int) (dCandidateNodeList.size() * this.numResRatio + rng.nextGaussian() * this.numCandStdev);
+		final int numNodetoProtect =
+			Attacker.getActionCount(this.minNumRes, this.maxNumRes, dCandidateNodeList.size(), goalCount);
 		if (dCandidateNodeList.size() == 0) {
 			return new DefenderAction();
 		}
@@ -59,14 +60,36 @@ public final class RootOnlyDefender extends Defender {
 	
 	@Override
 	public DefenderBelief updateBelief(
-			final DependencyGraph depGraph,
-			final DefenderBelief currentBelief, 
-			final DefenderAction dAction,
-			final DefenderObservation dObservation, 
-			final int curTimeStep, 
-			final int numTimeStep,
-			final RandomGenerator rng) {
+		final DependencyGraph depGraph,
+		final DefenderBelief currentBelief, 
+		final DefenderAction dAction,
+		final DefenderObservation dObservation, 
+		final int curTimeStep, 
+		final int numTimeStep,
+		final RandomGenerator rng) {
 		return new DefenderBelief();
 	}
-	
+
+	public int getMaxNumRes() {
+		return this.maxNumRes;
+	}
+
+	public int getMinNumRes() {
+		return this.minNumRes;
+	}
+
+	public double getNumResRatio() {
+		return this.numResRatio;
+	}
+
+	public double getNumCandStdev() {
+		return this.numCandStdev;
+	}
+
+	@Override
+	public String toString() {
+		return "RootOnlyDefender [maxNumRes=" + this.maxNumRes + ", minNumRes="
+			+ this.minNumRes + ", numResRatio=" + this.numResRatio + ", numCandStdev="
+			+ this.numCandStdev + "]";
+	}
 }

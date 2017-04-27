@@ -130,7 +130,7 @@ public final class TestGameSimulation {
 				defList[i] = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
 				break;
 			case ROOT_ONLY:
-				defList[i] = new RootOnlyDefender(maxNumRes, minNumRes, numResRatio);
+				defList[i] = new RootOnlyDefender(maxNumRes, minNumRes, numResRatio, 0.0);
 				break;
 			case vsVALUE_PROPAGATION:
 				defList[i] = new ValuePropagationVsDefender(maxNumRes, minNumRes, numResRatio
