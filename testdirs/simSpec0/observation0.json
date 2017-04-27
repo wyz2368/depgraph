@@ -12,12 +12,12 @@
     {
       "role": "attacker",
       "strategy": "UNIFORM:maxNumSelectCandidate_4.0_minNumSelectCandidate_3.0_numSelectCandidateRatio_0.6_stdev_0.0",
-      "payoff": -2.218362314447806,
+      "payoff": -2.177254331296727,
       "features": {}
     },
     {
       "role": "defender",
-      "strategy": "GOAL_ONLY:maxNumRes_5.0_minNumRes_2.0_numResRatio_0.8_logisParam_6.0",
+      "strategy": "GOAL_ONLY:maxNumRes_5.0_minNumRes_2.0_numResRatio_0.8_logisParam_6.0_stdev_0.0",
       "payoff": -4.729575616984904,
       "features": {}
     }

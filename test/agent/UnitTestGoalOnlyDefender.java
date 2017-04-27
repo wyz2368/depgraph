@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import game.GameSimulationSpec;
 import game.MeanGameSimulationResult;
+import graph.INode.NodeType;
 import graph.Node;
 import main.MainGameSimulation;
 import model.DefenderAction;
@@ -83,6 +84,7 @@ public final class UnitTestGoalOnlyDefender {
 		final int stratMin = 1;
 		final int stratMax = 7;
 		final Set<Integer> nodeCounts = new HashSet<Integer>();
+		final Set<Node> allDefendedNodes = new HashSet<Node>();
 		for (int i = 0; i < iters; i++) {
 			final DefenderAction defAction =
 				testDefender.sampleAction(depGraph, 1, numTimeSteps, belief, rnd.getRandomGenerator());
@@ -91,7 +93,15 @@ public final class UnitTestGoalOnlyDefender {
 			assertTrue(nodeCount >= stratMin);
 			assertTrue(nodeCount <= stratMax);
 			
+			allDefendedNodes.addAll(defAction.getAction());
 		}
 		assertTrue(nodeCounts.size() > 1);
+		for (final Node node: depGraph.vertexSet()) {
+			if (node.getType() == NodeType.TARGET) {
+				assertTrue(allDefendedNodes.contains(node));
+			} else {
+				assertTrue(!allDefendedNodes.contains(node));
+			}
+		}
 	}
 }
