@@ -86,7 +86,7 @@ public final class TestAttackerAgent {
 		UniformAttacker unAttacker =
 			new UniformAttacker(maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio, 0.0);
 		Attacker vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate, minNumSelectCandidate
-				, numSelectCandidateRatio, qrParam, discFact);
+				, numSelectCandidateRatio, qrParam, discFact, 0.0);
 		RandomWalkAttacker rwAttacker = new RandomWalkAttacker(numRWSample, qrParam, discFact);
 		
 		final double thousand = 1000.0;

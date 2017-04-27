@@ -106,7 +106,7 @@ public final class TestGameSimulation {
 			case VALUE_PROPAGATION:
 				attList[i] = new ValuePropagationAttacker(
 					maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio
-					, qrParam, discFact);
+					, qrParam, discFact, 0.0);
 				break;
 			case RANDOM_WALK:
 				attList[i] = new RandomWalkAttacker(numRWSample, qrParam, discFact);
@@ -136,7 +136,7 @@ public final class TestGameSimulation {
 				defList[i] = new ValuePropagationVsDefender(maxNumRes, minNumRes, numResRatio
 					, logisParam, discFact, thres
 					, qrParamDef
-					, maxNumSelectCandidateDef, minNumSelectCandidateDef, numSelectCandidateRatioDef);
+					, maxNumSelectCandidateDef, minNumSelectCandidateDef, numSelectCandidateRatioDef, 0.0);
 				break;
 			case vsRANDOM_WALK:
 				defList[i] = new RandomWalkVsDefender(logisParam, discFact, thres, qrParamDef, numRWSampleDef, 1.0);

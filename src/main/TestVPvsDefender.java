@@ -114,13 +114,13 @@ public final class TestVPvsDefender {
 			maxNumRes, minNumRes, numResRatio,
 			logisParam, discFact, thres,
 			qrParam, maxNumSelectCandidate, minNumSelectCandidate,
-			numSelectCandidateRatio);
+			numSelectCandidateRatio, 0.0);
 		
 		Defender randomWalkvsDefender =
 			new RandomWalkVsDefender(logisParam, discFact, thres, qrParam, numRWSample, 1.0);
 		
 		Attacker vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate, minNumSelectCandidate
-				, numSelectCandidateRatio, qrParam, discFact);
+			, numSelectCandidateRatio, qrParam, discFact, 0.0);
 				
 		long start = System.currentTimeMillis();
 		GameSimulation gameSimVPvsGO =

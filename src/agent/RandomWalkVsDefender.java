@@ -25,11 +25,16 @@ import org.apache.commons.math3.random.RandomGenerator;
 import agent.RandomWalkAttacker.RandomWalkTuple;
 
 public final class RandomWalkVsDefender extends Defender {
-	private double logisParam = 5.0; // Logistic parameter to randomize defense strategies
-	private double discFact = 0.9; // reward discount factor
-	private double thres = 0.001; // to remove game state from belief
+	private static final double DEFAULT_LOGIS_PARAM = 5.0;
+	private static final double DEFAULT_DISC_FACT = 0.9;
+	private static final double DEFAULT_THRES = 0.001;
+	private static final double DEFAULT_QR_PARAM = 5.0;
 	
-	private double qrParam = 5.0; // for the attacker
+	private double logisParam = DEFAULT_LOGIS_PARAM; // Logistic parameter to randomize defense strategies
+	private double discFact = DEFAULT_DISC_FACT; // reward discount factor
+	private double thres = DEFAULT_THRES; // to remove game state from belief
+	
+	private double qrParam = DEFAULT_QR_PARAM; // for the attacker
 	private static final int DEFAULT_NUM_RW_SAMPLE = 30;
 	private int numRWSample = DEFAULT_NUM_RW_SAMPLE; // number of random walks for the attacker
 	
@@ -50,12 +55,12 @@ public final class RandomWalkVsDefender extends Defender {
 	 * @param numRWSample number of random walk samples
 	 *****************************************************************************************/
 	public RandomWalkVsDefender(
-			final double logisParam, 
-			final double discFact, 
-			final double thres, 
-			final double qrParam, 
-			final double numRWSample,
-			final double isRandomized) {
+		final double logisParam, 
+		final double discFact, 
+		final double thres, 
+		final double qrParam, 
+		final double numRWSample,
+		final double isRandomized) {
 		super(DefenderType.vsRANDOM_WALK);
 		if (discFact <= 0.0 || discFact > 1.0 || thres < 0.0 || thres > 1.0
 			|| numRWSample < 1) {
@@ -85,11 +90,11 @@ public final class RandomWalkVsDefender extends Defender {
 	 *****************************************************************************************/
 	@Override
 	public DefenderAction sampleAction(
-			final DependencyGraph depGraph, 
-			final int curTimeStep, 
-			final int numTimeStep, 
-			final DefenderBelief dBelief, 
-			final RandomGenerator rng) {	
+		final DependencyGraph depGraph, 
+		final int curTimeStep, 
+		final int numTimeStep, 
+		final DefenderBelief dBelief, 
+		final RandomGenerator rng) {	
 		if (curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null) {
 			throw new IllegalArgumentException();
 		}
@@ -100,11 +105,11 @@ public final class RandomWalkVsDefender extends Defender {
 	}
 	
 	public DefenderAction sampleActionRandomize(
-			final DependencyGraph depGraph, 
-			final int curTimeStep, 
-			final int numTimeStep, 
-			final DefenderBelief dBelief, 
-			final RandomGenerator rng) {	
+		final DependencyGraph depGraph, 
+		final int curTimeStep, 
+		final int numTimeStep, 
+		final DefenderBelief dBelief, 
+		final RandomGenerator rng) {	
 		if (curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null) {
 			throw new IllegalArgumentException();
 		}
@@ -140,16 +145,16 @@ public final class RandomWalkVsDefender extends Defender {
 			double[] attValue = new double[this.numRWSample]; // values of corresponding action of the attacker
 			for (int i = 0; i < this.numRWSample; i++) {
 				RandomWalkTuple[] rwTuples = rwAttacker.randomWalk(
-															depGraph, 
-															curTimeStep, 
-															rng); // sample random walk
+					depGraph, 
+					curTimeStep, 
+					rng); // sample random walk
 				AttackerAction attAction = new AttackerAction();
 				attValue[i] = RandomWalkAttacker.greedyAction(
-									depGraph, // greedy attack
-									rwTuples, 
-									attAction, // attCandidate is an outcome as well
-									numTimeStep, 
-									this.discFact); 
+					depGraph, // greedy attack
+					rwTuples, 
+					attAction, // attCandidate is an outcome as well
+					numTimeStep, 
+					this.discFact); 
 				rwTuplesList[i] = rwTuples;
 				attActionList[i] = attAction;
 			}
@@ -157,14 +162,14 @@ public final class RandomWalkVsDefender extends Defender {
 			// attack probability
 			double[] attProb = RandomWalkAttacker.computeCandidateProb(this.numRWSample, attValue, this.qrParam);
 			greedyAction(
-					depGraph, // greedy defense with respect to each possible game state
-					rwTuplesList, 
-					attActionList, 
-					attProb, 
-					defAction, // this is outcome
-					curTimeStep, 
-					numTimeStep,
-					this.discFact);
+				depGraph, // greedy defense with respect to each possible game state
+				rwTuplesList, 
+				attActionList, 
+				attProb, 
+				defAction, // this is outcome
+				curTimeStep, 
+				numTimeStep,
+				this.discFact);
 			rwTuplesLists[idx] = rwTuplesList;
 			attActionLists[idx] = attActionList;
 			attProbs[idx] = attProb;
@@ -177,7 +182,7 @@ public final class RandomWalkVsDefender extends Defender {
 		
 		for (int i = 0; i < dBelief.getGameStateMap().size(); i++) {
 			candidateValues[i] = computeDValue(depGraph, dBelief, rwTuplesLists, attActionLists, attProbs
-					, candidates[i], curTimeStep, numTimeStep, this.discFact);
+				, candidates[i], curTimeStep, numTimeStep, this.discFact);
 		}
 		
 		// probability for each possible candidate action for the defender
@@ -220,13 +225,13 @@ public final class RandomWalkVsDefender extends Defender {
 	 * @return new belief of the defender
 	 *****************************************************************************************/
 	public DefenderBelief updateBelief(
-			final DependencyGraph depGraph, 
-			final DefenderBelief dBelief,
-			final DefenderAction dAction,
-			final DefenderObservation dObservation,
-			final int curTimeStep, 
-			final int numTimeStep,
-			final RandomGenerator rng) {		
+		final DependencyGraph depGraph, 
+		final DefenderBelief dBelief,
+		final DefenderAction dAction,
+		final DefenderObservation dObservation,
+		final int curTimeStep, 
+		final int numTimeStep,
+		final RandomGenerator rng) {		
 		if (curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null
 			|| dObservation == null || dAction == null
 		) {
@@ -234,15 +239,15 @@ public final class RandomWalkVsDefender extends Defender {
 		}
 		Attacker attacker = new RandomWalkAttacker(this.numRWSample, this.qrParam, this.discFact);
 		return updateBelief(depGraph
-				, dBelief
-				, dAction
-				, dObservation
-				, curTimeStep, numTimeStep
-				, rng
-				, attacker
-				, this.numAttActionSample
-				, this.numStateSample
-				, this.thres); 
+			, dBelief
+			, dAction
+			, dObservation
+			, curTimeStep, numTimeStep
+			, rng
+			, attacker
+			, this.numAttActionSample
+			, this.numStateSample
+			, this.thres); 
 	}
 	
 	/*****************************************************************************************
@@ -494,13 +499,13 @@ public final class RandomWalkVsDefender extends Defender {
 	
 	// depGraph has current game state the defender is examining
 	public static double computeDValue(
-			final DependencyGraph depGraph,
-			final RandomWalkTuple[][] rwTuplesList,
-			final AttackerAction[] attActionList,
-			final double[] attProb,
-			final DefenderAction defAction,
-			final int curTimeStep, final int numTimeStep,
-			final double discFact) {
+		final DependencyGraph depGraph,
+		final RandomWalkTuple[][] rwTuplesList,
+		final AttackerAction[] attActionList,
+		final double[] attProb,
+		final DefenderAction defAction,
+		final int curTimeStep, final int numTimeStep,
+		final double discFact) {
 		double dValue = 0.0;
 		Node[] topoOrder = new Node[depGraph.vertexSet().size()];
 		for (Node node : depGraph.vertexSet()) {
@@ -827,5 +832,4 @@ public final class RandomWalkVsDefender extends Defender {
 		
 		return greedyValue;
 	}
-
 }
