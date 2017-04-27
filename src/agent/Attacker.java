@@ -149,14 +149,15 @@ public abstract class Attacker {
 		}
 		
 		if (availableMax < strategyMin) {
+			// not enough available to even have strategyMin.
 			return availableMax;
 		}
 		int result = idealCount;
-		// can't be less than strategyMin
+		// result can't be less than strategyMin.
 		result = Math.max(result, strategyMin);
-		// can't choose more than are available
+		// result can't be more than strategyMax.
 		result = Math.min(result, strategyMax);
-		// can't choose more than are available
+		// result can't be more than availableMax.
 		result = Math.min(result, availableMax);
 		return result;
 	}
