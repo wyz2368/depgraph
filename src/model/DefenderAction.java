@@ -45,4 +45,15 @@ public final class DefenderAction {
 		}
 		GameSimulation.printIfDebug("--------------------------------------------------------------------");
 	}
+
+	@Override
+	public String toString() {
+		final StringBuilder builder = new StringBuilder();
+		builder.append("DefenderAction [action=\n\t");
+		for (final Node node: this.action) {
+			builder.append(node.getId()).append("\t");
+		}
+		builder.append("\n]");
+		return builder.toString();
+	}
 }
