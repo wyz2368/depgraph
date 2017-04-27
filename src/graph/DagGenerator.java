@@ -98,7 +98,7 @@ public final class DagGenerator {
 		if (numNode1Layer < 1 || rand == null) {
 			throw new IllegalArgumentException();
 		}
-		if (numNodeRatio < 1.0) {
+		if (numNodeRatio > 1.0) {
 			throw new IllegalArgumentException("Invalid numNodeRatio");
 		}
 		if (numEdgeRatio > 1.0 || numEdgeRatio < 0.0) {
