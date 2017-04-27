@@ -22,6 +22,8 @@ import model.GameState;
 import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 import org.apache.commons.math3.random.RandomGenerator;
 
+import agent.RandomWalkAttacker.RandomWalkTuple;
+
 public final class ValuePropagationVsDefender extends Defender {
 	private int maxNumRes;
 	private int minNumRes;
@@ -94,6 +96,59 @@ public final class ValuePropagationVsDefender extends Defender {
 		}
 		Attacker attacker = new ValuePropagationAttacker(this.maxNumAttCandidate, this.minNumAttCandidate
 				, this.numAttCandidateRatio, this.qrParam, this.discFact); // assumption about the attacker
+//		int numRWSample = 50;
+//		return sampleActionRandomWalk(
+//				depGraph, 
+//				curTimeStep, 
+//				numTimeStep, 
+//				dBelief, 
+//				rng,
+//				attacker, 
+//				numRWSample);
+		return sampleActionTopo(
+				depGraph, 
+				curTimeStep, 
+				numTimeStep, 
+				dBelief, 
+				rng, 
+				attacker);
+	}
+	@Override
+	public DefenderBelief updateBelief(
+		final DependencyGraph depGraph,
+		final DefenderBelief dBelief, 
+		final DefenderAction dAction,
+		final DefenderObservation dObservation, 
+		final int curTimeStep, 
+		final int numTimeStep,
+		final RandomGenerator rng) {
+		if (curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null
+				|| dObservation == null || dAction == null
+			) {
+				throw new IllegalArgumentException();
+			}
+		
+		Attacker attacker = new ValuePropagationAttacker(this.maxNumAttCandidate, this.minNumAttCandidate
+			, this.numAttCandidateRatio, this.qrParam, this.discFact);
+		
+		return updateBelief(depGraph
+				, dBelief
+				, dAction
+				, dObservation
+				, curTimeStep, numTimeStep
+				, rng
+				, attacker
+				, this.numAttActionSample
+				, this.numStateSample
+				, this.thres); 
+	}
+	public DefenderAction sampleActionTopo(
+		final DependencyGraph depGraph, 
+		final int curTimeStep, 
+		final int numTimeStep,
+		final DefenderBelief dBelief, 
+		final RandomGenerator rng,
+		final Attacker attacker) {
 		Map<Node, Double> dValueMap = computeCandidateValueTopo(depGraph, dBelief, curTimeStep, numTimeStep
 			, this.discFact, rng, attacker, this.numAttActionSample);
 		List<Node> dCandidateNodeList = new ArrayList<Node>();
@@ -144,34 +199,117 @@ public final class ValuePropagationVsDefender extends Defender {
 
 		return simpleSampleAction(dCandidateNodeList, numNodetoProtect, rnd);
 	}
-	@Override
-	public DefenderBelief updateBelief(
-		final DependencyGraph depGraph,
-		final DefenderBelief dBelief, 
-		final DefenderAction dAction,
-		final DefenderObservation dObservation, 
-		final int curTimeStep, 
-		final int numTimeStep,
-		final RandomGenerator rng) {
-		if (curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null
-				|| dObservation == null || dAction == null
-			) {
-				throw new IllegalArgumentException();
+	public DefenderAction sampleActionRandomWalk(
+			final DependencyGraph depGraph, 
+			final int curTimeStep, 
+			final int numTimeStep, 
+			final DefenderBelief dBelief, 
+			final RandomGenerator rng,
+			final Attacker attacker, // this is value-propagation attacker
+			final int numRWSample) { // this is for the random-walk process 
+		GameState savedGameState = new GameState();
+		for (Node node : depGraph.vertexSet()) {
+			if (node.getState() == NodeState.ACTIVE) {
+				savedGameState.addEnabledNode(node);
 			}
+		}
 		
-		Attacker attacker = new ValuePropagationAttacker(this.maxNumAttCandidate, this.minNumAttCandidate
-			, this.numAttCandidateRatio, this.qrParam, this.discFact);
+		RandomWalkAttacker rwAttacker = new RandomWalkAttacker(numRWSample, this.qrParam, this.discFact);
+		// iterate over current belief of the defender
+		double[] candidateValues = new double[dBelief.getGameStateMap().size()];
+		DefenderAction[] candidates = new DefenderAction[dBelief.getGameStateMap().size()];
 		
-		return updateBelief(depGraph
-				, dBelief
-				, dAction
-				, dObservation
-				, curTimeStep, numTimeStep
-				, rng
-				, attacker
-				, this.numAttActionSample
-				, this.numStateSample
-				, this.thres); 
+		RandomWalkTuple[][][] rwTuplesLists = new RandomWalkTuple[dBelief.getGameStateMap().size()][][];
+		AttackerAction[][] attActionLists = new AttackerAction[dBelief.getGameStateMap().size()][];
+		double[][] attProbs = new double[dBelief.getGameStateMap().size()][];
+		int idx = 0;
+		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) {
+			GameState gameState = entry.getKey();
+			
+			depGraph.setState(gameState); // for each possible state
+			AttackerAction[] attActionList = new AttackerAction[this.numAttActionSample];
+			List<AttackerAction> attActionListTemp = attacker.sampleAction(
+				depGraph, 
+				curTimeStep, 
+				numTimeStep, 
+				rng, 
+				this.numAttActionSample, 
+				false); // Sample attacker actions
+			for(int i = 0; i < this.numAttActionSample; i++) {
+				attActionList[i] = attActionListTemp.get(i);
+			}
+			double[] attValue = new double[attActionList.length]; // values of corresponding action of the attacker
+			for(int i = 0; i < attValue.length; i++)
+				attValue[i] = 0.0;
+			
+			RandomWalkTuple[][] rwTuplesList =
+					new RandomWalkTuple[attActionList.length][]; // list of all random walk tuples sampled
+			RandomWalkTuple[][] rwTuplesListSample =
+					new RandomWalkTuple[numRWSample][]; // list of all random walk tuples sampled
+				
+			for (int i = 0; i < numRWSample; i++) {
+				RandomWalkTuple[] rwTuples = rwAttacker.randomWalk(
+															depGraph, 
+															curTimeStep, 
+															rng); // sample random walk
+				rwTuplesListSample[i] = rwTuples;
+			}
+			int i = 0;
+			for(AttackerAction attAction : attActionList) {
+				double maxValue = Double.NEGATIVE_INFINITY;
+				int maxIdx = -1;
+				for(int j = 0; j < numRWSample; j++) {
+					RandomWalkTuple[] rwTuples = rwTuplesListSample[j];
+					double curValue = rwAttacker.computeAttackerValue(
+										depGraph, attAction, rwTuples, 
+										this.discFact, curTimeStep, numTimeStep);
+					if(maxValue < curValue) {
+						maxValue = curValue;
+						maxIdx = j;
+					}
+				}
+				rwTuplesList[i] = rwTuplesListSample[maxIdx];
+				i++;
+			}
+			DefenderAction defAction = new DefenderAction();
+			// attack probability
+			double[] attProb = RandomWalkAttacker.computeCandidateProb(this.numAttActionSample, attValue, this.qrParam);
+			RandomWalkVsDefender.greedyAction(
+					depGraph, // greedy defense with respect to each possible game state
+					rwTuplesList, 
+					attActionList, 
+					attProb, 
+					defAction, // this is outcome
+					curTimeStep, 
+					numTimeStep,
+					this.discFact);
+			rwTuplesLists[idx] = rwTuplesList;
+			attActionLists[idx] = attActionList;
+			attProbs[idx] = attProb;
+		
+			candidates[idx] = defAction;
+			idx++;
+		}
+		depGraph.setState(savedGameState);
+		
+		for (int i = 0; i < dBelief.getGameStateMap().size(); i++) {
+			candidateValues[i] = RandomWalkVsDefender.computeDValue(depGraph, dBelief, rwTuplesLists, attActionLists, attProbs
+					, candidates[i], curTimeStep, numTimeStep, this.discFact);
+		}
+		
+		// probability for each possible candidate action for the defender
+		double[] probabilities =
+			computeCandidateProb(dBelief.getGameStateMap().size(), candidateValues, this.logisParam);
+		
+		// Start sampling
+		int[] nodeIndexes = new int[dBelief.getGameStateMap().size()];
+		for (int i = 0; i < dBelief.getGameStateMap().size(); i++) {
+			nodeIndexes[i] = i;
+		}
+		EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
+		int sampleIdx = rnd.sample();
+		
+		return candidates[sampleIdx];
 	}
 	public static Map<Node, Double> computeCandidateValueTopo(
 		final DependencyGraph depGraph,
