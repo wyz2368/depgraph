@@ -90,6 +90,7 @@ public final class UnitTestMinCutDefender {
 		final int stratMin = 1;
 		final int stratMax = 7;
 		final Set<Integer> nodeCounts = new HashSet<Integer>();
+		final Set<Node> allDefendedNodes = new HashSet<Node>();
 		for (int i = 0; i < iters; i++) {
 			final DefenderAction defAction =
 				testDefender.sampleAction(depGraph, 1, numTimeSteps, belief, rnd.getRandomGenerator());
@@ -97,7 +98,16 @@ public final class UnitTestMinCutDefender {
 			nodeCounts.add(nodeCount);
 			assertTrue(nodeCount >= stratMin);
 			assertTrue(nodeCount <= stratMax);
+			
+			for (final Node node: defAction.getAction()) {
+				assertTrue(depGraph.getMinCut().contains(node));
+			}
+			allDefendedNodes.addAll(defAction.getAction());
 		}
 		assertTrue(nodeCounts.size() > 1);
+		
+		for (final Node node: depGraph.getMinCut()) {
+			assertTrue(allDefendedNodes.contains(node));
+		}
 	}
 }
