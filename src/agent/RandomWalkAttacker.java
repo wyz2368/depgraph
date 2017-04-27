@@ -8,6 +8,7 @@ import graph.Node;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import model.AttackerAction;
@@ -395,6 +396,67 @@ public final class RandomWalkAttacker extends Attacker {
 		}
 		if (Double.isNaN(value)) {
 			throw new IllegalStateException();
+		}
+		return value;
+	}
+	public double computeAttackerValue(
+			final DependencyGraph depGraph,
+			final AttackerAction attAction,
+			final RandomWalkTuple[] rwTuples,
+			final double discFact,
+			final int curTimeStep,
+			final int numTimeStep) {
+		double value = 0.0;
+		boolean[] isInQueue = new boolean[depGraph.vertexSet().size()];
+		for(int i = 0; i < isInQueue.length; i++) {
+			isInQueue[i] = false;
+		}
+		for(Entry<Node, Set<Edge>> entry : attAction.getActionCopy().entrySet()) {
+			Node node = entry.getKey();
+			isInQueue[node.getId() - 1] = true; 
+			double discValue = Math.pow(discFact, curTimeStep - 1);
+			if(node.getActivationType() == NodeActivationType.AND) {
+				value += node.getACost() * discValue;
+			}
+			else {
+				for(Edge edge : entry.getValue()) {
+					value += edge.getACost() * discValue;
+				}
+			}
+		}
+		Node[] topoOrder = new Node[depGraph.vertexSet().size()];
+		for (Node node : depGraph.vertexSet()) {
+			topoOrder[node.getTopoPosition()] = node;
+		}
+		for(int i = 0; i < depGraph.vertexSet().size(); i++) {
+			Node node = topoOrder[i];
+			RandomWalkTuple rwTuple = rwTuples[node.getId() - 1];
+			List<Edge> preEdgeList = rwTuple.getPreAct();
+			if(preEdgeList != null) { // not active and not root nodes
+				isInQueue[node.getId() - 1] = false;
+				if(node.getActivationType() == NodeActivationType.AND) {
+					isInQueue[node.getId() - 1] = true;
+					for(Edge edge : preEdgeList) {
+						if(!isInQueue[edge.getsource().getId() - 1]) {
+							isInQueue[node.getId() - 1] = false;
+							break;
+						}
+					}
+				}
+				else {
+					Node preNode = preEdgeList.get(0).getsource();
+					if(isInQueue[preNode.getId() - 1]) {
+						isInQueue[node.getId() - 1] = true;
+					}
+				}
+			}
+		}
+		for(Node target : depGraph.getTargetSet()) {
+			RandomWalkTuple rwTuple = rwTuples[target.getId() - 1];
+			int actTime = rwTuple.getTAct();
+			if(isInQueue[target.getId() - 1] && actTime <= numTimeStep) {
+				value += rwTuple.getPAct() * Math.pow(discFact, actTime - 1) * target.getAReward();
+			}
 		}
 		return value;
 	}

@@ -25,11 +25,11 @@ import org.apache.commons.math3.random.RandomGenerator;
 import agent.RandomWalkAttacker.RandomWalkTuple;
 
 public final class RandomWalkVsDefender extends Defender {
-	private double logisParam; // Logistic parameter to randomize defense strategies
-	private double discFact; // reward discount factor
-	private double thres; // to remove game state from belief
+	private double logisParam = 5.0; // Logistic parameter to randomize defense strategies
+	private double discFact = 0.9; // reward discount factor
+	private double thres = 0.001; // to remove game state from belief
 	
-	private double qrParam; // for the attacker
+	private double qrParam = 5.0; // for the attacker
 	private static final int DEFAULT_NUM_RW_SAMPLE = 30;
 	private int numRWSample = DEFAULT_NUM_RW_SAMPLE; // number of random walks for the attacker
 	
@@ -124,7 +124,6 @@ public final class RandomWalkVsDefender extends Defender {
 		// Assumption about the attacker
 		RandomWalkAttacker rwAttacker = new RandomWalkAttacker(this.numRWSample, this.qrParam, this.discFact);
 		
-
 		RandomWalkTuple[][][] rwTuplesLists = new RandomWalkTuple[dBelief.getGameStateMap().size()][][];
 		AttackerAction[][] attActionLists = new AttackerAction[dBelief.getGameStateMap().size()][];
 		double[][] attProbs = new double[dBelief.getGameStateMap().size()][];
@@ -258,7 +257,7 @@ public final class RandomWalkVsDefender extends Defender {
 	* @param discFact reward discount factor
 	* @return a candidate
 	*****************************************************************************************/
-	private static double greedyAction(
+	public static double greedyAction(
 		final DependencyGraph depGraph, // depGraph has current game state the defender is examining
 		final RandomWalkTuple[][] rwTuplesList,
 		final AttackerAction[] attActionList,

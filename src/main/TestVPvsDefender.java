@@ -24,11 +24,11 @@ public final class TestVPvsDefender {
 	}
 
 	public static void main(final String[] args) {
-//		final int numNode = 50;
-//		final int numEdge = 150;
+		final int numNode = 50;
+		final int numEdge = 150;
 		
 		final int numTarget = 10;
-		final double nodeActTypeRatio = 1.0;
+		final double nodeActTypeRatio = 0.3;
 		final double aRewardLB = 2.0;
 		final double aRewardUB = 10.0;
 		final double dPenaltyLB = -10.0;
@@ -52,42 +52,44 @@ public final class TestVPvsDefender {
 		Edge.resetCounter();
 		RandomDataGenerator rnd = new RandomDataGenerator();
 		rnd.reSeed(System.currentTimeMillis());
-//		DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rnd);
-//		DGraphGenerator.genGraph(depGraph, rnd
-//			, numTarget, nodeActTypeRatio
-//			, aRewardLB, aRewardUB
-//			, dPenaltyLB, dPenaltyUB
-//			, aNodeCostLB, aNodeCostUB
-//			, aEdgeCostLB, aEdgeCostUB
-//			, dCostLB, dCostUB
-//			, aNodeActProbLB, aNodeActProbUB
-//			, aEdgeActProbLB, aEdgeActProbUB
-//			, minPosActiveProb, maxPosActiveProb
-//			, minPosInactiveProb, maxPosInactiveProb);
+
+		DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rnd);
+		DGraphGenerator.genGraph(depGraph, rnd
+			, numTarget, nodeActTypeRatio
+			, aRewardLB, aRewardUB
+			, dPenaltyLB, dPenaltyUB
+			, aNodeCostLB, aNodeCostUB
+			, aEdgeCostLB, aEdgeCostUB
+			, dCostLB, dCostUB
+			, aNodeActProbLB, aNodeActProbUB
+			, aEdgeActProbLB, aEdgeActProbUB
+			, minPosActiveProb, maxPosActiveProb
+			, minPosInactiveProb, maxPosInactiveProb);
 		
-		final int numLayer = 7;
-		final int numNode1Layer = 50;
-		final double numNodeRatio = 0.8;
-		final double numEdgeRatio = 0.5;
+//		int numLayer = 7;
+//		int numNode1Layer = 50;
+//		double numNodeRatio = 0.8;
+//		double numEdgeRatio = 0.5;
+//		
+//		double aNodeCostFactor = 1.5;
+//		double aEdgeCostFactor = 1.5;
+//		double dCostFactor = 1.5;
+//		
+//		DependencyGraph depGraph = DagGenerator.genRandomSepLayDAG(numLayer, numNode1Layer, numNodeRatio, numEdgeRatio, rnd);
+//		DGraphGenerator.genSepLayGraph(depGraph, rnd, 
+//				numTarget, nodeActTypeRatio, 
+//				aRewardLB, aRewardUB, 
+//				dPenaltyLB, dPenaltyUB, 
+//				aNodeCostLB, aNodeCostUB, 
+//				aEdgeCostLB, aEdgeCostUB, 
+//				dCostLB, dCostUB, 
+//				aNodeActProbLB, aNodeActProbUB, 
+//				aEdgeActProbLB, aEdgeActProbUB, 
+//				minPosActiveProb, maxPosActiveProb, 
+//				minPosInactiveProb, maxPosInactiveProb, 
+//				aNodeCostFactor, aEdgeCostFactor, dCostFactor);
 		
-		final double aNodeCostFactor = 1.5;
-		final double aEdgeCostFactor = 1.5;
-		final double dCostFactor = 1.5;
 		
-		DependencyGraph depGraph =
-			DagGenerator.genRandomSepLayDAG(numLayer, numNode1Layer, numNodeRatio, numEdgeRatio, rnd);
-		DGraphGenerator.genSepLayGraph(depGraph, rnd, 
-				numTarget, nodeActTypeRatio, 
-				aRewardLB, aRewardUB, 
-				dPenaltyLB, dPenaltyUB, 
-				aNodeCostLB, aNodeCostUB, 
-				aEdgeCostLB, aEdgeCostUB, 
-				dCostLB, dCostUB, 
-				aNodeActProbLB, aNodeActProbUB, 
-				aEdgeActProbLB, aEdgeActProbUB, 
-				minPosActiveProb, maxPosActiveProb, 
-				minPosInactiveProb, maxPosInactiveProb, 
-				aNodeCostFactor, aEdgeCostFactor, dCostFactor);
 		DGraphGenerator.findMinCut(depGraph);
 		
 		final int maxNumSelectCandidate = 10;
