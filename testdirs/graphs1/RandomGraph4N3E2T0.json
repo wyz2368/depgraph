@@ -1,0 +1,92 @@
+{
+  "nodes": [
+    {
+      "id": 1,
+      "topoPosition": 0,
+      "nodeType": "NONTARGET",
+      "actType": "AND",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -1.0,
+      "posActiveProb": 0.8,
+      "posInactiveProb": 0.1,
+      "aActivationCost": -0.5,
+      "aActivationProb": 1.0
+    },
+    {
+      "id": 2,
+      "topoPosition": 1,
+      "nodeType": "NONTARGET",
+      "actType": "AND",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -1.1,
+      "posActiveProb": 0.9,
+      "posInactiveProb": 0.1,
+      "aActivationCost": -0.9,
+      "aActivationProb": 1.0
+    },
+    {
+      "id": 3,
+      "topoPosition": 2,
+      "nodeType": "NONTARGET",
+      "actType": "AND",
+      "state": "INACTIVE",
+      "aReward": 0.0,
+      "dPenalty": 0.0,
+      "dCost": -1.8,
+      "posActiveProb": 0.8,
+      "posInactiveProb": 0.1,
+      "aActivationCost": -0.6,
+      "aActivationProb": 1.0
+    },
+    {
+      "id": 4,
+      "topoPosition": 4,
+      "nodeType": "TARGET",
+      "actType": "OR",
+      "state": "INACTIVE",
+      "aReward": 4.0,
+      "dPenalty": -3.0,
+      "dCost": -1.74,
+      "posActiveProb": 0.98,
+      "posInactiveProb": 0.07,
+      "aActivationCost": 0.0,
+      "aActivationProb": 0.0
+    }
+  ],
+  "edges": [
+    {
+      "id": 1,
+      "srcID": 1,
+      "desID": 4,
+      "edgeType": "NORMAL",
+      "aActivationCost": 0.5,
+      "aActivationProb": 0.4
+    },
+    {
+      "id": 2,
+      "srcID": 2,
+      "desID": 4,
+      "edgeType": "NORMAL",
+      "aActivationCost": 0.6,
+      "aActivationProb": 0.3
+    },
+    {
+      "id": 3,
+      "srcID": 3,
+      "desID": 4,
+      "edgeType": "NORMAL",
+      "aActivationCost": 0.7,
+      "aActivationProb": 0.5
+    }
+  ],
+  "targets": [
+    {
+      "id": 4
+    }
+  ],
+  "minCut": []
+}
