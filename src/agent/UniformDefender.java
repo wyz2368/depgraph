@@ -41,15 +41,12 @@ public final class UniformDefender extends Defender {
 			throw new IllegalArgumentException();
 		}
 		List<Node> dCandidateNodeList = new ArrayList<Node>(depGraph.vertexSet());
-		int numNodetoProtect = 0;
-		if (dCandidateNodeList.size() < this.minNumRes) {
-			numNodetoProtect = dCandidateNodeList.size();
-		} else {
-			final int goalCount =
-				(int) (dCandidateNodeList.size() * this.numResRatio + rng.nextGaussian() * this.numCandStdev);
-			numNodetoProtect = Math.max(this.minNumRes, goalCount);
-			numNodetoProtect = Math.min(this.maxNumRes, numNodetoProtect);
-		}
+		
+		final int goalCount =
+			(int) (dCandidateNodeList.size() * this.numResRatio + rng.nextGaussian() * this.numCandStdev);
+		final int numNodetoProtect =
+			Attacker.getActionCount(this.minNumRes, this.maxNumRes, dCandidateNodeList.size(), goalCount);
+
 		if (dCandidateNodeList.size() == 0 || numNodetoProtect == 0) {
 			return new DefenderAction();
 		}

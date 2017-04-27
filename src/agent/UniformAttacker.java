@@ -61,24 +61,11 @@ public final class UniformAttacker extends Attacker {
 		final int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size()
 			+ attackCandidate.getNodeCandidateSet().size();
 		// Compute number of candidates to select
-		int numSelectCandidate = 0;
-		if (totalNumCandidate < this.minNumSelectCandidate) {
-			// it is legal to retain all candidates
-			numSelectCandidate = totalNumCandidate;
-		} else  {
-			final int goalCount =
-				(int) (totalNumCandidate * this.numSelectCandidateRatio + rng.nextGaussian() * this.numCandStdev);
-			// cannot retain all candidates
-			numSelectCandidate = Math.max(this.minNumSelectCandidate, goalCount);
-			numSelectCandidate = Math.min(this.maxNumSelectCandidate, numSelectCandidate);
-			// current state:
-			// if goalCount \in [minNumSelectCandidate, maxNumSelectCandidate]:
-			//     -> numSelectCandidate = goalCount
-			// elif goalCount > maxNumSelectCandidate:
-			//     -> numSelectCandidate = maxNumSelectCandidate
-			// else:
-			//     -> numSelectCandidate = minNumSelectCandidate
-		}
+		final int goalCount = 
+			(int) (totalNumCandidate * this.numSelectCandidateRatio + rng.nextGaussian() * this.numCandStdev);
+		final int numSelectCandidate =
+			getActionCount(this.minNumSelectCandidate, this.maxNumSelectCandidate, totalNumCandidate, goalCount);
+
 		if (numSelectCandidate == 0) { // if there is no candidate
 			return new AttackerAction();
 		}

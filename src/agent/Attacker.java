@@ -132,4 +132,32 @@ public abstract class Attacker {
 		}
 		return aCandidate;
 	}
+	
+	public static int getActionCount(
+		final int strategyMin,
+		final int strategyMax,
+		final int availableMax,
+		final int idealCount
+	) {
+		if (
+			strategyMin > strategyMax
+			|| strategyMin < 0
+			|| strategyMax < 0
+			|| availableMax < 0
+		) {
+			throw new IllegalArgumentException();
+		}
+		
+		if (availableMax < strategyMin) {
+			return availableMax;
+		}
+		int result = idealCount;
+		// can't be less than strategyMin
+		result = Math.max(result, strategyMin);
+		// can't choose more than are available
+		result = Math.min(result, strategyMax);
+		// can't choose more than are available
+		result = Math.min(result, availableMax);
+		return result;
+	}
 }
