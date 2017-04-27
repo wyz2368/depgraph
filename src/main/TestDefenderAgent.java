@@ -96,7 +96,7 @@ public final class TestDefenderAgent {
 			, rnd.getRandomGenerator());
 		dUniformAction.print();
 		
-		MinCutDefender minCutDefender = new MinCutDefender(maxNumRes, minNumRes, numResRatio);
+		MinCutDefender minCutDefender = new MinCutDefender(maxNumRes, minNumRes, numResRatio, 0.0);
 		DefenderAction dMinCutAction = minCutDefender.sampleAction(depGraph, curTimeStep, numTimeStep
 			, defBelief
 			, rnd.getRandomGenerator());

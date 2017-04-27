@@ -124,7 +124,7 @@ public final class TestGameSimulation {
 				defList[i] = new UniformDefender(maxNumRes, minNumRes, numResRatio, 0.0);
 				break;
 			case MINCUT:
-				defList[i] = new MinCutDefender(maxNumRes, minNumRes, numResRatio);
+				defList[i] = new MinCutDefender(maxNumRes, minNumRes, numResRatio, 0.0);
 				break;
 			case GOAL_ONLY:
 				defList[i] = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact);
