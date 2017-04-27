@@ -27,7 +27,7 @@ public final class TestVPvsDefender {
 		final int numNode = 50;
 		final int numEdge = 150;
 		final int numTarget = 10;
-		final double nodeActTypeRatio = 0.0;
+		final double nodeActTypeRatio = 1.0;
 		final double aRewardLB = 5.0;
 		final double aRewardUB = 10.0;
 		final double dPenaltyLB = -10.0;
@@ -100,7 +100,7 @@ public final class TestVPvsDefender {
 		
 		final int maxNumRes = 10;
 		final int minNumRes = 2;
-		final double numResRatio = 0.7;
+		final double numResRatio = 0.3;
 		final double logisParam = 5.0;
 		final double thres = 1e-3;
 		

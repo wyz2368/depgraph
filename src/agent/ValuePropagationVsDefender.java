@@ -100,24 +100,22 @@ public final class ValuePropagationVsDefender extends Defender {
 		Attacker attacker = new ValuePropagationAttacker(this.maxNumAttCandidate, this.minNumAttCandidate
 				, this.numAttCandidateRatio, this.qrParam, this.discFact, this.numAttCandStdev); // assumption about the attacker
 
-//		int numRWSample = 50;
-//		return sampleActionRandomWalk(
-//				depGraph, 
-//				curTimeStep, 
-//				numTimeStep, 
-//				dBelief, 
-//				rng, 
-//				attacker);
-//				rng,
-//				attacker, 
-//				numRWSample);
-		return sampleActionTopo(
-			depGraph, 
-			curTimeStep, 
-			numTimeStep, 
-			dBelief, 
-			rng, 
-			attacker);
+		int numRWSample = 50;
+		return sampleActionRandomWalk(
+				depGraph, 
+				curTimeStep, 
+				numTimeStep, 
+				dBelief, 
+				rng,
+				attacker, 
+				numRWSample);
+//		return sampleActionTopo(
+//			depGraph, 
+//			curTimeStep, 
+//			numTimeStep, 
+//			dBelief, 
+//			rng, 
+//			attacker);
 	}
 	@Override
 	public DefenderBelief updateBelief(
