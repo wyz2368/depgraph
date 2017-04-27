@@ -109,12 +109,12 @@ public final class ValuePropagationVsDefender extends Defender {
 //				attacker, 
 //				numRWSample);
 		return sampleActionTopo(
-				depGraph, 
-				curTimeStep, 
-				numTimeStep, 
-				dBelief, 
-				rng, 
-				attacker);
+			depGraph, 
+			curTimeStep, 
+			numTimeStep, 
+			dBelief, 
+			rng, 
+			attacker);
 	}
 	@Override
 	public DefenderBelief updateBelief(
@@ -264,9 +264,9 @@ public final class ValuePropagationVsDefender extends Defender {
 				int maxIdx = -1;
 				for (int j = 0; j < numRWSample; j++) {
 					RandomWalkTuple[] rwTuples = rwTuplesListSample[j];
-					double curValue = rwAttacker.computeAttackerValue(
-										depGraph, attAction, rwTuples, 
-										this.discFact, curTimeStep, numTimeStep);
+					double curValue = RandomWalkAttacker.computeAttackerValue(
+						depGraph, attAction, rwTuples, 
+						this.discFact, curTimeStep, numTimeStep);
 					if (maxValue < curValue) {
 						maxValue = curValue;
 						maxIdx = j;
@@ -279,14 +279,14 @@ public final class ValuePropagationVsDefender extends Defender {
 			// attack probability
 			double[] attProb = RandomWalkAttacker.computeCandidateProb(this.numAttActionSample, attValue, this.qrParam);
 			RandomWalkVsDefender.greedyAction(
-					depGraph, // greedy defense with respect to each possible game state
-					rwTuplesList, 
-					attActionList, 
-					attProb, 
-					defAction, // this is outcome
-					curTimeStep, 
-					numTimeStep,
-					this.discFact);
+				depGraph, // greedy defense with respect to each possible game state
+				rwTuplesList, 
+				attActionList, 
+				attProb, 
+				defAction, // this is outcome
+				curTimeStep, 
+				numTimeStep,
+				this.discFact);
 			rwTuplesLists[idx] = rwTuplesList;
 			attActionLists[idx] = attActionList;
 			attProbs[idx] = attProb;
