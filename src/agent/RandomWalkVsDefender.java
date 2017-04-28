@@ -63,7 +63,7 @@ public final class RandomWalkVsDefender extends Defender {
 		final double isRandomized) {
 		super(DefenderType.vsRANDOM_WALK);
 		if (discFact <= 0.0 || discFact > 1.0 || thres < 0.0 || thres > 1.0
-			|| numRWSample < 1) {
+			|| numRWSample < 1 || qrParam < 0.0) {
 			throw new IllegalArgumentException();
 		}
 		this.logisParam = logisParam;

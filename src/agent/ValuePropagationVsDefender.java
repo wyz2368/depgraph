@@ -70,6 +70,7 @@ public final class ValuePropagationVsDefender extends Defender {
 			|| discFact < 0.0 || discFact > 1.0 || !isProb(thres)
 			|| minNumAttCandidate < 1 || maxNumAttCandidate < minNumAttCandidate
 			|| !isProb(numAttCandidateRatio) || numAttCandStdev < 0.0
+			|| qrParam < 0.0
 		) {
 			throw new IllegalArgumentException();
 		}
@@ -98,17 +99,18 @@ public final class ValuePropagationVsDefender extends Defender {
 		}
 		// assumption about the attacker
 		Attacker attacker = new ValuePropagationAttacker(this.maxNumAttCandidate, this.minNumAttCandidate
-				, this.numAttCandidateRatio, this.qrParam, this.discFact, this.numAttCandStdev); // assumption about the attacker
+			, this.numAttCandidateRatio, this.qrParam, this.discFact, this.numAttCandStdev);
 
-		int numRWSample = 50;
+		final int defaultNumRWSample = 50;
+		int numRWSample = defaultNumRWSample;
 		return sampleActionRandomWalk(
-				depGraph, 
-				curTimeStep, 
-				numTimeStep, 
-				dBelief, 
-				rng,
-				attacker, 
-				numRWSample);
+			depGraph, 
+			curTimeStep, 
+			numTimeStep, 
+			dBelief, 
+			rng,
+			attacker, 
+			numRWSample);
 //		return sampleActionTopo(
 //			depGraph, 
 //			curTimeStep, 

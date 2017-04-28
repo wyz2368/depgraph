@@ -57,7 +57,7 @@ public final class RandomWalkAttacker extends Attacker {
 	
 	public RandomWalkAttacker(final double numRWSample, final double qrParam, final double discFact) {
 		super(AttackerType.RANDOM_WALK);
-		if (numRWSample < 0.0 || discFact < 0.0 || discFact > 1.0) {
+		if (numRWSample < 0.0 || discFact < 0.0 || discFact > 1.0 || qrParam < 0.0) {
 			throw new IllegalArgumentException(numRWSample + "\t" + discFact + "\t" + discFact);
 		}
 		this.numRWSample = (int) numRWSample;

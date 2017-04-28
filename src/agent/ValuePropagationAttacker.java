@@ -39,7 +39,7 @@ public final class ValuePropagationAttacker extends Attacker {
 		super(AttackerType.VALUE_PROPAGATION);
 		if (minNumSelectCandidate < 1 || maxNumSelectCandidate < minNumSelectCandidate
 			|| !isProb(numSelectCandidateRatio)
-			|| numCandStdev < 0.0) {
+			|| numCandStdev < 0.0 || qrParam < 0.0) {
 			throw new IllegalArgumentException();
 		}
 		this.maxNumSelectCandidate = (int) maxNumSelectCandidate;
