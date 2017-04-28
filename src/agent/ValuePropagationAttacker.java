@@ -67,9 +67,9 @@ public final class ValuePropagationAttacker extends Attacker {
 			throw new IllegalArgumentException();
 		}
 		// Find candidate
-		AttackCandidate attackCandidate = selectCandidate(depGraph);
+		final AttackCandidate attackCandidate = selectCandidate(depGraph);
 		// Compute candidate value
-		double[] candidateValue = computeCandidateValueTopo(
+		final double[] candidateValue = computeCandidateValueTopo(
 			depGraph, 
 			attackCandidate, 
 			curTimeStep, 
@@ -77,7 +77,7 @@ public final class ValuePropagationAttacker extends Attacker {
 			this.discFact, 
 			this.propagationParam,
 			this.isBest);
-		int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size() 
+		final int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size() 
 			+ attackCandidate.getNodeCandidateSet().size();
 		
 		// Compute number of candidates to select
@@ -90,15 +90,15 @@ public final class ValuePropagationAttacker extends Attacker {
 		}
 		
 		// Compute probability to choose each node
-		double[] probabilities = computeCandidateProb(totalNumCandidate, candidateValue, this.qrParam);
+		final double[] probabilities = computeCandidateProb(totalNumCandidate, candidateValue, this.qrParam);
 		
 		// Sampling
-		int[] nodeIndexes = new int[totalNumCandidate];
+		final int[] nodeIndexes = new int[totalNumCandidate];
 		for (int i = 0; i < totalNumCandidate; i++) {
 			nodeIndexes[i] = i;
 		}
-		EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
-		
+		final EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
+
 		return sampleAction(depGraph, attackCandidate, numSelectCandidate, rnd);
 	}
 	
@@ -123,9 +123,9 @@ public final class ValuePropagationAttacker extends Attacker {
 			throw new IllegalArgumentException();
 		}
 		// Find candidate
-		AttackCandidate attackCandidate = selectCandidate(depGraph);
+		final AttackCandidate attackCandidate = selectCandidate(depGraph);
 		// Compute candidate value
-		double[] candidateValue = computeCandidateValueTopo(
+		final double[] candidateValue = computeCandidateValueTopo(
 			depGraph, 
 			attackCandidate, 
 			curTimeStep, 
@@ -133,7 +133,7 @@ public final class ValuePropagationAttacker extends Attacker {
 			this.discFact, 
 			this.propagationParam,
 			this.isBest);
-		int totalNumCandidate =
+		final int totalNumCandidate =
 			attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
 		
 		// Compute number of candidates to select
@@ -148,16 +148,16 @@ public final class ValuePropagationAttacker extends Attacker {
 		}
 		
 		// Compute probability to choose each node
-		double[] probabilities = computeCandidateProb(totalNumCandidate, candidateValue, this.qrParam);
+		final double[] probabilities = computeCandidateProb(totalNumCandidate, candidateValue, this.qrParam);
 		
 		// Sampling
-		int[] nodeIndexes = new int[totalNumCandidate];
+		final int[] nodeIndexes = new int[totalNumCandidate];
 		for (int i = 0; i < totalNumCandidate; i++) {
 			nodeIndexes[i] = i;
 		}
-		EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
+		final EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
 		if (isReplacement) { // this is currently not used, need to check if the isAdded works properly
-			Set<AttackerAction> attActionSet = new HashSet<AttackerAction>();
+			final Set<AttackerAction> attActionSet = new HashSet<AttackerAction>();
 			int i = 0;
 			while (i < numSample) {
 				AttackerAction attAction = sampleAction(depGraph, attackCandidate, numSelectCandidate, rnd);
@@ -168,10 +168,11 @@ public final class ValuePropagationAttacker extends Attacker {
 			}
 			return new ArrayList<AttackerAction>(attActionSet);
 		}
+		
 		// this is currently used, correct
-		List<AttackerAction> attActionList = new ArrayList<AttackerAction>();
+		final List<AttackerAction> attActionList = new ArrayList<AttackerAction>();
 		for (int i = 0; i < numSample; i++) {
-			AttackerAction attAction = sampleAction(depGraph, attackCandidate, numSelectCandidate, rnd);
+			final AttackerAction attAction = sampleAction(depGraph, attackCandidate, numSelectCandidate, rnd);
 			attActionList.add(attAction);
 		}
 		return attActionList;
@@ -231,10 +232,13 @@ public final class ValuePropagationAttacker extends Attacker {
 	 * @return QR distribution over candidates
 	 *****************************************************************************************/
 	private static double[] computeCandidateProb(
-		final int totalNumCandidate, final double[] candidateValue, final double qrParam) {
-		if (totalNumCandidate < 0 || candidateValue == null) {
+		final int totalNumCandidate,
+		final double[] candidateValue,
+		final double qrParam) {
+		if (totalNumCandidate < 0 || candidateValue == null || qrParam < 0.0) {
 			throw new IllegalArgumentException();
 		}
+
 		//Normalize candidate value
 		double minValue = Double.POSITIVE_INFINITY;
 		double maxValue = Double.NEGATIVE_INFINITY;
@@ -425,19 +429,20 @@ public final class ValuePropagationAttacker extends Attacker {
 	 * @return type of AttackerAction: an action for the attacker
 	 *****************************************************************************************/
 	private static AttackerAction sampleAction(
-			final DependencyGraph depGraph,
-			final AttackCandidate attackCandidate, 
-			final int numSelectCandidate, 
-			final AbstractIntegerDistribution rnd) {
+		final DependencyGraph depGraph,
+		final AttackCandidate attackCandidate, 
+		final int numSelectCandidate, 
+		final AbstractIntegerDistribution rnd) {
 		if (depGraph == null || numSelectCandidate < 0 || rnd == null || attackCandidate == null) {
 			throw new IllegalArgumentException();
 		}
-		AttackerAction action = new AttackerAction();
-		List<Edge> edgeCandidateList = new ArrayList<Edge>(attackCandidate.getEdgeCandidateSet());
-		List<Node> nodeCandidateList = new ArrayList<Node>(attackCandidate.getNodeCandidateSet());
-		int totalNumCandidate = edgeCandidateList.size() + nodeCandidateList.size();
+		final AttackerAction action = new AttackerAction();
+		final List<Edge> edgeCandidateList = new ArrayList<Edge>(attackCandidate.getEdgeCandidateSet());
+		final List<Node> nodeCandidateList = new ArrayList<Node>(attackCandidate.getNodeCandidateSet());
+		final int totalNumCandidate = edgeCandidateList.size() + nodeCandidateList.size();
 
-		boolean[] isChosen = new boolean[totalNumCandidate]; // check if this candidate is already chosen
+		// check if this candidate is already chosen
+		final boolean[] isChosen = new boolean[totalNumCandidate];
 		for (int i = 0; i < totalNumCandidate; i++) {
 			isChosen[i] = false;
 		}
@@ -446,10 +451,10 @@ public final class ValuePropagationAttacker extends Attacker {
 			int idx = rnd.sample(); // randomly chooses a candidate
 			if (!isChosen[idx]) { // if this candidate is not chosen
 				if (idx < edgeCandidateList.size()) { // select edge
-					Edge selectEdge = edgeCandidateList.get(idx);
+					final Edge selectEdge = edgeCandidateList.get(idx);
 					action.addOrNodeAttack(selectEdge.gettarget(), selectEdge);
 				} else { // select node, this is for AND node only
-					Node selectNode = nodeCandidateList.get(idx - edgeCandidateList.size());
+					final Node selectNode = nodeCandidateList.get(idx - edgeCandidateList.size());
 					action.addAndNodeAttack(selectNode, depGraph.incomingEdgesOf(selectNode));
 				}
 				
@@ -457,8 +462,6 @@ public final class ValuePropagationAttacker extends Attacker {
 				count++;
 			}	
 		}
-		edgeCandidateList.clear();
-		nodeCandidateList.clear();
 		return action;
 	}
 	
