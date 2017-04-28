@@ -81,14 +81,10 @@ public final class ValuePropagationAttacker extends Attacker {
 			+ attackCandidate.getNodeCandidateSet().size();
 		
 		// Compute number of candidates to select
-		int numSelectCandidate = 0;
-		if (totalNumCandidate < this.minNumSelectCandidate) {
-			numSelectCandidate = totalNumCandidate;
-		} else {
-			numSelectCandidate = Math.max(this.minNumSelectCandidate,
-				(int) (totalNumCandidate * this.numSelectCandidateRatio));
-			numSelectCandidate = Math.min(this.maxNumSelectCandidate, numSelectCandidate);
-		}
+		final int goalCount = 
+			(int) (totalNumCandidate * this.numSelectCandidateRatio + rng.nextGaussian() * this.numCandStdev);
+		final int numSelectCandidate =
+			getActionCount(this.minNumSelectCandidate, this.maxNumSelectCandidate, totalNumCandidate, goalCount);
 		if (numSelectCandidate == 0) { // if there is no candidate
 			return new AttackerAction();
 		}
@@ -141,14 +137,10 @@ public final class ValuePropagationAttacker extends Attacker {
 			attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
 		
 		// Compute number of candidates to select
-		int numSelectCandidate = 0;
-		if (totalNumCandidate < this.minNumSelectCandidate) {
-			numSelectCandidate = totalNumCandidate;
-		} else {
-			numSelectCandidate = Math.max(this.minNumSelectCandidate,
-				(int) (totalNumCandidate * this.numSelectCandidateRatio));
-			numSelectCandidate = Math.min(this.maxNumSelectCandidate, numSelectCandidate);
-		}
+		final int goalCount = 
+			(int) (totalNumCandidate * this.numSelectCandidateRatio + rng.nextGaussian() * this.numCandStdev);
+		final int numSelectCandidate =
+			getActionCount(this.minNumSelectCandidate, this.maxNumSelectCandidate, totalNumCandidate, goalCount);
 		if (numSelectCandidate == 0) { // if there is no candidate
 			List<AttackerAction> attActionList = new ArrayList<AttackerAction>();
 			attActionList.add(new AttackerAction());
@@ -185,6 +177,7 @@ public final class ValuePropagationAttacker extends Attacker {
 		return attActionList;
 	}
 	
+	/*
 	static double[] computeCandidateProb(
 		final DependencyGraph depGraph, 
 		final AttackCandidate attackCandidate,
@@ -196,7 +189,9 @@ public final class ValuePropagationAttacker extends Attacker {
 		final int maxNumSelectCandidate,
 		final int minNumSelectCandidate, 
 		final double numSelectCandidateRatio,
-		final boolean isBest) {
+		final boolean isBest,
+		final RandomGenerator rng,
+		final double numCandStdev) {
 		if (depGraph == null || attackCandidate == null
 			|| curTimeStep < 0 || numTimeStep < curTimeStep
 			|| discFact < 0.0 || discFact > 1.0 || minNumSelectCandidate < 1
@@ -217,13 +212,10 @@ public final class ValuePropagationAttacker extends Attacker {
 			attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
 		
 		// Compute number of candidates to select
-		int numSelectCandidate = 0;
-		if (totalNumCandidate < minNumSelectCandidate) {
-			numSelectCandidate = totalNumCandidate;
-		} else {
-			numSelectCandidate = Math.max(minNumSelectCandidate, (int) (totalNumCandidate * numSelectCandidateRatio));
-			numSelectCandidate = Math.min(maxNumSelectCandidate, numSelectCandidate);
-		}
+		final int goalCount = 
+			(int) (totalNumCandidate * numSelectCandidateRatio + rng.nextGaussian() * numCandStdev);
+		final int numSelectCandidate =
+			getActionCount(minNumSelectCandidate, maxNumSelectCandidate, totalNumCandidate, goalCount);
 		if (numSelectCandidate == 0) { // if there is no candidate
 			return null;
 		}
@@ -231,6 +223,7 @@ public final class ValuePropagationAttacker extends Attacker {
 		// Compute probability to choose each node
 		return computeCandidateProb(totalNumCandidate, candidateValue, qrParam);
 	}
+	*/
 	
 	/*****************************************************************************************
 	 * @param totalNumCandidate: total number of candidates

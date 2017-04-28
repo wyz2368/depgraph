@@ -75,7 +75,8 @@ public final class TestVPvsDefender {
 //		double aEdgeCostFactor = 1.5;
 //		double dCostFactor = 1.5;
 //		
-//		DependencyGraph depGraph = DagGenerator.genRandomSepLayDAG(numLayer, numNode1Layer, numNodeRatio, numEdgeRatio, rnd);
+//		DependencyGraph depGraph =
+//          DagGenerator.genRandomSepLayDAG(numLayer, numNode1Layer, numNodeRatio, numEdgeRatio, rnd);
 //		DGraphGenerator.genSepLayGraph(depGraph, rnd, 
 //				numTarget, nodeActTypeRatio, 
 //				aRewardLB, aRewardUB, 
