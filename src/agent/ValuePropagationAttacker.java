@@ -389,17 +389,9 @@ public final class ValuePropagationAttacker extends Attacker {
 		) {
 			throw new IllegalArgumentException();
 		}
-
-		final List<Edge> edgeCands = new ArrayList<Edge>(attackCand.getEdgeCandidateSet());
-		final List<Node> nodeCands = new ArrayList<Node>(attackCand.getNodeCandidateSet());
-		final int candCount = edgeCands.size() + nodeCands.size();
-		final double[] candVals = new double[candCount];
 		
 		final List<Node> inactiveTargets = getInactiveTargets(depGraph);
-		
-		// get (forward) topographical order over nodes, from roots to leaves.
-		final Node[] topoOrder = getTopoOrder(depGraph);
-		
+
 		// Value propagation of each node with respect to each
 		// inactive target and propagation time (>= curTimeStep & <= numTimeStep).
 		// maps inactiveTargetIndex, to future time step index, to node index, to value.
@@ -413,6 +405,10 @@ public final class ValuePropagationAttacker extends Attacker {
 			// is the attacker reward of the target.
 			r[inactIndex][0][inactiveTarget.getId() - 1] = inactiveTarget.getAReward();
 		}
+		
+		// get (forward) topographical order over nodes, from roots to leaves.
+		final Node[] topoOrder = getTopoOrder(depGraph);
+		
 		// Start examining nodes in reverse topological order (leaf nodes first)
 		for (int topoIndex = depGraph.vertexSet().size() - 1; topoIndex >= 0; topoIndex--) {
 			final Node curNode = topoOrder[topoIndex];
@@ -465,39 +461,40 @@ public final class ValuePropagationAttacker extends Attacker {
 			}
 		}
 		
-		/*****************************************************************************************/
 		// Now, only keep maximum propagation values over all propagation paths
-		double[] rSum = new double[depGraph.vertexSet().size()];
-		for (int i = 0; i < depGraph.vertexSet().size(); i++) {
-			rSum[i] = 0;
-		}
-		for (int i = 0; i < inactiveTargets.size(); i++) {
-			for (int j = 0; j <= numTimeStep - curTimeStep; j++) {
-				for (int k = 0; k < depGraph.vertexSet().size(); k++) {
-					if (useMaxOnly) {
-						if (rSum[k] < r[i][j][k]) {
-							rSum[k] = r[i][j][k];
+		final double[] rAggregate = new double[depGraph.vertexSet().size()];
+		for (int inactIndex = 0; inactIndex < inactiveTargets.size(); inactIndex++) {
+			for (int timeIndex = 0; timeIndex <= numTimeStep - curTimeStep; timeIndex++) {
+				for (int nodeIndex = 0; nodeIndex < depGraph.vertexSet().size(); nodeIndex++) {
+					if (useMaxOnly) { // max
+						if (rAggregate[nodeIndex] < r[inactIndex][timeIndex][nodeIndex]) {
+							rAggregate[nodeIndex] = r[inactIndex][timeIndex][nodeIndex];
 						}
 					} else { // sum
-						if (r[i][j][k] > 0) {
-							rSum[k] += r[i][j][k];
+						if (r[inactIndex][timeIndex][nodeIndex] > 0) {
+							rAggregate[nodeIndex] += r[inactIndex][timeIndex][nodeIndex];
 						}
 					}
 				}
 			}
 		}
 		
-		// Now compute final propagation value for each candidate, considering cost and activation probs
-		int idx = 0;
-		for (Edge edge: edgeCands) {
-			candVals[idx] = Math.pow(discountFactor, curTimeStep - 1) 
-				* (edge.getACost() + edge.getActProb() * rSum[edge.gettarget().getId() - 1]);
-			idx++;
+		// Now compute final propagation value for each candidate, considering cost and activation prob
+		final List<Edge> edgeCands = new ArrayList<Edge>(attackCand.getEdgeCandidateSet());
+		final List<Node> nodeCands = new ArrayList<Node>(attackCand.getNodeCandidateSet());
+		final int candCount = edgeCands.size() + nodeCands.size();
+		
+		final double[] candVals = new double[candCount];
+		int i = 0;
+		for (final Edge edgeCand: edgeCands) {
+			candVals[i] = Math.pow(discountFactor, curTimeStep - 1) 
+				* (edgeCand.getACost() + edgeCand.getActProb() * rAggregate[edgeCand.gettarget().getId() - 1]);
+			i++;
 		}
-		for (Node node : nodeCands) {
-			candVals[idx] = Math.pow(discountFactor, curTimeStep - 1) 
-				* (node.getACost() + node.getActProb() * rSum[node.getId() - 1]);
-			idx++;
+		for (final Node nodeCand : nodeCands) {
+			candVals[i] = Math.pow(discountFactor, curTimeStep - 1) 
+				* (nodeCand.getACost() + nodeCand.getActProb() * rAggregate[nodeCand.getId() - 1]);
+			i++;
 		}
 		return candVals;
 	}
