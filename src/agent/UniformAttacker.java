@@ -55,7 +55,7 @@ public final class UniformAttacker extends Attacker {
 			throw new IllegalArgumentException();
 		}
 		// Select candidate for the attacker
-		final AttackCandidate attackCandidate = selectCandidate(depGraph);
+		final AttackCandidate attackCandidate = getAttackCandidate(depGraph);
 		
 		// Sample number of AND-nodes and OR-edges in attackCandidate sets
 		final int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size()

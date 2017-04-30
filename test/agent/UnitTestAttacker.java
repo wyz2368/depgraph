@@ -53,7 +53,7 @@ public final class UnitTestAttacker {
 		}
 		depGraph.setState(gameState);
 		// should be empty because all nodes are active
-		AttackCandidate candidate = Attacker.selectCandidate(depGraph);
+		AttackCandidate candidate = Attacker.getAttackCandidate(depGraph);
 		assertTrue(candidate.getEdgeCandidateSet().isEmpty());
 		assertTrue(candidate.getNodeCandidateSet().isEmpty());
 		
@@ -65,14 +65,14 @@ public final class UnitTestAttacker {
 		}
 		depGraph.setState(gameState);
 		// should be empty because all target nodes are enabled
-		candidate = Attacker.selectCandidate(depGraph);
+		candidate = Attacker.getAttackCandidate(depGraph);
 		assertTrue(candidate.getEdgeCandidateSet().isEmpty());
 		assertTrue(candidate.getNodeCandidateSet().isEmpty());
 		
 		gameState = new GameState();
 		depGraph.setState(gameState);
 		// should have 3 candidate nodes, no edges
-		candidate = Attacker.selectCandidate(depGraph);
+		candidate = Attacker.getAttackCandidate(depGraph);
 		assertTrue(candidate.getEdgeCandidateSet().isEmpty());
 		final int initialCands = 3;
 		assertTrue(candidate.getNodeCandidateSet().size() == initialCands);
@@ -83,7 +83,7 @@ public final class UnitTestAttacker {
 			}
 		}
 		depGraph.setState(gameState);
-		candidate = Attacker.selectCandidate(depGraph);
+		candidate = Attacker.getAttackCandidate(depGraph);
 		// should have node 5 as a candidate, because it's an AND node
 		// with all parents active
 		assertTrue(candidate.getEdgeCandidateSet().isEmpty());
@@ -105,7 +105,7 @@ public final class UnitTestAttacker {
 			}
 		}
 		depGraph.setState(gameState);
-		candidate = Attacker.selectCandidate(depGraph);
+		candidate = Attacker.getAttackCandidate(depGraph);
 		// should have just 2 candidate nodes, and edge 1 as a candidate,
 		// because edge 1 it goes to an inactive OR node (node 4) from an active node (node 2)
 		assertTrue(candidate.getEdgeCandidateSet().size() == 1);

@@ -67,12 +67,12 @@ public final class ValuePropagationAttacker extends Attacker {
 		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || rng == null) {
 			throw new IllegalArgumentException();
 		}
-		// Find candidate
-		final AttackCandidate attackCandidate = selectCandidate(depGraph);
+		final AttackCandidate attackCandidate = getAttackCandidate(depGraph);
 		if (attackCandidate.isEmpty()) {
 			return new AttackerAction();
 		}
-		// Compute candidate value
+
+		// Compute candidate values
 		final double[] candidateVals = computeCandidateValueTopo(
 			depGraph, 
 			attackCandidate, 
@@ -81,10 +81,10 @@ public final class ValuePropagationAttacker extends Attacker {
 			this.discFact, 
 			this.propagationParam,
 			this.isBest);
-		final int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size() 
-			+ attackCandidate.getNodeCandidateSet().size();
 		
 		// Compute number of candidates to select
+		final int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size() 
+			+ attackCandidate.getNodeCandidateSet().size();
 		final int goalCount = 
 			(int) (totalNumCandidate * this.numSelectCandidateRatio + rng.nextGaussian() * this.numCandStdev);
 		final int numToSelect =
@@ -137,7 +137,7 @@ public final class ValuePropagationAttacker extends Attacker {
 			throw new IllegalArgumentException();
 		}
 		// Find candidate
-		final AttackCandidate attackCandidate = selectCandidate(depGraph);
+		final AttackCandidate attackCandidate = getAttackCandidate(depGraph);
 		if (attackCandidate.isEmpty()) {
 			List<AttackerAction> attActionList = new ArrayList<AttackerAction>();
 			attActionList.add(new AttackerAction());
