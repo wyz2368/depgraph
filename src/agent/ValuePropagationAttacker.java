@@ -461,42 +461,65 @@ public final class ValuePropagationAttacker extends Attacker {
 			}
 		}
 		
-		// Now, only keep maximum propagation values over all propagation paths
-		final double[] rAggregate = new double[depGraph.vertexSet().size()];
-		for (int inactIndex = 0; inactIndex < inactiveTargets.size(); inactIndex++) {
+		// Now, only keep aggregate propagation values over all inactive targets.
+		final double[] rAggregate =
+			aggregateValues(r, depGraph, inactiveTargets.size(), numTimeStep, curTimeStep, useMaxOnly);
+		
+		// Now compute final propagation value for each candidate, considering cost and activation probability
+		final double[] result = getCandVals(attackCand, discountFactor, curTimeStep, rAggregate);
+		return result;
+	}
+	
+	private static double[] getCandVals(
+		final AttackCandidate attackCand,
+		final double discountFactor,
+		final int curTimeStep,
+		final double[] rAggregate
+	) {
+		final List<Edge> edgeCands = new ArrayList<Edge>(attackCand.getEdgeCandidateSet());
+		final List<Node> nodeCands = new ArrayList<Node>(attackCand.getNodeCandidateSet());
+		final int candCount = edgeCands.size() + nodeCands.size();
+		
+		final double[] result = new double[candCount];
+		int i = 0;
+		for (final Edge edgeCand: edgeCands) {
+			result[i] = Math.pow(discountFactor, curTimeStep - 1) 
+				* (edgeCand.getACost() + edgeCand.getActProb() * rAggregate[edgeCand.gettarget().getId() - 1]);
+			i++;
+		}
+		for (final Node nodeCand : nodeCands) {
+			result[i] = Math.pow(discountFactor, curTimeStep - 1) 
+				* (nodeCand.getACost() + nodeCand.getActProb() * rAggregate[nodeCand.getId() - 1]);
+			i++;
+		}
+		return result;
+	}
+	
+	private static double[] aggregateValues(
+		final double[][][] r,
+		final DependencyGraph depGraph,
+		final int inactiveTargetCount,
+		final int numTimeStep,
+		final int curTimeStep,
+		final boolean useMaxOnly
+	) {
+		final double[] result = new double[depGraph.vertexSet().size()];
+		for (int inactIndex = 0; inactIndex < inactiveTargetCount; inactIndex++) {
 			for (int timeIndex = 0; timeIndex <= numTimeStep - curTimeStep; timeIndex++) {
 				for (int nodeIndex = 0; nodeIndex < depGraph.vertexSet().size(); nodeIndex++) {
 					if (useMaxOnly) { // max
-						if (rAggregate[nodeIndex] < r[inactIndex][timeIndex][nodeIndex]) {
-							rAggregate[nodeIndex] = r[inactIndex][timeIndex][nodeIndex];
+						if (result[nodeIndex] < r[inactIndex][timeIndex][nodeIndex]) {
+							result[nodeIndex] = r[inactIndex][timeIndex][nodeIndex];
 						}
 					} else { // sum
 						if (r[inactIndex][timeIndex][nodeIndex] > 0) {
-							rAggregate[nodeIndex] += r[inactIndex][timeIndex][nodeIndex];
+							result[nodeIndex] += r[inactIndex][timeIndex][nodeIndex];
 						}
 					}
 				}
 			}
 		}
-		
-		// Now compute final propagation value for each candidate, considering cost and activation prob
-		final List<Edge> edgeCands = new ArrayList<Edge>(attackCand.getEdgeCandidateSet());
-		final List<Node> nodeCands = new ArrayList<Node>(attackCand.getNodeCandidateSet());
-		final int candCount = edgeCands.size() + nodeCands.size();
-		
-		final double[] candVals = new double[candCount];
-		int i = 0;
-		for (final Edge edgeCand: edgeCands) {
-			candVals[i] = Math.pow(discountFactor, curTimeStep - 1) 
-				* (edgeCand.getACost() + edgeCand.getActProb() * rAggregate[edgeCand.gettarget().getId() - 1]);
-			i++;
-		}
-		for (final Node nodeCand : nodeCands) {
-			candVals[i] = Math.pow(discountFactor, curTimeStep - 1) 
-				* (nodeCand.getACost() + nodeCand.getActProb() * rAggregate[nodeCand.getId() - 1]);
-			i++;
-		}
-		return candVals;
+		return result;
 	}
 	
 	/*****************************************************************************************
