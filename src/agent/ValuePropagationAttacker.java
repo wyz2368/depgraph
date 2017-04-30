@@ -27,7 +27,9 @@ public final class ValuePropagationAttacker extends Attacker {
 	private double discFact;
 	private double numCandStdev;
 	
+	// TODO make propagationParam a parameter from simulation_spec
 	private final double propagationParam = 0.5;
+	// TODO make useMaxOnly a parameter from simulation_spec
 	private final boolean useMaxOnly = true;
 	
 	public ValuePropagationAttacker(
