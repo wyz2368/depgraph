@@ -28,7 +28,7 @@ public final class ValuePropagationAttacker extends Attacker {
 	private double numCandStdev;
 	
 	private final double propagationParam = 0.5;
-	private final boolean isBest = true;
+	private final boolean useMaxOnly = true;
 	
 	public ValuePropagationAttacker(
 		final double maxNumSelectCandidate, 
@@ -80,7 +80,7 @@ public final class ValuePropagationAttacker extends Attacker {
 			numTimeStep, 
 			this.discFact, 
 			this.propagationParam,
-			this.isBest);
+			this.useMaxOnly);
 		
 		// Compute number of candidates to select
 		final int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size() 
@@ -96,7 +96,7 @@ public final class ValuePropagationAttacker extends Attacker {
 		// Compute probability to choose each node
 		final double[] probabilities = computeCandidateProb(candidateVals, this.qrParam);
 		
-		// Sampling
+		// array of [0, 1, . . ., totalNumCandidate - 1]
 		final int[] nodeIndexes = getNodeIndexes(totalNumCandidate);
 		// a probability mass function with integer values
 		final EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
@@ -151,7 +151,7 @@ public final class ValuePropagationAttacker extends Attacker {
 			numTimeStep, 
 			this.discFact, 
 			this.propagationParam,
-			this.isBest);
+			this.useMaxOnly);
 		final int totalNumCandidate =
 			attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
 		
@@ -234,8 +234,9 @@ public final class ValuePropagationAttacker extends Attacker {
 				vals[i] = 0.0;
 			}
 		} else {
+			final double range = maxVal - minVal;
 			for (int i = 0; i < vals.length; i++) {
-				vals[i] = (vals[i] - minVal) / (maxVal - minVal);
+				vals[i] = (vals[i] - minVal) / range;
 			}
 		}
 	}
@@ -252,28 +253,33 @@ public final class ValuePropagationAttacker extends Attacker {
 			throw new IllegalArgumentException();
 		}
 		for (int i = 0; i < normalVals.length; i++) {
-			if (normalVals[i] < 0.0 || normalVals[0] > 1.0) {
+			if (!isProb(normalVals[i])) {
+				// normalized values must be in [0, 1]
 				throw new IllegalArgumentException();
 			}
 		}
+		
 		final double[] result = new double[normalVals.length];
 		double totalProb = 0.0;
-		for (int i = 0; i < normalVals.length; i++) {
+		for (int i = 0; i < result.length; i++) {
 			result[i] = Math.exp(qrParam * normalVals[i]);
 			totalProb += result[i];
 		}
 		for (int i = 0; i < result.length; i++) {
 			result[i] /= totalProb;
 		}
+		
 		totalProb = 0.0;
 		for (int i = 0; i < result.length; i++) {
-			if (result[i] < 0.0 || result[i] > 1.0) {
+			if (!isProb(result[i])) {
+				// result values must be in [0, 1]
 				throw new IllegalStateException();
 			}
 			totalProb += result[i];
 		}
 		final double tolerance = 0.0001;
 		if (Math.abs(totalProb - 1.0) > tolerance) {
+			// total of result must equal 1.0
 			throw new IllegalStateException();
 		}
 		return result;
@@ -290,13 +296,14 @@ public final class ValuePropagationAttacker extends Attacker {
 			throw new IllegalArgumentException();
 		}
 
-		//Normalize candidate value: map each to [0, 1] as (val - min) / (max - min).
+		// Normalize each candidate value: map to [0, 1] as (val - min) / (max - min).
 		normalize(candidateVals);
 		
 		// Compute probability, using quantal response distribution.
 		return getProbsFromNormalizedVals(candidateVals, qrParam);
 	}
 	
+	// get target nodes (i.e., goal nodes) that are in the INACTIVE state, as a list
 	private static List<Node> getInactiveTargets(final DependencyGraph depGraph) {
 		if (depGraph == null) {
 			throw new IllegalArgumentException();
@@ -390,6 +397,7 @@ public final class ValuePropagationAttacker extends Attacker {
 			throw new IllegalArgumentException();
 		}
 		
+		// target nodes (i.e., goal nodes) that are in the INACTIVE state, as a list
 		final List<Node> inactiveTargets = getInactiveTargets(depGraph);
 
 		// Value propagation of each node with respect to each
@@ -503,9 +511,17 @@ public final class ValuePropagationAttacker extends Attacker {
 		final int curTimeStep,
 		final boolean useMaxOnly
 	) {
+		if (r == null || depGraph == null || inactiveTargetCount < 1 || curTimeStep < 0 || numTimeStep < curTimeStep) {
+			throw new IllegalArgumentException();
+		}
+		
+		// result will have an aggregate value for every node in depGraph
 		final double[] result = new double[depGraph.vertexSet().size()];
+		// iterate over inactive target (goal) nodes
 		for (int inactIndex = 0; inactIndex < inactiveTargetCount; inactIndex++) {
+			// iterate over time steps remaining
 			for (int timeIndex = 0; timeIndex <= numTimeStep - curTimeStep; timeIndex++) {
+				// iterate over all nodes
 				for (int nodeIndex = 0; nodeIndex < depGraph.vertexSet().size(); nodeIndex++) {
 					if (useMaxOnly) { // max
 						if (result[nodeIndex] < r[inactIndex][timeIndex][nodeIndex]) {
@@ -594,8 +610,8 @@ public final class ValuePropagationAttacker extends Attacker {
 		return this.propagationParam;
 	}
 
-	public boolean isBest() {
-		return this.isBest;
+	public boolean useMaxOnly() {
+		return this.useMaxOnly;
 	}
 	
 	@Override
@@ -605,8 +621,8 @@ public final class ValuePropagationAttacker extends Attacker {
 			+ this.minNumSelectCandidate + ", numSelectCandidateRatio="
 			+ this.numSelectCandidateRatio + ", qrParam=" + this.qrParam
 			+ ", discFact=" + this.discFact + ", numCandStdev=" + this.numCandStdev
-			+ ", propagationParam=" + this.propagationParam + ", isBest="
-			+ this.isBest + "]";
+			+ ", propagationParam=" + this.propagationParam + ", useMaxOnly="
+			+ this.useMaxOnly + "]";
 	}
 
 	private static boolean isProb(final double i) {
