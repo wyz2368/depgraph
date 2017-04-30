@@ -406,62 +406,78 @@ public final class ValuePropagationAttacker extends Attacker {
 		final double[][][] r =
 			new double[inactiveTargets.size()][numTimeStep - curTimeStep + 1][depGraph.vertexSet().size()];
 		
-		// For inactive targets first
+		// r^w(w, t) = r^a(w), for all w that are inactive target (goal) nodes.
 		for (int inactIndex = 0; inactIndex < inactiveTargets.size(); inactIndex++) {
 			final Node inactiveTarget = inactiveTargets.get(inactIndex);
 			// value of each inactive target, and current time step index (i.e., 0), at its own ID,
 			// is the attacker reward of the target.
+			// current time step t maps to 0 in the array.
 			r[inactIndex][0][inactiveTarget.getId() - 1] = inactiveTarget.getAReward();
 		}
-		
+
 		// get (forward) topographical order over nodes, from roots to leaves.
 		final Node[] topoOrder = getTopoOrder(depGraph);
 		
-		// Start examining nodes in reverse topological order (leaf nodes first)
+		// iterate over nodes in reverse topological order (i.e., leaf node first)
 		for (int topoIndex = depGraph.vertexSet().size() - 1; topoIndex >= 0; topoIndex--) {
 			final Node curNode = topoOrder[topoIndex];
-			// no need to examine active nodes
-			if (curNode.getState() == NodeState.INACTIVE) {
-				final Set<Edge> curOutEdges = depGraph.outgoingEdgesOf(curNode);
-				for (final Edge outEdge: curOutEdges) { // examine each outgoing edge of curNode
-					final Node childNode = outEdge.gettarget();
-					// if childNode is not active, then propagate value from childNode to curNode
-					if (childNode.getState() == NodeState.INACTIVE) {
-						for (int inactIndex = 0; inactIndex < inactiveTargets.size(); inactIndex++) {
-							for (int timeIndex = 1; timeIndex <= numTimeStep - curTimeStep; timeIndex++) {
-								double rHat = 0.0;
-								
-								if (childNode.getActivationType() == NodeActivationType.OR) {
-									// childNode is of type OR.
-									// take childNode's previous time step value, and multiply by outEdge's activation
-									// probability.
-									rHat = r[inactIndex][timeIndex - 1][childNode.getId() - 1] * outEdge.getActProb();
-									// add the cost to act on outEdge.
-									rHat += outEdge.getACost();
-								} else {
-									 // childNode is of type AND.
-									// take childNode's previous time step value, and multiply by childNode's activation
-									// probability.
-									rHat = r[inactIndex][timeIndex - 1][childNode.getId() - 1] * childNode.getActProb();
-									// add the cost to act on childNode.
-									rHat += childNode.getACost();
-									
-									final int inactiveInEdges = inactiveInEdgeCount(childNode, depGraph);
-									
-									// Normalization with respect to count of inactive in-edges of childNode
-									rHat = rHat / Math.pow(inactiveInEdges, propagationParam);
-								}
-								
-								if (useMaxOnly) {
-									// only keep maximum propagation value
-									if (r[inactIndex][timeIndex][curNode.getId() - 1] < discountFactor * rHat) {
-										r[inactIndex][timeIndex][curNode.getId() - 1] = discountFactor * rHat;
-									}
-								} else { // sum
-									if (rHat > 0) {
-										r[inactIndex][timeIndex][curNode.getId() - 1] += discountFactor * rHat;
-									}
-								}
+			if (curNode.getState() == NodeState.ACTIVE) {
+				// skip active nodes
+				continue;
+			}
+			final Set<Edge> curOutEdges = depGraph.outgoingEdgesOf(curNode);
+			for (final Edge outEdge: curOutEdges) { // examine each outgoing edge of curNode
+				final Node childNode = outEdge.gettarget();
+				if (childNode.getState() == NodeState.ACTIVE) {
+					// skip active child nodes
+					continue;
+				}
+				// curNode and childNode are both INACTIVE.
+				// propagate value from childNode to curNode
+				for (int inactIndex = 0; inactIndex < inactiveTargets.size(); inactIndex++) {
+					// iterating over inactive goal nodes
+					for (int timeIndex = 1; timeIndex <= numTimeStep - curTimeStep; timeIndex++) {
+						// iterating over future times
+						double rHat = 0.0;
+						
+						if (childNode.getActivationType() == NodeActivationType.AND) {
+							// childNode is of type AND.
+							// rHat = [c^a(v) + p(v) * r^w(v, t - 1)] / inactiveInEdgeCount^{propagationParam}
+							
+							// start with the cost to act on childNode.
+							rHat = childNode.getACost();
+							
+							// add childNode's previous time step value, times childNode's activation
+							// probability.
+							rHat += childNode.getActProb() * r[inactIndex][timeIndex - 1][childNode.getId() - 1];
+
+							// divide by count of inactive in-edges of childNode, to power of propagationParam.
+							final int inactiveInEdgeCount =
+								inactiveInEdgeCount(childNode, depGraph);							
+							rHat /= Math.pow(inactiveInEdgeCount, propagationParam);
+						} else  {
+							// childNode is of type OR.
+							// rHat = c^a(u, v) + p(u, v) * r^w(v, t - 1)
+							
+							// start with the cost to act on outEdge.
+							rHat = outEdge.getACost();
+							
+							// add childNode's previous time step value, times outEdge's activation
+							// probability.
+							rHat += outEdge.getActProb() * r[inactIndex][timeIndex - 1][childNode.getId() - 1];
+						}
+						
+						if (useMaxOnly) {
+							// only keep maximum propagation value
+							if (r[inactIndex][timeIndex][curNode.getId() - 1] < discountFactor * rHat) {
+								// r^w(u, t) < discountFactor * rHat
+									// r^w(u, t) <- discountFactor * rHat
+								r[inactIndex][timeIndex][curNode.getId() - 1] = discountFactor * rHat;
+							}
+						} else { // sum
+							// TODO this version is not documented in Overleaf doc (algorithm 2)
+							if (rHat > 0) {
+								r[inactIndex][timeIndex][curNode.getId() - 1] += discountFactor * rHat;
 							}
 						}
 					}
@@ -469,21 +485,27 @@ public final class ValuePropagationAttacker extends Attacker {
 			}
 		}
 		
-		// Now, only keep aggregate propagation values over all inactive targets.
+		// get aggregate propagation values over all inactive nodes.
 		final double[] rAggregate =
 			aggregateValues(r, depGraph, inactiveTargets.size(), numTimeStep, curTimeStep, useMaxOnly);
+		if (rAggregate.length != depGraph.vertexSet().size()) {
+			throw new IllegalStateException();
+		}
 		
-		// Now compute final propagation value for each candidate, considering cost and activation probability
-		final double[] result = getCandVals(attackCand, discountFactor, curTimeStep, rAggregate);
+		// compute final propagation value for each candidate, considering cost and activation probability
+		final double[] result = getCandVals(attackCand, rAggregate);
 		return result;
 	}
 	
+	// TODO: change Overleaf doc: does not make sense to multiply each by timeStep^discountFactor,
+	// because effect on probability of selection cancels out across different candidates.
 	private static double[] getCandVals(
 		final AttackCandidate attackCand,
-		final double discountFactor,
-		final int curTimeStep,
 		final double[] rAggregate
 	) {
+		if (attackCand == null || rAggregate == null) {
+			throw new IllegalArgumentException();
+		}
 		final List<Edge> edgeCands = new ArrayList<Edge>(attackCand.getEdgeCandidateSet());
 		final List<Node> nodeCands = new ArrayList<Node>(attackCand.getNodeCandidateSet());
 		final int candCount = edgeCands.size() + nodeCands.size();
@@ -491,13 +513,13 @@ public final class ValuePropagationAttacker extends Attacker {
 		final double[] result = new double[candCount];
 		int i = 0;
 		for (final Edge edgeCand: edgeCands) {
-			result[i] = Math.pow(discountFactor, curTimeStep - 1) 
-				* (edgeCand.getACost() + edgeCand.getActProb() * rAggregate[edgeCand.gettarget().getId() - 1]);
+			// r(e = v, u) <- c^a(e) + p(e) * rHat(u), where u is the end node of the edge.
+			result[i] = (edgeCand.getACost() + edgeCand.getActProb() * rAggregate[edgeCand.gettarget().getId() - 1]);
 			i++;
 		}
 		for (final Node nodeCand : nodeCands) {
-			result[i] = Math.pow(discountFactor, curTimeStep - 1) 
-				* (nodeCand.getACost() + nodeCand.getActProb() * rAggregate[nodeCand.getId() - 1]);
+			// r(u) <- c^a(u) + p(u) * rHat(u)
+			result[i] = (nodeCand.getACost() + nodeCand.getActProb() * rAggregate[nodeCand.getId() - 1]);
 			i++;
 		}
 		return result;
@@ -517,13 +539,15 @@ public final class ValuePropagationAttacker extends Attacker {
 		
 		// result will have an aggregate value for every node in depGraph
 		final double[] result = new double[depGraph.vertexSet().size()];
+		
 		// iterate over inactive target (goal) nodes
 		for (int inactIndex = 0; inactIndex < inactiveTargetCount; inactIndex++) {
-			// iterate over time steps remaining
+			// iterate over future time steps
 			for (int timeIndex = 0; timeIndex <= numTimeStep - curTimeStep; timeIndex++) {
 				// iterate over all nodes
 				for (int nodeIndex = 0; nodeIndex < depGraph.vertexSet().size(); nodeIndex++) {
 					if (useMaxOnly) { // max
+						// TODO this is not documented in Overleaf doc (algorithm 2)
 						if (result[nodeIndex] < r[inactIndex][timeIndex][nodeIndex]) {
 							result[nodeIndex] = r[inactIndex][timeIndex][nodeIndex];
 						}
