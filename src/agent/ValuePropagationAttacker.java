@@ -6,6 +6,7 @@ import graph.Node;
 import graph.INode.NodeState;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -314,8 +315,60 @@ public final class ValuePropagationAttacker extends Attacker {
 			throw new IllegalArgumentException();
 		}
 		final Node[] result = new Node[depGraph.vertexSet().size()];
-		for (Node node : depGraph.vertexSet()) {
+		for (final Node node : depGraph.vertexSet()) {
 			result[node.getTopoPosition()] = node;
+		}
+		if (!isValidTopoOrder(result, depGraph)) {
+			throw new IllegalStateException();
+		}
+		return result;
+	}
+	
+	public static boolean isValidTopoOrder(final Node[] input, final DependencyGraph depGraph) {
+		if (input == null || depGraph == null || depGraph.vertexSet().size() != input.length) {
+			throw new IllegalArgumentException();
+		}
+		
+		final List<Node> inputList = Arrays.asList(input);
+		final Set<Integer> idSet = new HashSet<Integer>();
+		for (final Node node: inputList) {
+			idSet.add(node.getId());
+		}
+		for (int i = 1; i <= input.length; i++) {
+			if (!idSet.contains(i)) {
+				System.out.println("Missing value: " + i);
+				System.out.println(idSet);
+				return false;
+			}
+		}
+		// all Ids in {0, 1, . . ., input.length - 1} are present
+		
+		for (final Node node: input) {
+			final Set<Edge> outEdges = depGraph.outgoingEdgesOf(node);
+			for (final Edge outEdge: outEdges) {
+				if (inputList.indexOf(outEdge.gettarget()) < inputList.indexOf(node)) {
+					System.out.println("Out-of-order pair:");
+					System.out.println("Edge: " + outEdge);
+					return false;
+				}
+			}
+		}
+		// every Node's children are after that Node.
+		return true;
+	}
+	
+	private static int inactiveInEdgeCount(
+		final Node node,
+		final DependencyGraph depGraph
+	) {
+		if (node == null || depGraph == null) {
+			throw new IllegalArgumentException();
+		}
+		int result = 0;
+		for (final Edge nodeInEdge: depGraph.incomingEdgesOf(node)) {
+			if (nodeInEdge.getsource().getState() == NodeState.INACTIVE) {
+				result++;
+			}
 		}
 		return result;
 	}
@@ -327,11 +380,12 @@ public final class ValuePropagationAttacker extends Attacker {
 		final int numTimeStep, 
 		final double discountFactor, 
 		final double propagationParam,
-		final boolean isBest
+		final boolean useMaxOnly
 	) {
 		if (depGraph == null || attackCand == null || attackCand.isEmpty()
 			|| curTimeStep < 0 || numTimeStep < curTimeStep
 			|| discountFactor < 0.0 || discountFactor > 1.0
+			|| propagationParam < 0.0
 		) {
 			throw new IllegalArgumentException();
 		}
@@ -343,57 +397,65 @@ public final class ValuePropagationAttacker extends Attacker {
 		
 		final List<Node> inactiveTargets = getInactiveTargets(depGraph);
 		
+		// get (forward) topographical order over nodes, from roots to leaves.
 		final Node[] topoOrder = getTopoOrder(depGraph);
 		
 		// Value propagation of each node with respect to each
 		// inactive target and propagation time (>= curTimeStep & <= numTimeStep).
+		// maps inactiveTargetIndex, to future time step index, to node index, to value.
 		final double[][][] r =
 			new double[inactiveTargets.size()][numTimeStep - curTimeStep + 1][depGraph.vertexSet().size()];
 		
 		// For inactive targets first
-		for (int i = 0; i < inactiveTargets.size(); i++) {
-			Node node = inactiveTargets.get(i);
-			r[i][0][node.getId() - 1] = node.getAReward();
+		for (int inactIndex = 0; inactIndex < inactiveTargets.size(); inactIndex++) {
+			final Node inactiveTarget = inactiveTargets.get(inactIndex);
+			// value of each inactive target, and current time step index (i.e., 0), at its own ID,
+			// is the attacker reward of the target.
+			r[inactIndex][0][inactiveTarget.getId() - 1] = inactiveTarget.getAReward();
 		}
-		// Start examining nodes in inverse topological order (leaf nodes first)
-		for (int k = depGraph.vertexSet().size() - 1; k >= 0; k--) {
-			Node node = topoOrder[k];
-			// checking inactive nodes only since no need to examine active nodes
-			if (node.getState() != NodeState.ACTIVE) {
-				Set<Edge> edgeSet = depGraph.outgoingEdgesOf(node);
-				if (edgeSet != null && !edgeSet.isEmpty()) { // if non-leaf 
-					for (Edge edge : edgeSet) { // examining each outgoing edge of this node
-						Node postNode = edge.gettarget();
-						// if this postcondition is not active, then propagate value from this node
-						if (postNode.getState() != NodeState.ACTIVE) {
-							for (int i = 0; i < inactiveTargets.size(); i++) {
-								for (int j = 1; j <= numTimeStep - curTimeStep; j++) {
-									double rHat = 0.0;
-									// postNode is of type OR
-									if (postNode.getActivationType() == NodeActivationType.OR) {
-										rHat = r[i][j - 1][postNode.getId() - 1] * edge.getActProb(); 
-										rHat += edge.getACost();
-									} else { // postNode is of type AND
-										rHat = r[i][j - 1][postNode.getId() - 1] * postNode.getActProb();
-										rHat += postNode.getACost();
-										int degree = depGraph.inDegreeOf(postNode);
-										for (Edge postEdge : depGraph.incomingEdgesOf(postNode)) {
-											if (postEdge.getsource().getState() == NodeState.ACTIVE) {
-												degree--;
-											}
-										}
-										// Some normalization with respect to # inactive precondition nodes
-										rHat = rHat / Math.pow(degree, propagationParam);
+		// Start examining nodes in reverse topological order (leaf nodes first)
+		for (int topoIndex = depGraph.vertexSet().size() - 1; topoIndex >= 0; topoIndex--) {
+			final Node curNode = topoOrder[topoIndex];
+			// no need to examine active nodes
+			if (curNode.getState() == NodeState.INACTIVE) {
+				final Set<Edge> curOutEdges = depGraph.outgoingEdgesOf(curNode);
+				for (final Edge outEdge: curOutEdges) { // examine each outgoing edge of curNode
+					final Node childNode = outEdge.gettarget();
+					// if childNode is not active, then propagate value from childNode to curNode
+					if (childNode.getState() == NodeState.INACTIVE) {
+						for (int inactIndex = 0; inactIndex < inactiveTargets.size(); inactIndex++) {
+							for (int timeIndex = 1; timeIndex <= numTimeStep - curTimeStep; timeIndex++) {
+								double rHat = 0.0;
+								
+								if (childNode.getActivationType() == NodeActivationType.OR) {
+									// childNode is of type OR.
+									// take childNode's previous time step value, and multiply by outEdge's activation
+									// probability.
+									rHat = r[inactIndex][timeIndex - 1][childNode.getId() - 1] * outEdge.getActProb();
+									// add the cost to act on outEdge.
+									rHat += outEdge.getACost();
+								} else {
+									 // childNode is of type AND.
+									// take childNode's previous time step value, and multiply by childNode's activation
+									// probability.
+									rHat = r[inactIndex][timeIndex - 1][childNode.getId() - 1] * childNode.getActProb();
+									// add the cost to act on childNode.
+									rHat += childNode.getACost();
+									
+									final int inactiveInEdges = inactiveInEdgeCount(childNode, depGraph);
+									
+									// Normalization with respect to count of inactive in-edges of childNode
+									rHat = rHat / Math.pow(inactiveInEdges, propagationParam);
+								}
+								
+								if (useMaxOnly) {
+									// only keep maximum propagation value
+									if (r[inactIndex][timeIndex][curNode.getId() - 1] < discountFactor * rHat) {
+										r[inactIndex][timeIndex][curNode.getId() - 1] = discountFactor * rHat;
 									}
-									if (isBest) {
-										// only keep maximum propagation value
-										if (r[i][j][node.getId() - 1] < discountFactor * rHat) {
-											r[i][j][node.getId() - 1] = discountFactor * rHat;
-										}
-									} else { // sum
-										if (rHat > 0) {
-											r[i][j][node.getId() - 1] += discountFactor * rHat;
-										}
+								} else { // sum
+									if (rHat > 0) {
+										r[inactIndex][timeIndex][curNode.getId() - 1] += discountFactor * rHat;
 									}
 								}
 							}
@@ -412,7 +474,7 @@ public final class ValuePropagationAttacker extends Attacker {
 		for (int i = 0; i < inactiveTargets.size(); i++) {
 			for (int j = 0; j <= numTimeStep - curTimeStep; j++) {
 				for (int k = 0; k < depGraph.vertexSet().size(); k++) {
-					if (isBest) {
+					if (useMaxOnly) {
 						if (rSum[k] < r[i][j][k]) {
 							rSum[k] = r[i][j][k];
 						}
