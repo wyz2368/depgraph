@@ -49,7 +49,7 @@ public final class GoalOnlyDefender extends Defender {
 		final DefenderBelief dBelief, 
 		final RandomGenerator rng) {
 		List<Node> dCandidateNodeList = new ArrayList<Node>(depGraph.getTargetSet());
-		double[] candidateValue = computeCandidateValue(dCandidateNodeList, this.discFact, curTimeStep);
+		double[] candidateValue = computeCandidateValue(dCandidateNodeList);
 		double[] probabilities = computeCandidateProb(dCandidateNodeList.size(), candidateValue, this.logisParam);
 		
 		int[] nodeIndexes = new int[dCandidateNodeList.size()];
@@ -113,14 +113,12 @@ public final class GoalOnlyDefender extends Defender {
 		return i >= 0.0 && i <= 1.0;
 	}
 	
+	// TODO no need to multiply by discFact^{timeStepsLeft}, not useful
 	private static double[] computeCandidateValue(
-		final List<Node> dCandidateNodeList, 
-		final double discountFactor, 
-		final int curTimeStep) {
+		final List<Node> dCandidateNodeList) {
 		double[] candidateValue = new double[dCandidateNodeList.size()];
 		for (int i = 0; i < dCandidateNodeList.size(); i++) {
-			candidateValue[i] = Math.pow(discountFactor, curTimeStep - 1) 
-				* (-dCandidateNodeList.get(i).getDPenalty() + dCandidateNodeList.get(i).getDCost());
+			candidateValue[i] = -dCandidateNodeList.get(i).getDPenalty() + dCandidateNodeList.get(i).getDCost();
 		}
 		return candidateValue;
 	}
