@@ -69,7 +69,7 @@ public final class ValuePropagationAttacker extends Attacker {
 		// Find candidate
 		final AttackCandidate attackCandidate = selectCandidate(depGraph);
 		// Compute candidate value
-		final double[] candidateValue = computeCandidateValueTopo(
+		final double[] candidateVals = computeCandidateValueTopo(
 			depGraph, 
 			attackCandidate, 
 			curTimeStep, 
@@ -83,23 +83,33 @@ public final class ValuePropagationAttacker extends Attacker {
 		// Compute number of candidates to select
 		final int goalCount = 
 			(int) (totalNumCandidate * this.numSelectCandidateRatio + rng.nextGaussian() * this.numCandStdev);
-		final int numSelectCandidate =
+		final int numToSelect =
 			getActionCount(this.minNumSelectCandidate, this.maxNumSelectCandidate, totalNumCandidate, goalCount);
-		if (numSelectCandidate == 0) { // if there is no candidate
+		if (numToSelect == 0) { // if there is no candidate to select
 			return new AttackerAction();
 		}
 		
 		// Compute probability to choose each node
-		final double[] probabilities = computeCandidateProb(totalNumCandidate, candidateValue, this.qrParam);
+		final double[] probabilities = computeCandidateProb(candidateVals, this.qrParam);
 		
 		// Sampling
-		final int[] nodeIndexes = new int[totalNumCandidate];
-		for (int i = 0; i < totalNumCandidate; i++) {
-			nodeIndexes[i] = i;
-		}
+		final int[] nodeIndexes = getNodeIndexes(totalNumCandidate);
+		// a probability mass function with integer values
 		final EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
 
-		return sampleAction(depGraph, attackCandidate, numSelectCandidate, rnd);
+		return sampleAction(depGraph, attackCandidate, numToSelect, rnd);
+	}
+	
+	// get list of length count, with values {0, 1, . . ., count - 1}
+	private static int[] getNodeIndexes(final int count) {
+		if (count < 1) {
+			throw new IllegalArgumentException();
+		}
+		final int[] result = new int[count];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = i;
+		}
+		return result;
 	}
 	
 	@Override
@@ -125,7 +135,7 @@ public final class ValuePropagationAttacker extends Attacker {
 		// Find candidate
 		final AttackCandidate attackCandidate = selectCandidate(depGraph);
 		// Compute candidate value
-		final double[] candidateValue = computeCandidateValueTopo(
+		final double[] candidateVals = computeCandidateValueTopo(
 			depGraph, 
 			attackCandidate, 
 			curTimeStep, 
@@ -148,13 +158,11 @@ public final class ValuePropagationAttacker extends Attacker {
 		}
 		
 		// Compute probability to choose each node
-		final double[] probabilities = computeCandidateProb(totalNumCandidate, candidateValue, this.qrParam);
+		final double[] probabilities = computeCandidateProb(candidateVals, this.qrParam);
 		
 		// Sampling
-		final int[] nodeIndexes = new int[totalNumCandidate];
-		for (int i = 0; i < totalNumCandidate; i++) {
-			nodeIndexes[i] = i;
-		}
+		final int[] nodeIndexes = getNodeIndexes(totalNumCandidate);
+		
 		final EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
 		if (isReplacement) { // this is currently not used, need to check if the isAdded works properly
 			final Set<AttackerAction> attActionSet = new HashSet<AttackerAction>();
@@ -178,102 +186,106 @@ public final class ValuePropagationAttacker extends Attacker {
 		return attActionList;
 	}
 	
-	/*
-	static double[] computeCandidateProb(
-		final DependencyGraph depGraph, 
-		final AttackCandidate attackCandidate,
-		final int curTimeStep, 
-		final int numTimeStep,
-		final double qrParam, 
-		final double discFact,
-		final double propagationParam, 
-		final int maxNumSelectCandidate,
-		final int minNumSelectCandidate, 
-		final double numSelectCandidateRatio,
-		final boolean isBest,
-		final RandomGenerator rng,
-		final double numCandStdev) {
-		if (depGraph == null || attackCandidate == null
-			|| curTimeStep < 0 || numTimeStep < curTimeStep
-			|| discFact < 0.0 || discFact > 1.0 || minNumSelectCandidate < 1
-			|| maxNumSelectCandidate < minNumSelectCandidate
-			|| !isProb(numSelectCandidateRatio)
-		) {
+	private static double max(final double[] input) {
+		if (input == null || input.length == 0) {
 			throw new IllegalArgumentException();
 		}
-		double[] candidateValue = computeCandidateValueTopo(
-			depGraph, 
-			attackCandidate, 
-			curTimeStep, 
-			numTimeStep,
-			discFact, 
-			propagationParam,
-			isBest);
-		int totalNumCandidate =
-			attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
-		
-		// Compute number of candidates to select
-		final int goalCount = 
-			(int) (totalNumCandidate * numSelectCandidateRatio + rng.nextGaussian() * numCandStdev);
-		final int numSelectCandidate =
-			getActionCount(minNumSelectCandidate, maxNumSelectCandidate, totalNumCandidate, goalCount);
-		if (numSelectCandidate == 0) { // if there is no candidate
-			return null;
+		double result = Double.MIN_VALUE;
+		for (int i = 0; i < input.length; i++) {
+			if (input[i] > result) {
+				result = input[i];
+			}
 		}
-		
-		// Compute probability to choose each node
-		return computeCandidateProb(totalNumCandidate, candidateValue, qrParam);
+		return result;
 	}
-	*/
+	
+	private static double min(final double[] input) {
+		if (input == null || input.length == 0) {
+			throw new IllegalArgumentException();
+		}
+		double result = Double.MAX_VALUE;
+		for (int i = 0; i < input.length; i++) {
+			if (input[i] < result) {
+				result = input[i];
+			}
+		}
+		return result;
+	}
+	
+	// for each value in vals,
+	// replace with (val - min) / (max - min).
+	private static void normalize(final double[] vals) {
+		if (vals == null || vals.length == 0) {
+			throw new IllegalArgumentException();
+		}
+		final double minVal = min(vals);
+		final double maxVal = max(vals);
+		if (minVal == maxVal) {
+			for (int i = 0; i < vals.length; i++) {
+				vals[i] = 0.0;
+			}
+		} else {
+			for (int i = 0; i < vals.length; i++) {
+				vals[i] = (vals[i] - minVal) / (maxVal - minVal);
+			}
+		}
+	}
+	
+	// given values in normalVals in [0, 1] and qrParam.
+	// first map each val to exp(val * qrParam).
+	// then normalize to a probability vector, by dividing
+	// each result by the total (so all will sum to 1.0).
+	private static double[] getProbsFromNormalizedVals(
+		final double[] normalVals,
+		final double qrParam
+	) {
+		if (normalVals == null || normalVals.length == 0 || qrParam < 0.0) {
+			throw new IllegalArgumentException();
+		}
+		for (int i = 0; i < normalVals.length; i++) {
+			if (normalVals[i] < 0.0 || normalVals[0] > 1.0) {
+				throw new IllegalArgumentException();
+			}
+		}
+		final double[] result = new double[normalVals.length];
+		double totalProb = 0.0;
+		for (int i = 0; i < normalVals.length; i++) {
+			result[i] = Math.exp(qrParam * normalVals[i]);
+			totalProb += result[i];
+		}
+		for (int i = 0; i < result.length; i++) {
+			result[i] /= totalProb;
+		}
+		totalProb = 0.0;
+		for (int i = 0; i < result.length; i++) {
+			if (result[i] < 0.0 || result[i] > 1.0) {
+				throw new IllegalStateException();
+			}
+			totalProb += result[i];
+		}
+		final double tolerance = 0.0001;
+		if (Math.abs(totalProb - 1.0) > tolerance) {
+			throw new IllegalStateException();
+		}
+		return result;
+	}
 	
 	/*****************************************************************************************
-	 * @param totalNumCandidate: total number of candidates
-	 * @param candidateValue: corresponding candidate values
+	 * @param candidateValue: candidate values
 	 * @return QR distribution over candidates
 	 *****************************************************************************************/
 	private static double[] computeCandidateProb(
-		final int totalNumCandidate,
-		final double[] candidateValue,
+		final double[] candidateVals,
 		final double qrParam) {
-		if (totalNumCandidate < 0 || candidateValue == null || qrParam < 0.0) {
+		if (candidateVals == null || candidateVals.length == 0 || qrParam < 0.0) {
 			throw new IllegalArgumentException();
 		}
 
-		//Normalize candidate value
-		double minValue = Double.POSITIVE_INFINITY;
-		double maxValue = Double.NEGATIVE_INFINITY;
-		for (int i = 0; i < totalNumCandidate; i++) {
-			if (minValue > candidateValue[i]) {
-				minValue = candidateValue[i];
-			}
-			if (maxValue < candidateValue[i]) {
-				maxValue = candidateValue[i];
-			}
-		}
-		if (maxValue > minValue) {
-			for (int i = 0; i < totalNumCandidate; i++) {
-				candidateValue[i] = (candidateValue[i] - minValue) / (maxValue - minValue);
-			}
-		} else  {
-			for (int i = 0; i < totalNumCandidate; i++) {
-				candidateValue[i] = 0.0;
-			}
-		}
+		//Normalize candidate value: map each to [0, 1] as (val - min) / (max - min).
+		normalize(candidateVals);
 		
-		// Compute probability
-		double[] probabilities = new double[totalNumCandidate];
-		int[] nodeList = new int[totalNumCandidate];
-		double sumProb = 0.0;
-		for (int i = 0; i < totalNumCandidate; i++) {
-			nodeList[i] = i;
-			probabilities[i] = Math.exp(qrParam * candidateValue[i]);
-			sumProb += probabilities[i];
-		}
-		for (int i = 0; i < totalNumCandidate; i++) {
-			probabilities[i] /= sumProb;
-		}
-		
-		return probabilities;
+		// Compute probability, using quantal response distribution.
+		return getProbsFromNormalizedVals(candidateVals, qrParam);
 	}
 	
 	private static double[] computeCandidateValueTopo(
