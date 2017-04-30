@@ -341,8 +341,8 @@ public final class ValuePropagationAttacker extends Attacker {
 				return false;
 			}
 		}
-		// all Ids in {0, 1, . . ., input.length - 1} are present
-		
+		// all Ids in {1, 2, . . ., input.length} are present
+
 		for (final Node node: input) {
 			final Set<Edge> outEdges = depGraph.outgoingEdgesOf(node);
 			for (final Edge outEdge: outEdges) {
