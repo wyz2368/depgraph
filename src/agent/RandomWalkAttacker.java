@@ -225,26 +225,45 @@ public final class RandomWalkAttacker extends Attacker {
 			throw new IllegalArgumentException();
 		}
 		final List<Edge> inEdges = new ArrayList<Edge>(depGraph.incomingEdgesOf(node));
-		final int[] nodeIndexes = new int[inEdges.size()];
 		final double[] probabilities = new double[inEdges.size()];
 		double totalProb = 0.0;
 		for (int inEdgeIndex = 0; inEdgeIndex < inEdges.size(); inEdgeIndex++) {
-			nodeIndexes[inEdgeIndex] = inEdgeIndex;
 			final Node parent = inEdges.get(inEdgeIndex).getsource();
+			// p^{rw}(u, v) \prop pAct(u) * p(u, v)
 			probabilities[inEdgeIndex] = rwTuples[parent.getId() - 1].getPAct() * inEdges.get(inEdgeIndex).getActProb();
 			totalProb += probabilities[inEdgeIndex];
 		}
-		for (int i = 0; i < inEdges.size(); i++) {
+		
+		// normalize probabilities, to sum to 1.0
+		for (int i = 0; i < probabilities.length; i++) {
 			probabilities[i] /= totalProb;
 		}
+		totalProb = 0.0;
+		for (int i = 0; i < probabilities.length; i++) {
+			if (!isProb(probabilities[i])) {
+				// result values must be in [0, 1]
+				throw new IllegalStateException();
+			}
+			totalProb += probabilities[i];
+		}
+		final double tolerance = 0.0001;
+		if (Math.abs(totalProb - 1.0) > tolerance) {
+			// total of result must equal 1.0
+			throw new IllegalStateException();
+		}
 		
+		// select parent u of node v.
+		final int[] nodeIndexes = getIndexArray(inEdges.size());
 		final EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
 		final int chosenPreIndex = rnd.sample();
 		final Edge chosenInEdge = inEdges.get(chosenPreIndex);
 		final Node chosenParent = chosenInEdge.getsource();
 		
-		final int tAct = rwTuples[chosenParent.getId() - 1].getTAct() + 1;
+		// pAct(v) = pAct(u) * p(u, v), for edge (u, v)
 		final double pAct = rwTuples[chosenParent.getId() - 1].getPAct() * chosenInEdge.getActProb();
+		// tAct(v) = tAct(u) + 1
+		final int tAct = rwTuples[chosenParent.getId() - 1].getTAct() + 1;
+		// preAct(v) = [u]
 		final List<Edge> preAct = new ArrayList<Edge>();
 		preAct.add(chosenInEdge);
 		return new RandomWalkTuple(tAct, pAct, preAct);
@@ -261,48 +280,71 @@ public final class RandomWalkAttacker extends Attacker {
 		) {
 			throw new IllegalArgumentException();
 		}
+		
+		// tAct = [max_{u in pre(v)} tAct(u)] + 1
+		// preAct = [all incoming edges of node]
 		int tAct = 0;
 		final List<Edge> preAct = new ArrayList<Edge>();
 		for (final Edge inEdge : depGraph.incomingEdgesOf(node)) {
+			preAct.add(inEdge);
+			
 			final Node parent = inEdge.getsource();
 			tAct = Math.max(tAct, rwTuples[parent.getId() - 1].getTAct());
-			preAct.add(inEdge);
 		}
 		tAct++;
 		
+		final boolean[] alreadyInSeq = new boolean[depGraph.vertexSet().size()];
+		alreadyInSeq[node.getId() - 1] = true; // node is in the sequence
 		final List<Node> sequenceList = new ArrayList<Node>(); 
-		final boolean[] isInSequence = new boolean[depGraph.vertexSet().size()];
 		for (final Edge inEdge: preAct) {
-			sequenceList.add(inEdge.getsource());
-			isInSequence[inEdge.getsource().getId() - 1] = true;
+			final Node parent = inEdge.getsource();
+			sequenceList.add(parent);
+			alreadyInSeq[parent.getId() - 1] = true;
 		}
+		// initially, sequenceList contains every parent of node.
+		// alreadyInSeq has true for every node that has been in sequenceList, false for all others.
 		
-		// Start backtracking
+		// pAct starts with node's pAct(v), because node is an AND-type node
 		double pAct = node.getActProb();
 		while (!sequenceList.isEmpty()) {
 			final Node curNode = sequenceList.remove(0);
-			final RandomWalkTuple rwTuple = rwTuples[curNode.getId() - 1];
-			if (curNode.getActivationType() == NodeActivationType.AND 
-				&& curNode.getState() == NodeState.INACTIVE) { // inactive AND node
+			final RandomWalkTuple curRWTuple = rwTuples[curNode.getId() - 1];
+			
+			if (curNode.getState() == NodeState.ACTIVE) {
+				continue;
+			}
+			// node is INACTIVE
+			if (curNode.getActivationType() == NodeActivationType.AND) { // inactive AND node
+				// multiply pAct by p(u) for an AND-type ancestor.
 				pAct *= curNode.getActProb();
-				if (rwTuple.getPreAct() != null) { // not the root node
-					for (final Edge inEdge: rwTuple.getPreAct()) {
+				
+				if (curRWTuple.getPreAct() != null) { // not the root node, has parents
+					for (final Edge inEdge: curRWTuple.getPreAct()) {
 						final Node parent = inEdge.getsource();
-						if (!isInSequence[parent.getId() - 1]) {
+						if (!alreadyInSeq[parent.getId() - 1]) {
+							// not already processed.
+							// will proceed to parents of the AND-type node.
 							sequenceList.add(parent);
-							isInSequence[parent.getId() - 1] = true;
+							alreadyInSeq[parent.getId() - 1] = true;
 						}
 					}
 				}
-			} else { // OR node
-				if (rwTuple.getPreAct() != null) {  // not the active node
-					final Edge inEdge = rwTuple.getPreAct().get(0);
-					pAct *= inEdge.getActProb();
-					final Node parent = inEdge.getsource();
-					if (!isInSequence[parent.getId() - 1]) {
-						sequenceList.add(parent);
-						isInSequence[parent.getId() - 1] = true;
-					}
+			} else {  // inactive OR node. cannot be a root node because OR-type.
+				final Edge inEdge = curRWTuple.getPreAct().get(0);
+				
+				if (curRWTuple.getPreAct().size() != 1) {
+					throw new IllegalStateException();
+				}
+				
+				// multiply pAct by p(u, v) for the preAct in-edge of this node
+				pAct *= inEdge.getActProb();
+				
+				final Node parent = inEdge.getsource();
+				if (!alreadyInSeq[parent.getId() - 1]) {
+					// not already processed.
+					// will proceed to parent of the OR-type node.
+					sequenceList.add(parent);
+					alreadyInSeq[parent.getId() - 1] = true;
 				}
 			}
 		}
