@@ -63,7 +63,7 @@ public final class RandomWalkVsDefender extends Defender {
 		final double isRandomized) {
 		super(DefenderType.vsRANDOM_WALK);
 		if (discFact <= 0.0 || discFact > 1.0 || thres < 0.0 || thres > 1.0
-			|| numRWSample < 1) {
+			|| numRWSample < 1 || qrParam < 0.0) {
 			throw new IllegalArgumentException();
 		}
 		this.logisParam = logisParam;
@@ -160,7 +160,7 @@ public final class RandomWalkVsDefender extends Defender {
 			}
 			DefenderAction defAction = new DefenderAction();
 			// attack probability
-			double[] attProb = RandomWalkAttacker.computeCandidateProb(this.numRWSample, attValue, this.qrParam);
+			double[] attProb = Attacker.computeCandidateProb(attValue, this.qrParam);
 			greedyAction(
 				depGraph, // greedy defense with respect to each possible game state
 				rwTuplesList, 
@@ -630,7 +630,7 @@ public final class RandomWalkVsDefender extends Defender {
 				attActionList[i] = attAction;
 			}
 			// attack probability
-			double[] attProb = RandomWalkAttacker.computeCandidateProb(this.numRWSample, attValue, this.qrParam);
+			double[] attProb = Attacker.computeCandidateProb(attValue, this.qrParam);
 			
 			rwTuplesAll[bIdx] = rwTuplesList;
 			rwAttActionAll[bIdx] = attActionList;

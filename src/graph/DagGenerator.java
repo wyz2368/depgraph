@@ -85,12 +85,12 @@ public final class DagGenerator {
 	}
 	
 	public static DependencyGraph genRandomSepLayDAG(
-			final int numLayer,
-			final int numNode1Layer, // first layer, assuming largest number of nodes
-			final double numNodeRatio, // decreased number of nodes in deeper layers
-			// number of edges between consecutive layers, with ratio w.r.t. #nodes of these layers
-			final double numEdgeRatio,
-			final RandomDataGenerator rand
+		final int numLayer,
+		final int numNode1Layer, // first layer, assuming largest number of nodes
+		final double numNodeRatio, // decreased number of nodes in deeper layers
+		// number of edges between consecutive layers, with ratio w.r.t. #nodes of these layers
+		final double numEdgeRatio,
+		final RandomDataGenerator rand
 		) {
 		if (numLayer < 1) {
 			throw new IllegalArgumentException("Invalid numLayer");

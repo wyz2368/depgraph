@@ -26,8 +26,10 @@ public final class ValuePropagationAttacker extends Attacker {
 	private double discFact;
 	private double numCandStdev;
 	
+	// TODO make propagationParam a parameter from simulation_spec
 	private final double propagationParam = 0.5;
-	private final boolean isBest = true;
+	// TODO make useMaxOnly a parameter from simulation_spec
+	private final boolean useMaxOnly = true;
 	
 	public ValuePropagationAttacker(
 		final double maxNumSelectCandidate, 
@@ -39,7 +41,7 @@ public final class ValuePropagationAttacker extends Attacker {
 		super(AttackerType.VALUE_PROPAGATION);
 		if (minNumSelectCandidate < 1 || maxNumSelectCandidate < minNumSelectCandidate
 			|| !isProb(numSelectCandidateRatio)
-			|| numCandStdev < 0.0) {
+			|| numCandStdev < 0.0 || qrParam < 0.0) {
 			throw new IllegalArgumentException();
 		}
 		this.maxNumSelectCandidate = (int) maxNumSelectCandidate;
@@ -66,44 +68,41 @@ public final class ValuePropagationAttacker extends Attacker {
 		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || rng == null) {
 			throw new IllegalArgumentException();
 		}
-		// Find candidate
-		AttackCandidate attackCandidate = selectCandidate(depGraph);
-		// Compute candidate value
-		double[] candidateValue = computeCandidateValueTopo(
+		final AttackCandidate attackCandidate = getAttackCandidate(depGraph);
+		if (attackCandidate.isEmpty()) {
+			return new AttackerAction();
+		}
+
+		// Compute candidate values
+		final double[] candidateVals = computeCandidateValueTopo(
 			depGraph, 
 			attackCandidate, 
 			curTimeStep, 
 			numTimeStep, 
 			this.discFact, 
 			this.propagationParam,
-			this.isBest);
-		int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size() 
-			+ attackCandidate.getNodeCandidateSet().size();
+			this.useMaxOnly);
 		
 		// Compute number of candidates to select
-		int numSelectCandidate = 0;
-		if (totalNumCandidate < this.minNumSelectCandidate) {
-			numSelectCandidate = totalNumCandidate;
-		} else {
-			numSelectCandidate = Math.max(this.minNumSelectCandidate,
-				(int) (totalNumCandidate * this.numSelectCandidateRatio));
-			numSelectCandidate = Math.min(this.maxNumSelectCandidate, numSelectCandidate);
-		}
-		if (numSelectCandidate == 0) { // if there is no candidate
+		final int totalNumCandidate = attackCandidate.getEdgeCandidateSet().size() 
+			+ attackCandidate.getNodeCandidateSet().size();
+		final int goalCount = 
+			(int) (totalNumCandidate * this.numSelectCandidateRatio + rng.nextGaussian() * this.numCandStdev);
+		final int numToSelect =
+			getActionCount(this.minNumSelectCandidate, this.maxNumSelectCandidate, totalNumCandidate, goalCount);
+		if (numToSelect == 0) { // if there is no candidate to select
 			return new AttackerAction();
 		}
 		
 		// Compute probability to choose each node
-		double[] probabilities = computeCandidateProb(totalNumCandidate, candidateValue, this.qrParam);
+		final double[] probabilities = computeCandidateProb(candidateVals, this.qrParam);
 		
-		// Sampling
-		int[] nodeIndexes = new int[totalNumCandidate];
-		for (int i = 0; i < totalNumCandidate; i++) {
-			nodeIndexes[i] = i;
-		}
-		EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
-		
-		return sampleAction(depGraph, attackCandidate, numSelectCandidate, rnd);
+		// array of [0, 1, . . ., totalNumCandidate - 1]
+		final int[] nodeIndexes = getIndexArray(totalNumCandidate);
+		// a probability mass function with integer values
+		final EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
+
+		return sampleActionFromCandidate(depGraph, attackCandidate, numToSelect, rnd);
 	}
 	
 	@Override
@@ -127,28 +126,29 @@ public final class ValuePropagationAttacker extends Attacker {
 			throw new IllegalArgumentException();
 		}
 		// Find candidate
-		AttackCandidate attackCandidate = selectCandidate(depGraph);
+		final AttackCandidate attackCandidate = getAttackCandidate(depGraph);
+		if (attackCandidate.isEmpty()) {
+			List<AttackerAction> attActionList = new ArrayList<AttackerAction>();
+			attActionList.add(new AttackerAction());
+			return attActionList;
+		}
 		// Compute candidate value
-		double[] candidateValue = computeCandidateValueTopo(
+		final double[] candidateVals = computeCandidateValueTopo(
 			depGraph, 
 			attackCandidate, 
 			curTimeStep, 
 			numTimeStep, 
 			this.discFact, 
 			this.propagationParam,
-			this.isBest);
-		int totalNumCandidate =
+			this.useMaxOnly);
+		final int totalNumCandidate =
 			attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
 		
 		// Compute number of candidates to select
-		int numSelectCandidate = 0;
-		if (totalNumCandidate < this.minNumSelectCandidate) {
-			numSelectCandidate = totalNumCandidate;
-		} else {
-			numSelectCandidate = Math.max(this.minNumSelectCandidate,
-				(int) (totalNumCandidate * this.numSelectCandidateRatio));
-			numSelectCandidate = Math.min(this.maxNumSelectCandidate, numSelectCandidate);
-		}
+		final int goalCount = 
+			(int) (totalNumCandidate * this.numSelectCandidateRatio + rng.nextGaussian() * this.numCandStdev);
+		final int numSelectCandidate =
+			getActionCount(this.minNumSelectCandidate, this.maxNumSelectCandidate, totalNumCandidate, goalCount);
 		if (numSelectCandidate == 0) { // if there is no candidate
 			List<AttackerAction> attActionList = new ArrayList<AttackerAction>();
 			attActionList.add(new AttackerAction());
@@ -156,19 +156,18 @@ public final class ValuePropagationAttacker extends Attacker {
 		}
 		
 		// Compute probability to choose each node
-		double[] probabilities = computeCandidateProb(totalNumCandidate, candidateValue, this.qrParam);
+		final double[] probabilities = computeCandidateProb(candidateVals, this.qrParam);
 		
 		// Sampling
-		int[] nodeIndexes = new int[totalNumCandidate];
-		for (int i = 0; i < totalNumCandidate; i++) {
-			nodeIndexes[i] = i;
-		}
-		EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
+		final int[] nodeIndexes = getIndexArray(totalNumCandidate);
+		
+		final EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
 		if (isReplacement) { // this is currently not used, need to check if the isAdded works properly
-			Set<AttackerAction> attActionSet = new HashSet<AttackerAction>();
+			final Set<AttackerAction> attActionSet = new HashSet<AttackerAction>();
 			int i = 0;
 			while (i < numSample) {
-				AttackerAction attAction = sampleAction(depGraph, attackCandidate, numSelectCandidate, rnd);
+				AttackerAction attAction =
+					sampleActionFromCandidate(depGraph, attackCandidate, numSelectCandidate, rnd);
 				boolean isAdded = attActionSet.add(attAction);
 				if (isAdded) {
 					i++;
@@ -176,207 +175,145 @@ public final class ValuePropagationAttacker extends Attacker {
 			}
 			return new ArrayList<AttackerAction>(attActionSet);
 		}
+		
 		// this is currently used, correct
-		List<AttackerAction> attActionList = new ArrayList<AttackerAction>();
+		final List<AttackerAction> attActionList = new ArrayList<AttackerAction>();
 		for (int i = 0; i < numSample; i++) {
-			AttackerAction attAction = sampleAction(depGraph, attackCandidate, numSelectCandidate, rnd);
+			final AttackerAction attAction =
+				sampleActionFromCandidate(depGraph, attackCandidate, numSelectCandidate, rnd);
 			attActionList.add(attAction);
 		}
 		return attActionList;
 	}
 	
-	static double[] computeCandidateProb(
-		final DependencyGraph depGraph, 
-		final AttackCandidate attackCandidate,
-		final int curTimeStep, 
-		final int numTimeStep,
-		final double qrParam, 
-		final double discFact,
-		final double propagationParam, 
-		final int maxNumSelectCandidate,
-		final int minNumSelectCandidate, 
-		final double numSelectCandidateRatio,
-		final boolean isBest) {
-		if (depGraph == null || attackCandidate == null
-			|| curTimeStep < 0 || numTimeStep < curTimeStep
-			|| discFact < 0.0 || discFact > 1.0 || minNumSelectCandidate < 1
-			|| maxNumSelectCandidate < minNumSelectCandidate
-			|| !isProb(numSelectCandidateRatio)
-		) {
+	// get target nodes (i.e., goal nodes) that are in the INACTIVE state, as a list
+	private static List<Node> getInactiveTargets(final DependencyGraph depGraph) {
+		if (depGraph == null) {
 			throw new IllegalArgumentException();
 		}
-		double[] candidateValue = computeCandidateValueTopo(
-			depGraph, 
-			attackCandidate, 
-			curTimeStep, 
-			numTimeStep,
-			discFact, 
-			propagationParam,
-			isBest);
-		int totalNumCandidate =
-			attackCandidate.getEdgeCandidateSet().size() + attackCandidate.getNodeCandidateSet().size();
-		
-		// Compute number of candidates to select
-		int numSelectCandidate = 0;
-		if (totalNumCandidate < minNumSelectCandidate) {
-			numSelectCandidate = totalNumCandidate;
-		} else {
-			numSelectCandidate = Math.max(minNumSelectCandidate, (int) (totalNumCandidate * numSelectCandidateRatio));
-			numSelectCandidate = Math.min(maxNumSelectCandidate, numSelectCandidate);
+		final List<Node> result = new ArrayList<Node>();
+		for (final Node node: depGraph.getTargetSet()) {
+			if (node.getState() == NodeState.INACTIVE) {
+				result.add(node);
+			}
 		}
-		if (numSelectCandidate == 0) { // if there is no candidate
-			return null;
-		}
-		
-		// Compute probability to choose each node
-		return computeCandidateProb(totalNumCandidate, candidateValue, qrParam);
+		return result;
 	}
 	
-	/*****************************************************************************************
-	 * @param totalNumCandidate: total number of candidates
-	 * @param candidateValue: corresponding candidate values
-	 * @return QR distribution over candidates
-	 *****************************************************************************************/
-	private static double[] computeCandidateProb(
-		final int totalNumCandidate, final double[] candidateValue, final double qrParam) {
-		if (totalNumCandidate < 0 || candidateValue == null) {
+	private static int inactiveInEdgeCount(
+		final Node node,
+		final DependencyGraph depGraph
+	) {
+		if (node == null || depGraph == null) {
 			throw new IllegalArgumentException();
 		}
-		//Normalize candidate value
-		double minValue = Double.POSITIVE_INFINITY;
-		double maxValue = Double.NEGATIVE_INFINITY;
-		for (int i = 0; i < totalNumCandidate; i++) {
-			if (minValue > candidateValue[i]) {
-				minValue = candidateValue[i];
-			}
-			if (maxValue < candidateValue[i]) {
-				maxValue = candidateValue[i];
+		int result = 0;
+		for (final Edge nodeInEdge: depGraph.incomingEdgesOf(node)) {
+			if (nodeInEdge.getsource().getState() == NodeState.INACTIVE) {
+				result++;
 			}
 		}
-		if (maxValue > minValue) {
-			for (int i = 0; i < totalNumCandidate; i++) {
-				candidateValue[i] = (candidateValue[i] - minValue) / (maxValue - minValue);
-			}
-		} else  {
-			for (int i = 0; i < totalNumCandidate; i++) {
-				candidateValue[i] = 0.0;
-			}
-		}
-		
-		// Compute probability
-		double[] probabilities = new double[totalNumCandidate];
-		int[] nodeList = new int[totalNumCandidate];
-		double sumProb = 0.0;
-		for (int i = 0; i < totalNumCandidate; i++) {
-			nodeList[i] = i;
-			probabilities[i] = Math.exp(qrParam * candidateValue[i]);
-			sumProb += probabilities[i];
-		}
-		for (int i = 0; i < totalNumCandidate; i++) {
-			probabilities[i] /= sumProb;
-		}
-		
-		return probabilities;
+		return result;
 	}
 	
 	private static double[] computeCandidateValueTopo(
 		final DependencyGraph depGraph, 
-		final AttackCandidate attackCandidate, 
+		final AttackCandidate attackCand, 
 		final int curTimeStep, 
 		final int numTimeStep, 
 		final double discountFactor, 
 		final double propagationParam,
-		final boolean isBest
+		final boolean useMaxOnly
 	) {
-		if (depGraph == null || attackCandidate == null
+		if (depGraph == null || attackCand == null || attackCand.isEmpty()
 			|| curTimeStep < 0 || numTimeStep < curTimeStep
 			|| discountFactor < 0.0 || discountFactor > 1.0
+			|| propagationParam < 0.0
 		) {
 			throw new IllegalArgumentException();
 		}
-		// if there is no candidate, then no point to compute attack probability
-		if (attackCandidate.isEmpty()) {
-			return null;
-		}
-		List<Edge> edgeCandidateList = new ArrayList<Edge>(attackCandidate.getEdgeCandidateSet());
-		List<Node> nodeCandidateList = new ArrayList<Node>(attackCandidate.getNodeCandidateSet());
-		int totalNumCandidate = edgeCandidateList.size() + nodeCandidateList.size();
-		double[] candidateValue = new double[totalNumCandidate];
-		for (int i = 0; i < totalNumCandidate; i++) {
-			candidateValue[i] = 0.0;
-		}
 		
-		List<Node> targetList = new ArrayList<Node>(); // list of inactive targets
-		for (Node target : depGraph.getTargetSet()) {
-			if (target.getState() != NodeState.ACTIVE) {
-				targetList.add(target);
-			}
-		}
-		
-		// Get topological order of the vertices in graph
-		Node[] topoOrder = new Node[depGraph.vertexSet().size()];
+		// target nodes (i.e., goal nodes) that are in the INACTIVE state, as a list
+		final List<Node> inactiveTargets = getInactiveTargets(depGraph);
 
-		for (Node node : depGraph.vertexSet()) {
-			topoOrder[node.getTopoPosition()] = node;
-		}
-		
 		// Value propagation of each node with respect to each
 		// inactive target and propagation time (>= curTimeStep & <= numTimeStep).
-		double[][][] r = new double[targetList.size()][numTimeStep - curTimeStep + 1][depGraph.vertexSet().size()];
-		for (int i = 0; i < targetList.size(); i++) {
-			for (int j = 0; j <= numTimeStep - curTimeStep; j++) {
-				for (int k = 0; k < depGraph.vertexSet().size(); k++) {
-					r[i][j][k] = 0.0;
-				}
-			}
-		}
+		// maps inactiveTargetIndex, to future time step index, to node index, to value.
+		final double[][][] r =
+			new double[inactiveTargets.size()][numTimeStep - curTimeStep + 1][depGraph.vertexSet().size()];
 		
-		// For inactive targets first
-		for (int i = 0; i < targetList.size(); i++) {
-			Node node = targetList.get(i);
-			r[i][0][node.getId() - 1] = node.getAReward();
+		// r^w(w, t) = r^a(w), for all w that are inactive target (goal) nodes.
+		for (int inactIndex = 0; inactIndex < inactiveTargets.size(); inactIndex++) {
+			final Node inactiveTarget = inactiveTargets.get(inactIndex);
+			// value of each inactive target, and current time step index (i.e., 0), at its own ID,
+			// is the attacker reward of the target.
+			// current time step t maps to 0 in the array.
+			r[inactIndex][0][inactiveTarget.getId() - 1] = inactiveTarget.getAReward();
 		}
-		// Start examining nodes in inverse topological order (leaf nodes first)
-		for (int k = depGraph.vertexSet().size() - 1; k >= 0; k--) {
-			Node node = topoOrder[k];
-			// checking inactive nodes only since no need to examine active nodes
-			if (node.getState() != NodeState.ACTIVE) {
-				Set<Edge> edgeSet = depGraph.outgoingEdgesOf(node);
-				if (edgeSet != null && !edgeSet.isEmpty()) { // if non-leaf 
-					for (Edge edge : edgeSet) { // examining each outgoing edge of this node
-						Node postNode = edge.gettarget();
-						// if this postcondition is not active, then propagate value from this node
-						if (postNode.getState() != NodeState.ACTIVE) {
-							for (int i = 0; i < targetList.size(); i++) {
-								for (int j = 1; j <= numTimeStep - curTimeStep; j++) {
-									double rHat = 0.0;
-									// postNode is of type OR
-									if (postNode.getActivationType() == NodeActivationType.OR) {
-										rHat = r[i][j - 1][postNode.getId() - 1] * edge.getActProb(); 
-										rHat += edge.getACost();
-									} else { // postNode is of type AND
-										rHat = r[i][j - 1][postNode.getId() - 1] * postNode.getActProb();
-										rHat += postNode.getACost();
-										int degree = depGraph.inDegreeOf(postNode);
-										for (Edge postEdge : depGraph.incomingEdgesOf(postNode)) {
-											if (postEdge.getsource().getState() == NodeState.ACTIVE) {
-												degree--;
-											}
-										}
-										// Some normalization with respect to # inactive precondition nodes
-										rHat = rHat / Math.pow(degree, propagationParam);
-									}
-									if (isBest) {
-										// only keep maximum propagation value
-										if (r[i][j][node.getId() - 1] < discountFactor * rHat) {
-											r[i][j][node.getId() - 1] = discountFactor * rHat;
-										}
-									} else { // sum
-										if (rHat > 0) {
-											r[i][j][node.getId() - 1] += discountFactor * rHat;
-										}
-									}
-								}
+
+		// get (forward) topographical order over nodes, from roots to leaves.
+		final Node[] topoOrder = getTopoOrder(depGraph);
+		
+		// iterate over nodes in reverse topological order (i.e., leaf node first)
+		for (int topoIndex = depGraph.vertexSet().size() - 1; topoIndex >= 0; topoIndex--) {
+			final Node curNode = topoOrder[topoIndex];
+			if (curNode.getState() == NodeState.ACTIVE) {
+				// skip active nodes
+				continue;
+			}
+			final Set<Edge> curOutEdges = depGraph.outgoingEdgesOf(curNode);
+			for (final Edge outEdge: curOutEdges) { // examine each outgoing edge of curNode
+				final Node childNode = outEdge.gettarget();
+				if (childNode.getState() == NodeState.ACTIVE) {
+					// skip active child nodes
+					continue;
+				}
+				// curNode and childNode are both INACTIVE.
+				// propagate value from childNode to curNode
+				for (int inactIndex = 0; inactIndex < inactiveTargets.size(); inactIndex++) {
+					// iterating over inactive goal nodes
+					for (int timeIndex = 1; timeIndex <= numTimeStep - curTimeStep; timeIndex++) {
+						// iterating over future times
+						double rHat = 0.0;
+						
+						if (childNode.getActivationType() == NodeActivationType.AND) {
+							// childNode is of type AND.
+							// rHat = [c^a(v) + p(v) * r^w(v, t - 1)] / inactiveInEdgeCount^{propagationParam}
+							
+							// start with the cost to act on childNode.
+							rHat = childNode.getACost();
+							
+							// add childNode's previous time step value, times childNode's activation
+							// probability.
+							rHat += childNode.getActProb() * r[inactIndex][timeIndex - 1][childNode.getId() - 1];
+
+							// divide by count of inactive in-edges of childNode, to power of propagationParam.
+							final int inactiveInEdgeCount =
+								inactiveInEdgeCount(childNode, depGraph);							
+							rHat /= Math.pow(inactiveInEdgeCount, propagationParam);
+						} else  {
+							// childNode is of type OR.
+							// rHat = c^a(u, v) + p(u, v) * r^w(v, t - 1)
+							
+							// start with the cost to act on outEdge.
+							rHat = outEdge.getACost();
+							
+							// add childNode's previous time step value, times outEdge's activation
+							// probability.
+							rHat += outEdge.getActProb() * r[inactIndex][timeIndex - 1][childNode.getId() - 1];
+						}
+						
+						if (useMaxOnly) {
+							// only keep maximum propagation value
+							if (r[inactIndex][timeIndex][curNode.getId() - 1] < discountFactor * rHat) {
+								// r^w(u, t) < discountFactor * rHat
+									// r^w(u, t) <- discountFactor * rHat
+								r[inactIndex][timeIndex][curNode.getId() - 1] = discountFactor * rHat;
+							}
+						} else { // sum
+							// TODO this version is not documented in Overleaf doc (algorithm 2)
+							if (rHat > 0) {
+								r[inactIndex][timeIndex][curNode.getId() - 1] += discountFactor * rHat;
 							}
 						}
 					}
@@ -384,44 +321,81 @@ public final class ValuePropagationAttacker extends Attacker {
 			}
 		}
 		
-		/*****************************************************************************************/
-		// Now, only keep maximum propagation values over all propagation paths
-		double[] rSum = new double[depGraph.vertexSet().size()];
-		for (int i = 0; i < depGraph.vertexSet().size(); i++) {
-			rSum[i] = 0;
+		// get aggregate propagation values over all inactive nodes.
+		final double[] rAggregate =
+			aggregateValues(r, depGraph, inactiveTargets.size(), numTimeStep, curTimeStep, useMaxOnly);
+		if (rAggregate.length != depGraph.vertexSet().size()) {
+			throw new IllegalStateException();
 		}
-		for (int i = 0; i < targetList.size(); i++) {
-			for (int j = 0; j <= numTimeStep - curTimeStep; j++) {
-				for (int k = 0; k < depGraph.vertexSet().size(); k++) {
-					if (isBest) {
-						if (rSum[k] < r[i][j][k]) {
-							rSum[k] = r[i][j][k];
+		
+		// compute final propagation value for each candidate, considering cost and activation probability
+		final double[] result = getCandVals(attackCand, rAggregate);
+		return result;
+	}
+	
+	// TODO: change Overleaf doc: does not make sense to multiply each by timeStep^discountFactor,
+	// because effect on probability of selection cancels out across different candidates.
+	private static double[] getCandVals(
+		final AttackCandidate attackCand,
+		final double[] rAggregate
+	) {
+		if (attackCand == null || rAggregate == null) {
+			throw new IllegalArgumentException();
+		}
+		final List<Edge> edgeCands = new ArrayList<Edge>(attackCand.getEdgeCandidateSet());
+		final List<Node> nodeCands = new ArrayList<Node>(attackCand.getNodeCandidateSet());
+		final int candCount = edgeCands.size() + nodeCands.size();
+		
+		final double[] result = new double[candCount];
+		int i = 0;
+		for (final Edge edgeCand: edgeCands) {
+			// r(e = v, u) <- c^a(e) + p(e) * rHat(u), where u is the end node of the edge.
+			result[i] = (edgeCand.getACost() + edgeCand.getActProb() * rAggregate[edgeCand.gettarget().getId() - 1]);
+			i++;
+		}
+		for (final Node nodeCand : nodeCands) {
+			// r(u) <- c^a(u) + p(u) * rHat(u)
+			result[i] = (nodeCand.getACost() + nodeCand.getActProb() * rAggregate[nodeCand.getId() - 1]);
+			i++;
+		}
+		return result;
+	}
+	
+	private static double[] aggregateValues(
+		final double[][][] r,
+		final DependencyGraph depGraph,
+		final int inactiveTargetCount,
+		final int numTimeStep,
+		final int curTimeStep,
+		final boolean useMaxOnly
+	) {
+		if (r == null || depGraph == null || inactiveTargetCount < 1 || curTimeStep < 0 || numTimeStep < curTimeStep) {
+			throw new IllegalArgumentException();
+		}
+		
+		// result will have an aggregate value for every node in depGraph
+		final double[] result = new double[depGraph.vertexSet().size()];
+		
+		// iterate over inactive target (goal) nodes
+		for (int inactIndex = 0; inactIndex < inactiveTargetCount; inactIndex++) {
+			// iterate over future time steps
+			for (int timeIndex = 0; timeIndex <= numTimeStep - curTimeStep; timeIndex++) {
+				// iterate over all nodes
+				for (int nodeIndex = 0; nodeIndex < depGraph.vertexSet().size(); nodeIndex++) {
+					if (useMaxOnly) { // max
+						// TODO this is not documented in Overleaf doc (algorithm 2)
+						if (result[nodeIndex] < r[inactIndex][timeIndex][nodeIndex]) {
+							result[nodeIndex] = r[inactIndex][timeIndex][nodeIndex];
 						}
 					} else { // sum
-						if (r[i][j][k] > 0) {
-							rSum[k] += r[i][j][k];
+						if (r[inactIndex][timeIndex][nodeIndex] > 0) {
+							result[nodeIndex] += r[inactIndex][timeIndex][nodeIndex];
 						}
 					}
 				}
 			}
 		}
-		
-		// Now compute final propagation value for each candidate, considering cost and activation probs
-		int idx = 0;
-		for (Edge edge : edgeCandidateList) {
-			candidateValue[idx] = Math.pow(discountFactor, curTimeStep - 1) 
-				* (edge.getACost() + edge.getActProb() * rSum[edge.gettarget().getId() - 1]);
-			idx++;
-		}
-		for (Node node : nodeCandidateList) {
-			candidateValue[idx] = Math.pow(discountFactor, curTimeStep - 1) 
-				* (node.getACost() + node.getActProb() * rSum[node.getId() - 1]);
-			idx++;
-		}
-		
-		edgeCandidateList.clear();
-		nodeCandidateList.clear();
-		return candidateValue;
+		return result;
 	}
 	
 	/*****************************************************************************************
@@ -431,20 +405,21 @@ public final class ValuePropagationAttacker extends Attacker {
 	 * @param rnd: integer distribution randomizer
 	 * @return type of AttackerAction: an action for the attacker
 	 *****************************************************************************************/
-	private static AttackerAction sampleAction(
-			final DependencyGraph depGraph,
-			final AttackCandidate attackCandidate, 
-			final int numSelectCandidate, 
-			final AbstractIntegerDistribution rnd) {
+	private static AttackerAction sampleActionFromCandidate(
+		final DependencyGraph depGraph,
+		final AttackCandidate attackCandidate, 
+		final int numSelectCandidate, 
+		final AbstractIntegerDistribution rnd) {
 		if (depGraph == null || numSelectCandidate < 0 || rnd == null || attackCandidate == null) {
 			throw new IllegalArgumentException();
 		}
-		AttackerAction action = new AttackerAction();
-		List<Edge> edgeCandidateList = new ArrayList<Edge>(attackCandidate.getEdgeCandidateSet());
-		List<Node> nodeCandidateList = new ArrayList<Node>(attackCandidate.getNodeCandidateSet());
-		int totalNumCandidate = edgeCandidateList.size() + nodeCandidateList.size();
+		final AttackerAction action = new AttackerAction();
+		final List<Edge> edgeCandidateList = new ArrayList<Edge>(attackCandidate.getEdgeCandidateSet());
+		final List<Node> nodeCandidateList = new ArrayList<Node>(attackCandidate.getNodeCandidateSet());
+		final int totalNumCandidate = edgeCandidateList.size() + nodeCandidateList.size();
 
-		boolean[] isChosen = new boolean[totalNumCandidate]; // check if this candidate is already chosen
+		// check if this candidate is already chosen
+		final boolean[] isChosen = new boolean[totalNumCandidate];
 		for (int i = 0; i < totalNumCandidate; i++) {
 			isChosen[i] = false;
 		}
@@ -453,10 +428,10 @@ public final class ValuePropagationAttacker extends Attacker {
 			int idx = rnd.sample(); // randomly chooses a candidate
 			if (!isChosen[idx]) { // if this candidate is not chosen
 				if (idx < edgeCandidateList.size()) { // select edge
-					Edge selectEdge = edgeCandidateList.get(idx);
+					final Edge selectEdge = edgeCandidateList.get(idx);
 					action.addOrNodeAttack(selectEdge.gettarget(), selectEdge);
 				} else { // select node, this is for AND node only
-					Node selectNode = nodeCandidateList.get(idx - edgeCandidateList.size());
+					final Node selectNode = nodeCandidateList.get(idx - edgeCandidateList.size());
 					action.addAndNodeAttack(selectNode, depGraph.incomingEdgesOf(selectNode));
 				}
 				
@@ -464,8 +439,6 @@ public final class ValuePropagationAttacker extends Attacker {
 				count++;
 			}	
 		}
-		edgeCandidateList.clear();
-		nodeCandidateList.clear();
 		return action;
 	}
 	
@@ -497,8 +470,8 @@ public final class ValuePropagationAttacker extends Attacker {
 		return this.propagationParam;
 	}
 
-	public boolean isBest() {
-		return this.isBest;
+	public boolean useMaxOnly() {
+		return this.useMaxOnly;
 	}
 	
 	@Override
@@ -508,11 +481,7 @@ public final class ValuePropagationAttacker extends Attacker {
 			+ this.minNumSelectCandidate + ", numSelectCandidateRatio="
 			+ this.numSelectCandidateRatio + ", qrParam=" + this.qrParam
 			+ ", discFact=" + this.discFact + ", numCandStdev=" + this.numCandStdev
-			+ ", propagationParam=" + this.propagationParam + ", isBest="
-			+ this.isBest + "]";
-	}
-
-	private static boolean isProb(final double i) {
-		return i >= 0.0 && i <= 1.0;
+			+ ", propagationParam=" + this.propagationParam + ", useMaxOnly="
+			+ this.useMaxOnly + "]";
 	}
 }

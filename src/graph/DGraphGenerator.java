@@ -21,17 +21,17 @@ public final class DGraphGenerator {
 		// private constructor
 	}
 	public static void genSepLayGraph(final DependencyGraph dag, final RandomDataGenerator rand
-			, final int numTarget, final double nodeActTypeRatio
-			, final double aRewardLB, final double aRewardUB // targets
-			, final double dPenaltyLB, final double dPenaltyUB // targets
-			, final double aNodeCostLB, final double aNodeCostUB // first layer
-			, final double aEdgeCostLB, final double aEdgeCostUB // between first and second layer
-			, final double dCostLB, final double dCostUB // first layer
-			, final double aNodeActProbLB, final double aNodeActProbUB // random
-			, final double aEdgeActProbLB, final double aEdgeActProbUB // random
-			, final double minPosActiveProb, final double maxPosActiveProb // random
-			, final double minPosInactiveProb, final double maxPosInactiveProb // random
-			, final double aNodeCostFactor, final double aEdgeCostFactor, final double dCostFactor) { 
+		, final int numTarget, final double nodeActTypeRatio
+		, final double aRewardLB, final double aRewardUB // targets
+		, final double dPenaltyLB, final double dPenaltyUB // targets
+		, final double aNodeCostLB, final double aNodeCostUB // first layer
+		, final double aEdgeCostLB, final double aEdgeCostUB // between first and second layer
+		, final double dCostLB, final double dCostUB // first layer
+		, final double aNodeActProbLB, final double aNodeActProbUB // random
+		, final double aEdgeActProbLB, final double aEdgeActProbUB // random
+		, final double minPosActiveProb, final double maxPosActiveProb // random
+		, final double minPosInactiveProb, final double maxPosInactiveProb // random
+		, final double aNodeCostFactor, final double aEdgeCostFactor, final double dCostFactor) { 
 		
 		DependencyGraph depGraph = dag;
 		setTopologicalOrder(depGraph);
@@ -55,11 +55,11 @@ public final class DGraphGenerator {
 			int nodeLayer = layer[node.getId() - 1];
 			setNodeTypeRandom(depGraph, node, rand, nodeActTypeRatio);
 			genNodePayoffRandom(
-					node, rand, aRewardLB, aRewardUB, dPenaltyLB, dPenaltyUB, 
-					Math.pow(aNodeCostFactor, nodeLayer) * aNodeCostLB , 
-					Math.pow(aNodeCostFactor, nodeLayer) * aNodeCostUB, 
-					Math.pow(dCostFactor, nodeLayer) * dCostLB, 
-					Math.pow(dCostFactor, nodeLayer) * dCostUB);
+				node, rand, aRewardLB, aRewardUB, dPenaltyLB, dPenaltyUB, 
+				Math.pow(aNodeCostFactor, nodeLayer) * aNodeCostLB , 
+				Math.pow(aNodeCostFactor, nodeLayer) * aNodeCostUB, 
+				Math.pow(dCostFactor, nodeLayer) * dCostLB, 
+				Math.pow(dCostFactor, nodeLayer) * dCostUB);
 			
 			genActivationProbRandom(node, rand, aNodeActProbLB, aNodeActProbUB);
 			if (node.getType() != NodeType.TARGET) {
@@ -77,8 +77,8 @@ public final class DGraphGenerator {
 			int edgeLayer = layer[edge.getsource().getId() - 1];
 			if (edge.gettarget().getActivationType() == NodeActivationType.OR) {
 				genEdgePayoffRandom(edge, rand, 
-						Math.pow(aEdgeCostFactor, edgeLayer) * aEdgeCostLB, 
-						Math.pow(aEdgeCostFactor, edgeLayer) * aEdgeCostUB);
+					Math.pow(aEdgeCostFactor, edgeLayer) * aEdgeCostLB, 
+					Math.pow(aEdgeCostFactor, edgeLayer) * aEdgeCostUB);
 				genActivationProbRandom(edge, rand, aEdgeActProbLB, aEdgeActProbUB);
 			}
 		}
@@ -179,14 +179,14 @@ public final class DGraphGenerator {
         	if (node.getTopoPosition() != -1 && cloneGraph.inDegreeOf(node) == 0) {
         		Edge newEdge = new Edge();
     			cloneGraph.addEdge(source, node, newEdge);
-//	    			cloneGraph.setEdgeWeight(newEdge, Double.POSITIVE_INFINITY);
+    			// cloneGraph.setEdgeWeight(newEdge, Double.POSITIVE_INFINITY);
     			cloneGraph.setEdgeWeight(newEdge, high);
         	}
         		
         	if (node.getTopoPosition() != -1 && cloneGraph.outDegreeOf(node) == 0) {
         		Edge newEdge = new Edge();
         		cloneGraph.addEdge(node, sink, newEdge);
-//	        		cloneGraph.setEdgeWeight(newEdge, Double.POSITIVE_INFINITY);
+        		// cloneGraph.setEdgeWeight(newEdge, Double.POSITIVE_INFINITY);
         		cloneGraph.setEdgeWeight(newEdge, high);
         		
         	}
@@ -195,22 +195,21 @@ public final class DGraphGenerator {
         minCutAlgo.calculateMinCut(source, sink);
         
         Set<Edge> minCut = minCutAlgo.getCutEdges();
-//        GameSimulation.printIfDebug("Min cut: ");
+        // GameSimulation.printIfDebug("Min cut: ");
         for (Edge edge : minCut) {
         	if (edge.getsource().getId() != source.getId()) {
         		depGraph.addMinCut(edge.getsource());
         	} else if (edge.gettarget().getId() != sink.getId()) {
         		depGraph.addMinCut(edge.gettarget());
         	}
-//        	GameSimulation.printIfDebug(edge.getsource().getId() + "\t" 
-//        		+ edge.gettarget().getId() + "\t" + edge.getweight());
+        	// GameSimulation.printIfDebug(edge.getsource().getId() + "\t" 
+        	// + edge.gettarget().getId() + "\t" + edge.getweight());
         }
-//        GameSimulation.printIfDebug("Edges of new graph clone: ");
-//        for (Edge edge : cloneGraph.edgeSet()) {
-//        	GameSimulation.printIfDebug(edge.getsource().getId() + "\t"
-//        		+ edge.gettarget().getId() + "\t" + edge.getweight());
-//        }
-        
+        // GameSimulation.printIfDebug("Edges of new graph clone: ");
+        // for (Edge edge : cloneGraph.edgeSet()) {
+        	// GameSimulation.printIfDebug(edge.getsource().getId() + "\t"
+        		// + edge.gettarget().getId() + "\t" + edge.getweight());
+        // }
 	}
 	
 	private static void selectTargetRandom(
@@ -317,12 +316,12 @@ public final class DGraphGenerator {
 		node.setAReward(aReward);
 		node.setDPenalty(dPenalty);
 		
-//		if (node.getType() == NodeType.TARGET) {
-//			double aCost = 2 * safeUniform(aCostLB, aCostUB, rand);
-//			double dCost = 2 * safeUniform(dCostLB, dCostUB, rand);
-//			node.setACost(aCost);
-//			node.setDCost(dCost);
-//		} else 
+		// if (node.getType() == NodeType.TARGET) {
+			// double aCost = 2 * safeUniform(aCostLB, aCostUB, rand);
+			// double dCost = 2 * safeUniform(dCostLB, dCostUB, rand);
+			// node.setACost(aCost);
+			// node.setDCost(dCost);
+		// } else 
 		double aCost = safeUniform(aCostLB, aCostUB, rand);
 		double dCost = safeUniform(dCostLB, dCostUB, rand);
 		node.setACost(aCost);

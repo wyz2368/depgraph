@@ -70,6 +70,7 @@ public final class ValuePropagationVsDefender extends Defender {
 			|| discFact < 0.0 || discFact > 1.0 || !isProb(thres)
 			|| minNumAttCandidate < 1 || maxNumAttCandidate < minNumAttCandidate
 			|| !isProb(numAttCandidateRatio) || numAttCandStdev < 0.0
+			|| qrParam < 0.0
 		) {
 			throw new IllegalArgumentException();
 		}
@@ -98,17 +99,18 @@ public final class ValuePropagationVsDefender extends Defender {
 		}
 		// assumption about the attacker
 		Attacker attacker = new ValuePropagationAttacker(this.maxNumAttCandidate, this.minNumAttCandidate
-				, this.numAttCandidateRatio, this.qrParam, this.discFact, this.numAttCandStdev); // assumption about the attacker
+			, this.numAttCandidateRatio, this.qrParam, this.discFact, this.numAttCandStdev);
 
-		int numRWSample = 50;
+		final int defaultNumRWSample = 50;
+		int numRWSample = defaultNumRWSample;
 		return sampleActionRandomWalk(
-				depGraph, 
-				curTimeStep, 
-				numTimeStep, 
-				dBelief, 
-				rng,
-				attacker, 
-				numRWSample);
+			depGraph, 
+			curTimeStep, 
+			numTimeStep, 
+			dBelief, 
+			rng,
+			attacker, 
+			numRWSample);
 //		return sampleActionTopo(
 //			depGraph, 
 //			curTimeStep, 
@@ -278,7 +280,7 @@ public final class ValuePropagationVsDefender extends Defender {
 			}
 			DefenderAction defAction = new DefenderAction();
 			// attack probability
-			double[] attProb = RandomWalkAttacker.computeCandidateProb(this.numAttActionSample, attValue, this.qrParam);
+			double[] attProb = Attacker.computeCandidateProb(attValue, this.qrParam);
 			RandomWalkVsDefender.greedyAction(
 				depGraph, // greedy defense with respect to each possible game state
 				rwTuplesList, 
@@ -570,9 +572,5 @@ public final class ValuePropagationVsDefender extends Defender {
 			+ ", numAttCandStdev=" + this.numAttCandStdev + ", numStateSample="
 			+ this.numStateSample + ", numAttActionSample=" + this.numAttActionSample
 			+ "]";
-	}
-
-	private static boolean isProb(final double i) {
-		return i >= 0.0 && i <= 1.0;
 	}
 }
