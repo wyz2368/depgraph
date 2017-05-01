@@ -372,74 +372,92 @@ public final class RandomWalkAttacker extends Attacker {
 		while (true) {
 			// Start searching for next best target
 			Node targetToAdd = null;
-			final boolean[] chosenIsInSequence = new boolean[depGraph.vertexSet().size()];
-			final boolean[] isInCurSequence = new boolean[depGraph.vertexSet().size()];
+			final boolean[] isInSeqToAdd = new boolean[depGraph.vertexSet().size()];
 			for (int targetIdx = 0; targetIdx < targetList.size(); targetIdx++) {
 				final Node target = targetList.get(targetIdx);
-				final RandomWalkTuple targetRWTuple = rwTuples[target.getId() - 1];
+				final RandomWalkTuple rwTupleTarget = rwTuples[target.getId() - 1];
 				if (target.getState() == NodeState.ACTIVE
 					|| greedyTargetSet.contains(target)
-					|| targetRWTuple.getTAct() > numTimeStep) {
+					|| rwTupleTarget.getTAct() > numTimeStep) {
 					continue;
 				}
 				// Value of target
 				// add to total value of previously selected goal targets:
 				// pAct(v) * r^a(v) + discFact^{tAct(v) - 1}
 				double targetValue = totalValue
-					+ targetRWTuple.getPAct() * target.getAReward() * Math.pow(discFact, targetRWTuple.getTAct() - 1);
+					+ rwTupleTarget.getPAct() * target.getAReward() * Math.pow(discFact, rwTupleTarget.getTAct() - 1);
+				// will have true for all nodes that are true in isInSequence, plus any that are ancestors for target.
+				final boolean[] isInSeqTarget = new boolean[depGraph.vertexSet().size()];
 				for (int j = 0; j < depGraph.vertexSet().size(); j++) {
-					isInCurSequence[j] = isInSequence[j];
+					// initialize isInSeqTarget to match isInSequence.
+					isInSeqTarget[j] = isInSequence[j];
 				}
-				if (!isInCurSequence[target.getId() - 1]) { // target node is not in sequence so far
-					// Cost of activating the target
-					isInCurSequence[target.getId() - 1] = true;
+				if (!isInSequence[target.getId() - 1]) { // target node is not in sequence yet
+					isInSeqTarget[target.getId() - 1] = true;
 					if (target.getActivationType() == NodeActivationType.AND) {
-						targetValue += targetRWTuple.getPAct() / target.getActProb()  
-							* target.getACost() * Math.pow(discFact, targetRWTuple.getTAct() - 1);
-					} else {
-						final Edge chosenEdge = targetRWTuple.getPreAct().get(0);
-						targetValue += targetRWTuple.getPAct() / chosenEdge.getActProb() 
-							* chosenEdge.getACost() * Math.pow(discFact, targetRWTuple.getTAct() - 1);
+						// add: [pAct(v) / p(v)] * c^a(v) * discFact^(tAct(v) - 1)
+						targetValue += (rwTupleTarget.getPAct() / target.getActProb())
+							* target.getACost() * Math.pow(discFact, rwTupleTarget.getTAct() - 1);
+					} else { // target is OR-type
+						final Edge chosenEdge = rwTupleTarget.getPreAct().get(0);
+						// add: [pAct(v) / p(u, v)] * c^a(u, v) * discFact^(tAct(v) - 1)
+						targetValue += (rwTupleTarget.getPAct() / chosenEdge.getActProb())
+							* chosenEdge.getACost() * Math.pow(discFact, rwTupleTarget.getTAct() - 1);
 					}
 
-					// Start finding sequence of the target
-					final List<Node> sequence = new ArrayList<Node>();
-					if (targetRWTuple.getPreAct() != null) { // this target is not a root node
-						for (final Edge edge : targetRWTuple.getPreAct()) {
+					// Start finding sequence of the target:
+					// INACTIVE nodes in its recursive preAct() tree.
+					final List<Node> targetSeq = new ArrayList<Node>();
+					if (rwTupleTarget.getPreAct() != null) { // this target is not a root node
+						for (final Edge edge : rwTupleTarget.getPreAct()) {
 							if (edge.getsource().getState() == NodeState.INACTIVE) {
-								sequence.add(edge.getsource());
+								targetSeq.add(edge.getsource());
 							}
 						}
 					}
-					while (!sequence.isEmpty()) {
-						final Node curNode = sequence.remove(0);
-						final RandomWalkTuple curRwTuple = rwTuples[curNode.getId() - 1];
-						if (!isInCurSequence[curNode.getId() - 1]) {
-							isInCurSequence[curNode.getId() - 1] = true;
-							if (curNode.getActivationType() == NodeActivationType.AND) { // AND node
-								targetValue += curRwTuple.getPAct() / curNode.getActProb()  
-									* curNode.getACost() * Math.pow(discFact, curRwTuple.getTAct() - 1);
-								if (curRwTuple.getPreAct() != null) { // not root node
-									for (final Edge inEdge: curRwTuple.getPreAct()) {
-										final Node parent = inEdge.getsource();
-										if (!isInCurSequence[parent.getId() - 1] 
-												&& parent.getState() == NodeState.INACTIVE) {
-											isInCurSequence[parent.getId() - 1] = true;
-											sequence.add(parent);
-										}
-									}
+					while (!targetSeq.isEmpty()) {
+						final Node curNode = targetSeq.remove(0);
+						final RandomWalkTuple rwTupleCur = rwTuples[curNode.getId() - 1];
+						if (isInSeqTarget[curNode.getId() - 1]) {
+							// already counted this node's cost, either because already visited
+							// in targetSeq, or was already in isInSequence.
+							// do not double-count.
+							continue;
+						}
+						// mark curNode as having had its cost counted in targetValue.
+						isInSeqTarget[curNode.getId() - 1] = true;
+						if (curNode.getActivationType() == NodeActivationType.AND) { // AND node
+							// add: [pAct(v) / p(v)] * c^a(v) * discFact^(tAct(v) - 1)
+							targetValue += (rwTupleCur.getPAct() / curNode.getActProb())
+								* curNode.getACost() * Math.pow(discFact, rwTupleCur.getTAct() - 1);
+							if (rwTupleCur.getPreAct() == null) {
+								// root node. no need to add parents to targetSeq.
+								continue;
+							}
+							for (final Edge inEdge: rwTupleCur.getPreAct()) {
+								final Node parent = inEdge.getsource();
+								if (!isInSeqTarget[parent.getId() - 1] 
+									&& parent.getState() == NodeState.INACTIVE) {
+									// FIXME this statement limits depth of recursion to 1. remove.
+									isInSeqTarget[parent.getId() - 1] = true;
+									targetSeq.add(parent);
 								}
-							} else { // OR node
-								if (curRwTuple.getPreAct() != null) {
-									final Edge chosenEdge = curRwTuple.getPreAct().get(0);
-									targetValue += curRwTuple.getPAct() / chosenEdge.getActProb() 
-										* chosenEdge.getACost() * Math.pow(discFact, curRwTuple.getTAct() - 1);
-									if (!isInCurSequence[chosenEdge.getsource().getId() - 1]
-										&& chosenEdge.getsource().getState() == NodeState.INACTIVE) {
-										isInCurSequence[chosenEdge.getsource().getId() - 1] = true;
-										sequence.add(chosenEdge.getsource());
-									}
-								}
+							}
+						} else { // OR node
+							if (rwTupleCur.getPreAct() == null) {
+								// should not be an active OR node.
+								// cannot be a root node, because it's OR-type.
+								throw new IllegalStateException();
+							}
+							final Edge chosenEdge = rwTupleCur.getPreAct().get(0);
+							// add: [pAct(v) / p(u, v)] * c^a(u, v) * discFact^(tAct(v) - 1)
+							targetValue += (rwTupleCur.getPAct() / chosenEdge.getActProb())
+								* chosenEdge.getACost() * Math.pow(discFact, rwTupleCur.getTAct() - 1);
+							if (!isInSeqTarget[chosenEdge.getsource().getId() - 1]
+								&& chosenEdge.getsource().getState() == NodeState.INACTIVE) {
+								// FIXME this statement limits depth of recursion to 1. remove.
+								isInSeqTarget[chosenEdge.getsource().getId() - 1] = true;
+								targetSeq.add(chosenEdge.getsource());
 							}
 						}
 					}
@@ -451,7 +469,10 @@ public final class RandomWalkAttacker extends Attacker {
 					totalValue = targetValue;
 					targetToAdd = target;
 					for (int j = 0; j < depGraph.vertexSet().size(); j++) {
-						chosenIsInSequence[j] = isInCurSequence[j];
+						// set isInSeqToAdd to match isInSeqTarget.
+						// it will include all values of isInSequence, plus any
+						// additional true items needed for ancestors of target.
+						isInSeqToAdd[j] = isInSeqTarget[j];
 					}
 				}
 			}
@@ -462,7 +483,10 @@ public final class RandomWalkAttacker extends Attacker {
 			
 			// some target was chosen. continue iterating.
 			for (int j = 0; j < depGraph.vertexSet().size(); j++) {
-				isInSequence[j] = chosenIsInSequence[j];
+				// set isInSequence to match isInSeqToAdd.
+				// it will include all values of isInSequence, plus any
+				// true items needed for ancestors of targetToAdd.
+				isInSequence[j] = isInSeqToAdd[j];
 			}
 			greedyTargetSet.add(targetToAdd);
 		}
