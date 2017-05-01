@@ -280,7 +280,7 @@ public final class ValuePropagationVsDefender extends Defender {
 			}
 			DefenderAction defAction = new DefenderAction();
 			// attack probability
-			double[] attProb = RandomWalkAttacker.computeCandidateProb(this.numAttActionSample, attValue, this.qrParam);
+			double[] attProb = Attacker.computeCandidateProb(attValue, this.qrParam);
 			RandomWalkVsDefender.greedyAction(
 				depGraph, // greedy defense with respect to each possible game state
 				rwTuplesList, 

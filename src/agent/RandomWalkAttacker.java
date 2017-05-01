@@ -94,7 +94,7 @@ public final class RandomWalkAttacker extends Attacker {
 		}
 		
 		// Compute the candidate probability
-		double[] probabilities = computeCandidateProb(this.numRWSample, actionValues, this.qrParam);
+		double[] probabilities = computeCandidateProb(actionValues, this.qrParam);
 		
 		// Start sampling
 		int[] nodeIndexes = new int[this.numRWSample];
@@ -464,54 +464,6 @@ public final class RandomWalkAttacker extends Attacker {
 			}
 		}
 		return value;
-	}
-	
-	/*****************************************************************************************
-	 * @param totalNumCandidate total number of candidates
-	 * @param candidateValue corresponding candidate values
-	 * @param qrParam
-	 * @return QR distribution over candidates
-	 *****************************************************************************************/
-	static double[] computeCandidateProb(
-		final int totalNumCandidate, final double[] candidateValue, final double qrParam) {
-		if (totalNumCandidate < 0 || candidateValue == null || qrParam < 0.0) {
-			throw new IllegalArgumentException();
-		}
-		//Normalize candidate value
-		double minValue = Double.POSITIVE_INFINITY;
-		double maxValue = Double.NEGATIVE_INFINITY;
-		for (int i = 0; i < totalNumCandidate; i++) {
-			if (minValue > candidateValue[i]) {
-				minValue = candidateValue[i];
-			}
-			if (maxValue < candidateValue[i]) {
-				maxValue = candidateValue[i];
-			}
-		}
-		if (maxValue > minValue) {
-			for (int i = 0; i < totalNumCandidate; i++) {
-				candidateValue[i] = (candidateValue[i] - minValue) / (maxValue - minValue);
-			}
-		} else {
-			for (int i = 0; i < totalNumCandidate; i++) {
-				candidateValue[i] = 0.0;
-			}
-		}
-		
-		// Compute probability
-		double[] probabilities = new double[totalNumCandidate];
-		int[] nodeList = new int[totalNumCandidate];
-		double sumProb = 0.0;
-		for (int i = 0; i < totalNumCandidate; i++) {
-			nodeList[i] = i;
-			probabilities[i] = Math.exp(qrParam * candidateValue[i]);
-			sumProb += probabilities[i];
-		}
-		for (int i = 0; i < totalNumCandidate; i++) {
-			probabilities[i] /= sumProb;
-		}
-		
-		return probabilities;
 	}
 
 	public double getQrParam() {
