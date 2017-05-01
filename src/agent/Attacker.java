@@ -1,6 +1,9 @@
 package agent;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import model.AttackCandidate;
 import model.AttackerAction;
@@ -202,6 +205,53 @@ public abstract class Attacker {
 			result[i] = i;
 		}
 		return result;
+	}
+	
+	public static Node[] getTopoOrder(final DependencyGraph depGraph) {
+		if (depGraph == null) {
+			throw new IllegalArgumentException();
+		}
+		final Node[] result = new Node[depGraph.vertexSet().size()];
+		for (final Node node : depGraph.vertexSet()) {
+			result[node.getTopoPosition()] = node;
+		}
+		if (!isValidTopoOrder(result, depGraph)) {
+			throw new IllegalStateException();
+		}
+		return result;
+	}
+	
+	public static boolean isValidTopoOrder(final Node[] input, final DependencyGraph depGraph) {
+		if (input == null || depGraph == null || depGraph.vertexSet().size() != input.length) {
+			throw new IllegalArgumentException();
+		}
+		
+		final List<Node> inputList = Arrays.asList(input);
+		final Set<Integer> idSet = new HashSet<Integer>();
+		for (final Node node: inputList) {
+			idSet.add(node.getId());
+		}
+		for (int i = 1; i <= input.length; i++) {
+			if (!idSet.contains(i)) {
+				System.out.println("Missing value: " + i);
+				System.out.println(idSet);
+				return false;
+			}
+		}
+		// all Ids in {1, 2, . . ., input.length} are present
+
+		for (final Node node: input) {
+			final Set<Edge> outEdges = depGraph.outgoingEdgesOf(node);
+			for (final Edge outEdge: outEdges) {
+				if (inputList.indexOf(outEdge.gettarget()) < inputList.indexOf(node)) {
+					System.out.println("Out-of-order pair:");
+					System.out.println("Edge: " + outEdge);
+					return false;
+				}
+			}
+		}
+		// every Node's children are after that Node.
+		return true;
 	}
 	
 	// for each value in vals,
