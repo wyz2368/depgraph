@@ -361,11 +361,8 @@ public final class RandomWalkAttacker extends Attacker {
 			|| numTimeStep < 0 || !isProb(discFact)) {
 			throw new IllegalArgumentException();
 		}
-		final Set<Node> greedyTargetSet = new HashSet<Node>();
+		// list of all target nodes
 		final List<Node> targetList = new ArrayList<Node>(depGraph.getTargetSet());
-		final boolean[] isChosen = new boolean[targetList.size()];
-
-		double value = 0.0; // value of the chosen target subset
 		
 		// sequence to reach greedy target subset
 		final boolean[] isInSequence = new boolean[depGraph.vertexSet().size()];
@@ -373,16 +370,18 @@ public final class RandomWalkAttacker extends Attacker {
 		final boolean[] chosenIsInSequence = new boolean[depGraph.vertexSet().size()];
 		final boolean[] isInCurSequence = new boolean[depGraph.vertexSet().size()]; // for each iteration of greedy
 
-		boolean isStop = false;
-		while (!isStop) {
+		// will contain the set of targets greedily chosen to attempt to activate
+		final Set<Node> greedyTargetSet = new HashSet<Node>();
+		double value = 0.0; // value of the chosen target subset
+		while (true) {
 			// Start searching for next best target
-			int targetIdx = 0; // for searching over target list
-			int chosenIdx = -1; // target index which is chosen
-			
-			for (final Node target : targetList) {
+			Node targetToAdd = null;
+			for (int targetIdx = 0; targetIdx < targetList.size(); targetIdx++) {
+				final Node target = targetList.get(targetIdx);
 				final RandomWalkTuple rwTuple = rwTuples[target.getId() - 1];
 				if (target.getState() == NodeState.INACTIVE
-					&& !isChosen[targetIdx] && rwTuple.getTAct() <= numTimeStep) {
+					&& !greedyTargetSet.contains(target)
+					&& rwTuple.getTAct() <= numTimeStep) {
 					// Value of target
 					double curValue = value
 						+ rwTuple.getPAct() * target.getAReward() * Math.pow(discFact, rwTuple.getTAct() - 1);
@@ -390,7 +389,6 @@ public final class RandomWalkAttacker extends Attacker {
 						isInCurSequence[j] = isInSequence[j];
 					}
 					if (!isInCurSequence[target.getId() - 1]) { // target node is not in sequence so far
-
 						// Cost of activating the target
 						isInCurSequence[target.getId() - 1] = true;
 						if (target.getActivationType() == NodeActivationType.AND) {
@@ -418,7 +416,7 @@ public final class RandomWalkAttacker extends Attacker {
 								isInCurSequence[curNode.getId() - 1] = true;
 								if (curNode.getActivationType() == NodeActivationType.AND) { // AND node
 									curValue += curRwTuple.getPAct() / curNode.getActProb()  
-											* curNode.getACost() * Math.pow(discFact, curRwTuple.getTAct() - 1);
+										* curNode.getACost() * Math.pow(discFact, curRwTuple.getTAct() - 1);
 									if (curRwTuple.getPreAct() != null) { // not root node
 										for (final Edge inEdge: curRwTuple.getPreAct()) {
 											final Node parent = inEdge.getsource();
@@ -441,29 +439,28 @@ public final class RandomWalkAttacker extends Attacker {
 										}
 									}
 								}
-								
 							}
 						}
 					}
 					if (curValue > value) {
 						value = curValue;
-						chosenIdx = targetIdx;
+						targetToAdd = target;
 						for (int j = 0; j < depGraph.vertexSet().size(); j++) {
 							chosenIsInSequence[j] = isInCurSequence[j];
 						}
 					}
 				}
-				targetIdx++;
 			}
-			if (chosenIdx != -1) {
-				isChosen[chosenIdx] = true;
-				for (int j = 0; j < depGraph.vertexSet().size(); j++) {
-					isInSequence[j] = chosenIsInSequence[j];
-				}
-				greedyTargetSet.add(targetList.get(chosenIdx));
-			} else {
-				isStop = true;
+			if (targetToAdd == null) {
+				// no target was chosen this iteration. stop iterating.
+				break;
 			}
+			
+			// some target was chosen. continue iterating.
+			for (int j = 0; j < depGraph.vertexSet().size(); j++) {
+				isInSequence[j] = chosenIsInSequence[j];
+			}
+			greedyTargetSet.add(targetToAdd);
 		}
 
 		// Find corresponding candidate set for chosen subset of targets
