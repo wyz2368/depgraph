@@ -465,33 +465,55 @@ public final class RandomWalkAttacker extends Attacker {
 
 		// Find corresponding candidate set for chosen subset of targets
 		if (!greedyTargetSet.isEmpty()) {
-			for (final Node node: depGraph.vertexSet()) {
-				if (isInSequence[node.getId() - 1] && node.getState() == NodeState.INACTIVE) {
-					if (node.getActivationType() == NodeActivationType.AND) {
-						boolean isCandidate = true;
-						for (final Edge inEdge : depGraph.incomingEdgesOf(node)) {
-							if (inEdge.getsource().getState() == NodeState.INACTIVE) {
-								isCandidate = false;
-								break;
-							}
-						}
-						if (isCandidate) {
-							attAction.addAndNodeAttack(node, depGraph.incomingEdgesOf(node));
-						}
-					} else {
-						final RandomWalkTuple rwTuple = rwTuples[node.getId() - 1];
-						final Edge inEdge = rwTuple.getPreAct().get(0);
-						if (inEdge.getsource().getState() == NodeState.ACTIVE) {
-							attAction.addOrNodeAttack(node, inEdge);
-						}
-					}
-				}
-			}
+			addAncestorsToAttackSet(attAction, depGraph, isInSequence, rwTuples);
 		}
 		if (Double.isNaN(value)) {
 			throw new IllegalStateException();
 		}
 		return value;
+	}
+	
+	private static void addAncestorsToAttackSet(
+		final AttackerAction attAction,
+		final DependencyGraph depGraph,
+		final boolean[] isInSequence,
+		final RandomWalkTuple[] rwTuples
+	) {
+		if (attAction == null || depGraph == null || isInSequence == null || rwTuples == null
+			|| !attAction.getActionCopy().keySet().isEmpty()) {
+			throw new IllegalArgumentException();
+		}
+		for (final Node node: depGraph.vertexSet()) {
+			if (isInSequence[node.getId() - 1] && node.getState() == NodeState.INACTIVE) {
+				// only add inactive nodes that are in the activation sequence of a selected
+				// target node.
+				if (node.getActivationType() == NodeActivationType.AND) {
+					boolean isCandidate = true;
+					for (final Edge inEdge : depGraph.incomingEdgesOf(node)) {
+						if (inEdge.getsource().getState() == NodeState.INACTIVE) {
+							// some parent of the AND-type node is not active.
+							// will not add this node.
+							isCandidate = false;
+							break;
+						}
+					}
+					if (isCandidate) {
+						// and the AND-type node and its in-edges to attack set
+						attAction.addAndNodeAttack(node, depGraph.incomingEdgesOf(node));
+					}
+				} else {
+					// FIXME shouldn't we include an OR-type node even if its selected parent is INACTIVE,
+					// if it is in the candidate set (i.e., any parent is ACTIVE), and in isInSequence?
+					final RandomWalkTuple rwTuple = rwTuples[node.getId() - 1];
+					final Edge inEdge = rwTuple.getPreAct().get(0);
+					if (inEdge.getsource().getState() == NodeState.ACTIVE) {
+						// the selected parent of the OR-type node is active. will add this node.
+						// and the OR-type node and its chosen in-edge to attack set
+						attAction.addOrNodeAttack(node, inEdge);
+					}
+				}
+			}
+		}
 	}
 	
 	public static double computeAttackerValue(
