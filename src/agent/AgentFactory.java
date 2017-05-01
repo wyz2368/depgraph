@@ -98,7 +98,7 @@ public final class AgentFactory {
 			if (!defenderParams.containsKey(DefenderParam.maxNumRes.toString())
 			|| !defenderParams.containsKey(DefenderParam.minNumRes.toString())
 			|| !defenderParams.containsKey(DefenderParam.numResRatio.toString())
-			|| !defenderParams.containsKey(AttackerParam.STDEV.toString())) {
+			|| !defenderParams.containsKey(DefenderParam.stdev.toString())) {
 				throw new IllegalArgumentException();
 			}
 			final int expectedKeys = 4;
@@ -154,10 +154,11 @@ public final class AgentFactory {
 			|| !defenderParams.containsKey(DefenderParam.maxNumAttCandidate.toString())
 			|| !defenderParams.containsKey(DefenderParam.minNumAttCandidate.toString())
 			|| !defenderParams.containsKey(DefenderParam.numAttCandidateRatio.toString())
-			|| !defenderParams.containsKey(DefenderParam.numAttCandStdev.toString())) {
+			|| !defenderParams.containsKey(DefenderParam.numAttCandStdev.toString())
+			|| !defenderParams.containsKey(DefenderParam.isTopo.toString())) {
 				throw new IllegalArgumentException();
 			}
-			final int expectedKeys = 10;
+			final int expectedKeys = 11;
 			if (defenderParams.keySet().size() != expectedKeys) {
 				throw new IllegalArgumentException();
 			}
@@ -170,8 +171,9 @@ public final class AgentFactory {
 				, defenderParams.get(DefenderParam.qrParam.toString())
 				, defenderParams.get(DefenderParam.maxNumAttCandidate.toString())
 				, defenderParams.get(DefenderParam.minNumAttCandidate.toString())
-				, defenderParams.get(DefenderParam.numAttCandidateRatio.toString()),
-				defenderParams.get(DefenderParam.numAttCandStdev.toString()));
+				, defenderParams.get(DefenderParam.numAttCandidateRatio.toString())
+				, defenderParams.get(DefenderParam.numAttCandStdev.toString())
+				, defenderParams.get(DefenderParam.isTopo.toString()));
 		} else if (defType == DefenderType.vsRANDOM_WALK) {
 			if (!defenderParams.containsKey(DefenderParam.logisParam.toString())
 			|| !defenderParams.containsKey(DefenderParam.bThres.toString())
