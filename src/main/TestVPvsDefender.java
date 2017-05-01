@@ -65,14 +65,14 @@ public final class TestVPvsDefender {
 //			, minPosActiveProb, maxPosActiveProb
 //			, minPosInactiveProb, maxPosInactiveProb);
 		
-		int numLayer = 10;
-		int numNode1Layer = 50;
-		double numNodeRatio = 0.8;
-		double numEdgeRatio = 0.5;
+		final int numLayer = 10;
+		final int numNode1Layer = 50;
+		final double numNodeRatio = 0.8;
+		final double numEdgeRatio = 0.5;
 		
-		double aNodeCostFactor = 1.5;
-		double aEdgeCostFactor = 1.5;
-		double dCostFactor = 1.5;
+		final double aNodeCostFactor = 1.5;
+		final double aEdgeCostFactor = 1.5;
+		final double dCostFactor = 1.5;
 		
 		DependencyGraph depGraph =
           DagGenerator.genRandomSepLayDAG(numLayer, numNode1Layer, numNodeRatio, numEdgeRatio, rnd);

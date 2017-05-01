@@ -93,12 +93,8 @@ public final class ValuePropagationVsDefender extends Defender {
 		this.numResRatio = numResRatio;
 		this.logisParam = logisParam;
 		
-		if(isTopo == 1.0) {
-			this.isTopo = true;
-		}
-		else {
-			this.isTopo = false;
-		}
+		final double tolerance = 0.00001;
+		this.isTopo = (Math.abs(isTopo - 1.0) < tolerance);
 	}
 
 	@Override
@@ -112,19 +108,7 @@ public final class ValuePropagationVsDefender extends Defender {
 		Attacker attacker = new ValuePropagationAttacker(this.maxNumAttCandidate, this.minNumAttCandidate
 			, this.numAttCandidateRatio, this.qrParam, this.discFact, this.numAttCandStdev);
 
-		if(!this.isTopo) {
-			final int defaultNumRWSample = 10;
-			int numRWSample = defaultNumRWSample;
-			return sampleActionRandomWalk(
-				depGraph, 
-				curTimeStep, 
-				numTimeStep, 
-				dBelief, 
-				rng,
-				attacker, 
-				numRWSample);
-		}
-		else {
+		if (this.isTopo) {
 			return sampleActionTopo(
 				depGraph, 
 				curTimeStep, 
@@ -133,7 +117,19 @@ public final class ValuePropagationVsDefender extends Defender {
 				rng, 
 				attacker);
 		}
+			
+		final int defaultNumRWSample = 10;
+		int numRWSample = defaultNumRWSample;
+		return sampleActionRandomWalk(
+			depGraph, 
+			curTimeStep, 
+			numTimeStep, 
+			dBelief, 
+			rng,
+			attacker, 
+			numRWSample);
 	}
+	
 	@Override
 	public DefenderBelief updateBelief(
 		final DependencyGraph depGraph,
