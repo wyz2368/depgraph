@@ -650,8 +650,4 @@ public final class ValuePropagationAttacker extends Attacker {
 			+ ", propagationParam=" + this.propagationParam + ", useMaxOnly="
 			+ this.useMaxOnly + "]";
 	}
-
-	private static boolean isProb(final double i) {
-		return i >= 0.0 && i <= 1.0;
-	}
 }

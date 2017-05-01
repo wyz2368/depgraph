@@ -573,8 +573,4 @@ public final class ValuePropagationVsDefender extends Defender {
 			+ this.numStateSample + ", numAttActionSample=" + this.numAttActionSample
 			+ "]";
 	}
-
-	private static boolean isProb(final double i) {
-		return i >= 0.0 && i <= 1.0;
-	}
 }

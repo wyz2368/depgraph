@@ -44,9 +44,11 @@ public final class RandomWalkAttacker extends Attacker {
 		public List<Edge> getPreAct() {
 			return this.preAct;
 		}
-		
-		private boolean isProb(final double i) {
-			return i >= 0.0 && i <= 1.0;
+
+		@Override
+		public String toString() {
+			return "RandomWalkTuple [tAct=" + this.tAct + ", pAct=" + this.pAct
+				+ ", preAct=" + this.preAct + "]";
 		}
 	}
 	
@@ -57,7 +59,7 @@ public final class RandomWalkAttacker extends Attacker {
 	
 	public RandomWalkAttacker(final double numRWSample, final double qrParam, final double discFact) {
 		super(AttackerType.RANDOM_WALK);
-		if (numRWSample < 0.0 || discFact < 0.0 || discFact > 1.0 || qrParam < 0.0) {
+		if (numRWSample < 1.0 || !isProb(discFact) || qrParam < 0.0) {
 			throw new IllegalArgumentException(numRWSample + "\t" + discFact + "\t" + discFact);
 		}
 		this.numRWSample = (int) numRWSample;
@@ -74,10 +76,10 @@ public final class RandomWalkAttacker extends Attacker {
 	 * @return type of Attacker Action: an attack action
 	 */
 	public AttackerAction sampleAction(
-			final DependencyGraph depGraph,
-			final int curTimeStep, 
-			final int numTimeStep, 
-			final RandomGenerator rng) {
+		final DependencyGraph depGraph,
+		final int curTimeStep, 
+		final int numTimeStep, 
+		final RandomGenerator rng) {
 		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || rng == null) {
 			throw new IllegalArgumentException();
 		}
@@ -140,7 +142,7 @@ public final class RandomWalkAttacker extends Attacker {
 	* @return random walk tuple for all nodes
 	*/
 	public RandomWalkTuple[] randomWalk(final DependencyGraph depGraph,
-			final int curTimeStep, final RandomGenerator rng) {
+		final int curTimeStep, final RandomGenerator rng) {
 		if (depGraph == null || curTimeStep < 0 || rng == null) {
 			throw new IllegalArgumentException();
 		}
@@ -248,13 +250,13 @@ public final class RandomWalkAttacker extends Attacker {
 	attCandidate: outcome of greedy, initialized already*
 	*****************************************************************************************/
 	static double greedyAction(
-			final DependencyGraph depGraph, 
-			final RandomWalkTuple[] rwTuples, 
-			final AttackerAction attAction, 
-			final int numTimeStep, 
-			final double discFact) {
+		final DependencyGraph depGraph, 
+		final RandomWalkTuple[] rwTuples, 
+		final AttackerAction attAction, 
+		final int numTimeStep, 
+		final double discFact) {
 		if (depGraph == null || rwTuples == null || attAction == null
-			|| numTimeStep < 0 || discFact <= 0.0 || discFact > 1.0) {
+			|| numTimeStep < 0 || !isProb(discFact)) {
 			throw new IllegalArgumentException();
 		}
 		Set<Node> greedyTargetSet = new HashSet<Node>();
@@ -407,6 +409,10 @@ public final class RandomWalkAttacker extends Attacker {
 		final double aDiscFact,
 		final int curTimeStep,
 		final int numTimeStep) {
+		if (depGraph == null || attAction == null || rwTuples == null
+			|| !isProb(aDiscFact) || curTimeStep < 0 || numTimeStep < curTimeStep) {
+			throw new IllegalArgumentException();
+		}
 		double value = 0.0;
 		boolean[] isInQueue = new boolean[depGraph.vertexSet().size()];
 		for (int i = 0; i < isInQueue.length; i++) {
@@ -468,7 +474,7 @@ public final class RandomWalkAttacker extends Attacker {
 	 *****************************************************************************************/
 	static double[] computeCandidateProb(
 		final int totalNumCandidate, final double[] candidateValue, final double qrParam) {
-		if (totalNumCandidate < 0 || candidateValue == null) {
+		if (totalNumCandidate < 0 || candidateValue == null || qrParam < 0.0) {
 			throw new IllegalArgumentException();
 		}
 		//Normalize candidate value
@@ -506,5 +512,23 @@ public final class RandomWalkAttacker extends Attacker {
 		}
 		
 		return probabilities;
+	}
+
+	public double getQrParam() {
+		return this.qrParam;
+	}
+
+	public double getDiscFact() {
+		return this.discFact;
+	}
+
+	public int getNumRWSample() {
+		return this.numRWSample;
+	}
+
+	@Override
+	public String toString() {
+		return "RandomWalkAttacker [qrParam=" + this.qrParam + ", discFact="
+			+ this.discFact + ", numRWSample=" + this.numRWSample + "]";
 	}
 }

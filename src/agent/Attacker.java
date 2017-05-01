@@ -169,4 +169,8 @@ public abstract class Attacker {
 		result = Math.min(result, availableMax);
 		return result;
 	}
+	
+	public static boolean isProb(final double i) {
+		return i >= 0.0 && i <= 1.0;
+	}
 }

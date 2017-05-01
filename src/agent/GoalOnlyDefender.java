@@ -108,10 +108,6 @@ public final class GoalOnlyDefender extends Defender {
 			+ this.logisParam + ", discFact=" + this.discFact + ", numCandStdev="
 			+ this.numCandStdev + "]";
 	}
-
-	private static boolean isProb(final double i) {
-		return i >= 0.0 && i <= 1.0;
-	}
 	
 	// TODO no need to multiply by discFact^{timeStepsLeft}, not useful
 	private static double[] computeCandidateValue(
