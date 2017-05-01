@@ -40,9 +40,12 @@ public final class ValuePropagationVsDefender extends Defender {
 	private double numAttCandStdev;
 	
 	// number of simulation to approximate update
-	private static final int DEFAULT_NUM_STATE_SAMPLE = 50;
+	private static final int DEFAULT_NUM_STATE_SAMPLE = 20;
+	private static final int DEFAULT_NUM_ACTION_SAMPLE = 20;
 	private int numStateSample = DEFAULT_NUM_STATE_SAMPLE;
-	private int numAttActionSample = DEFAULT_NUM_STATE_SAMPLE;
+	private int numAttActionSample = DEFAULT_NUM_ACTION_SAMPLE;
+	
+	private boolean isTopo = true;
 	
 	/*****************************************************************************************
 	 * 
@@ -60,7 +63,8 @@ public final class ValuePropagationVsDefender extends Defender {
 	public ValuePropagationVsDefender(final double maxNumRes, final double minNumRes, final double numResRatio,
 		final double logisParam, final double discFact, final double thres,
 		final double qrParam, final double maxNumAttCandidate, final double minNumAttCandidate,
-		final double numAttCandidateRatio, final double numAttCandStdev) {
+		final double numAttCandidateRatio, final double numAttCandStdev,
+		final double isTopo) {
 		super(DefenderType.vsVALUE_PROPAGATION);
 		if (
 			discFact < 0.0 || discFact > 1.0 || !isProb(thres)
@@ -88,6 +92,13 @@ public final class ValuePropagationVsDefender extends Defender {
 		this.minNumRes = (int) minNumRes;
 		this.numResRatio = numResRatio;
 		this.logisParam = logisParam;
+		
+		if(isTopo == 1.0) {
+			this.isTopo = true;
+		}
+		else {
+			this.isTopo = false;
+		}
 	}
 
 	@Override
@@ -101,23 +112,27 @@ public final class ValuePropagationVsDefender extends Defender {
 		Attacker attacker = new ValuePropagationAttacker(this.maxNumAttCandidate, this.minNumAttCandidate
 			, this.numAttCandidateRatio, this.qrParam, this.discFact, this.numAttCandStdev);
 
-		final int defaultNumRWSample = 50;
-		int numRWSample = defaultNumRWSample;
-		return sampleActionRandomWalk(
-			depGraph, 
-			curTimeStep, 
-			numTimeStep, 
-			dBelief, 
-			rng,
-			attacker, 
-			numRWSample);
-//		return sampleActionTopo(
-//			depGraph, 
-//			curTimeStep, 
-//			numTimeStep, 
-//			dBelief, 
-//			rng, 
-//			attacker);
+		if(!this.isTopo) {
+			final int defaultNumRWSample = 10;
+			int numRWSample = defaultNumRWSample;
+			return sampleActionRandomWalk(
+				depGraph, 
+				curTimeStep, 
+				numTimeStep, 
+				dBelief, 
+				rng,
+				attacker, 
+				numRWSample);
+		}
+		else {
+			return sampleActionTopo(
+				depGraph, 
+				curTimeStep, 
+				numTimeStep, 
+				dBelief, 
+				rng, 
+				attacker);
+		}
 	}
 	@Override
 	public DefenderBelief updateBelief(
@@ -276,6 +291,7 @@ public final class ValuePropagationVsDefender extends Defender {
 					}
 				}
 				rwTuplesList[i] = rwTuplesListSample[maxIdx];
+//				attValue[i] = maxValue;
 				i++;
 			}
 			DefenderAction defAction = new DefenderAction();
