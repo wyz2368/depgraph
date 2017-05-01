@@ -176,12 +176,13 @@ public final class RandomWalkAttacker extends Attacker {
 		if (depGraph.inDegreeOf(node) == 0) {
 			return getRWTupleInactiveRoot(node, curTimeStep, depGraph);
 		}
-		if (node.getActivationType() == NodeActivationType.AND) {
-			return getRWTupleInactiveNonRootAnd(node, depGraph, rwTuples);
+		if (node.getActivationType() == NodeActivationType.OR) {
+			return getRWTupleInactiveNonRootOr(node, depGraph, rwTuples, rng);
 		}
-		return getRWTupleInactiveNonRootOr(node, depGraph, rwTuples, rng);
+		return getRWTupleInactiveNonRootAnd(node, depGraph, rwTuples);
 	}
 	
+	// pAct = 1, tAct = curTimeStep - 1, preAct = null
 	private RandomWalkTuple getRWTupleActive(
 		final Node node,
 		final int curTimeStep
@@ -189,12 +190,13 @@ public final class RandomWalkAttacker extends Attacker {
 		if (node == null || node.getState() != NodeState.ACTIVE || curTimeStep < 0) {
 			throw new IllegalArgumentException();
 		}
-		final int tAct = curTimeStep - 1;
 		final double pAct = 1.0;
+		final int tAct = curTimeStep - 1;
 		final List<Edge> preAct = null;
 		return new RandomWalkTuple(tAct, pAct, preAct);
  	}
 	
+	// pAct = p(v), tAct = curTimeStep, preAct = null
 	private RandomWalkTuple getRWTupleInactiveRoot(
 		final Node node,
 		final int curTimeStep,
@@ -204,9 +206,47 @@ public final class RandomWalkAttacker extends Attacker {
 			|| curTimeStep < 0 || depGraph.inDegreeOf(node) != 0) {
 			throw new IllegalArgumentException();
 		}
-		final int tAct = curTimeStep;
 		final double pAct = node.getActProb();
+		final int tAct = curTimeStep;
 		final List<Edge> preAct = null;
+		return new RandomWalkTuple(tAct, pAct, preAct);
+	}
+	
+	private RandomWalkTuple getRWTupleInactiveNonRootOr(
+		final Node node,
+		final DependencyGraph depGraph,
+		final RandomWalkTuple[] rwTuples,
+		final RandomGenerator rng
+	) {
+		if (node == null || node.getState() != NodeState.INACTIVE
+			|| depGraph.inDegreeOf(node) == 0 || node.getActivationType() != NodeActivationType.OR
+			|| rwTuples == null || rng == null
+		) {
+			throw new IllegalArgumentException();
+		}
+		final List<Edge> inEdges = new ArrayList<Edge>(depGraph.incomingEdgesOf(node));
+		final int[] nodeIndexes = new int[inEdges.size()];
+		final double[] probabilities = new double[inEdges.size()];
+		double totalProb = 0.0;
+		for (int inEdgeIndex = 0; inEdgeIndex < inEdges.size(); inEdgeIndex++) {
+			nodeIndexes[inEdgeIndex] = inEdgeIndex;
+			final Node parent = inEdges.get(inEdgeIndex).getsource();
+			probabilities[inEdgeIndex] = rwTuples[parent.getId() - 1].getPAct() * inEdges.get(inEdgeIndex).getActProb();
+			totalProb += probabilities[inEdgeIndex];
+		}
+		for (int i = 0; i < inEdges.size(); i++) {
+			probabilities[i] /= totalProb;
+		}
+		
+		final EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
+		final int chosenPreIndex = rnd.sample();
+		final Edge chosenInEdge = inEdges.get(chosenPreIndex);
+		final Node chosenParent = chosenInEdge.getsource();
+		
+		final int tAct = rwTuples[chosenParent.getId() - 1].getTAct() + 1;
+		final double pAct = rwTuples[chosenParent.getId() - 1].getPAct() * chosenInEdge.getActProb();
+		final List<Edge> preAct = new ArrayList<Edge>();
+		preAct.add(chosenInEdge);
 		return new RandomWalkTuple(tAct, pAct, preAct);
 	}
 	
@@ -266,44 +306,6 @@ public final class RandomWalkAttacker extends Attacker {
 				}
 			}
 		}
-		return new RandomWalkTuple(tAct, pAct, preAct);
-	}
-	
-	private RandomWalkTuple getRWTupleInactiveNonRootOr(
-		final Node node,
-		final DependencyGraph depGraph,
-		final RandomWalkTuple[] rwTuples,
-		final RandomGenerator rng
-	) {
-		if (node == null || node.getState() != NodeState.INACTIVE
-			|| depGraph.inDegreeOf(node) == 0 || node.getActivationType() != NodeActivationType.OR
-			|| rwTuples == null || rng == null
-		) {
-			throw new IllegalArgumentException();
-		}
-		final List<Edge> inEdges = new ArrayList<Edge>(depGraph.incomingEdgesOf(node));
-		final int[] nodeIndexes = new int[inEdges.size()];
-		final double[] probabilities = new double[inEdges.size()];
-		double totalProb = 0.0;
-		for (int inEdgeIndex = 0; inEdgeIndex < inEdges.size(); inEdgeIndex++) {
-			nodeIndexes[inEdgeIndex] = inEdgeIndex;
-			final Node parent = inEdges.get(inEdgeIndex).getsource();
-			probabilities[inEdgeIndex] = rwTuples[parent.getId() - 1].getPAct() * inEdges.get(inEdgeIndex).getActProb();
-			totalProb += probabilities[inEdgeIndex];
-		}
-		for (int i = 0; i < inEdges.size(); i++) {
-			probabilities[i] /= totalProb;
-		}
-		
-		final EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
-		final int chosenPreIndex = rnd.sample();
-		final Edge chosenInEdge = inEdges.get(chosenPreIndex);
-		final Node chosenParent = chosenInEdge.getsource();
-		
-		final int tAct = rwTuples[chosenParent.getId() - 1].getTAct() + 1;
-		final double pAct = rwTuples[chosenParent.getId() - 1].getPAct() * chosenInEdge.getActProb();
-		final List<Edge> preAct = new ArrayList<Edge>();
-		preAct.add(chosenInEdge);
 		return new RandomWalkTuple(tAct, pAct, preAct);
 	}
 	
