@@ -192,6 +192,18 @@ public abstract class Attacker {
 		return getProbsFromNormalizedVals(candidateVals, qrParam);
 	}
 	
+	// get list of length count, with values {0, 1, . . ., count - 1}
+	public static int[] getIndexArray(final int count) {
+		if (count < 1) {
+			throw new IllegalArgumentException();
+		}
+		final int[] result = new int[count];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = i;
+		}
+		return result;
+	}
+	
 	// for each value in vals,
 	// replace with (val - min) / (max - min).
 	private static void normalize(final double[] vals) {

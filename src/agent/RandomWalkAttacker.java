@@ -84,52 +84,47 @@ public final class RandomWalkAttacker extends Attacker {
 			throw new IllegalArgumentException();
 		}
 		// Compute the greedy action values
-		double[] actionValues = new double[this.numRWSample];
-		AttackerAction[] actions = new AttackerAction[this.numRWSample];
+		final double[] actionValues = new double[this.numRWSample];
+		final AttackerAction[] actions = new AttackerAction[this.numRWSample];
 		for (int i = 0; i < this.numRWSample; i++) {
-			RandomWalkTuple[] rwSample = randomWalk(depGraph, curTimeStep, rng);
-			AttackerAction attAction = new AttackerAction();
-			actionValues[i] = greedyAction(depGraph, rwSample, attAction, numTimeStep, this.discFact);
+			final AttackerAction attAction = new AttackerAction();
 			actions[i] = attAction;
+			final RandomWalkTuple[] rwSample = randomWalk(depGraph, curTimeStep, rng);
+			actionValues[i] = greedyAction(depGraph, rwSample, attAction, numTimeStep, this.discFact);
 		}
 		
-		// Compute the candidate probability
-		double[] probabilities = computeCandidateProb(actionValues, this.qrParam);
+		// Compute probability to choose each rwSample's action
+		final double[] probabilities = computeCandidateProb(actionValues, this.qrParam);
 		
-		// Start sampling
-		int[] nodeIndexes = new int[this.numRWSample];
-		for (int i = 0; i < this.numRWSample; i++) {
-			nodeIndexes[i] = i;
-		}
-		EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
+		// array of [0, 1, . . ., this.numRWSample - 1]
+		final int[] rwSampleIndexes = getIndexArray(this.numRWSample);
+		// a probability mass function with integer values
+		final EnumeratedIntegerDistribution rnd =
+			new EnumeratedIntegerDistribution(rng, rwSampleIndexes, probabilities);
 		
-		int sampleIdx = rnd.sample();
+		final int sampleIdx = rnd.sample();
 		return actions[sampleIdx];
 	}
-	
+
 	@Override
 	public List<AttackerAction> sampleAction(final DependencyGraph depGraph,
 		final int curTimeStep, final int numTimeStep, final RandomGenerator rng,
 		final int numSample, final boolean isReplacement) {
-		if (curTimeStep < 0 || numTimeStep < curTimeStep || rng == null || numSample < 1) {
+		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || rng == null || numSample < 1) {
 			throw new IllegalArgumentException();
 		}
 		if (isReplacement) { // this is currently not used, need to check if the isAdded works properly
-			Set<AttackerAction> attActionSet = new HashSet<AttackerAction>();
-			int i = 0;
-			while (i < numSample) {
-				AttackerAction attAction = sampleAction(depGraph, curTimeStep, numTimeStep, rng);
-				boolean isAdded = attActionSet.add(attAction);
-				if (isAdded) {
-					i++;
-				}
+			final Set<AttackerAction> attActionSet = new HashSet<AttackerAction>();
+			while (attActionSet.size() < numSample) {
+				final AttackerAction attAction = sampleAction(depGraph, curTimeStep, numTimeStep, rng);
+				attActionSet.add(attAction);
 			}
 			return new ArrayList<AttackerAction>(attActionSet);
 		}
 		// this is currently used, correct
-		List<AttackerAction> attActionList = new ArrayList<AttackerAction>();
-		for (int i = 0; i < numSample; i++) {
-			AttackerAction attAction = sampleAction(depGraph, curTimeStep, numTimeStep, rng);
+		final List<AttackerAction> attActionList = new ArrayList<AttackerAction>();
+		while (attActionList.size() < numSample) {
+			final AttackerAction attAction = sampleAction(depGraph, curTimeStep, numTimeStep, rng);
 			attActionList.add(attAction);
 		}
 		return attActionList;

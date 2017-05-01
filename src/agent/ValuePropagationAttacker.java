@@ -99,23 +99,11 @@ public final class ValuePropagationAttacker extends Attacker {
 		final double[] probabilities = computeCandidateProb(candidateVals, this.qrParam);
 		
 		// array of [0, 1, . . ., totalNumCandidate - 1]
-		final int[] nodeIndexes = getNodeIndexes(totalNumCandidate);
+		final int[] nodeIndexes = getIndexArray(totalNumCandidate);
 		// a probability mass function with integer values
 		final EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
 
-		return sampleAction(depGraph, attackCandidate, numToSelect, rnd);
-	}
-	
-	// get list of length count, with values {0, 1, . . ., count - 1}
-	private static int[] getNodeIndexes(final int count) {
-		if (count < 1) {
-			throw new IllegalArgumentException();
-		}
-		final int[] result = new int[count];
-		for (int i = 0; i < result.length; i++) {
-			result[i] = i;
-		}
-		return result;
+		return sampleActionFromCandidate(depGraph, attackCandidate, numToSelect, rnd);
 	}
 	
 	@Override
@@ -172,14 +160,15 @@ public final class ValuePropagationAttacker extends Attacker {
 		final double[] probabilities = computeCandidateProb(candidateVals, this.qrParam);
 		
 		// Sampling
-		final int[] nodeIndexes = getNodeIndexes(totalNumCandidate);
+		final int[] nodeIndexes = getIndexArray(totalNumCandidate);
 		
 		final EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
 		if (isReplacement) { // this is currently not used, need to check if the isAdded works properly
 			final Set<AttackerAction> attActionSet = new HashSet<AttackerAction>();
 			int i = 0;
 			while (i < numSample) {
-				AttackerAction attAction = sampleAction(depGraph, attackCandidate, numSelectCandidate, rnd);
+				AttackerAction attAction =
+					sampleActionFromCandidate(depGraph, attackCandidate, numSelectCandidate, rnd);
 				boolean isAdded = attActionSet.add(attAction);
 				if (isAdded) {
 					i++;
@@ -191,7 +180,8 @@ public final class ValuePropagationAttacker extends Attacker {
 		// this is currently used, correct
 		final List<AttackerAction> attActionList = new ArrayList<AttackerAction>();
 		for (int i = 0; i < numSample; i++) {
-			final AttackerAction attAction = sampleAction(depGraph, attackCandidate, numSelectCandidate, rnd);
+			final AttackerAction attAction =
+				sampleActionFromCandidate(depGraph, attackCandidate, numSelectCandidate, rnd);
 			attActionList.add(attAction);
 		}
 		return attActionList;
@@ -463,7 +453,7 @@ public final class ValuePropagationAttacker extends Attacker {
 	 * @param rnd: integer distribution randomizer
 	 * @return type of AttackerAction: an action for the attacker
 	 *****************************************************************************************/
-	private static AttackerAction sampleAction(
+	private static AttackerAction sampleActionFromCandidate(
 		final DependencyGraph depGraph,
 		final AttackCandidate attackCandidate, 
 		final int numSelectCandidate, 
