@@ -32,7 +32,7 @@ public final class GameSimulation {
 	
 	private RandomDataGenerator rng;
 	
-	public static final boolean DEBUG_PRINT = true;
+	public static final boolean DEBUG_PRINT = false;
 	
 	//Outcome
 	private GameSimulationResult simResult;
