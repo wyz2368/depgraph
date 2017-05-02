@@ -493,8 +493,6 @@ public final class RandomWalkAttacker extends Attacker {
 							final Node parent = inEdge.getsource();
 							if (!isInSeqTarget[parent.getId() - 1] 
 								&& parent.getState() == NodeState.INACTIVE) {
-								// FIXME this statement limits depth of recursion to 1. remove.
-								isInSeqTarget[parent.getId() - 1] = true;
 								targetSeq.add(parent);
 							}
 						}
@@ -510,8 +508,6 @@ public final class RandomWalkAttacker extends Attacker {
 							* chosenEdge.getACost() * Math.pow(discFact, rwTupleCur.getTAct() - 1);
 						if (!isInSeqTarget[chosenEdge.getsource().getId() - 1]
 							&& chosenEdge.getsource().getState() == NodeState.INACTIVE) {
-							// FIXME this statement limits depth of recursion to 1. remove.
-							isInSeqTarget[chosenEdge.getsource().getId() - 1] = true;
 							targetSeq.add(chosenEdge.getsource());
 						}
 					}
@@ -575,8 +571,9 @@ public final class RandomWalkAttacker extends Attacker {
 						attAction.addAndNodeAttack(node, depGraph.incomingEdgesOf(node));
 					}
 				} else {
-					// FIXME shouldn't we include an OR-type node even if its selected parent is INACTIVE,
-					// if it is in the candidate set (i.e., any parent is ACTIVE), and in isInSequence?
+					// TODO clarify in Overleaf why we do not include an OR-type node
+					// even if its selected parent is INACTIVE,
+					// if it is in the candidate set (i.e., any parent is ACTIVE), and in isInSequence
 					final RandomWalkTuple rwTuple = rwTuples[node.getId() - 1];
 					final Edge inEdge = rwTuple.getPreAct().get(0);
 					if (inEdge.getsource().getState() == NodeState.ACTIVE) {
