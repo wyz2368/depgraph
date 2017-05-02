@@ -83,7 +83,7 @@ public final class AgentFactory {
 			if (!defenderParams.containsKey(DefenderParam.maxNumRes.toString())
 			|| !defenderParams.containsKey(DefenderParam.minNumRes.toString())
 			|| !defenderParams.containsKey(DefenderParam.numResRatio.toString())
-			|| !defenderParams.containsKey(AttackerParam.STDEV.toString())) {
+			|| !defenderParams.containsKey(DefenderParam.stdev.toString())) {
 				throw new IllegalArgumentException();
 			}
 			final int expectedKeys = 4;

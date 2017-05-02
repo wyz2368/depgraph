@@ -26,7 +26,7 @@ public final class TestVPvsDefender {
 	public static void main(final String[] args) {
 //		final int numNode = 50;
 //		final int numEdge = 150;
-		final int numTarget = 20;
+		final int numTarget = 10;
 		final double nodeActTypeRatio = 0.5;
 		final double aRewardLB = 5.0;
 		final double aRewardUB = 10.0;
@@ -66,7 +66,7 @@ public final class TestVPvsDefender {
 //			, minPosInactiveProb, maxPosInactiveProb);
 		
 		int numLayer = 10;
-		int numNode1Layer = 50;
+		int numNode1Layer = 25;
 		double numNodeRatio = 0.8;
 		double numEdgeRatio = 0.5;
 		
@@ -115,7 +115,7 @@ public final class TestVPvsDefender {
 			maxNumRes, minNumRes, numResRatio,
 			logisParam, discFact, thres,
 			qrParam, maxNumSelectCandidate, minNumSelectCandidate,
-			numSelectCandidateRatio, 0.0, 1.0);
+			numSelectCandidateRatio, 0.0, 0.0);
 		
 		Defender randomWalkvsDefender =
 			new RandomWalkVsDefender(logisParam, discFact, thres, qrParam, numRWSample, 1.0);
