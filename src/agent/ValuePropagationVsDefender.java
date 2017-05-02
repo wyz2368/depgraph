@@ -159,6 +159,7 @@ public final class ValuePropagationVsDefender extends Defender {
 			, this.numStateSample
 			, this.thres); 
 	}
+	
 	public DefenderAction sampleActionTopo(
 		final DependencyGraph depGraph, 
 		final int curTimeStep, 
@@ -216,14 +217,15 @@ public final class ValuePropagationVsDefender extends Defender {
 
 		return simpleSampleAction(dCandidateNodeList, numNodetoProtect, rnd);
 	}
+	
 	public DefenderAction sampleActionRandomWalk(
-			final DependencyGraph depGraph, 
-			final int curTimeStep, 
-			final int numTimeStep, 
-			final DefenderBelief dBelief, 
-			final RandomGenerator rng,
-			final Attacker attacker, // this is value-propagation attacker
-			final int numRWSample) { // this is for the random-walk process 
+		final DependencyGraph depGraph, 
+		final int curTimeStep, 
+		final int numTimeStep, 
+		final DefenderBelief dBelief, 
+		final RandomGenerator rng,
+		final Attacker attacker, // this is value-propagation attacker
+		final int numRWSample) { // this is for the random-walk process 
 		GameState savedGameState = new GameState();
 		for (Node node : depGraph.vertexSet()) {
 			if (node.getState() == NodeState.ACTIVE) {
@@ -267,9 +269,9 @@ public final class ValuePropagationVsDefender extends Defender {
 				
 			for (int i = 0; i < numRWSample; i++) {
 				RandomWalkTuple[] rwTuples = rwAttacker.randomWalk(
-															depGraph, 
-															curTimeStep, 
-															rng); // sample random walk
+					depGraph, 
+					curTimeStep, 
+					rng); // sample random walk
 				rwTuplesListSample[i] = rwTuples;
 			}
 			int i = 0;
@@ -287,7 +289,6 @@ public final class ValuePropagationVsDefender extends Defender {
 					}
 				}
 				rwTuplesList[i] = rwTuplesListSample[maxIdx];
-//				attValue[i] = maxValue;
 				i++;
 			}
 			DefenderAction defAction = new DefenderAction();
@@ -331,6 +332,7 @@ public final class ValuePropagationVsDefender extends Defender {
 		
 		return candidates[sampleIdx];
 	}
+	
 	public static Map<Node, Double> computeCandidateValueTopo(
 		final DependencyGraph depGraph,
 		final DefenderBelief dBelief,
