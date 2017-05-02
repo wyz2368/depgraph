@@ -1,0 +1,23 @@
+{
+  "assignment": {
+    "attacker": [
+      "RANDOM_WALK:numRWSample_100_qrParam_2.0"
+    ],
+    "defender": [
+      "GOAL_ONLY:maxNumRes_5.0_minNumRes_2.0_numResRatio_0.8_logisParam_6.0_stdev_0.0"
+    ]
+  },
+  "configuration": {
+    "numSim": 7,
+    "numTimeStep": 11,
+    "graphID": 0,
+    "numNode": 10,
+    "numEdge": 0,
+    "numTarget": 10,
+    "discFact": 0.4
+  },
+  "role_counts": {
+    "attacker": 1,
+    "defender": 1
+  }
+}
