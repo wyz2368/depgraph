@@ -26,7 +26,7 @@ public final class TestVPvsDefender {
 	public static void main(final String[] args) {
 //		final int numNode = 50;
 //		final int numEdge = 150;
-		final int numTarget = 20;
+		final int numTarget = 10;
 		final double nodeActTypeRatio = 0.5;
 		final double aRewardLB = 5.0;
 		final double aRewardUB = 10.0;
@@ -65,14 +65,14 @@ public final class TestVPvsDefender {
 //			, minPosActiveProb, maxPosActiveProb
 //			, minPosInactiveProb, maxPosInactiveProb);
 		
-		final int numLayer = 10;
-		final int numNode1Layer = 50;
-		final double numNodeRatio = 0.8;
-		final double numEdgeRatio = 0.5;
+		int numLayer = 10;
+		int numNode1Layer = 25;
+		double numNodeRatio = 0.8;
+		double numEdgeRatio = 0.5;
 		
-		final double aNodeCostFactor = 1.5;
-		final double aEdgeCostFactor = 1.5;
-		final double dCostFactor = 1.5;
+		double aNodeCostFactor = 1.5;
+		double aEdgeCostFactor = 1.5;
+		double dCostFactor = 1.5;
 		
 		DependencyGraph depGraph =
           DagGenerator.genRandomSepLayDAG(numLayer, numNode1Layer, numNodeRatio, numEdgeRatio, rnd);
@@ -115,7 +115,7 @@ public final class TestVPvsDefender {
 			maxNumRes, minNumRes, numResRatio,
 			logisParam, discFact, thres,
 			qrParam, maxNumSelectCandidate, minNumSelectCandidate,
-			numSelectCandidateRatio, 0.0, 1.0);
+			numSelectCandidateRatio, 0.0, 0.0);
 		
 		Defender randomWalkvsDefender =
 			new RandomWalkVsDefender(logisParam, discFact, thres, qrParam, numRWSample, 1.0);
