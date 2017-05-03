@@ -137,6 +137,16 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 		}
 	}
 	
+	public GameState getGameState() {
+		final GameState result = new GameState();
+		for (Node node: this.vertexSet()) {
+			if (node.getState() == NodeState.ACTIVE) {
+				result.addEnabledNode(node);
+			}
+		}
+		return result;
+	}
+	
 	public void print() {
 		for (Node node : this.vertexSet()) {
 			node.print();

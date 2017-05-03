@@ -18,9 +18,9 @@ import utils.DGraphUtils;
 import utils.EncodingUtils;
 import utils.JsonUtils;
 
-public final class MainGameSimulation_SepLayGraph {
+public final class MainGameSimSepLayGraph {
 	
-	private MainGameSimulation_SepLayGraph() {
+	private MainGameSimSepLayGraph() {
 		// private constructor
 	}
 

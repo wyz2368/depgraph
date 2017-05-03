@@ -24,8 +24,8 @@ public final class TestVPvsDefender {
 	}
 
 	public static void main(final String[] args) {
-//		final int numNode = 50;
-//		final int numEdge = 150;
+		// final int numNode = 50;
+		// final int numEdge = 150;
 		final int numTarget = 10;
 		final double nodeActTypeRatio = 0.5;
 		final double aRewardLB = 5.0;
@@ -46,7 +46,7 @@ public final class TestVPvsDefender {
 		final double maxPosActiveProb = 1.0;
 		final double minPosInactiveProb = 0.0;
 		final double maxPosInactiveProb = 0.2;
-//		
+	
 		Node.resetCounter();
 		Edge.resetCounter();
 		RandomDataGenerator rnd = new RandomDataGenerator();
@@ -65,31 +65,30 @@ public final class TestVPvsDefender {
 //			, minPosActiveProb, maxPosActiveProb
 //			, minPosInactiveProb, maxPosInactiveProb);
 		
-		int numLayer = 10;
-		int numNode1Layer = 25;
-		double numNodeRatio = 0.8;
-		double numEdgeRatio = 0.5;
+		final int numLayer = 10;
+		final int numNode1Layer = 25;
+		final double numNodeRatio = 0.8;
+		final double numEdgeRatio = 0.5;
 		
-		double aNodeCostFactor = 1.5;
-		double aEdgeCostFactor = 1.5;
-		double dCostFactor = 1.5;
+		final double aNodeCostFactor = 1.5;
+		final double aEdgeCostFactor = 1.5;
+		final double dCostFactor = 1.5;
 		
 		DependencyGraph depGraph =
-          DagGenerator.genRandomSepLayDAG(numLayer, numNode1Layer, numNodeRatio, numEdgeRatio, rnd);
+			DagGenerator.genRandomSepLayDAG(numLayer, numNode1Layer, numNodeRatio, numEdgeRatio, rnd);
 		DGraphGenerator.genSepLayGraph(depGraph, rnd, 
-				numTarget, nodeActTypeRatio, 
-				aRewardLB, aRewardUB, 
-				dPenaltyLB, dPenaltyUB, 
-				aNodeCostLB, aNodeCostUB, 
-				aEdgeCostLB, aEdgeCostUB, 
-				dCostLB, dCostUB, 
-				aNodeActProbLB, aNodeActProbUB, 
-				aEdgeActProbLB, aEdgeActProbUB, 
-				minPosActiveProb, maxPosActiveProb, 
-				minPosInactiveProb, maxPosInactiveProb, 
-				aNodeCostFactor, aEdgeCostFactor, dCostFactor);
-		
-		
+			numTarget, nodeActTypeRatio, 
+			aRewardLB, aRewardUB, 
+			dPenaltyLB, dPenaltyUB, 
+			aNodeCostLB, aNodeCostUB, 
+			aEdgeCostLB, aEdgeCostUB, 
+			dCostLB, dCostUB, 
+			aNodeActProbLB, aNodeActProbUB, 
+			aEdgeActProbLB, aEdgeActProbUB, 
+			minPosActiveProb, maxPosActiveProb, 
+			minPosInactiveProb, maxPosInactiveProb, 
+			aNodeCostFactor, aEdgeCostFactor, dCostFactor);
+	
 		DGraphGenerator.findMinCut(depGraph);
 		
 		final int maxNumSelectCandidate = 10;
@@ -163,22 +162,22 @@ public final class TestVPvsDefender {
 		timeVPvsVP = (end - start) / thousand / numSim;
 		
 		GameSimulation gameSimVPvsRW =
-				new GameSimulation(depGraph, vpAttacker, randomWalkvsDefender, rnd, numTimeStep, discFact);
-			double defPayoffVPvsRW = 0.0;
-			double attPayoffVPvsRW = 0.0;
-			double timeVPvsRW = 0.0;
-			for (int i = 0; i < numSim; i++) {
-				System.out.println("Simulation " + i);
-				gameSimVPvsRW.runSimulation();
-				gameSimVPvsRW.printPayoff();
-				defPayoffVPvsRW += gameSimVPvsRW.getSimulationResult().getDefPayoff();
-				attPayoffVPvsRW += gameSimVPvsRW.getSimulationResult().getAttPayoff();
-				gameSimVPvsRW.reset();
-			}
-			end = System.currentTimeMillis();
-			defPayoffVPvsRW /= numSim;
-			attPayoffVPvsRW /= numSim;
-			timeVPvsRW = (end - start) / thousand / numSim;
+			new GameSimulation(depGraph, vpAttacker, randomWalkvsDefender, rnd, numTimeStep, discFact);
+		double defPayoffVPvsRW = 0.0;
+		double attPayoffVPvsRW = 0.0;
+		double timeVPvsRW = 0.0;
+		for (int i = 0; i < numSim; i++) {
+			System.out.println("Simulation " + i);
+			gameSimVPvsRW.runSimulation();
+			gameSimVPvsRW.printPayoff();
+			defPayoffVPvsRW += gameSimVPvsRW.getSimulationResult().getDefPayoff();
+			attPayoffVPvsRW += gameSimVPvsRW.getSimulationResult().getAttPayoff();
+			gameSimVPvsRW.reset();
+		}
+		end = System.currentTimeMillis();
+		defPayoffVPvsRW /= numSim;
+		attPayoffVPvsRW /= numSim;
+		timeVPvsRW = (end - start) / thousand / numSim;
 		
 		System.out.println("Defender value propagation payoff: " + defPayoffVPvsVP);
 		System.out.println("Attacker value propagation payoff: " + attPayoffVPvsVP);
