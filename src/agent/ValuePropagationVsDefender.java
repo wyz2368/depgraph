@@ -413,62 +413,84 @@ public final class ValuePropagationVsDefender extends Defender {
 			throw new IllegalArgumentException();
 		}
 		
-		// Compute values for each node in the graph
-		final Node[] topoOrder = Attacker.getTopoOrder(depGraph);
-		
-		List<Node> targetList = new ArrayList<Node>(depGraph.getTargetSet()); // list of targets
-		// FIXME should r only include inactive targets, rather than all targets?
+		// TODO should r only include inactive targets, rather than all targets?
 		// see also: ValuePropagationAttacker computeCandidateValueTopo, line 235
-		double[][][] r = new double[targetList.size()][numTimeStep - curTimeStep + 1][depGraph.vertexSet().size()];
-		for (int i = 0; i < targetList.size(); i++) {
-			for (int j = 0; j <= numTimeStep - curTimeStep; j++) {
+		final List<Node> targets = new ArrayList<Node>(depGraph.getTargetSet());
+
+		final double[][][] r =
+			new double[targets.size()][numTimeStep - curTimeStep + 1][depGraph.vertexSet().size()];
+		for (int i = 0; i < targets.size(); i++) {
+			for (int j = 0; j < numTimeStep - curTimeStep + 1; j++) {
 				for (int k = 0; k < depGraph.vertexSet().size(); k++) {
 					r[i][j][k] = Double.POSITIVE_INFINITY;
 				}
 			}
 		}
-		for (int i = 0; i < targetList.size(); i++) {
-			Node node = targetList.get(i);
-			if (node.getState() != NodeState.ACTIVE) { // for non-active targets only
-				r[i][0][node.getId() - 1] = node.getDPenalty();
+
+		for (int targetIndex = 0; targetIndex < targets.size(); targetIndex++) {
+			final Node target = targets.get(targetIndex);
+			if (target.getState() == NodeState.INACTIVE) { // for non-active targets only
+				r[targetIndex][0][target.getId() - 1] = target.getDPenalty();
 			}
 		}
-		for (int k = depGraph.vertexSet().size() - 1; k >= 0; k--) { // starting propagate values for the defender 
-			Node node = topoOrder[k];
 
-			Set<Edge> edgeSet = depGraph.outgoingEdgesOf(node);
-			if (edgeSet != null && !edgeSet.isEmpty()) { // if non-leaf
-				for (Edge edge : edgeSet) {
-					Node postNode = edge.gettarget();
-					if (postNode.getState() != NodeState.ACTIVE) { // consider non-active postconditions only
-						for (int i = 0; i < targetList.size(); i++) {
-							if (targetList.get(i).getState() != NodeState.ACTIVE) {
-								for (int j = 1; j <= numTimeStep - curTimeStep; j++) {
-									double rHat = 0.0;
-									if (postNode.getActivationType() == NodeActivationType.OR) {
-										rHat = r[i][j - 1][postNode.getId() - 1] * edge.getActProb(); 
-									} else {
-										rHat = r[i][j - 1][postNode.getId() - 1] * postNode.getActProb();
-									}
-									if (r[i][j][node.getId() - 1] > discountFactor * rHat) {
-										// find the worst case scenario
-										r[i][j][node.getId() - 1] = discountFactor * rHat;
-									}
-								}
+		// Compute values for each node in the graph
+		final Node[] topoOrder = Attacker.getTopoOrder(depGraph);
+		
+		// iterate over nodes in reverse topological order (i.e., leaf node first)
+		for (int topoIndex = depGraph.vertexSet().size() - 1; topoIndex >= 0; topoIndex--) {
+			final Node curNode = topoOrder[topoIndex];
+			// FIXME should we skip curNode if it is ACTIVE? see ValuePropagationAttacker.computeCandidateValueTopo,
+			// line 258.
+			final Set<Edge> curOutEdges = depGraph.outgoingEdgesOf(curNode);
+			for (final Edge outEdge: curOutEdges) {
+				final Node childNode = outEdge.gettarget();
+				if (childNode.getState() == NodeState.ACTIVE) {
+					continue;
+				}
+				for (int targetIndex = 0; targetIndex < targets.size(); targetIndex++) {
+					// FIXME here we have to test if target is INACTIVE.
+					// in ValuePropagationAttacker, we just use inactive targets in r.
+					// can we do that here too?
+					if (targets.get(targetIndex).getState() == NodeState.INACTIVE) {
+						for (int timeIndex = 1; timeIndex <= numTimeStep - curTimeStep; timeIndex++) {
+							double rHat = 0.0;
+							
+							if (childNode.getActivationType() == NodeActivationType.AND) {
+								// FIXME what about childNode.getACost()?
+								// see also ValuePropagationAttacker.computeCandidateValueTopo,
+								// line 282.
+								rHat = childNode.getActProb() * r[targetIndex][timeIndex - 1][childNode.getId() - 1];
+								// FIXME what about normalizing over inactiveInEdgeCount of the AND node?
+								// see also ValuePropagationAttacker.computeCandidateValueTopo,
+								// line 291.
+							} else {
+								// FIXME what about outEdge.getACost()?
+								// see also ValuePropagationAttacker.computeCandidateValueTopo,
+								// line 297.
+								rHat = outEdge.getActProb() * r[targetIndex][timeIndex - 1][childNode.getId() - 1];
+							}
+							
+							// FIXME should we take the maximum or minimum propagation value?
+							// see also ValuePropagationAttacker.computeCandidateValueTopo,
+							// line 306.
+							if (r[targetIndex][timeIndex][curNode.getId() - 1] > discountFactor * rHat) {
+								// find the worst-case scenario
+								r[targetIndex][timeIndex][curNode.getId() - 1] = discountFactor * rHat;
 							}
 						}
 					}
 				}
 			}
-		
 		}
+		
 		// Min of value for candidates
 		double[] rSum = new double[depGraph.vertexSet().size()];
 		for (int i = 0; i < depGraph.vertexSet().size(); i++) {
 			rSum[i] = Double.POSITIVE_INFINITY;
 		}
-		for (int i = 0; i < targetList.size(); i++) {
-			if (targetList.get(i).getState() != NodeState.ACTIVE) {
+		for (int i = 0; i < targets.size(); i++) {
+			if (targets.get(i).getState() != NodeState.ACTIVE) {
 				for (int j = 0; j <= numTimeStep - curTimeStep; j++) {
 					for (int k = 0; k < depGraph.vertexSet().size(); k++) {
 						if (rSum[k] > r[i][j][k]) {
