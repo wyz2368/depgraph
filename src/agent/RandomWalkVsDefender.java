@@ -474,23 +474,21 @@ public final class RandomWalkVsDefender extends Defender {
 		final double discFact) {
 		double dValue = 0.0;
 		// True game state
-		GameState savedGameState = new GameState();
-		for (Node node : depGraph.vertexSet()) {
-			if (node.getState() == NodeState.ACTIVE) {
-				savedGameState.addEnabledNode(node);
-			}
-		}
+		final GameState savedGameState = depGraph.getGameState();
+		
 		int idx = 0;
 		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) {
 			GameState gameState = entry.getKey(); // a possible game state
 			Double gameStateProb = entry.getValue(); // corresponding state probability
-			depGraph.setState(gameState); // temporarily set game state to the graph
+			
 			RandomWalkTuple[][] rwTuplesList =  rwTuplesLists[idx];
 			AttackerAction[] attActionList = attActionLists[idx];
 			double[] attProb = attProbs[idx];
-			
+
+			depGraph.setState(gameState); // temporarily set game state to the graph
 			dValue += gameStateProb * computeDValue(depGraph, rwTuplesList, attActionList, attProb
-					, defAction, curTimeStep, numTimeStep, discFact);
+				, defAction, curTimeStep, numTimeStep, discFact);
+
 			idx++;
 		}
 		depGraph.setState(savedGameState);
@@ -834,5 +832,14 @@ public final class RandomWalkVsDefender extends Defender {
 		}
 		
 		return greedyValue;
+	}
+
+	@Override
+	public String toString() {
+		return "RandomWalkVsDefender [logisParam=" + this.logisParam + ", discFact="
+			+ this.discFact + ", thres=" + this.thres + ", qrParam=" + this.qrParam
+			+ ", numRWSample=" + this.numRWSample + ", numStateSample="
+			+ this.numStateSample + ", numAttActionSample=" + this.numAttActionSample
+			+ ", isRandomized=" + this.isRandomized + "]";
 	}
 }

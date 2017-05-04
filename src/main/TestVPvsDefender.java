@@ -83,36 +83,36 @@ public final class TestVPvsDefender {
 		double numNodeRatio = 0.8;
 		double numEdgeRatio = 0.5;
 		
-		double aNodeCostFactor = 1.2;
-		double aEdgeCostFactor = 1.2;
-		double dCostFactor = 1.2;
-		double aRewardFactor = 1.2;
-		double dPenaltyFactor = 1.2;
+		final double aNodeCostFactor = 1.2;
+		final double aEdgeCostFactor = 1.2;
+		final double dCostFactor = 1.2;
+		final double aRewardFactor = 1.2;
+		final double dPenaltyFactor = 1.2;
 		
-//		DependencyGraph depGraph =
-//			DagGenerator.genRandomSepLayDAG(numLayer, numNode1Layer, numNodeRatio, numEdgeRatio, rnd);
-//		DGraphGenerator.genSepLayGraph(depGraph, rnd, 
-//				numTarget, nodeActTypeRatio, 
-//				aRewardLB, aRewardUB, 
-//				dPenaltyLB, dPenaltyUB, 
-//				aNodeCostLB, aNodeCostUB, 
-//				aEdgeCostLB, aEdgeCostUB, 
-//				dCostLB, dCostUB, 
-//				aNodeActProbLB, aNodeActProbUB, 
-//				aEdgeActProbLB, aEdgeActProbUB, 
-//				minPosActiveProb, maxPosActiveProb, 
-//				minPosInactiveProb, maxPosInactiveProb, 
-//				aNodeCostFactor, aEdgeCostFactor, dCostFactor,
-//				aRewardFactor, dPenaltyFactor);
-//		
-//		DGraphGenerator.findMinCut(depGraph);
+		DependencyGraph depGraph =
+			DagGenerator.genRandomSepLayDAG(numLayer, numNode1Layer, numNodeRatio, numEdgeRatio, rnd);
+		DGraphGenerator.genSepLayGraph(depGraph, rnd, 
+				numTarget, nodeActTypeRatio, 
+				aRewardLB, aRewardUB, 
+				dPenaltyLB, dPenaltyUB, 
+				aNodeCostLB, aNodeCostUB, 
+				aEdgeCostLB, aEdgeCostUB, 
+				dCostLB, dCostUB, 
+				aNodeActProbLB, aNodeActProbUB, 
+				aEdgeActProbLB, aEdgeActProbUB, 
+				minPosActiveProb, maxPosActiveProb, 
+				minPosInactiveProb, maxPosInactiveProb, 
+				aNodeCostFactor, aEdgeCostFactor, dCostFactor,
+				aRewardFactor, dPenaltyFactor);
 		
-		String graphFolderName = "/Users/thanhnguyen/Documents/WORKS/ATTACK_GRAPH/EXPERIMENTS/E2_SepLay/2_GraphGameSim_SepLay/graphs";
-		int graphID = 1;
-		String filePathName = graphFolderName + File.separator
-				+ "SepLayerGraph" 
-				+ graphID + JsonUtils.JSON_SUFFIX;
-		DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
+		DGraphGenerator.findMinCut(depGraph);
+		
+//		String graphFolderName = "/Users/thanhnguyen/Documents/WORKS/ATTACK_GRAPH/EXPERIMENTS/E2_SepLay/2_GraphGameSim_SepLay/graphs";
+//		int graphID = 1;
+//		String filePathName = graphFolderName + File.separator
+//				+ "SepLayerGraph" 
+//				+ graphID + JsonUtils.JSON_SUFFIX;
+//		DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
 		
 		final int maxNumSelectCandidate = 10;
 		final int minNumSelectCandidate = 2;
@@ -146,7 +146,7 @@ public final class TestVPvsDefender {
 		
 		Attacker rwAttacker = new RandomWalkAttacker(numRWSample, qrParam, discFact);
 				
-		double thousand = 1000.0;
+		final double thousand = 1000.0;
 		
 		long start = System.currentTimeMillis();
 		GameSimulation gameSimVPvsVP =
@@ -172,8 +172,9 @@ public final class TestVPvsDefender {
 		defPayoffVPvsVP /= numSim;
 		attPayoffVPvsVP /= numSim;
 		
-		defPayoffStdVPvsVP = Math.pow(defPayoffStdVPvsVP / numSim - Math.pow(defPayoffVPvsVP, 2), 0.5);
-		attPayoffStdVPvsVP = Math.pow(attPayoffStdVPvsVP / numSim - Math.pow(attPayoffVPvsVP, 2), 0.5);
+		final double half = 0.5;
+		defPayoffStdVPvsVP = Math.pow(defPayoffStdVPvsVP / numSim - Math.pow(defPayoffVPvsVP, 2), half);
+		attPayoffStdVPvsVP = Math.pow(attPayoffStdVPvsVP / numSim - Math.pow(attPayoffVPvsVP, 2), half);
 		
 		timeVPvsVP = (end - start) / thousand / numSim;
 		
@@ -253,6 +254,7 @@ public final class TestVPvsDefender {
 //		defPayoffStdRWvsRW = Math.pow(defPayoffStdRWvsRW / numSim - Math.pow(defPayoffRWvsRW, 2), 0.5);
 //		attPayoffStdRWvsRW = Math.pow(attPayoffStdRWvsRW / numSim - Math.pow(attPayoffRWvsRW, 2), 0.5);
 //		timeRWvsRW = (end - start) / thousand / numSim;
+
 	
 		System.out.println("Defender value propagation payoff: " + defPayoffVPvsVP + "\t Std " + defPayoffStdVPvsVP);
 		System.out.println("Attacker value propagation payoff: " + attPayoffVPvsVP + "\t Std " + attPayoffStdVPvsVP);

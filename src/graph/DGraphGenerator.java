@@ -20,6 +20,7 @@ public final class DGraphGenerator {
 	private DGraphGenerator() {
 		// private constructor
 	}
+
 	public static void genSepLayGraph(final DependencyGraph dag, final RandomDataGenerator rand
 		, final int numTarget, final double nodeActTypeRatio
 		, final double aRewardLB, final double aRewardUB // targets
@@ -88,6 +89,7 @@ public final class DGraphGenerator {
 			}
 		}
 	}
+
 	public static void genGraph(final DependencyGraph dag, final RandomDataGenerator rand
 			, final int numTarget, final double nodeActTypeRatio
 			, final double aRewardLB, final double aRewardUB // targets 
@@ -122,13 +124,12 @@ public final class DGraphGenerator {
 						shortestPathLength[node.getId() - 1] = Integer.MAX_VALUE;
 						for (Edge edge : edgeSet) {
 							shortestPathLength[node.getId() - 1] = Math.min(shortestPathLength[node.getId() - 1]
-									, shortestPathLength[edge.getsource().getId() - 1]);
+								, shortestPathLength[edge.getsource().getId() - 1]);
 						}
-					}
-					else {
+					} else {
 						for (Edge edge : edgeSet) {
 							shortestPathLength[node.getId() - 1] = Math.max(shortestPathLength[node.getId() - 1]
-									, shortestPathLength[edge.getsource().getId() - 1]);
+								, shortestPathLength[edge.getsource().getId() - 1]);
 						}
 					}
 					shortestPathLength[node.getId() - 1] += 1;
@@ -166,7 +167,8 @@ public final class DGraphGenerator {
 					node.setActProb(0.0);
 					node.setACost(0.0);
 				}
-				genAlertProbRandom(node, rand, minPosActiveProb, maxPosActiveProb, minPosInactiveProb, maxPosInactiveProb);
+				genAlertProbRandom(
+					node, rand, minPosActiveProb, maxPosActiveProb, minPosInactiveProb, maxPosInactiveProb);
 			}
 			for (Edge edge : depGraph.edgeSet()) {
 				int length = shortestPathLength[edge.getsource().getId() - 1];
@@ -178,6 +180,7 @@ public final class DGraphGenerator {
 				}
 			}
 	}
+
 	// Number simulations per observation such that: 1-2 mins
 	// All leaf nodes are targets, all costs, reward, penalty are within [0,1]
 	public static void genGraph(final DependencyGraph dag, final RandomDataGenerator rand
