@@ -200,6 +200,7 @@ public final class RandomWalkVsDefender extends Defender {
 		
 		return candidates[sampleIdx];
 	}
+	
 	public DefenderAction sampleActionStatic(
 		final DependencyGraph depGraph,
 		final int curTimeStep, 
@@ -213,6 +214,7 @@ public final class RandomWalkVsDefender extends Defender {
 		greedyAction(depGraph, curTimeStep, numTimeStep, dBelief, rng, defAction);
 		return defAction;
 	}
+	
 	@Override
 	/*****************************************************************************************
 	 * Update defender's belief.
@@ -459,6 +461,7 @@ public final class RandomWalkVsDefender extends Defender {
 		
 		return value;
 	}
+	
 	public static double computeDValue(
 		final DependencyGraph depGraph,
 		final DefenderBelief dBelief,
@@ -725,7 +728,6 @@ public final class RandomWalkVsDefender extends Defender {
 			}
 			bIdx++;
 		}
-//		defCandidate.print();
 		List<Node> defCandidateList = new ArrayList<Node>(defCandidate.getNodeCandidateSet());
 		boolean[] isGreedyChosen = new boolean[defCandidateList.size()];
 		for (int i = 0; i < defCandidateList.size(); i++) {

@@ -26,9 +26,7 @@ public final class ValuePropagationAttacker extends Attacker {
 	private double discFact;
 	private double numCandStdev;
 	
-	// TODO make propagationParam a parameter from simulation_spec
 	private final double propagationParam = 0.5;
-	// TODO make useMaxOnly a parameter from simulation_spec
 	private final boolean useMaxOnly = true;
 	
 	public ValuePropagationAttacker(
@@ -311,7 +309,7 @@ public final class ValuePropagationAttacker extends Attacker {
 								r[inactIndex][timeIndex][curNode.getId() - 1] = discountFactor * rHat;
 							}
 						} else { // sum
-							// TODO this version is not documented in Overleaf doc (algorithm 2)
+							// this version is not documented in Overleaf doc (algorithm 2)
 							if (rHat > 0) {
 								r[inactIndex][timeIndex][curNode.getId() - 1] += discountFactor * rHat;
 							}
@@ -383,7 +381,7 @@ public final class ValuePropagationAttacker extends Attacker {
 				// iterate over all nodes
 				for (int nodeIndex = 0; nodeIndex < depGraph.vertexSet().size(); nodeIndex++) {
 					if (useMaxOnly) { // max
-						// TODO this is not documented in Overleaf doc (algorithm 2)
+						// TODO change in Overleaf doc (algorithm 2), to indicate we take max not sum
 						if (result[nodeIndex] < r[inactIndex][timeIndex][nodeIndex]) {
 							result[nodeIndex] = r[inactIndex][timeIndex][nodeIndex];
 						}

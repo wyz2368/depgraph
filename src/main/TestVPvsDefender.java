@@ -24,8 +24,8 @@ public final class TestVPvsDefender {
 	}
 
 	public static void main(final String[] args) {
-//		final int numNode = 50;
-//		final int numEdge = 150;
+		// final int numNode = 50;
+		// final int numEdge = 150;
 		final int numTarget = 10;
 		final double nodeActTypeRatio = 0.0;
 		final double aRewardLB = 10.0;
@@ -53,7 +53,7 @@ public final class TestVPvsDefender {
 		final double maxPosActiveProb = 1.0;
 		final double minPosInactiveProb = 0.0;
 		final double maxPosInactiveProb = 0.2;
-//		
+	
 		Node.resetCounter();
 		Edge.resetCounter();
 		RandomDataGenerator rnd = new RandomDataGenerator();
@@ -84,7 +84,7 @@ public final class TestVPvsDefender {
 		double dPenaltyFactor = 1.2;
 		
 		DependencyGraph depGraph =
-          DagGenerator.genRandomSepLayDAG(numLayer, numNode1Layer, numNodeRatio, numEdgeRatio, rnd);
+			DagGenerator.genRandomSepLayDAG(numLayer, numNode1Layer, numNodeRatio, numEdgeRatio, rnd);
 		DGraphGenerator.genSepLayGraph(depGraph, rnd, 
 				numTarget, nodeActTypeRatio, 
 				aRewardLB, aRewardUB, 
@@ -98,7 +98,6 @@ public final class TestVPvsDefender {
 				minPosInactiveProb, maxPosInactiveProb, 
 				aNodeCostFactor, aEdgeCostFactor, dCostFactor,
 				aRewardFactor, dPenaltyFactor);
-		
 		
 		DGraphGenerator.findMinCut(depGraph);
 		
@@ -118,7 +117,7 @@ public final class TestVPvsDefender {
 		final double numRWSample = 100;
 		
 		final int numTimeStep = 10;
-		final int numSim = 1;
+		final int numSim = 5;
 		
 		Defender valuePropagationvsDefender = new ValuePropagationVsDefender(
 			maxNumRes, minNumRes, numResRatio,
@@ -181,17 +180,15 @@ public final class TestVPvsDefender {
 			
 			defPayoffStdVPvsRW += Math.pow(gameSimVPvsRW.getSimulationResult().getDefPayoff(), 2);
 			attPayoffStdVPvsRW += Math.pow(gameSimVPvsRW.getSimulationResult().getAttPayoff(), 2);
+			
 			gameSimVPvsRW.reset();
 		}
 		end = System.currentTimeMillis();
 		defPayoffVPvsRW /= numSim;
 		attPayoffVPvsRW /= numSim;
-		
 		defPayoffStdVPvsRW = Math.pow(defPayoffStdVPvsRW / numSim - Math.pow(defPayoffVPvsRW, 2), 0.5);
 		attPayoffStdVPvsRW = Math.pow(attPayoffStdVPvsRW / numSim - Math.pow(attPayoffVPvsRW, 2), 0.5);
 		timeVPvsRW = (end - start) / thousand / numSim;
-//		
-		
 		
 		start = System.currentTimeMillis();
 		GameSimulation gameSimRWvsVP =
@@ -217,7 +214,6 @@ public final class TestVPvsDefender {
 		attPayoffRWvsVP /= numSim;
 		defPayoffStdRWvsVP = Math.pow(defPayoffStdRWvsVP / numSim - Math.pow(defPayoffRWvsVP, 2), 0.5);
 		attPayoffStdRWvsVP = Math.pow(attPayoffStdRWvsVP / numSim - Math.pow(attPayoffRWvsVP, 2), 0.5);
-		
 		timeRWvsVP = (end - start) / thousand / numSim;
 		
 		GameSimulation gameSimRWvsRW =
@@ -241,7 +237,6 @@ public final class TestVPvsDefender {
 		end = System.currentTimeMillis();
 		defPayoffRWvsRW /= numSim;
 		attPayoffRWvsRW /= numSim;
-		
 		defPayoffStdRWvsRW = Math.pow(defPayoffStdRWvsRW / numSim - Math.pow(defPayoffRWvsRW, 2), 0.5);
 		attPayoffStdRWvsRW = Math.pow(attPayoffStdRWvsRW / numSim - Math.pow(attPayoffRWvsRW, 2), 0.5);
 		timeRWvsRW = (end - start) / thousand / numSim;

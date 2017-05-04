@@ -64,7 +64,7 @@ public final class MainGraphGen02 {
 		double aRewardFactor = 1.2;
 		double dPenaltyFactor = 1.2;
 		
-		int numSample = 50;
+		final int numSample = 50;
 		
 		genSepLayerGraph(
 				folderPath, 
@@ -86,31 +86,31 @@ public final class MainGraphGen02 {
 				rnd, numSample);
 	}
 	public static void genRandomGraph(
-			final String folderPath, 
-			final int numNode,
-			final int numEdge,
-			final int numTarget,
-			final double nodeActTypeRatio,
-			final double aRewardLB,
-			final double aRewardUB,
-			final double dPenaltyLB,
-			final double dPenaltyUB,
-			final double aNodeCostLB,
-			final double aNodeCostUB,
-			final double aEdgeCostLB,
-			final double aEdgeCostUB,
-			final double dCostLB,
-			final double dCostUB,
-			final double aNodeActProbLB,
-			final double aNodeActProbUB,
-			final double aEdgeActProbLB,
-			final double aEdgeActProbUB,
-			final double minPosActiveProb,
-			final double maxPosActiveProb,
-			final double minPosInactiveProb,
-			final double maxPosInactiveProb,
-			final RandomDataGenerator rnd,
-			final int numSample) {
+		final String folderPath, 
+		final int numNode,
+		final int numEdge,
+		final int numTarget,
+		final double nodeActTypeRatio,
+		final double aRewardLB,
+		final double aRewardUB,
+		final double dPenaltyLB,
+		final double dPenaltyUB,
+		final double aNodeCostLB,
+		final double aNodeCostUB,
+		final double aEdgeCostLB,
+		final double aEdgeCostUB,
+		final double dCostLB,
+		final double dCostUB,
+		final double aNodeActProbLB,
+		final double aNodeActProbUB,
+		final double aEdgeActProbLB,
+		final double aEdgeActProbUB,
+		final double minPosActiveProb,
+		final double maxPosActiveProb,
+		final double minPosInactiveProb,
+		final double maxPosInactiveProb,
+		final RandomDataGenerator rnd,
+		final int numSample) {
 		for (int idx = 0; idx < numSample; idx++) {
 			Node.resetCounter();
 			Edge.resetCounter();
@@ -132,8 +132,8 @@ public final class MainGraphGen02 {
 			DGraphGenerator.findMinCut(depGraph);
 			DGraphUtils.save(filePathName, depGraph);
 		}
-		
 	}
+
 	public static void genSepLayerGraph(
 			final String folderPath, 
 			final int numLayer,
@@ -173,7 +173,7 @@ public final class MainGraphGen02 {
 			String filePathName = folderPath + File.separator
 				+ "SepLayerGraph" + idx + JsonUtils.JSON_SUFFIX;
 			DependencyGraph depGraph =
-					DagGenerator.genRandomSepLayDAG(numLayer, numNode1Layer, numNodeRatio, numEdgeRatio, rnd);
+				DagGenerator.genRandomSepLayDAG(numLayer, numNode1Layer, numNodeRatio, numEdgeRatio, rnd);
 			DGraphGenerator.genSepLayGraph(depGraph, rnd, 
 					numTarget, nodeActTypeRatio, 
 					aRewardLB, aRewardUB, 
@@ -188,9 +188,7 @@ public final class MainGraphGen02 {
 					aNodeCostFactor, aEdgeCostFactor, dCostFactor,
 					aRewardFactor, dPenaltyFactor);
 			DGraphGenerator.findMinCut(depGraph);
-			
 			DGraphUtils.save(filePathName, depGraph);
 		}
-		
 	}
 }
