@@ -20,9 +20,9 @@ import utils.JsonUtils;
 
 public final class MainGameSimSepLayGraph {
 	
-//	private MainGameSimSepLayGraph() {
-//		// private constructor
-//	}
+	private MainGameSimSepLayGraph() {
+		// private constructor
+	}
 
 	public static void main(final String[] args) {
 		if (args == null || args.length != 2) {

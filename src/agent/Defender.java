@@ -23,7 +23,7 @@ import graph.INode.NodeState;
 public abstract class Defender {
 	public enum DefenderType {
 		UNIFORM, MINCUT, GOAL_ONLY, ROOT_ONLY
-		, vsVALUE_PROPAGATION, vsRANDOM_WALK, vsUNIFORM;
+		, vsVALUE_PROPAGATION, vsRANDOM_WALK, vsUNIFORM, NOOP;
 		
 		@Override
 		public String toString() {
@@ -35,6 +35,7 @@ public abstract class Defender {
 			case vsVALUE_PROPAGATION: return "vVP";
 			case vsRANDOM_WALK: return "vRW";
 			case vsUNIFORM: return "vUN";
+			case NOOP: return "NOOP";
 			default: return "";
 			}	
 		}

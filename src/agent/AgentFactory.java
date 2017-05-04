@@ -66,6 +66,12 @@ public final class AgentFactory {
 			}
 			return new RandomWalkAttacker(attackerParams.get(AttackerParam.NUM_RW_SAMPLE.toString())
 				, attackerParams.get(AttackerParam.QR_PARAM.toString()), discFact);
+		} else if (attType == AttackerType.NOOP) {
+			final int expectedKeys = 0;
+			if (attackerParams.keySet().size() != expectedKeys) {
+				throw new IllegalArgumentException();
+			}
+			return new NoopAttacker();
 		}
 		throw new IllegalArgumentException();
 	}
@@ -216,6 +222,12 @@ public final class AgentFactory {
 				, defenderParams.get(DefenderParam.maxNumAttCandidate.toString())
 				, defenderParams.get(DefenderParam.minNumAttCandidate.toString())
 				, defenderParams.get(DefenderParam.numAttCandidateRatio.toString()));
+		} else if (defType == DefenderType.NOOP) {
+			final int expectedKeys = 0;
+			if (defenderParams.keySet().size() != expectedKeys) {
+				throw new IllegalArgumentException();
+			}
+			return new NoopDefender();
 		}
 		throw new IllegalArgumentException();
 	 }

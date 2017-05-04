@@ -18,7 +18,7 @@ import graph.INode.NodeState;
 
 public abstract class Attacker {
 	public enum AttackerType {
-		UNIFORM, VALUE_PROPAGATION, RANDOM_WALK;
+		UNIFORM, VALUE_PROPAGATION, RANDOM_WALK, NOOP;
 		
 		@Override
 		public String toString() {
@@ -26,6 +26,7 @@ public abstract class Attacker {
 			case UNIFORM: return "UN";
 			case VALUE_PROPAGATION: return "VP";
 			case RANDOM_WALK: return "RW";
+			case NOOP: return "NOOP";
 			default: return "";
 			}
 		}

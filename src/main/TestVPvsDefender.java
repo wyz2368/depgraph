@@ -1,23 +1,14 @@
 package main;
 
-import java.io.File;
-
 import game.GameSimulation;
 import graph.DGraphGenerator;
 import graph.DagGenerator;
-import graph.Edge;
-import graph.Node;
 import model.DependencyGraph;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
 
-import utils.DGraphUtils;
-import utils.JsonUtils;
 import agent.Attacker;
 import agent.Defender;
-import agent.RandomWalkAttacker;
-import agent.RandomWalkVsDefender;
-//import agent.GoalOnlyDefender;
 import agent.ValuePropagationAttacker;
 import agent.ValuePropagationVsDefender;
 
@@ -76,12 +67,10 @@ public final class TestVPvsDefender {
 //			, minPosActiveProb, maxPosActiveProb
 //			, minPosInactiveProb, maxPosInactiveProb);
 		
-		
-		
-		int numLayer = 5;
-		int numNode1Layer = 25;
-		double numNodeRatio = 0.8;
-		double numEdgeRatio = 0.5;
+		final int numLayer = 5;
+		final int numNode1Layer = 25;
+		final double numNodeRatio = 0.8;
+		final double numEdgeRatio = 0.5;
 		
 		final double aNodeCostFactor = 1.2;
 		final double aEdgeCostFactor = 1.2;
@@ -107,7 +96,8 @@ public final class TestVPvsDefender {
 		
 		DGraphGenerator.findMinCut(depGraph);
 		
-//		String graphFolderName = "/Users/thanhnguyen/Documents/WORKS/ATTACK_GRAPH/EXPERIMENTS/E2_SepLay/2_GraphGameSim_SepLay/graphs";
+//		String graphFolderName =
+		// "/Users/thanhnguyen/Documents/WORKS/ATTACK_GRAPH/EXPERIMENTS/E2_SepLay/2_GraphGameSim_SepLay/graphs";
 //		int graphID = 1;
 //		String filePathName = graphFolderName + File.separator
 //				+ "SepLayerGraph" 
@@ -127,7 +117,7 @@ public final class TestVPvsDefender {
 		final double logisParam = 1.0;
 		final double thres = 0.01;
 		
-		final double numRWSample = 100;
+		// final double numRWSample = 100;
 		
 		final int numTimeStep = 10;
 		final int numSim = 100;
@@ -138,13 +128,13 @@ public final class TestVPvsDefender {
 			qrParam, maxNumSelectCandidate, minNumSelectCandidate,
 			numSelectCandidateRatio, 0.0, 1.0);
 		
-		Defender randomWalkvsDefender =
-			new RandomWalkVsDefender(logisParam, discFact, thres, qrParam, numRWSample, 1.0);
+		// Defender randomWalkvsDefender =
+			// new RandomWalkVsDefender(logisParam, discFact, thres, qrParam, numRWSample, 1.0);
 		
 		Attacker vpAttacker = new ValuePropagationAttacker(maxNumSelectCandidate, minNumSelectCandidate
 			, numSelectCandidateRatio, qrParam, discFact, 0.0);
 		
-		Attacker rwAttacker = new RandomWalkAttacker(numRWSample, qrParam, discFact);
+		// Attacker rwAttacker = new RandomWalkAttacker(numRWSample, qrParam, discFact);
 				
 		final double thousand = 1000.0;
 		
