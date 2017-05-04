@@ -27,16 +27,18 @@ public final class MainGraphGen02 {
 		String folderPath = args[0];
 		final int numTarget = 10;
 		final double nodeActTypeRatio = 0.5;
-		final double aRewardLB = 5.0;
-		final double aRewardUB = 10.0;
-		final double dPenaltyLB = -10.0;
-		final double dPenaltyUB = -5.0;
+		final double aRewardLB = 10.0;
+		final double aRewardUB = 20.0;
+		final double dPenaltyLB = -20.0;
+		final double dPenaltyUB = -10.0;
+		
 		final double aNodeCostLB = -1.0;
 		final double aNodeCostUB = -0.5;
 		final double aEdgeCostLB = -1.0;
 		final double aEdgeCostUB = -0.5;
-		final double dCostLB = -2.0;
-		final double dCostUB = -1.0;
+		final double dCostLB = -1.0;
+		final double dCostUB = -0.5;
+
 		final double aNodeActProbLB = 0.8;
 		final double aNodeActProbUB = 1.0;
 		final double aEdgeActProbLB = 0.6;
@@ -45,20 +47,22 @@ public final class MainGraphGen02 {
 		final double maxPosActiveProb = 1.0;
 		final double minPosInactiveProb = 0.0;
 		final double maxPosInactiveProb = 0.2;
-//		
+		
 		Node.resetCounter();
 		Edge.resetCounter();
 		RandomDataGenerator rnd = new RandomDataGenerator();
 		rnd.reSeed(System.currentTimeMillis());
 
-		int numLayer = 10;
+		int numLayer = 5;
 		int numNode1Layer = 25;
 		double numNodeRatio = 0.8;
 		double numEdgeRatio = 0.5;
 		
-		double aNodeCostFactor = 1.5;
-		double aEdgeCostFactor = 1.5;
-		double dCostFactor = 1.5;
+		double aNodeCostFactor = 1.2;
+		double aEdgeCostFactor = 1.2;
+		double dCostFactor = 1.2;
+		double aRewardFactor = 1.2;
+		double dPenaltyFactor = 1.2;
 		
 		int numSample = 50;
 		
@@ -68,6 +72,7 @@ public final class MainGraphGen02 {
 				numNodeRatio, numEdgeRatio, 
 				aNodeCostFactor, aEdgeCostFactor, 
 				dCostFactor, 
+				aRewardFactor, dPenaltyFactor,
 				numTarget, nodeActTypeRatio, 
 				aRewardLB, aRewardUB, 
 				dPenaltyLB, dPenaltyUB, 
@@ -138,6 +143,8 @@ public final class MainGraphGen02 {
 			final double aNodeCostFactor,
 			final double aEdgeCostFactor,
 			final double dCostFactor,
+			final double aRewardFactor, 
+			final double dPenaltyFactor,
 			final int numTarget,
 			final double nodeActTypeRatio,
 			final double aRewardLB,
@@ -178,7 +185,8 @@ public final class MainGraphGen02 {
 					aEdgeActProbLB, aEdgeActProbUB, 
 					minPosActiveProb, maxPosActiveProb, 
 					minPosInactiveProb, maxPosInactiveProb, 
-					aNodeCostFactor, aEdgeCostFactor, dCostFactor);
+					aNodeCostFactor, aEdgeCostFactor, dCostFactor,
+					aRewardFactor, dPenaltyFactor);
 			DGraphGenerator.findMinCut(depGraph);
 			
 			DGraphUtils.save(filePathName, depGraph);

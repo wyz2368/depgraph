@@ -136,7 +136,7 @@ public final class TestGameSimulation {
 				defList[i] = new ValuePropagationVsDefender(maxNumRes, minNumRes, numResRatio
 					, logisParam, discFact, thres
 					, qrParamDef
-					, maxNumSelectCandidateDef, minNumSelectCandidateDef, numSelectCandidateRatioDef, 0.0, 1.0);
+					, maxNumSelectCandidateDef, minNumSelectCandidateDef, numSelectCandidateRatioDef, 0.0, 0.0);
 				break;
 			case vsRANDOM_WALK:
 				defList[i] = new RandomWalkVsDefender(logisParam, discFact, thres, qrParamDef, numRWSampleDef, 1.0);

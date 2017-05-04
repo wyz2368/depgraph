@@ -215,6 +215,7 @@ public abstract class Defender {
 		// Belief revision
 		DefenderBelief revisedBelief = new DefenderBelief();
 		for (Entry<GameState, Double> entry : newBelief.getGameStateMap().entrySet()) {
+//			System.out.println(entry.getValue());
 			if (entry.getValue() > thres) {
 				revisedBelief.addState(entry.getKey(), entry.getValue());
 			}

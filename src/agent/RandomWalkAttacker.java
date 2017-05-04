@@ -494,7 +494,7 @@ public final class RandomWalkAttacker extends Attacker {
 							if (!isInSeqTarget[parent.getId() - 1] 
 								&& parent.getState() == NodeState.INACTIVE) {
 								// FIXME this statement limits depth of recursion to 1. remove.
-								isInSeqTarget[parent.getId() - 1] = true;
+//								isInSeqTarget[parent.getId() - 1] = true;
 								targetSeq.add(parent);
 							}
 						}
@@ -511,7 +511,7 @@ public final class RandomWalkAttacker extends Attacker {
 						if (!isInSeqTarget[chosenEdge.getsource().getId() - 1]
 							&& chosenEdge.getsource().getState() == NodeState.INACTIVE) {
 							// FIXME this statement limits depth of recursion to 1. remove.
-							isInSeqTarget[chosenEdge.getsource().getId() - 1] = true;
+//							isInSeqTarget[chosenEdge.getsource().getId() - 1] = true;
 							targetSeq.add(chosenEdge.getsource());
 						}
 					}
