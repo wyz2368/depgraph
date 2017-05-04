@@ -72,32 +72,32 @@ public final class TestVPvsDefender {
 //			, minPosActiveProb, maxPosActiveProb
 //			, minPosInactiveProb, maxPosInactiveProb);
 		
-		int numLayer = 5;
-		int numNode1Layer = 25;
-		double numNodeRatio = 0.8;
-		double numEdgeRatio = 0.5;
+		final int numLayer = 5;
+		final int numNode1Layer = 25;
+		final double numNodeRatio = 0.8;
+		final double numEdgeRatio = 0.5;
 		
-		double aNodeCostFactor = 1.2;
-		double aEdgeCostFactor = 1.2;
-		double dCostFactor = 1.2;
-		double aRewardFactor = 1.2;
-		double dPenaltyFactor = 1.2;
+		final double aNodeCostFactor = 1.2;
+		final double aEdgeCostFactor = 1.2;
+		final double dCostFactor = 1.2;
+		final double aRewardFactor = 1.2;
+		final double dPenaltyFactor = 1.2;
 		
 		DependencyGraph depGraph =
 			DagGenerator.genRandomSepLayDAG(numLayer, numNode1Layer, numNodeRatio, numEdgeRatio, rnd);
 		DGraphGenerator.genSepLayGraph(depGraph, rnd, 
-				numTarget, nodeActTypeRatio, 
-				aRewardLB, aRewardUB, 
-				dPenaltyLB, dPenaltyUB, 
-				aNodeCostLB, aNodeCostUB, 
-				aEdgeCostLB, aEdgeCostUB, 
-				dCostLB, dCostUB, 
-				aNodeActProbLB, aNodeActProbUB, 
-				aEdgeActProbLB, aEdgeActProbUB, 
-				minPosActiveProb, maxPosActiveProb, 
-				minPosInactiveProb, maxPosInactiveProb, 
-				aNodeCostFactor, aEdgeCostFactor, dCostFactor,
-				aRewardFactor, dPenaltyFactor);
+			numTarget, nodeActTypeRatio, 
+			aRewardLB, aRewardUB, 
+			dPenaltyLB, dPenaltyUB, 
+			aNodeCostLB, aNodeCostUB, 
+			aEdgeCostLB, aEdgeCostUB, 
+			dCostLB, dCostUB, 
+			aNodeActProbLB, aNodeActProbUB, 
+			aEdgeActProbLB, aEdgeActProbUB, 
+			minPosActiveProb, maxPosActiveProb, 
+			minPosInactiveProb, maxPosInactiveProb, 
+			aNodeCostFactor, aEdgeCostFactor, dCostFactor,
+			aRewardFactor, dPenaltyFactor);
 		
 		DGraphGenerator.findMinCut(depGraph);
 		
@@ -133,7 +133,7 @@ public final class TestVPvsDefender {
 		
 		Attacker rwAttacker = new RandomWalkAttacker(numRWSample, qrParam, discFact);
 				
-		double thousand = 1000.0;
+		final double thousand = 1000.0;
 		
 		long start = System.currentTimeMillis();
 		GameSimulation gameSimVPvsVP =
@@ -159,8 +159,9 @@ public final class TestVPvsDefender {
 		defPayoffVPvsVP /= numSim;
 		attPayoffVPvsVP /= numSim;
 		
-		defPayoffStdVPvsVP = Math.pow(defPayoffStdVPvsVP / numSim - Math.pow(defPayoffVPvsVP, 2), 0.5);
-		attPayoffStdVPvsVP = Math.pow(attPayoffStdVPvsVP / numSim - Math.pow(attPayoffVPvsVP, 2), 0.5);
+		final double half = 0.5;
+		defPayoffStdVPvsVP = Math.pow(defPayoffStdVPvsVP / numSim - Math.pow(defPayoffVPvsVP, 2), half);
+		attPayoffStdVPvsVP = Math.pow(attPayoffStdVPvsVP / numSim - Math.pow(attPayoffVPvsVP, 2), half);
 		
 		timeVPvsVP = (end - start) / thousand / numSim;
 		
@@ -186,8 +187,8 @@ public final class TestVPvsDefender {
 		end = System.currentTimeMillis();
 		defPayoffVPvsRW /= numSim;
 		attPayoffVPvsRW /= numSim;
-		defPayoffStdVPvsRW = Math.pow(defPayoffStdVPvsRW / numSim - Math.pow(defPayoffVPvsRW, 2), 0.5);
-		attPayoffStdVPvsRW = Math.pow(attPayoffStdVPvsRW / numSim - Math.pow(attPayoffVPvsRW, 2), 0.5);
+		defPayoffStdVPvsRW = Math.pow(defPayoffStdVPvsRW / numSim - Math.pow(defPayoffVPvsRW, 2), half);
+		attPayoffStdVPvsRW = Math.pow(attPayoffStdVPvsRW / numSim - Math.pow(attPayoffVPvsRW, 2), half);
 		timeVPvsRW = (end - start) / thousand / numSim;
 		
 		start = System.currentTimeMillis();
@@ -212,8 +213,8 @@ public final class TestVPvsDefender {
 		end = System.currentTimeMillis();
 		defPayoffRWvsVP /= numSim;
 		attPayoffRWvsVP /= numSim;
-		defPayoffStdRWvsVP = Math.pow(defPayoffStdRWvsVP / numSim - Math.pow(defPayoffRWvsVP, 2), 0.5);
-		attPayoffStdRWvsVP = Math.pow(attPayoffStdRWvsVP / numSim - Math.pow(attPayoffRWvsVP, 2), 0.5);
+		defPayoffStdRWvsVP = Math.pow(defPayoffStdRWvsVP / numSim - Math.pow(defPayoffRWvsVP, 2), half);
+		attPayoffStdRWvsVP = Math.pow(attPayoffStdRWvsVP / numSim - Math.pow(attPayoffRWvsVP, 2), half);
 		timeRWvsVP = (end - start) / thousand / numSim;
 		
 		GameSimulation gameSimRWvsRW =
@@ -237,8 +238,8 @@ public final class TestVPvsDefender {
 		end = System.currentTimeMillis();
 		defPayoffRWvsRW /= numSim;
 		attPayoffRWvsRW /= numSim;
-		defPayoffStdRWvsRW = Math.pow(defPayoffStdRWvsRW / numSim - Math.pow(defPayoffRWvsRW, 2), 0.5);
-		attPayoffStdRWvsRW = Math.pow(attPayoffStdRWvsRW / numSim - Math.pow(attPayoffRWvsRW, 2), 0.5);
+		defPayoffStdRWvsRW = Math.pow(defPayoffStdRWvsRW / numSim - Math.pow(defPayoffRWvsRW, 2), half);
+		attPayoffStdRWvsRW = Math.pow(attPayoffStdRWvsRW / numSim - Math.pow(attPayoffRWvsRW, 2), half);
 		timeRWvsRW = (end - start) / thousand / numSim;
 	
 		System.out.println("Defender value propagation payoff: " + defPayoffVPvsVP + "\t Std " + defPayoffStdVPvsVP);
@@ -260,6 +261,5 @@ public final class TestVPvsDefender {
 		System.out.println("Attacker random walk payoff: " + attPayoffRWvsRW + "\t Std " + attPayoffStdRWvsRW);
 		System.out.println("Runtime per simulation: " + timeRWvsRW);
 		System.out.println();
-		
 	}
 }
