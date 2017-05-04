@@ -252,13 +252,15 @@ public final class ValuePropagationVsDefender extends Defender {
 			depGraph.setState(curGameState); // for each possible state
 
 			// sample actions from the attacker, given this current game state from the belief
-			final AttackerAction[] attActions = (AttackerAction[]) attacker.sampleAction(
+			final List<AttackerAction> attActionList = attacker.sampleAction(
 				depGraph,
 				curTimeStep,
 				numTimeStep,
 				rng,
 				this.numAttActionSample, 
-				false).toArray();
+				false);
+			final AttackerAction[] attActions =
+				attActionList.toArray(new AttackerAction[attActionList.size()]);
 
 			final RandomWalkTuple[][] rwTuplesListSample =
 				new RandomWalkTuple[numRWSample][]; // list of all random walk tuples sampled
