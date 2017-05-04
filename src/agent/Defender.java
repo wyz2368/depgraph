@@ -169,8 +169,8 @@ public abstract class Defender {
 			
 			List<AttackerAction> attActionList = attacker.sampleAction(depGraph, curTimeStep, numTimeStep
 				, rng, numAttActionSample, false); // Sample attacker actions
-			
-			for (int attActionSample = 0; attActionSample < numAttActionSample; attActionSample++) {
+			int trueNumAttActionSample = attActionList.size();
+			for (int attActionSample = 0; attActionSample < trueNumAttActionSample; attActionSample++) {
 				// Iterate over all samples of attack actions
 				AttackerAction attAction = attActionList.get(attActionSample); // current sample of attack action
 				List<GameState> gameStateList = GameOracle.generateStateSample(gameState, attAction, dAction
