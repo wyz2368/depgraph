@@ -231,110 +231,105 @@ public final class ValuePropagationVsDefender extends Defender {
 		final RandomGenerator rng,
 		final Attacker attacker, // this is value-propagation attacker
 		final int numRWSample) { // this is for the random-walk process 
-		GameState savedGameState = new GameState();
-		for (Node node : depGraph.vertexSet()) {
-			if (node.getState() == NodeState.ACTIVE) {
-				savedGameState.addEnabledNode(node);
-			}
+		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep
+			|| dBelief == null || rng == null || attacker == null || numRWSample < 1) {
+			throw new IllegalArgumentException();
 		}
-		
-		RandomWalkAttacker rwAttacker = new RandomWalkAttacker(numRWSample, this.qrParam, this.discFact);
-		// iterate over current belief of the defender
-		double[] candidateValues = new double[dBelief.getGameStateMap().size()];
-		DefenderAction[] candidates = new DefenderAction[dBelief.getGameStateMap().size()];
-		
-		RandomWalkTuple[][][] rwTuplesLists = new RandomWalkTuple[dBelief.getGameStateMap().size()][][];
-		AttackerAction[][] attActionLists = new AttackerAction[dBelief.getGameStateMap().size()][];
-		double[][] attProbs = new double[dBelief.getGameStateMap().size()][];
+
+		// Used for storing true game state of the game
+		final GameState savedGameState = depGraph.getGameState();
+
+		// possible defender actions to take
+		final DefenderAction[] candidates = new DefenderAction[dBelief.getGameStateMap().size()];
+
+		final RandomWalkTuple[][][] rwTuplesLists = new RandomWalkTuple[dBelief.getGameStateMap().size()][][];
+		final AttackerAction[][] attActionLists = new AttackerAction[dBelief.getGameStateMap().size()][];
+		final double[][] attProbs = new double[dBelief.getGameStateMap().size()][];
 		int idx = 0;
-		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) {
-			GameState gameState = entry.getKey();
-			
-			depGraph.setState(gameState); // for each possible state
-			AttackerAction[] attActionList = new AttackerAction[this.numAttActionSample];
-			List<AttackerAction> attActionListTemp = attacker.sampleAction(
-				depGraph, 
-				curTimeStep, 
-				numTimeStep, 
-				rng, 
+		// iterate over current belief of the defender
+		for (final Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) {
+			final GameState curGameState = entry.getKey();
+			depGraph.setState(curGameState); // for each possible state
+
+			// sample actions from the attacker, given this current game state from the belief
+			final AttackerAction[] attActions = (AttackerAction[]) attacker.sampleAction(
+				depGraph,
+				curTimeStep,
+				numTimeStep,
+				rng,
 				this.numAttActionSample, 
-				false); // Sample attacker actions
-			for (int i = 0; i < this.numAttActionSample; i++) {
-				attActionList[i] = attActionListTemp.get(i);
-			}
-			double[] attValue = new double[attActionList.length]; // values of corresponding action of the attacker
-			for (int i = 0; i < attValue.length; i++) {
-				attValue[i] = 0.0;
-			}
-			
-			RandomWalkTuple[][] rwTuplesList =
-					new RandomWalkTuple[attActionList.length][]; // list of all random walk tuples sampled
-			RandomWalkTuple[][] rwTuplesListSample =
-					new RandomWalkTuple[numRWSample][]; // list of all random walk tuples sampled
-				
+				false).toArray();
+
+			final RandomWalkTuple[][] rwTuplesListSample =
+				new RandomWalkTuple[numRWSample][]; // list of all random walk tuples sampled
+			final RandomWalkAttacker rwAttacker = new RandomWalkAttacker(numRWSample, this.qrParam, this.discFact);
 			for (int i = 0; i < numRWSample; i++) {
-				RandomWalkTuple[] rwTuples = rwAttacker.randomWalk(
+				final RandomWalkTuple[] rwTuples = rwAttacker.randomWalk(
 					depGraph, 
 					curTimeStep, 
 					rng); // sample random walk
 				rwTuplesListSample[i] = rwTuples;
 			}
-			int i = 0;
-			for (AttackerAction attAction : attActionList) {
+			final RandomWalkTuple[][] rwTuplesList =
+				new RandomWalkTuple[attActions.length][]; // list of all random walk tuples sampled
+			for (int attActionIndex = 0; attActionIndex < attActions.length; attActionIndex++) {
+				final AttackerAction attAction = attActions[attActionIndex];
 				double maxValue = Double.NEGATIVE_INFINITY;
 				int maxIdx = -1;
-				for (int j = 0; j < numRWSample; j++) {
-					RandomWalkTuple[] rwTuples = rwTuplesListSample[j];
-					double curValue = RandomWalkAttacker.computeAttackerValue(
+				for (int rwSampleIndex = 0; rwSampleIndex < numRWSample; rwSampleIndex++) {
+					final RandomWalkTuple[] rwTuples = rwTuplesListSample[rwSampleIndex];
+					final double curValue = RandomWalkAttacker.computeAttackerValue(
 						depGraph, attAction, rwTuples, 
 						this.discFact, curTimeStep, numTimeStep);
 					if (maxValue < curValue) {
 						maxValue = curValue;
-						maxIdx = j;
+						maxIdx = rwSampleIndex;
 					}
 				}
-				rwTuplesList[i] = rwTuplesListSample[maxIdx];
-				i++;
+				if (maxIdx == -1) {
+					throw new IllegalStateException();
+				}
+				rwTuplesList[attActionIndex] = rwTuplesListSample[maxIdx];
 			}
-			DefenderAction defAction = new DefenderAction();
+			
+			// values of corresponding action of the attacker
+			final double[] attValue = new double[attActions.length];
 			// attack probability
 			double[] attProb = Attacker.computeCandidateProb(attValue, this.qrParam);
+			DefenderAction defAction = new DefenderAction();
 			RandomWalkVsDefender.greedyAction(
 				depGraph, // greedy defense with respect to each possible game state
 				rwTuplesList, 
-				attActionList, 
+				attActions, 
 				attProb, 
 				defAction, // this is outcome
 				curTimeStep, 
 				numTimeStep,
 				this.discFact);
+
 			rwTuplesLists[idx] = rwTuplesList;
-			attActionLists[idx] = attActionList;
+			attActionLists[idx] = attActions;
 			attProbs[idx] = attProb;
-		
 			candidates[idx] = defAction;
 			idx++;
 		}
 		depGraph.setState(savedGameState);
 		
-		for (int i = 0; i < dBelief.getGameStateMap().size(); i++) {
+		final double[] candidateValues = new double[dBelief.getGameStateMap().size()];
+		for (int i = 0; i < candidateValues.length; i++) {
 			candidateValues[i] =
 				RandomWalkVsDefender.computeDValue(depGraph, dBelief, rwTuplesLists, attActionLists, attProbs
-				, candidates[i], curTimeStep, numTimeStep, this.discFact);
+					, candidates[i], curTimeStep, numTimeStep, this.discFact);
 		}
 		
 		// probability for each possible candidate action for the defender
-		double[] probabilities =
+		final double[] probabilities =
 			computeCandidateProb(dBelief.getGameStateMap().size(), candidateValues, this.logisParam);
 		
 		// Start sampling
-		int[] nodeIndexes = new int[dBelief.getGameStateMap().size()];
-		for (int i = 0; i < dBelief.getGameStateMap().size(); i++) {
-			nodeIndexes[i] = i;
-		}
-		EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
-		int sampleIdx = rnd.sample();
-		
+		final int[] nodeIndexes = Attacker.getIndexArray(dBelief.getGameStateMap().size());
+		final EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
+		final int sampleIdx = rnd.sample();
 		return candidates[sampleIdx];
 	}
 	
@@ -413,8 +408,6 @@ public final class ValuePropagationVsDefender extends Defender {
 			throw new IllegalArgumentException();
 		}
 		
-		// TODO should r only include inactive targets, rather than all targets?
-		// see also: ValuePropagationAttacker computeCandidateValueTopo, line 235
 		final List<Node> targets = new ArrayList<Node>(depGraph.getTargetSet());
 
 		final double[][][] r =
@@ -440,8 +433,6 @@ public final class ValuePropagationVsDefender extends Defender {
 		// iterate over nodes in reverse topological order (i.e., leaf node first)
 		for (int topoIndex = depGraph.vertexSet().size() - 1; topoIndex >= 0; topoIndex--) {
 			final Node curNode = topoOrder[topoIndex];
-			// FIXME should we skip curNode if it is ACTIVE? see ValuePropagationAttacker.computeCandidateValueTopo,
-			// line 258.
 			final Set<Edge> curOutEdges = depGraph.outgoingEdgesOf(curNode);
 			for (final Edge outEdge: curOutEdges) {
 				final Node childNode = outEdge.gettarget();
@@ -449,31 +440,20 @@ public final class ValuePropagationVsDefender extends Defender {
 					continue;
 				}
 				for (int targetIndex = 0; targetIndex < targets.size(); targetIndex++) {
-					// FIXME here we have to test if target is INACTIVE.
-					// in ValuePropagationAttacker, we just use inactive targets in r.
-					// can we do that here too?
 					if (targets.get(targetIndex).getState() == NodeState.INACTIVE) {
 						for (int timeIndex = 1; timeIndex <= numTimeStep - curTimeStep; timeIndex++) {
 							double rHat = 0.0;
 							
 							if (childNode.getActivationType() == NodeActivationType.AND) {
-								// FIXME what about childNode.getACost()?
-								// see also ValuePropagationAttacker.computeCandidateValueTopo,
-								// line 282.
+								// don't consider node cost
 								rHat = childNode.getActProb() * r[targetIndex][timeIndex - 1][childNode.getId() - 1];
-								// FIXME what about normalizing over inactiveInEdgeCount of the AND node?
-								// see also ValuePropagationAttacker.computeCandidateValueTopo,
-								// line 291.
+								// don't normalize for the multiple inactive parents of the AND node
 							} else {
-								// FIXME what about outEdge.getACost()?
-								// see also ValuePropagationAttacker.computeCandidateValueTopo,
-								// line 297.
+								// don't consider edge cost
 								rHat = outEdge.getActProb() * r[targetIndex][timeIndex - 1][childNode.getId() - 1];
 							}
 							
-							// FIXME should we take the maximum or minimum propagation value?
-							// see also ValuePropagationAttacker.computeCandidateValueTopo,
-							// line 306.
+							// take the minimum payoff (worst case)
 							if (r[targetIndex][timeIndex][curNode.getId() - 1] > discountFactor * rHat) {
 								// find the worst-case scenario
 								r[targetIndex][timeIndex][curNode.getId() - 1] = discountFactor * rHat;
@@ -484,59 +464,58 @@ public final class ValuePropagationVsDefender extends Defender {
 			}
 		}
 		
-		// Min of value for candidates
-		double[] rSum = new double[depGraph.vertexSet().size()];
+		double[] rAggregate = new double[depGraph.vertexSet().size()];
 		for (int i = 0; i < depGraph.vertexSet().size(); i++) {
-			rSum[i] = Double.POSITIVE_INFINITY;
+			rAggregate[i] = Double.POSITIVE_INFINITY;
 		}
-		for (int i = 0; i < targets.size(); i++) {
-			if (targets.get(i).getState() != NodeState.ACTIVE) {
-				for (int j = 0; j <= numTimeStep - curTimeStep; j++) {
-					for (int k = 0; k < depGraph.vertexSet().size(); k++) {
-						if (rSum[k] > r[i][j][k]) {
-							rSum[k] = r[i][j][k];
-						}
+		for (int targetIndex = 0; targetIndex < targets.size(); targetIndex++) {
+			if (targets.get(targetIndex).getState() == NodeState.ACTIVE) {
+				continue;
+			}
+			for (int timeIndex = 0; timeIndex <= numTimeStep - curTimeStep; timeIndex++) {
+				for (int nodeIndex = 0; nodeIndex < depGraph.vertexSet().size(); nodeIndex++) {
+					// take the minimum (worst) value here
+					if (rAggregate[nodeIndex] > r[targetIndex][timeIndex][nodeIndex]) {
+						rAggregate[nodeIndex] = r[targetIndex][timeIndex][nodeIndex];
 					}
 				}
 			}
 		}
 		
 		final Map<Node, Double> dValueMap = new HashMap<Node, Double>();
-		for (AttackerAction attAction : attActionList) {
-			for (Entry<Node, Set<Edge>> attEntry : attAction.getActionCopy().entrySet()) {
-				Node node = attEntry.getKey();
-				Set<Edge> edgeSet = attEntry.getValue();
-				
-				double addedDValue = rSum[node.getId() - 1];
+		for (final AttackerAction attAction : attActionList) {
+			for (final Entry<Node, Set<Edge>> attEntry : attAction.getActionCopy().entrySet()) {
+				final Node attNode = attEntry.getKey();
+				final Set<Edge> attEdges = attEntry.getValue();
+
 				double actProb = 1.0;
-				if (node.getActivationType() == NodeActivationType.OR) {
-					for (Edge edge : edgeSet) {
-						actProb *= (1 - edge.getActProb());
+				if (attNode.getActivationType() == NodeActivationType.OR) {
+					for (final Edge attEdge: attEdges) {
+						actProb *= (1 - attEdge.getActProb());
 					}
 					actProb = 1 - actProb;
 				} else {
-					actProb *= node.getActProb();
+					actProb *= attNode.getActProb();
 				}
-				addedDValue *= actProb;
-				
-				Double curDValue = dValueMap.get(node);
+
+				final double addedDValue = rAggregate[attNode.getId() - 1] * actProb;
+				Double curDValue = dValueMap.get(attNode);
 				if (curDValue == null) { // if this is new
 					curDValue = addedDValue;
 				} else {
 					curDValue += addedDValue;
 				}
-				dValueMap.put(node, curDValue);
+				dValueMap.put(attNode, curDValue);
 			}
 		}
-		for (Entry<Node, Double> entry : dValueMap.entrySet()) {
-			double value = entry.getValue();
-			entry.setValue(value / attActionList.size());
+		for (final Entry<Node, Double> entry : dValueMap.entrySet()) {
+			entry.setValue(entry.getValue() / attActionList.size());
 		}
-		for (Node target : depGraph.getTargetSet()) {
+		for (final Node target : depGraph.getTargetSet()) {
 			if (target.getState() == NodeState.ACTIVE) { // Examine active targets
 				double dValue = target.getDPenalty();
-				if (rSum[target.getId() - 1] != Double.POSITIVE_INFINITY) {
-					dValue += rSum[target.getId() - 1];
+				if (rAggregate[target.getId() - 1] != Double.POSITIVE_INFINITY) {
+					dValue += rAggregate[target.getId() - 1];
 				}
 				dValueMap.put(target, dValue);
 			}
