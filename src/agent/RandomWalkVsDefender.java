@@ -833,4 +833,13 @@ public final class RandomWalkVsDefender extends Defender {
 		
 		return greedyValue;
 	}
+
+	@Override
+	public String toString() {
+		return "RandomWalkVsDefender [logisParam=" + this.logisParam + ", discFact="
+			+ this.discFact + ", thres=" + this.thres + ", qrParam=" + this.qrParam
+			+ ", numRWSample=" + this.numRWSample + ", numStateSample="
+			+ this.numStateSample + ", numAttActionSample=" + this.numAttActionSample
+			+ ", isRandomized=" + this.isRandomized + "]";
+	}
 }

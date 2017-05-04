@@ -82,17 +82,17 @@ public final class MainGameSimSepLayGraph {
 		final GameSimulationSpec simSpec, final String attackerName,
 		final Map<String, Double> attackerParams, final String defenderName,
 		final Map<String, Double> defenderParams, final int numSim) {
-		MeanGameSimulationResult meanGameSimResult = new MeanGameSimulationResult();
-		Attacker attacker =
+		final MeanGameSimulationResult meanGameSimResult = new MeanGameSimulationResult();
+		final Attacker attacker =
 			AgentFactory.createAttacker(
 				attackerName, attackerParams, simSpec.getDiscFact());
-		Defender defender =
+		final Defender defender =
 			AgentFactory.createDefender(
 				defenderName, defenderParams, simSpec.getDiscFact());
-		RandomDataGenerator rng = new RandomDataGenerator();
-		GameSimulation gameSim = new GameSimulation(depGraph, attacker, defender, rng
+		final RandomDataGenerator rng = new RandomDataGenerator();
+		final GameSimulation gameSim = new GameSimulation(depGraph, attacker, defender, rng
 			, simSpec.getNumTimeStep(), simSpec.getDiscFact());
-		
+
 		final int thousand = 1000;
 		for (int i = 0; i < numSim; i++) {
 			if (i % thousand == 0) {
