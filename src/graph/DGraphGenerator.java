@@ -31,7 +31,8 @@ public final class DGraphGenerator {
 		, final double aEdgeActProbLB, final double aEdgeActProbUB // random
 		, final double minPosActiveProb, final double maxPosActiveProb // random
 		, final double minPosInactiveProb, final double maxPosInactiveProb // random
-		, final double aNodeCostFactor, final double aEdgeCostFactor, final double dCostFactor) { 
+		, final double aNodeCostFactor, final double aEdgeCostFactor, final double dCostFactor
+		, final double aRewardFactor, final double dPenaltyFactor) { 
 		
 		DependencyGraph depGraph = dag;
 		setTopologicalOrder(depGraph);
@@ -55,7 +56,11 @@ public final class DGraphGenerator {
 			int nodeLayer = layer[node.getId() - 1];
 			setNodeTypeRandom(depGraph, node, rand, nodeActTypeRatio);
 			genNodePayoffRandom(
-				node, rand, aRewardLB, aRewardUB, dPenaltyLB, dPenaltyUB, 
+				node, rand, 
+				Math.pow(aRewardFactor, nodeLayer) * aRewardLB, 
+				Math.pow(aRewardFactor, nodeLayer) * aRewardUB, 
+				Math.pow(dPenaltyFactor, nodeLayer) * dPenaltyLB, 
+				Math.pow(dPenaltyFactor, nodeLayer) * dPenaltyUB, 
 				Math.pow(aNodeCostFactor, nodeLayer) * aNodeCostLB , 
 				Math.pow(aNodeCostFactor, nodeLayer) * aNodeCostUB, 
 				Math.pow(dCostFactor, nodeLayer) * dCostLB, 
@@ -82,6 +87,96 @@ public final class DGraphGenerator {
 				genActivationProbRandom(edge, rand, aEdgeActProbLB, aEdgeActProbUB);
 			}
 		}
+	}
+	public static void genGraph(final DependencyGraph dag, final RandomDataGenerator rand
+			, final int numTarget, final double nodeActTypeRatio
+			, final double aRewardLB, final double aRewardUB // targets 
+			, final double dPenaltyLB, final double dPenaltyUB // targets
+			, final double aNodeCostLB, final double aNodeCostUB // first layer
+			, final double aEdgeCostLB, final double aEdgeCostUB // between first and second layer
+			, final double dCostLB, final double dCostUB // first layer
+			, final double aNodeActProbLB, final double aNodeActProbUB // random
+			, final double aEdgeActProbLB, final double aEdgeActProbUB // random
+			, final double minPosActiveProb, final double maxPosActiveProb // random
+			, final double minPosInactiveProb, final double maxPosInactiveProb // random
+			, final double aNodeCostFactor, final double aEdgeCostFactor, final double dCostFactor
+			, final double aRewardFactor, final double dPenaltyFactor) { 
+			
+			DependencyGraph depGraph = dag;
+			setTopologicalOrder(depGraph);
+			selectTargetRandom(depGraph, rand, numTarget);
+			setRootSet(depGraph);
+			Node[] nodeList = new Node[depGraph.vertexSet().size()];
+			for (Node node : depGraph.vertexSet()) {
+				nodeList[node.getTopoPosition()] = node;
+			}
+			
+			// Finding shortest path length to each node
+			int[] shortestPathLength = new int[depGraph.vertexSet().size()];
+			for (int i = 0; i < depGraph.vertexSet().size(); i++) {
+				Node node = nodeList[i]; 
+				shortestPathLength[node.getId() - 1] = 0;
+				Set<Edge> edgeSet = depGraph.incomingEdgesOf(node);
+				if (edgeSet != null && !edgeSet.isEmpty()) { // non-root nodes
+					if (node.getActivationType() == NodeActivationType.OR) {
+						shortestPathLength[node.getId() - 1] = Integer.MAX_VALUE;
+						for (Edge edge : edgeSet) {
+							shortestPathLength[node.getId() - 1] = Math.min(shortestPathLength[node.getId() - 1]
+									, shortestPathLength[edge.getsource().getId() - 1]);
+						}
+					}
+					else {
+						for (Edge edge : edgeSet) {
+							shortestPathLength[node.getId() - 1] = Math.max(shortestPathLength[node.getId() - 1]
+									, shortestPathLength[edge.getsource().getId() - 1]);
+						}
+					}
+					shortestPathLength[node.getId() - 1] += 1;
+				}
+			}
+			
+//			// Finding min length of targets
+//			int minTargetLength = Integer.MAX_VALUE;
+//			for	(Node target : depGraph.getTargetSet()) {
+//				if (shortestPathLength[target.getId() - 1] < minTargetLength) {
+//					minTargetLength = shortestPathLength[target.getId() - 1];
+//				}	
+//			}
+			for (Node node : depGraph.vertexSet()) {
+				int length = shortestPathLength[node.getId() - 1];
+				setNodeTypeRandom(depGraph, node, rand, nodeActTypeRatio);
+				genNodePayoffRandom(
+					node, rand, 
+					Math.pow(aRewardFactor, length) * aRewardLB, 
+					Math.pow(aRewardFactor, length) * aRewardUB, 
+					Math.pow(dPenaltyFactor, length) * dPenaltyLB, 
+					Math.pow(dPenaltyFactor, length) * dPenaltyUB, 
+					Math.pow(aNodeCostFactor, length) * aNodeCostLB , 
+					Math.pow(aNodeCostFactor, length) * aNodeCostUB, 
+					Math.pow(dCostFactor, length) * dCostLB, 
+					Math.pow(dCostFactor, length) * dCostUB);
+				
+				genActivationProbRandom(node, rand, aNodeActProbLB, aNodeActProbUB);
+				if (node.getType() != NodeType.TARGET) {
+					node.setAReward(0.0);
+					node.setDPenalty(0.0);
+				}
+				
+				if (node.getActivationType() != NodeActivationType.AND) {
+					node.setActProb(0.0);
+					node.setACost(0.0);
+				}
+				genAlertProbRandom(node, rand, minPosActiveProb, maxPosActiveProb, minPosInactiveProb, maxPosInactiveProb);
+			}
+			for (Edge edge : depGraph.edgeSet()) {
+				int length = shortestPathLength[edge.getsource().getId() - 1];
+				if (edge.gettarget().getActivationType() == NodeActivationType.OR) {
+					genEdgePayoffRandom(edge, rand, 
+						Math.pow(aEdgeCostFactor, length) * aEdgeCostLB, 
+						Math.pow(aEdgeCostFactor, length) * aEdgeCostUB);
+					genActivationProbRandom(edge, rand, aEdgeActProbLB, aEdgeActProbUB);
+				}
+			}
 	}
 	// Number simulations per observation such that: 1-2 mins
 	// All leaf nodes are targets, all costs, reward, penalty are within [0,1]

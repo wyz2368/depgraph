@@ -493,6 +493,7 @@ public final class RandomWalkAttacker extends Attacker {
 							final Node parent = inEdge.getsource();
 							if (!isInSeqTarget[parent.getId() - 1] 
 								&& parent.getState() == NodeState.INACTIVE) {
+								// FIXME this statement limits depth of recursion to 1. remove.
 								targetSeq.add(parent);
 							}
 						}
