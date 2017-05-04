@@ -1,0 +1,23 @@
+{
+  "assignment": {
+    "attacker": [
+      "UNIFORM:maxNumSelectCandidate_4.0_minNumSelectCandidate_3.0_numSelectCandidateRatio_0.6_stdev_0.0"
+    ],
+    "defender": [
+      "NOOP:"
+    ]
+  },
+  "configuration": {
+    "numSim": 7,
+    "numTimeStep": 11,
+    "graphID": 0,
+    "numNode": 5,
+    "numEdge": 3,
+    "numTarget": 2,
+    "discFact": 0.4
+  },
+  "role_counts": {
+    "attacker": 1,
+    "defender": 1
+  }
+}
