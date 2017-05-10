@@ -33,8 +33,8 @@ public final class ValuePropagationVsDefender extends Defender {
 	private double thres; // to remove game state from belief
 	
 	// defender's assumption about attacker
-	private double qrParam; 
-	private int maxNumAttCandidate; 
+	private double qrParam;
+	private int maxNumAttCandidate;
 	private int minNumAttCandidate;
 	private double numAttCandidateRatio;
 	private double numAttCandStdev;

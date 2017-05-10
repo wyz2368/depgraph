@@ -242,7 +242,8 @@ public final class UnitTestGameOracle {
 		gameState = GameOracle.generateStateSample(gameState, attAction, defAction, rnd);
 		// if defender protects all, and attacker attacks all, and all were inactive, all remain inactive
 		assertTrue(gameState.getEnabledNodeSet().size() == 0);
-		dBelief.addState(gameState, 2.0);
+		final double prob = 0.5;
+		dBelief.addState(gameState, prob);
 		depGraph.setState(gameState);
 		attAction = uniformAttacker.sampleAction(
 			depGraph, 

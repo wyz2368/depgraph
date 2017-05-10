@@ -3,7 +3,9 @@ package agent;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.junit.Test;
@@ -11,7 +13,9 @@ import org.junit.Test;
 import game.GameSimulationSpec;
 import game.MeanGameSimulationResult;
 import graph.Node;
+import graph.INode.NodeType;
 import main.MainGameSimulation;
+import model.DefenderAction;
 import model.DefenderBelief;
 import model.DependencyGraph;
 import model.GameState;
@@ -80,6 +84,30 @@ public final class UnitTestValuePropagationVsDefender {
 		final int iters = 100;
 		for (int i = 0; i < iters; i++) {
 			testDefender.sampleAction(depGraph, 1, numTimeSteps, belief, rnd.getRandomGenerator());			
+		}
+
+		// set all TARGET nodes (only) to active.
+		gameState = new GameState();
+		for (final Node node: depGraph.vertexSet()) {
+			if (node.getType() == NodeType.TARGET) {
+				gameState.addEnabledNode(node);
+			}
+		}
+		gameState.createID();
+		// set belief to surely being this game state.
+		belief = new DefenderBelief();
+		belief.addState(gameState, 1.0);
+		final Set<Node> protectedNodes = new HashSet<Node>();
+		final int myIters = 1000;
+		for (int i = 0; i < myIters; i++) {
+			final DefenderAction act =
+				testDefender.sampleAction(depGraph, 1, numTimeSteps, belief, rnd.getRandomGenerator());
+			protectedNodes.addAll(act.getAction());
+		}
+		for (final Node node: depGraph.vertexSet()) {
+			if (node.getType() == NodeType.TARGET) {
+				assertTrue(protectedNodes.contains(node));
+			}
 		}
 	}
 }

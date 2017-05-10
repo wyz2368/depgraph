@@ -195,7 +195,6 @@ public abstract class Defender {
 							attAction, 
 							gameState, 
 							newGameState);
-					
 					newBelief.addState(newGameState, curProb + addedProb);
 				}
 			}
