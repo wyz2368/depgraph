@@ -21,6 +21,9 @@ public final class DefenderBelief {
 	}
 	
 	public void addState(final GameState gameState, final Double prob) {
+		if (gameState == null) {
+			throw new IllegalArgumentException(gameState + "\n" + prob);
+		}
 		this.gameStateMap.put(gameState, prob);
 	}
 	

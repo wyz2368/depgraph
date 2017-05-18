@@ -246,6 +246,7 @@ public final class ValuePropagationAttacker extends Attacker {
 			// value of each inactive target, and current time step index (i.e., 0), at its own ID,
 			// is the attacker reward of the target.
 			// current time step t maps to 0 in the array.
+			// FIXME no discounting is applied for the inactive target node rewards.
 			r[inactIndex][0][inactiveTarget.getId() - 1] = inactiveTarget.getAReward();
 		}
 
