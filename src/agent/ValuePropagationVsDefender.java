@@ -118,7 +118,7 @@ public final class ValuePropagationVsDefender extends Defender {
 				attacker);
 		}
 
-		final int defaultNumRWSample = 10;
+		final int defaultNumRWSample = 30;
 		int numRWSample = defaultNumRWSample;
 		return sampleActionRandomWalk(
 			depGraph, 

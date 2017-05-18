@@ -26,7 +26,7 @@ public final class MainGraphGen02 {
 		}
 		String folderPath = args[0];
 		final int numTarget = 10;
-		final double nodeActTypeRatio = 0.5;
+		final double nodeActTypeRatio = 1.0;
 		final double aRewardLB = 10.0;
 		final double aRewardUB = 20.0;
 		final double dPenaltyLB = -20.0;

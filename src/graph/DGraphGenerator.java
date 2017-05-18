@@ -348,7 +348,7 @@ public final class DGraphGenerator {
 		}
 		if (depGraph.inDegreeOf(node) != 0) { // non-root nodes
 			double value = rand.nextUniform(0, 1, true);
-			if (value <= typePivot) {
+			if (value < typePivot) {
 				node.setActivationType(NodeActivationType.AND);
 			}
 		} else { // root nodes
