@@ -42,7 +42,8 @@ public final class GameOracle {
 		final DefenderAction defAction, 
 		final RandomDataGenerator rnd
 	) {
-		if (pastState == null || attAction == null || defAction == null || rnd == null) {
+		if (pastState == null || attAction == null
+			|| defAction == null || rnd == null) {
 			throw new IllegalArgumentException();
 		}
 		List<GameState> stateSampleList = generateStateSample(pastState
@@ -80,10 +81,12 @@ public final class GameOracle {
 				trueAlertProb = node.getPosActiveProb();
 			}
 			final double pivot = rnd.nextUniform(0.0, 1.0, true);
-			final SecurityAlert alert = new SecurityAlert(node, pivot < trueAlertProb);
+			final SecurityAlert alert =
+				new SecurityAlert(node, pivot < trueAlertProb);
 			defObservation.addAlert(alert);
 		}
-		if (defObservation.getAlertSet().size() != depGraph.vertexSet().size()) {
+		if (defObservation.getAlertSet().size()
+			!= depGraph.vertexSet().size()) {
 			throw new IllegalStateException();
 		}
 		return defObservation;
@@ -95,7 +98,8 @@ public final class GameOracle {
 	 * @param dObservation observation resulted from gameState
 	 * @return probability of the observation
 	 */
-	public static double computeObservationProb(final GameState gameState, final DefenderObservation dObservation) {
+	public static double computeObservationProb(
+		final GameState gameState, final DefenderObservation dObservation) {
 		if (gameState == null || dObservation == null) {
 			throw new IllegalArgumentException();
 		}
@@ -131,7 +135,8 @@ public final class GameOracle {
 	public static double computeStateTransitionProb(
 		final DefenderAction dAction, final AttackerAction aAction
 		, final GameState pastState, final GameState newState) {
-		if (dAction == null || aAction == null || pastState == null || newState == null) {
+		if (dAction == null || aAction == null
+			|| pastState == null || newState == null) {
 			throw new IllegalArgumentException();
 		}
 		// active nodes in past state will remain active if not disable
@@ -140,7 +145,8 @@ public final class GameOracle {
 				return 0.0;
 			}
 		}
-		for (Node node : newState.getEnabledNodeSet()) { // nodes which are disabled by the defender can not be active
+		// nodes which are disabled by the defender can not be active
+		for (Node node : newState.getEnabledNodeSet()) {
 			if (dAction.containsNode(node)) {
 				return 0.0;
 			}
@@ -148,11 +154,15 @@ public final class GameOracle {
 		
 		double prob = 1.0;
 		// iterate over nodes the attacker aims at activating
-		for (Entry<Node, Set<Edge>> entry : aAction.getActionCopy().entrySet()) {
+		for (Entry<Node, Set<Edge>> entry
+			: aAction.getActionCopy().entrySet()) {
 			Node node = entry.getKey();
-			assert !pastState.containsNode(node); // if node is already enabled, the attacker should not enable it again
+			// if node is already enabled, the attacker should not
+			// enable it again
+			assert !pastState.containsNode(node);
 			List<Edge> edgeList = new ArrayList<Edge>(entry.getValue());
-			if (!dAction.getAction().contains(node)) { // if the defender doesn't disable this node
+			// if the defender doesn't disable this node
+			if (!dAction.getAction().contains(node)) {
 				double enableProb = 1.0;
 				if (node.getActivationType() == NodeActivationType.AND) {
 					enableProb = node.getActProb();
@@ -185,30 +195,38 @@ public final class GameOracle {
 	 */
 	public static List<GameState> generateStateSample(final GameState pastState
 		, final AttackerAction attAction, final DefenderAction defAction
-		, final RandomDataGenerator rnd, final int numStateSample, final boolean isReplacement) {
-		if (pastState == null || attAction == null || defAction == null || rnd == null || numStateSample < 1) {
+		, final RandomDataGenerator rnd, final int numStateSample,
+		final boolean isReplacement) {
+		if (pastState == null || attAction == null
+			|| defAction == null || rnd == null || numStateSample < 1) {
 			throw new IllegalArgumentException();
 		}
-		Map<Node, Double> enableProbMap = new HashMap<Node, Double>(); // probability each node is active
+		// probability each node is active
+		Map<Node, Double> enableProbMap = new HashMap<Node, Double>();
 		for (Node node : pastState.getEnabledNodeSet()) {
 			if (!defAction.containsNode(node)) {
-				// nodes currently enabled and not protected by defender remain enabled
+				// nodes currently enabled and not protected
+				// by defender remain enabled
 				enableProbMap.put(node, 1.0);
 			}
 		}
 		
 		// Iterate over all nodes the attacker aims at activating
-		for (Entry<Node, Set<Edge>> entry : attAction.getActionCopy().entrySet()) {
+		for (Entry<Node, Set<Edge>> entry
+			: attAction.getActionCopy().entrySet()) {
 			final Node node = entry.getKey();
 			final Set<Edge> edges = entry.getValue();
 			if (pastState.containsNode(node)) {
-				// if node is already enabled, the attacker must not be allowed to enable it again
+				// if node is already enabled, the attacker 
+				// must not be allowed to enable it again
 				throw new IllegalStateException();
 			}
-			if (!defAction.getAction().contains(node)) { // if the defender is not protecting this node
+			// if the defender is not protecting this node
+			if (!defAction.getAction().contains(node)) {
 				for (final Edge inEdge: edges) {
 					if (!pastState.containsNode(inEdge.getsource())) {
-						throw new IllegalStateException("attacked over edge with inactive source");
+						throw new IllegalStateException(
+							"attacked over edge with inactive source");
 					}
 				}
 				double enableProb = 1.0;
@@ -237,21 +255,25 @@ public final class GameOracle {
 					Node node = entry.getKey();
 					Double enableProb = entry.getValue();
 					Double pivot = rnd.nextUniform(0.0, 1.0, true);
-					if (pivot <= enableProb) { // Check if this node will become active
+					// Check if this node will become active
+					if (pivot <= enableProb) {
 						gameState.addEnabledNode(node);
 					}
 				}
 				gameState.createID();
-				boolean isAdd = gameStateSet.add(gameState); // check if this is a new state
+				// check if this is a new state
+				boolean isAdd = gameStateSet.add(gameState);
 				if (isAdd) {
 					i++;
 				}
-				// if the maximum number of iterations reached before obtaining the required number of samples
+				// if the maximum number of iterations reached
+				// before obtaining the required number of samples
 				if (count > MAX_ITER) {
 					break;
 				}
 			}
-			return new ArrayList<GameState>(gameStateSet); // return the new set of samples
+			// return the new set of samples
+			return new ArrayList<GameState>(gameStateSet);
 		}
 		
 		List<GameState> gameStateList = new ArrayList<GameState>();

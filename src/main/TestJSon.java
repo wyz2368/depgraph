@@ -17,9 +17,11 @@ public class TestJSon {
 	private static String STRATEGIES = "strategies";
 	private static String PROFILES = "profiles";
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		// TODO Auto-generated method stub
-		String filePathName = "/Users/thanhnguyen/Documents/WORKS/ATTACK_GRAPH/EXPERIMENTS/E3_SepLay/1627-ga.json";
+		String filePathName =
+			"/Users/thanhnguyen/Documents/"
+			+ "WORKS/ATTACK_GRAPH/EXPERIMENTS/E3_SepLay/1627-ga.json";
 		final String inputString = JsonUtils.linesAsString(filePathName);
 		final JsonObject inputJson = 
 				new JsonParser().parse(inputString).getAsJsonObject();
@@ -27,7 +29,8 @@ public class TestJSon {
 		inputJson.get(STRATEGIES).getAsJsonObject();
 		JsonArray profiles = inputJson.get(PROFILES).getAsJsonArray();
 		List<String> playerList = new ArrayList<String>();
-		for(Entry<String, JsonElement> entry : players.entrySet()) {
+		for (Entry<String, JsonElement> entry
+			: players.entrySet()) {
 			playerList.add(entry.getKey());
 		}
 		
@@ -43,7 +46,9 @@ public class TestJSon {
 		
 		for (int i = 0; i < 1; i++) {
 			JsonObject profile = profiles.get(i).getAsJsonObject();
-			double attPayoff = profile.get("attacker").getAsJsonArray().get(0).getAsJsonArray().get(2).getAsDouble();
+			double attPayoff =
+				profile.get("attacker").getAsJsonArray().get(0).
+					getAsJsonArray().get(2).getAsDouble();
 //			double defPayoff = profile.get("defender").getAsDouble();
 			System.out.println(attPayoff);
 		}

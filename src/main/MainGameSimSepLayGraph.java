@@ -59,10 +59,14 @@ public final class MainGameSimSepLayGraph {
 		GameSimulation.printIfDebug(filePathName);
 				
 		// Load players
-		final String attackerString = JsonUtils.getAttackerString(simspecFolderName);
-		final String defenderString = JsonUtils.getDefenderString(simspecFolderName);
-		final String attackerName = EncodingUtils.getStrategyName(attackerString);
-		final String defenderName = EncodingUtils.getStrategyName(defenderString);
+		final String attackerString =
+			JsonUtils.getAttackerString(simspecFolderName);
+		final String defenderString =
+			JsonUtils.getDefenderString(simspecFolderName);
+		final String attackerName =
+			EncodingUtils.getStrategyName(attackerString);
+		final String defenderName =
+			EncodingUtils.getStrategyName(defenderString);
 		final Map<String, Double> attackerParams =
 			EncodingUtils.getStrategyParams(attackerString);
 		final Map<String, Double> defenderParams =
@@ -78,11 +82,13 @@ public final class MainGameSimSepLayGraph {
 		JsonUtils.printObservationToFile(simspecFolderName, obsString);
 	}
 	
-	public static MeanGameSimulationResult runSimulations(final DependencyGraph depGraph,
+	public static MeanGameSimulationResult runSimulations(
+		final DependencyGraph depGraph,
 		final GameSimulationSpec simSpec, final String attackerName,
 		final Map<String, Double> attackerParams, final String defenderName,
 		final Map<String, Double> defenderParams, final int numSim) {
-		final MeanGameSimulationResult meanGameSimResult = new MeanGameSimulationResult();
+		final MeanGameSimulationResult meanGameSimResult =
+			new MeanGameSimulationResult();
 		final Attacker attacker =
 			AgentFactory.createAttacker(
 				attackerName, attackerParams, simSpec.getDiscFact());
@@ -90,7 +96,8 @@ public final class MainGameSimSepLayGraph {
 			AgentFactory.createDefender(
 				defenderName, defenderParams, simSpec.getDiscFact());
 		final RandomDataGenerator rng = new RandomDataGenerator();
-		final GameSimulation gameSim = new GameSimulation(depGraph, attacker, defender, rng
+		final GameSimulation gameSim =
+			new GameSimulation(depGraph, attacker, defender, rng
 			, simSpec.getNumTimeStep(), simSpec.getDiscFact());
 
 		final int thousand = 1000;
@@ -99,7 +106,8 @@ public final class MainGameSimSepLayGraph {
 				GameSimulation.printIfDebug("Simulation: " + i);
 			}
 			gameSim.runSimulation();
-			meanGameSimResult.updateMeanSimulationResult(gameSim.getSimulationResult());
+			meanGameSimResult.updateMeanSimulationResult(
+				gameSim.getSimulationResult());
 			gameSim.reset();
 		}
 		return meanGameSimResult;

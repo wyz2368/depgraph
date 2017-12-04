@@ -53,17 +53,22 @@ public final class MainGameSimulation {
 			JsonUtils.getSimSpecOrDefaults(simspecFolderName);	
 		// Load graph
 		String filePathName = graphFolderName + File.separator
-			+ "RandomGraph" + simSpec.getNumNode() + "N" + simSpec.getNumEdge() + "E" 
+			+ "RandomGraph" + simSpec.getNumNode()
+			+ "N" + simSpec.getNumEdge() + "E" 
 			+ simSpec.getNumTarget() + "T"
 			+ simSpec.getGraphID() + JsonUtils.JSON_SUFFIX;
 		DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
 		GameSimulation.printIfDebug(filePathName);
 				
 		// Load players
-		final String attackerString = JsonUtils.getAttackerString(simspecFolderName);
-		final String defenderString = JsonUtils.getDefenderString(simspecFolderName);
-		final String attackerName = EncodingUtils.getStrategyName(attackerString);
-		final String defenderName = EncodingUtils.getStrategyName(defenderString);
+		final String attackerString =
+			JsonUtils.getAttackerString(simspecFolderName);
+		final String defenderString =
+			JsonUtils.getDefenderString(simspecFolderName);
+		final String attackerName =
+			EncodingUtils.getStrategyName(attackerString);
+		final String defenderName =
+			EncodingUtils.getStrategyName(defenderString);
 		final Map<String, Double> attackerParams =
 			EncodingUtils.getStrategyParams(attackerString);
 		final Map<String, Double> defenderParams =
@@ -79,11 +84,13 @@ public final class MainGameSimulation {
 		JsonUtils.printObservationToFile(simspecFolderName, obsString);
 	}
 	
-	public static MeanGameSimulationResult runSimulations(final DependencyGraph depGraph,
+	public static MeanGameSimulationResult runSimulations(
+		final DependencyGraph depGraph,
 		final GameSimulationSpec simSpec, final String attackerName,
 		final Map<String, Double> attackerParams, final String defenderName,
 		final Map<String, Double> defenderParams, final int numSim) {
-		MeanGameSimulationResult meanGameSimResult = new MeanGameSimulationResult();
+		MeanGameSimulationResult meanGameSimResult =
+			new MeanGameSimulationResult();
 		Attacker attacker =
 			AgentFactory.createAttacker(
 				attackerName, attackerParams, simSpec.getDiscFact());
@@ -91,7 +98,8 @@ public final class MainGameSimulation {
 			AgentFactory.createDefender(
 				defenderName, defenderParams, simSpec.getDiscFact());
 		RandomDataGenerator rng = new RandomDataGenerator();
-		GameSimulation gameSim = new GameSimulation(depGraph, attacker, defender, rng
+		GameSimulation gameSim = new GameSimulation(
+			depGraph, attacker, defender, rng
 			, simSpec.getNumTimeStep(), simSpec.getDiscFact());
 		
 		final int thousand = 1000;
@@ -100,7 +108,8 @@ public final class MainGameSimulation {
 				GameSimulation.printIfDebug("Simulation: " + i);
 			}
 			gameSim.runSimulation();
-			meanGameSimResult.updateMeanSimulationResult(gameSim.getSimulationResult());
+			meanGameSimResult.updateMeanSimulationResult(
+				gameSim.getSimulationResult());
 			gameSim.reset();
 		}
 		return meanGameSimResult;

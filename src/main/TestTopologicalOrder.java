@@ -20,9 +20,11 @@ public final class TestTopologicalOrder {
 		
 		RandomDataGenerator rng = new RandomDataGenerator();
 		rng.reSeed(System.currentTimeMillis());
-		DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rng);
+		DependencyGraph depGraph =
+			DagGenerator.genRandomDAG(numNode, numEdge, rng);
 		depGraph.print();
-		TopologicalOrderIterator<Node, Edge> topoOrderIter = new TopologicalOrderIterator<Node, Edge>(depGraph);
+		TopologicalOrderIterator<Node, Edge> topoOrderIter =
+			new TopologicalOrderIterator<Node, Edge>(depGraph);
 		System.out.println("Topological order: ");
 		while (topoOrderIter.hasNext()) {
 			Node node = topoOrderIter.next();

@@ -14,7 +14,8 @@ public final class MeanGameSimulationResult {
 		this.numTimeStep = 0;
 	}
 	
-	public MeanGameSimulationResult(final double aMeanDefPayoff, final double aMeanAttPayoff,
+	public MeanGameSimulationResult(final double aMeanDefPayoff,
+		final double aMeanAttPayoff,
 		final int aNumSimulation, final int aNumTimeStep) {
 		if (aNumSimulation < 1 || aNumTimeStep < 1) {
 			throw new IllegalArgumentException();
@@ -25,7 +26,8 @@ public final class MeanGameSimulationResult {
 		this.numTimeStep = aNumTimeStep;
 	}
 	
-	public void updateMeanSimulationResult(final GameSimulationResult newSimulationResult) {
+	public void updateMeanSimulationResult(
+		final GameSimulationResult newSimulationResult) {
 		assert newSimulationResult != null;
 		this.meanDefPayoff += newSimulationResult.getDefPayoff();
 		this.meanAttPayoff += newSimulationResult.getAttPayoff();

@@ -43,7 +43,8 @@ public final class TestGraphGen {
 		Edge.resetCounter();
 		RandomDataGenerator rnd = new RandomDataGenerator();
 		rnd.reSeed(System.currentTimeMillis());
-		DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rnd);
+		DependencyGraph depGraph =
+			DagGenerator.genRandomDAG(numNode, numEdge, rnd);
 		DGraphGenerator.genGraph(depGraph, rnd
 			, numTarget, nodeActTypeRatio
 			, aRewardLB, aRewardUB
@@ -57,7 +58,8 @@ public final class TestGraphGen {
 			, minPosInactiveProb, maxPosInactiveProb);
 		DGraphGenerator.findMinCut(depGraph);
 		DGraphUtils.save("./TestGraphUtil_1.json", depGraph);
-		DependencyGraph depGraphClone = DGraphUtils.loadGraph("./TestGraphUtil_1.json");
+		DependencyGraph depGraphClone =
+			DGraphUtils.loadGraph("./TestGraphUtil_1.json");
 		DGraphUtils.save("./TestGraphUtil_2.json", depGraphClone);
 	}
 }

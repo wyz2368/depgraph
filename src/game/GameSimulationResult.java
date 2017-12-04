@@ -14,15 +14,16 @@ public final class GameSimulationResult {
 	private double defPayoff;
 	private double attPayoff;
 	
-	public GameSimulationResult(final GameState initialState, final List<GameSample> gameSampleList,
-		final double defPayoff, final double attPayoff) {
-		if (initialState == null || gameSampleList == null) {
+	public GameSimulationResult(final GameState aInitialState,
+		final List<GameSample> aGameSampleList,
+		final double aDefPayoff, final double aAttPayoff) {
+		if (aInitialState == null || aGameSampleList == null) {
 			throw new IllegalArgumentException();
 		}
-		this.initialState = initialState;
-		this.gameSampleList = gameSampleList;
-		this.defPayoff = defPayoff;
-		this.attPayoff = attPayoff;
+		this.initialState = aInitialState;
+		this.gameSampleList = aGameSampleList;
+		this.defPayoff = aDefPayoff;
+		this.attPayoff = aAttPayoff;
 	}
 	
 	public GameSimulationResult() {
@@ -41,9 +42,11 @@ public final class GameSimulationResult {
 		assert aInitialState != null;
 		this.initialState = aInitialState;
 	}
+	
 	public GameState getInitialState() {
 		return this.initialState;
 	}
+	
 	public void setGameSampleList(final List<GameSample> aGameSampleList) {
 		assert aGameSampleList != null;
 		this.gameSampleList = aGameSampleList;
@@ -106,6 +109,7 @@ public final class GameSimulationResult {
 	@Override
 	public String toString() {
 		return "GameSimulationResult [initialState=" + this.initialState
-			+ ", defPayoff=" + this.defPayoff + ", attPayoff=" + this.attPayoff + "]";
+			+ ", defPayoff=" + this.defPayoff
+			+ ", attPayoff=" + this.attPayoff + "]";
 	}
 }

@@ -12,21 +12,21 @@ public final class GameSimulationSpec {
 	
 	private final double discFact; // for computing payoff
 	
-	public GameSimulationSpec(final int numTimeStep, final int numSim,
-		final int graphID, final int numNode,
-		final int numEdge, final int numTarget,
-		final double discFact) {
-		if (numTimeStep < 1 || numSim < 1 || numNode < 1 || numEdge < 0
-			|| numTarget < 1 || discFact <= 0.0 || discFact > 1.0) {
+	public GameSimulationSpec(final int aNumTimeStep, final int aNumSim,
+		final int aGraphID, final int aNumNode,
+		final int aNumEdge, final int aNumTarget,
+		final double aDiscFact) {
+		if (aNumTimeStep < 1 || aNumSim < 1 || aNumNode < 1 || aNumEdge < 0
+			|| aNumTarget < 1 || aDiscFact <= 0.0 || aDiscFact > 1.0) {
 			throw new IllegalArgumentException();
 		}
-		this.numTimeStep = numTimeStep;
-		this.numSim = numSim;
-		this.graphID = graphID;
-		this.numNode = numNode;
-		this.numEdge = numEdge;
-		this.numTarget = numTarget;
-		this.discFact = discFact;
+		this.numTimeStep = aNumTimeStep;
+		this.numSim = aNumSim;
+		this.graphID = aGraphID;
+		this.numNode = aNumNode;
+		this.numEdge = aNumEdge;
+		this.numTarget = aNumTarget;
+		this.discFact = aDiscFact;
 	}
 	
 	public int getNumTimeStep() {
@@ -59,8 +59,10 @@ public final class GameSimulationSpec {
 
 	@Override
 	public String toString() {
-		return "GameSimulationSpec [numTimeStep=" + this.numTimeStep + ", numSim="
-			+ this.numSim + ", graphID=" + this.graphID + ", numNode=" + this.numNode
+		return "GameSimulationSpec [numTimeStep="
+			+ this.numTimeStep + ", numSim="
+			+ this.numSim + ", graphID=" + this.graphID
+			+ ", numNode=" + this.numNode
 			+ ", numEdge=" + this.numEdge + ", numTarget=" + this.numTarget
 			+ ", discFact=" + this.discFact + "]";
 	}

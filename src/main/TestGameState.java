@@ -45,7 +45,8 @@ public final class TestGameState {
 		Edge.resetCounter();
 		RandomDataGenerator rnd = new RandomDataGenerator();
 		rnd.reSeed(System.currentTimeMillis());
-		DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rnd);
+		DependencyGraph depGraph =
+			DagGenerator.genRandomDAG(numNode, numEdge, rnd);
 		DGraphGenerator.genGraph(depGraph, rnd
 			, numTarget, nodeActTypeRatio
 			, aRewardLB, aRewardUB
@@ -73,8 +74,10 @@ public final class TestGameState {
 		}
 		gameState2.createID();
 		
-		System.out.println(gameState1.getID() + "\t" + gameState1.getEnabledNodeSet().size());
-		System.out.println(gameState2.getID() + "\t" + gameState2.getEnabledNodeSet().size());
+		System.out.println(gameState1.getID() + "\t" 
+			+ gameState1.getEnabledNodeSet().size());
+		System.out.println(gameState2.getID() + "\t"
+			+ gameState2.getEnabledNodeSet().size());
 		
 		boolean isEqual = gameState2.equals(gameState1);
 		if (isEqual) {

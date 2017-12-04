@@ -49,7 +49,8 @@ public final class TestUniformVsDefender {
 		Edge.resetCounter();
 		RandomDataGenerator rnd = new RandomDataGenerator();
 		rnd.reSeed(System.currentTimeMillis());
-		DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rnd);
+		DependencyGraph depGraph =
+			DagGenerator.genRandomDAG(numNode, numEdge, rnd);
 		DGraphGenerator.genGraph(depGraph, rnd
 			, numTarget, nodeActTypeRatio
 			, aRewardLB, aRewardUB
@@ -77,16 +78,21 @@ public final class TestUniformVsDefender {
 		
 		final int numTimeStep = 6;
 		final int numSim = 50;
-		Defender goalOnlyDefender = new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact, 0.0);
-		Defender uniformvsDefender = new UniformVsDefender(logisParam, discFact, thres
+		Defender goalOnlyDefender = new GoalOnlyDefender(
+			maxNumRes, minNumRes, numResRatio, logisParam, discFact, 0.0);
+		Defender uniformvsDefender = new UniformVsDefender(
+			logisParam, discFact, thres
 			, maxNumRes, minNumRes, numResRatio
-			, maxNumSelectCandidate, minNumSelectCandidate, numSelectCandidateRatio);
+			, maxNumSelectCandidate, minNumSelectCandidate,
+			numSelectCandidateRatio);
 		
-		Attacker uniformAttacker = new UniformAttacker(maxNumSelectCandidate, minNumSelectCandidate
+		Attacker uniformAttacker =
+			new UniformAttacker(maxNumSelectCandidate, minNumSelectCandidate
 			, numSelectCandidateRatio, 0.0);
 		
 		GameSimulation gameSimUvsGO =
-			new GameSimulation(depGraph, uniformAttacker, goalOnlyDefender, rnd, numTimeStep, discFact);
+			new GameSimulation(depGraph, uniformAttacker,
+				goalOnlyDefender, rnd, numTimeStep, discFact);
 		double defPayoffUvsGO = 0.0;
 		double attPayoffUvsGO = 0.0;
 		for (int i = 0; i < numSim; i++) {
@@ -101,15 +107,18 @@ public final class TestUniformVsDefender {
 		attPayoffUvsGO /= numSim;
 		
 		GameSimulation gameSimUvsUvs =
-			new GameSimulation(depGraph, uniformAttacker, uniformvsDefender, rnd, numTimeStep, discFact);
+			new GameSimulation(depGraph, uniformAttacker,
+				uniformvsDefender, rnd, numTimeStep, discFact);
 		double defPayoffUvsUvs = 0.0;
 		double attPayoffUvsUvs = 0.0;
 		for (int i = 0; i < numSim; i++) {
 			System.out.println("Simulation " + i);
 			gameSimUvsUvs.runSimulation();
 			gameSimUvsUvs.printPayoff();
-			defPayoffUvsUvs += gameSimUvsUvs.getSimulationResult().getDefPayoff();
-			attPayoffUvsUvs += gameSimUvsUvs.getSimulationResult().getAttPayoff();
+			defPayoffUvsUvs +=
+				gameSimUvsUvs.getSimulationResult().getDefPayoff();
+			attPayoffUvsUvs +=
+				gameSimUvsUvs.getSimulationResult().getAttPayoff();
 			gameSimUvsUvs.reset();
 		}
 		defPayoffUvsUvs /= numSim;

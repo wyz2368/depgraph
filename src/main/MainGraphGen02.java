@@ -118,7 +118,8 @@ public final class MainGraphGen02 {
 			String filePathName = folderPath + File.separator
 				+ "RandomGraph" + numNode + "N" + numEdge + "E" 
 				+ numTarget + "T" + idx + JsonUtils.JSON_SUFFIX;
-			DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rnd);
+			DependencyGraph depGraph =
+				DagGenerator.genRandomDAG(numNode, numEdge, rnd);
 			DGraphGenerator.genGraph(depGraph, rnd
 				, numTarget, nodeActTypeRatio
 				, aRewardLB, aRewardUB
@@ -174,7 +175,8 @@ public final class MainGraphGen02 {
 			String filePathName = folderPath + File.separator
 				+ "SepLayerGraph" + idx + JsonUtils.JSON_SUFFIX;
 			DependencyGraph depGraph =
-				DagGenerator.genRandomSepLayDAG(numLayer, numNode1Layer, numNodeRatio, numEdgeRatio, rnd);
+				DagGenerator.genRandomSepLayDAG(
+					numLayer, numNode1Layer, numNodeRatio, numEdgeRatio, rnd);
 			DGraphGenerator.genSepLayGraph(depGraph, rnd, 
 				numTarget, nodeActTypeRatio, 
 				aRewardLB, aRewardUB, 

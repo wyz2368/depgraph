@@ -41,60 +41,60 @@ public final class Node implements INode {
 	
 	public Node(final int aId, final NodeType aType,
 		final NodeActivationType aEType
-		, final double aReward, final double dPenalty
-		, final double dCost, final double aCost
-		, final double posActiveProb, final double posInactiveProb
-		, final double actProb) {
+		, final double aAReward, final double aDPenalty
+		, final double aDCost, final double aACost
+		, final double aPosActiveProb, final double aPosInactiveProb
+		, final double aActProb) {
 		if (
 			aType == null || aEType == null
-			|| !isProb(posActiveProb) || !isProb(posInactiveProb)
-			|| !isProb(actProb)
+			|| !isProb(aPosActiveProb) || !isProb(aPosInactiveProb)
+			|| !isProb(aActProb)
 		) {
 			throw new IllegalArgumentException();
 		}
-		if (aReward < 0.0 || dPenalty > 0.0 || dCost > 0.0 || aCost > 0.0) {
+		if (aAReward < 0.0 || aDPenalty > 0.0 || aDCost > 0.0 || aACost > 0.0) {
 			throw new IllegalArgumentException();
 		}
 		if (aEType == NodeActivationType.OR
-			&& (aCost != 0.0 || actProb != 0.0)) {
+			&& (aACost != 0.0 || aActProb != 0.0)) {
 			// OR nodes must have placeholder aCost and actProb of 0.0
 			throw new IllegalArgumentException();
 		}
 		this.id = aId;
 		this.type = aType; 
 		this.eType = aEType;
-		this.aReward = aReward;
-		this.dPenalty = dPenalty;
-		this.dCost = dCost;
-		this.aCost = aCost;
-		this.posActiveProb = posActiveProb;
-		this.posInactiveProb = posInactiveProb;
-		this.actProb = actProb;
+		this.aReward = aAReward;
+		this.dPenalty = aDPenalty;
+		this.dCost = aDCost;
+		this.aCost = aACost;
+		this.posActiveProb = aPosActiveProb;
+		this.posInactiveProb = aPosInactiveProb;
+		this.actProb = aActProb;
 	}
 	
-	private Node(final NodeType type, final NodeActivationType eType
-		, final double aReward, final double dPenalty
-		, final double dCost, final double aCost
-		, final double posActiveProb, final double posInactiveProb
-		, final double actProb) {
+	private Node(final NodeType aType, final NodeActivationType aEType
+		, final double aAReward, final double aDPenalty
+		, final double aDCost, final double aACost
+		, final double aPosActiveProb, final double aPosInactiveProb
+		, final double aActProb) {
 		if (
-			type == null || eType == null
-			|| !isProb(posActiveProb) || !isProb(posInactiveProb)
-			|| !isProb(actProb)
+			aType == null || aEType == null
+			|| !isProb(aPosActiveProb) || !isProb(aPosInactiveProb)
+			|| !isProb(aActProb)
 		) {
 			throw new IllegalArgumentException();
 		}
 		this.id = counter;
 		counter++;
-		this.type = type; 
-		this.eType = eType;
-		this.aReward = aReward;
-		this.dPenalty = dPenalty;
-		this.dCost = dCost;
-		this.aCost = aCost;
-		this.posActiveProb = posActiveProb;
-		this.posInactiveProb = posInactiveProb;
-		this.actProb = actProb;
+		this.type = aType; 
+		this.eType = aEType;
+		this.aReward = aAReward;
+		this.dPenalty = aDPenalty;
+		this.dCost = aDCost;
+		this.aCost = aACost;
+		this.posActiveProb = aPosActiveProb;
+		this.posInactiveProb = aPosInactiveProb;
+		this.actProb = aActProb;
 	}
 	
 	@Override

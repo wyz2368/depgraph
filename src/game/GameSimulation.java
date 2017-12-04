@@ -37,24 +37,26 @@ public final class GameSimulation {
 	//Outcome
 	private GameSimulationResult simResult;
 	
-	public GameSimulation(final DependencyGraph depGraph, final Attacker attacker,
-		final Defender defender, final RandomDataGenerator rng,
-		final int numTimeStep, final double discFact) {
-		if (depGraph == null || attacker == null || defender == null
-			|| rng == null || numTimeStep < 1 || discFact <= 0.0 || discFact > 1.0) {
+	public GameSimulation(
+		final DependencyGraph aDepGraph, final Attacker aAttacker,
+		final Defender aDefender, final RandomDataGenerator aRng,
+		final int aNumTimeStep, final double aDiscFact) {
+		if (aDepGraph == null || aAttacker == null || aDefender == null
+			|| aRng == null || aNumTimeStep < 1
+			|| aDiscFact <= 0.0 || aDiscFact > 1.0) {
 			throw new IllegalArgumentException();
 		}
-		if (!depGraph.isValid()) {
+		if (!aDepGraph.isValid()) {
 			throw new IllegalArgumentException();
 		}
-		this.depGraph = depGraph;
-		this.numTimeStep = numTimeStep;
-		this.discFact = discFact;
+		this.depGraph = aDepGraph;
+		this.numTimeStep = aNumTimeStep;
+		this.discFact = aDiscFact;
 		
-		this.attacker = attacker;
-		this.defender = defender;
+		this.attacker = aAttacker;
+		this.defender = aDefender;
 		
-		this.rng = rng;
+		this.rng = aRng;
 		
 		this.simResult = new GameSimulationResult();
 	}
@@ -121,21 +123,25 @@ public final class GameSimulation {
 			
 			printIfDebug("Sample game state...");
 			start = System.currentTimeMillis();
-			gameState = GameOracle.generateStateSample(gameState, attAction, defAction, this.rng); // new game state
+			gameState = GameOracle.generateStateSample(
+				gameState, attAction, defAction, this.rng); // new game state
 			end = System.currentTimeMillis();
 			printIfDebug("Elapsed time: " + (end - start) / thousand);
 			
 			printIfDebug("Sample observation...");
 			start = System.currentTimeMillis();
 			// observation based on game state
-			dObservation = GameOracle.generateDefObservation(this.depGraph, gameState, this.rng); 
+			dObservation = GameOracle.generateDefObservation(
+				this.depGraph, gameState, this.rng); 
 			end = System.currentTimeMillis();
 			printIfDebug("Elapsed time: " + (end - start) / thousand);
 			
 			printIfDebug("Update defender belief...");
 			start = System.currentTimeMillis();
-			dBelief = this.defender.updateBelief(this.depGraph, dBelief, defAction,
-				dObservation, t, this.numTimeStep, this.rng.getRandomGenerator());
+			dBelief = this.defender.updateBelief(
+				this.depGraph, dBelief, defAction,
+				dObservation, t, this.numTimeStep,
+				this.rng.getRandomGenerator());
 			end = System.currentTimeMillis();
 			printIfDebug("Elapsed time: " + (end - start) / thousand);
 			
@@ -146,12 +152,14 @@ public final class GameSimulation {
 			end = System.currentTimeMillis();
 			printIfDebug("Elapsed time: " + (end - start) / thousand);
 			
-			GameSample gameSample = new GameSample(t, gameState, dObservation, defAction, attAction);
+			GameSample gameSample = new GameSample(
+				t, gameState, dObservation, defAction, attAction);
 			this.simResult.addGameSample(gameSample);
 		}
 		if (this.simResult.getGameSampleList().size() != this.numTimeStep) {
 			throw new IllegalStateException(
-				this.simResult.getGameSampleList().size() + "\t" + this.numTimeStep);
+				this.simResult.getGameSampleList().size()
+				+ "\t" + this.numTimeStep);
 		}
 		this.computePayoff();
 	}
@@ -175,7 +183,8 @@ public final class GameSimulation {
 			for (final Node node : defAction.getAction()) {
 				defPayoff += discFactPow * node.getDCost();
 			}
-			for (final Entry<Node, Set<Edge>> entry : attAction.getActionCopy().entrySet()) {
+			for (final Entry<Node, Set<Edge>> entry
+				: attAction.getActionCopy().entrySet()) {
 				final Node node = entry.getKey();
 				if (node.getActivationType() == NodeActivationType.AND) {
 					attPayoff += discFactPow * node.getACost();
@@ -224,7 +233,8 @@ public final class GameSimulation {
 	@Override
 	public String toString() {
 		return "GameSimulation [numTimeStep=" + this.numTimeStep + ", attacker="
-			+ this.attacker + ", defender=" + this.defender + ", discFact=" + this.discFact
+			+ this.attacker + ", defender="
+			+ this.defender + ", discFact=" + this.discFact
 			+ ", rng=" + this.rng + "]";
 	}
 }

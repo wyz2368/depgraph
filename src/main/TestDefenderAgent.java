@@ -61,7 +61,8 @@ public final class TestDefenderAgent {
 		Edge.resetCounter();
 		RandomDataGenerator rnd = new RandomDataGenerator();
 		rnd.reSeed(System.currentTimeMillis());
-		DependencyGraph depGraph = DagGenerator.genRandomDAG(numNode, numEdge, rnd);
+		DependencyGraph depGraph =
+			DagGenerator.genRandomDAG(numNode, numEdge, rnd);
 		DGraphGenerator.genGraph(depGraph, rnd
 			, numTarget, nodeActTypeRatio
 			, aRewardLB, aRewardUB
@@ -90,21 +91,27 @@ public final class TestDefenderAgent {
 		final double prob = 0.7;
 		defBelief.addState(gameState, prob);
 		
-		UniformDefender uniformDefender = new UniformDefender(maxNumRes, minNumRes, numResRatio, 0.0);
-		DefenderAction dUniformAction = uniformDefender.sampleAction(depGraph, curTimeStep, numTimeStep
+		UniformDefender uniformDefender =
+			new UniformDefender(maxNumRes, minNumRes, numResRatio, 0.0);
+		DefenderAction dUniformAction =
+			uniformDefender.sampleAction(depGraph, curTimeStep, numTimeStep
 			, defBelief
 			, rnd.getRandomGenerator());
 		dUniformAction.print();
 		
-		MinCutDefender minCutDefender = new MinCutDefender(maxNumRes, minNumRes, numResRatio, 0.0);
-		DefenderAction dMinCutAction = minCutDefender.sampleAction(depGraph, curTimeStep, numTimeStep
+		MinCutDefender minCutDefender =
+			new MinCutDefender(maxNumRes, minNumRes, numResRatio, 0.0);
+		DefenderAction dMinCutAction =
+			minCutDefender.sampleAction(depGraph, curTimeStep, numTimeStep
 			, defBelief
 			, rnd.getRandomGenerator());
 		dMinCutAction.print();
 		
 		GoalOnlyDefender goalOnlyDefender =
-			new GoalOnlyDefender(maxNumRes, minNumRes, numResRatio, logisParam, discFact, 0.0);
-		DefenderAction dGoalOnlyAction = goalOnlyDefender.sampleAction(depGraph, curTimeStep, numTimeStep
+			new GoalOnlyDefender(
+				maxNumRes, minNumRes, numResRatio, logisParam, discFact, 0.0);
+		DefenderAction dGoalOnlyAction =
+			goalOnlyDefender.sampleAction(depGraph, curTimeStep, numTimeStep
 			, defBelief
 			, rnd.getRandomGenerator());
 		dGoalOnlyAction.print();
