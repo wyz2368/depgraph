@@ -20,19 +20,19 @@ public final class MinCutDefender extends Defender {
 	private double numCandStdev;
 	
 	public MinCutDefender(
-		final double maxNumRes, 
-		final double minNumRes, 
-		final double numResRatio,
-		final double numCandStdev) {
+		final double aMaxNumRes, 
+		final double aMinNumRes, 
+		final double aNumResRatio,
+		final double aNumCandStdev) {
 		super(DefenderType.MINCUT);
-		if (maxNumRes < minNumRes || minNumRes < 0 || !isProb(numResRatio)
-			|| numCandStdev < 0.0) {
+		if (aMaxNumRes < aMinNumRes || aMinNumRes < 0 || !isProb(aNumResRatio)
+			|| aNumCandStdev < 0.0) {
 			throw new IllegalArgumentException();
 		}
-		this.maxNumRes = (int) maxNumRes;
-		this.minNumRes = (int) minNumRes;
-		this.numResRatio = numResRatio;
-		this.numCandStdev = numCandStdev;
+		this.maxNumRes = (int) aMaxNumRes;
+		this.minNumRes = (int) aMinNumRes;
+		this.numResRatio = aNumResRatio;
+		this.numCandStdev = aNumCandStdev;
 	}
 	
 	@Override
@@ -43,19 +43,26 @@ public final class MinCutDefender extends Defender {
 		final DefenderBelief dBelief,
 		final RandomGenerator rng
 	) {
-		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null) {
+		if (depGraph == null || curTimeStep < 0
+			|| numTimeStep < curTimeStep || dBelief == null || rng == null) {
 			throw new IllegalArgumentException();
 		}
-		List<Node> dCandidateNodeList = new ArrayList<Node>(depGraph.getMinCut());
+		List<Node> dCandidateNodeList =
+			new ArrayList<Node>(depGraph.getMinCut());
 		final int goalCount =
-			(int) (dCandidateNodeList.size() * this.numResRatio + rng.nextGaussian() * this.numCandStdev);
+			(int) (dCandidateNodeList.size() * this.numResRatio
+				+ rng.nextGaussian() * this.numCandStdev);
 		final int numNodetoProtect =
-			Attacker.getActionCount(this.minNumRes, this.maxNumRes, dCandidateNodeList.size(), goalCount);
+			Attacker.getActionCount(
+				this.minNumRes, this.maxNumRes,
+				dCandidateNodeList.size(), goalCount);
 		if (dCandidateNodeList.size() == 0) {
 			return new DefenderAction();
 		}
 		// Sample nodes
-		UniformIntegerDistribution rnd = new UniformIntegerDistribution(rng, 0, dCandidateNodeList.size() - 1);
+		UniformIntegerDistribution rnd =
+			new UniformIntegerDistribution(
+				rng, 0, dCandidateNodeList.size() - 1);
 		return simpleSampleAction(dCandidateNodeList, numNodetoProtect, rnd);	
 	}
 	
@@ -90,7 +97,8 @@ public final class MinCutDefender extends Defender {
 	@Override
 	public String toString() {
 		return "MinCutDefender [maxNumRes=" + this.maxNumRes + ", minNumRes="
-			+ this.minNumRes + ", numResRatio=" + this.numResRatio + ", numCandStdev="
+			+ this.minNumRes + ", numResRatio="
+			+ this.numResRatio + ", numCandStdev="
 			+ this.numCandStdev + "]";
 	}
 }

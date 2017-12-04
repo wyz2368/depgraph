@@ -20,19 +20,20 @@ public final class RootOnlyDefender extends Defender {
 	private double numCandStdev;
 	
 	public RootOnlyDefender(
-		final double maxNumRes, 
-		final double minNumRes, 
-		final double numResRatio,
-		final double numCandStdev) {
+		final double aMaxNumRes, 
+		final double aMinNumRes, 
+		final double aNumResRatio,
+		final double aNumCandStdev) {
 		super(DefenderType.ROOT_ONLY);
-		if (minNumRes < 1 || maxNumRes < minNumRes || numResRatio < 0.0 || numResRatio > 1.0
-			|| numCandStdev < 0.0) {
+		if (aMinNumRes < 1 || aMaxNumRes < aMinNumRes
+			|| aNumResRatio < 0.0 || aNumResRatio > 1.0
+			|| aNumCandStdev < 0.0) {
 			throw new IllegalArgumentException();
 		}
-		this.maxNumRes = (int) maxNumRes;
-		this.minNumRes = (int) minNumRes;
-		this.numResRatio = numResRatio;
-		this.numCandStdev = numCandStdev;
+		this.maxNumRes = (int) aMaxNumRes;
+		this.minNumRes = (int) aMinNumRes;
+		this.numResRatio = aNumResRatio;
+		this.numCandStdev = aNumCandStdev;
 	}
 	
 	@Override
@@ -42,19 +43,25 @@ public final class RootOnlyDefender extends Defender {
 		final int numTimeStep, 
 		final DefenderBelief dBelief, 
 		final RandomGenerator rng) {
-		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null) {
+		if (depGraph == null || curTimeStep < 0
+			|| numTimeStep < curTimeStep || dBelief == null || rng == null) {
 			throw new IllegalArgumentException();
 		}
-		List<Node> dCandidateNodeList = new ArrayList<Node>(depGraph.getRootSet());
+		List<Node> dCandidateNodeList =
+			new ArrayList<Node>(depGraph.getRootSet());
 		final int goalCount =
-			(int) (dCandidateNodeList.size() * this.numResRatio + rng.nextGaussian() * this.numCandStdev);
+			(int) (dCandidateNodeList.size()
+				* this.numResRatio + rng.nextGaussian() * this.numCandStdev);
 		final int numNodetoProtect =
-			Attacker.getActionCount(this.minNumRes, this.maxNumRes, dCandidateNodeList.size(), goalCount);
+			Attacker.getActionCount(this.minNumRes,
+				this.maxNumRes, dCandidateNodeList.size(), goalCount);
 		if (dCandidateNodeList.size() == 0) {
 			return new DefenderAction();
 		}
 		// Sample nodes
-		UniformIntegerDistribution rnd = new UniformIntegerDistribution(rng, 0, dCandidateNodeList.size() - 1);
+		UniformIntegerDistribution rnd =
+			new UniformIntegerDistribution(rng, 0,
+				dCandidateNodeList.size() - 1);
 		return simpleSampleAction(dCandidateNodeList, numNodetoProtect, rnd);	
 	}
 	
@@ -89,7 +96,8 @@ public final class RootOnlyDefender extends Defender {
 	@Override
 	public String toString() {
 		return "RootOnlyDefender [maxNumRes=" + this.maxNumRes + ", minNumRes="
-			+ this.minNumRes + ", numResRatio=" + this.numResRatio + ", numCandStdev="
+			+ this.minNumRes + ", numResRatio="
+			+ this.numResRatio + ", numCandStdev="
 			+ this.numCandStdev + "]";
 	}
 }

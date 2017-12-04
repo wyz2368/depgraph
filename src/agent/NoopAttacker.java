@@ -16,8 +16,10 @@ public final class NoopAttacker extends Attacker {
 
 	@Override
 	public AttackerAction sampleAction(final DependencyGraph depGraph,
-		final int curTimeStep, final int numTimeStep, final RandomGenerator rng) {
-		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || rng == null) {
+		final int curTimeStep, final int numTimeStep,
+		final RandomGenerator rng) {
+		if (depGraph == null || curTimeStep < 0
+			|| numTimeStep < curTimeStep || rng == null) {
 			throw new IllegalArgumentException();
 		}
 		return new AttackerAction(); // noop action
@@ -27,7 +29,8 @@ public final class NoopAttacker extends Attacker {
 	public List<AttackerAction> sampleAction(final DependencyGraph depGraph,
 		final int curTimeStep, final int numTimeStep, final RandomGenerator rng,
 		final int numSample, final boolean isReplacement) {
-		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || rng == null
+		if (depGraph == null || curTimeStep < 0
+			|| numTimeStep < curTimeStep || rng == null
 			|| numSample < 1) {
 			throw new IllegalArgumentException();
 		}

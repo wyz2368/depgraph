@@ -21,24 +21,24 @@ public final class GoalOnlyDefender extends Defender {
 	private double numCandStdev;
 	
 	public GoalOnlyDefender(
-		final double maxNumRes,
-		final double minNumRes, 
-		final double numResRatio,
-		final double logisParam, 
-		final double discFact,
-		final double numCandStdev) {
+		final double aMaxNumRes,
+		final double aMinNumRes, 
+		final double aNumResRatio,
+		final double aLogisParam, 
+		final double aDiscFact,
+		final double aNumCandStdev) {
 		super(DefenderType.GOAL_ONLY);
-		if (maxNumRes < minNumRes || minNumRes < 0 || !isProb(numResRatio)
-			|| discFact <= 0.0 || discFact > 1.0
-			|| numCandStdev < 0.0) {
+		if (aMaxNumRes < aMinNumRes || aMinNumRes < 0 || !isProb(aNumResRatio)
+			|| aDiscFact <= 0.0 || aDiscFact > 1.0
+			|| aNumCandStdev < 0.0) {
 			throw new IllegalArgumentException();
 		}
-		this.maxNumRes = (int) maxNumRes;
-		this.minNumRes = (int) minNumRes;
-		this.numResRatio = numResRatio;
-		this.logisParam = logisParam;
-		this.discFact = discFact;
-		this.numCandStdev = numCandStdev;
+		this.maxNumRes = (int) aMaxNumRes;
+		this.minNumRes = (int) aMinNumRes;
+		this.numResRatio = aNumResRatio;
+		this.logisParam = aLogisParam;
+		this.discFact = aDiscFact;
+		this.numCandStdev = aNumCandStdev;
 	}
 	
 	@Override
@@ -48,20 +48,25 @@ public final class GoalOnlyDefender extends Defender {
 		final int numTimeStep, 
 		final DefenderBelief dBelief, 
 		final RandomGenerator rng) {
-		List<Node> dCandidateNodeList = new ArrayList<Node>(depGraph.getTargetSet());
+		List<Node> dCandidateNodeList =
+			new ArrayList<Node>(depGraph.getTargetSet());
 		double[] candidateValue = computeCandidateValue(dCandidateNodeList);
-		double[] probabilities = computeCandidateProb(dCandidateNodeList.size(), candidateValue, this.logisParam);
+		double[] probabilities = computeCandidateProb(
+			dCandidateNodeList.size(), candidateValue, this.logisParam);
 		
 		int[] nodeIndexes = new int[dCandidateNodeList.size()];
 		for (int i = 0; i < dCandidateNodeList.size(); i++) {
 			nodeIndexes[i] = i;
 		}
-		EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
+		EnumeratedIntegerDistribution rnd =
+			new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
 		
 		final int goalCount =
-			(int) (dCandidateNodeList.size() * this.numResRatio + rng.nextGaussian() * this.numCandStdev);
+			(int) (dCandidateNodeList.size()
+				* this.numResRatio + rng.nextGaussian() * this.numCandStdev);
 		final int numNodetoProtect =
-			Attacker.getActionCount(this.minNumRes, this.maxNumRes, dCandidateNodeList.size(), goalCount);
+			Attacker.getActionCount(this.minNumRes, this.maxNumRes,
+				dCandidateNodeList.size(), goalCount);
 		if (dCandidateNodeList.size() == 0) {
 			return new DefenderAction();
 		}
@@ -72,7 +77,8 @@ public final class GoalOnlyDefender extends Defender {
 	@Override
 	public DefenderBelief updateBelief(final DependencyGraph depGraph,
 		final DefenderBelief currentBelief, final DefenderAction dAction,
-		final DefenderObservation dObservation, final int curTimeStep, final int numTimeStep,
+		final DefenderObservation dObservation,
+		final int curTimeStep, final int numTimeStep,
 		final RandomGenerator rng) {
 		return new DefenderBelief(); // an empty belief
 	}
@@ -104,8 +110,10 @@ public final class GoalOnlyDefender extends Defender {
 	@Override
 	public String toString() {
 		return "GoalOnlyDefender [maxNumRes=" + this.maxNumRes + ", minNumRes="
-			+ this.minNumRes + ", numResRatio=" + this.numResRatio + ", logisParam="
-			+ this.logisParam + ", discFact=" + this.discFact + ", numCandStdev="
+			+ this.minNumRes + ", numResRatio="
+			+ this.numResRatio + ", logisParam="
+			+ this.logisParam + ", discFact="
+			+ this.discFact + ", numCandStdev="
 			+ this.numCandStdev + "]";
 	}
 	
@@ -114,7 +122,8 @@ public final class GoalOnlyDefender extends Defender {
 		final List<Node> dCandidateNodeList) {
 		double[] candidateValue = new double[dCandidateNodeList.size()];
 		for (int i = 0; i < dCandidateNodeList.size(); i++) {
-			candidateValue[i] = -dCandidateNodeList.get(i).getDPenalty() + dCandidateNodeList.get(i).getDCost();
+			candidateValue[i] = -dCandidateNodeList.get(i).getDPenalty()
+				+ dCandidateNodeList.get(i).getDCost();
 		}
 		return candidateValue;
 	}

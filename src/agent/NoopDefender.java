@@ -15,7 +15,8 @@ public final class NoopDefender extends Defender {
 
 	@Override
 	public DefenderAction sampleAction(final DependencyGraph depGraph,
-		final int curTimeStep, final int numTimeStep, final DefenderBelief dBelief,
+		final int curTimeStep, final int numTimeStep,
+		final DefenderBelief dBelief,
 		final RandomGenerator rng) {
 		return new DefenderAction(); // noop action
 	}
@@ -23,7 +24,8 @@ public final class NoopDefender extends Defender {
 	@Override
 	public DefenderBelief updateBelief(final DependencyGraph depGraph,
 		final DefenderBelief currentBelief, final DefenderAction dAction,
-		final DefenderObservation dObservation, final int curTimeStep, final int numTimeStep,
+		final DefenderObservation dObservation,
+		final int curTimeStep, final int numTimeStep,
 		final RandomGenerator rng) {
 		return new DefenderBelief(); // an empty belief
 	}
