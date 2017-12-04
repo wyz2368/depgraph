@@ -57,7 +57,8 @@ public final class JsonUtils {
 		// private constructor
 	}
 	
-	public static GameSimulationSpec getSimSpecOrDefaults(final String folderName) {
+	public static GameSimulationSpec getSimSpecOrDefaults(
+		final String folderName) {
 		assert folderName != null;
 		final String inputPath =
 			folderName + File.separator + SIMSPEC_FILE_NAME;
@@ -77,7 +78,8 @@ public final class JsonUtils {
 		final JsonObject defaultConfig =
 			(JsonObject) defaultAsJson.get(SIMSPEC_FIELD_NAME);
 		
-		final Set<String> validKeys = new HashSet<String>(Arrays.asList("assignment"));
+		final Set<String> validKeys =
+			new HashSet<String>(Arrays.asList("assignment"));
 		// fill in any missing entries in inputConfig,
 		// with data from the defaultConfig
 		for (final Entry<String, JsonElement> entry: defaultConfig.entrySet()) {
@@ -88,8 +90,10 @@ public final class JsonUtils {
 			}
 		}
 		for (final Entry<String, JsonElement> entry: inputConfig.entrySet()) {
-			if (!defaultConfig.has(entry.getKey()) && !validKeys.contains(entry.getKey())) {
-				throw new IllegalStateException("unexpected config key: " + entry.getKey());
+			if (!defaultConfig.has(entry.getKey())
+				&& !validKeys.contains(entry.getKey())) {
+				throw new IllegalStateException(
+					"unexpected config key: " + entry.getKey());
 			}
 		}
 		final Gson gson = new Gson();
@@ -145,7 +149,8 @@ public final class JsonUtils {
 		return fromObservationString(obsString);
 	}
 	
-	public static ObservationStruct fromObservationString(final String obsString) {
+	public static ObservationStruct fromObservationString(
+		final String obsString) {
 		if (obsString == null) {
 			throw new IllegalArgumentException();
 		}
@@ -163,10 +168,14 @@ public final class JsonUtils {
 		final JsonArray playersJson = (JsonArray) obsJson.get("players");
 		final JsonObject attackerJson = (JsonObject) playersJson.get(0);
 		final JsonObject defenderJson = (JsonObject) playersJson.get(1);
-		final String attackerStratString = attackerJson.get("strategy").toString().replaceAll("\"", "");
-		final String defenderStratString = defenderJson.get("strategy").toString().replaceAll("\"", "");
-		final String attackerName = EncodingUtils.getStrategyName(attackerStratString);
-		final String defenderName = EncodingUtils.getStrategyName(defenderStratString);
+		final String attackerStratString =
+			attackerJson.get("strategy").toString().replaceAll("\"", "");
+		final String defenderStratString =
+			defenderJson.get("strategy").toString().replaceAll("\"", "");
+		final String attackerName =
+			EncodingUtils.getStrategyName(attackerStratString);
+		final String defenderName =
+			EncodingUtils.getStrategyName(defenderStratString);
 		final Map<String, Double> attackerParams =
 			EncodingUtils.getStrategyParams(attackerStratString);
 		final Map<String, Double> defenderParams =
@@ -183,14 +192,18 @@ public final class JsonUtils {
 		final int numSim = gameSimSpec.getNumSim();
 		final int numTimeStep = gameSimSpec.getNumTimeStep();
 		final MeanGameSimulationResult gameSimResult =
-			new MeanGameSimulationResult(meanDefPayoff, meanAttPayoff, numSim, numTimeStep);
+			new MeanGameSimulationResult(
+				meanDefPayoff, meanAttPayoff, numSim, numTimeStep);
 		
-		return new ObservationStruct(gameSimResult, attacker, defender, gameSimSpec);
+		return new ObservationStruct(
+			gameSimResult, attacker, defender, gameSimSpec);
 	}
 
 	public static String getObservationString(
-		final MeanGameSimulationResult simResult, final String attackerStrategyString
-		, final String defenderStrategyString, final GameSimulationSpec simSpec) {
+		final MeanGameSimulationResult simResult,
+		final String attackerStrategyString
+		, final String defenderStrategyString,
+		final GameSimulationSpec simSpec) {
 		assert simResult != null
 			&& attackerStrategyString != null
 			&& defenderStrategyString != null
@@ -236,7 +249,8 @@ public final class JsonUtils {
 	}
 	
 	// return file name written to if successful, else return null.
-	public static String printObservationToFile(final String folderName, final String obsString) {
+	public static String printObservationToFile(
+		final String folderName, final String obsString) {
 		assert folderName != null && obsString != null;
 		final int maxSuffixValue =
 			maxSuffixValue(folderName, OBS_FILE_PREFIX);
@@ -275,7 +289,8 @@ public final class JsonUtils {
 		return builder.toString();
 	}
 		
-	private static int maxSuffixValue(final String folderPath, final String fileNamePrefix) {
+	private static int maxSuffixValue(
+		final String folderPath, final String fileNamePrefix) {
 		assert folderPath != null && fileNamePrefix != null;
 		final Set<Integer> values = new HashSet<Integer>();
 		final File[] files = new File(folderPath).listFiles();
@@ -355,8 +370,10 @@ public final class JsonUtils {
 
 		@Override
 		public String toString() {
-			return "ObservationStruct [\n\tsimResult=" + this.simResult + ",\n\tattacker="
-				+ this.attacker + ",\n\tdefender=" + this.defender + ",\n\tsimSpec="
+			return "ObservationStruct [\n\tsimResult="
+				+ this.simResult + ",\n\tattacker="
+				+ this.attacker + ",\n\tdefender="
+				+ this.defender + ",\n\tsimSpec="
 				+ this.simSpec + "\n]";
 		}
 	}

@@ -38,20 +38,23 @@ public final class GameState {
 	}
 	
 	public void print() {
-		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug(
+		"--------------------------------------------------------------------");
 		GameSimulation.printIfDebug("Active Nodes");
 		for (Node node : this.enabledNodeSet) {
 			GameSimulation.printIfDebug(node.getId() + "\t" + node.getType());
 		}
 		GameSimulation.printIfDebug("");
-		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug(
+		"--------------------------------------------------------------------");
 	}
 	
 	public String getEnabledSetString() {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("[");
 		for (Node node : this.enabledNodeSet) {
-			builder.append(node.getId()).append(",").append(node.getType()).append("\t");
+			builder.append(node.getId()).append(",").
+				append(node.getType()).append("\t");
 		}
 		builder.append("]");
 		return builder.toString();
@@ -106,7 +109,8 @@ public final class GameState {
 
 	@Override
 	public String toString() {
-		return "GameState [\n\tid=" + this.id + ",\n\tenabledNodeSet=" + getEnabledSetString()
+		return "GameState [\n\tid=" + this.id
+			+ ",\n\tenabledNodeSet=" + getEnabledSetString()
 			+ "\n]";
 	}
 }

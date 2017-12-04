@@ -34,7 +34,8 @@ public final class AttackerAction {
 		return this.action.isEmpty();
 	}
 	
-	public void addAndNodeAttack(final Node targetAndNode, final Set<Edge> inEdges) {
+	public void addAndNodeAttack(
+		final Node targetAndNode, final Set<Edge> inEdges) {
 		if (targetAndNode == null || inEdges == null) {
 			throw new IllegalArgumentException();
 		}
@@ -75,29 +76,36 @@ public final class AttackerAction {
 	}
 	
 	public void print() {
-		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug(
+	"--------------------------------------------------------------------");
 		GameSimulation.printIfDebug("Attacker Action...");
 		for (Entry<Node, Set<Edge>> entry : this.action.entrySet()) {
-			GameSimulation.printIfDebug("Activating node: " + entry.getKey().getId() 
+			GameSimulation.printIfDebug(
+				"Activating node: " + entry.getKey().getId() 
 				+ "\t Node type: " + entry.getKey().getType().toString()
-				+ "\t Activation Type: " + entry.getKey().getActivationType().toString());
+				+ "\t Activation Type: "
+				+ entry.getKey().getActivationType().toString());
 			if (entry.getKey().getActivationType() == NodeActivationType.OR) {
 				GameSimulation.printIfDebug("Via edge: ");
 				for (Edge edge : entry.getValue()) {
-					GameSimulation.printIfDebug(edge.getsource().getId() + "(" + edge.getsource().getState().toString() 
+					GameSimulation.printIfDebug(
+						edge.getsource().getId() + "(" 
+						+ edge.getsource().getState().toString() 
 						+ ")-->" + edge.gettarget().getId());
 				}
 				GameSimulation.printIfDebug("");
 			}
 		}
-		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug(
+		"--------------------------------------------------------------------");
 	}
 	
 	public String getActionString() {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("[");
 		for (Node node : this.action.keySet()) {
-			builder.append(node.getId()).append(",").append(node.getType()).append("\t");
+			builder.append(node.getId()).append(",")
+				.append(node.getType()).append("\t");
 		}
 		builder.append("]");
 		return builder.toString();

@@ -24,7 +24,7 @@ public class TestJSon {
 		final JsonObject inputJson = 
 				new JsonParser().parse(inputString).getAsJsonObject();
 		JsonObject players = inputJson.get(PLAYERS).getAsJsonObject(); 
-		JsonObject strategies = inputJson.get(STRATEGIES).getAsJsonObject();
+		inputJson.get(STRATEGIES).getAsJsonObject();
 		JsonArray profiles = inputJson.get(PROFILES).getAsJsonArray();
 		List<String> playerList = new ArrayList<String>();
 		for(Entry<String, JsonElement> entry : players.entrySet()) {

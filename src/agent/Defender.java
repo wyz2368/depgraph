@@ -109,7 +109,8 @@ public abstract class Defender {
 		final int numNodetoProtect,
 		final AbstractIntegerDistribution rnd) {
 		if (dCandidateNodeList == null || numNodetoProtect < 0 
-				|| numNodetoProtect > dCandidateNodeList.size() || rnd == null) {
+				|| numNodetoProtect > dCandidateNodeList.size()
+				|| rnd == null) {
 			throw new IllegalArgumentException();
 		}
 		DefenderAction action = new DefenderAction();
@@ -131,7 +132,8 @@ public abstract class Defender {
 		return action;
 	}
 	
-	public static DefenderBelief updateBelief(final DependencyGraph depGraph
+	public static DefenderBelief updateBelief(
+		final DependencyGraph depGraph
 		, final DefenderBelief dBelief
 		, final DefenderAction dAction
 		, final DefenderObservation dObservation
@@ -141,7 +143,8 @@ public abstract class Defender {
 		, final int numAttActionSample
 		, final int numStateSample
 		, final double thres) {
-		if (depGraph == null || dBelief == null || dAction == null || dObservation == null 
+		if (depGraph == null || dBelief == null
+			|| dAction == null || dObservation == null 
 			|| curTimeStep < 0 || numTimeStep < curTimeStep || rng == null
 		) {
 			throw new IllegalArgumentException();
@@ -157,33 +160,48 @@ public abstract class Defender {
 			}
 		}
 		
-		DefenderBelief newBelief = new DefenderBelief(); // new belief of the defender
+		DefenderBelief newBelief =
+			new DefenderBelief(); // new belief of the defender
 		// probability of observation given game state
-		Map<GameState, Double> observationProbMap = new HashMap<GameState, Double>();
+		Map<GameState, Double> observationProbMap =
+			new HashMap<GameState, Double>();
 		
 		// iterate over current belief of the defender
-		for (Entry<GameState, Double> entry : dBelief.getGameStateMap().entrySet()) {
+		for (Entry<GameState, Double> entry 
+			: dBelief.getGameStateMap().entrySet()) {
 			GameState gameState = entry.getKey(); // one of possible game state
-			Double curStateProb = entry.getValue(); // probability of the game state
+			Double curStateProb =
+				entry.getValue(); // probability of the game state
 		
 			depGraph.setState(gameState); // for each possible state
 			
-			List<AttackerAction> attActionList = attacker.sampleAction(depGraph, curTimeStep, numTimeStep
+			List<AttackerAction> attActionList =
+				attacker.sampleAction(depGraph, curTimeStep, numTimeStep
 				, rng, numAttActionSample, false); // Sample attacker actions
 			int trueNumAttActionSample = attActionList.size();
-			for (int attActionSample = 0; attActionSample < trueNumAttActionSample; attActionSample++) {
+			for (int attActionSample = 0; 
+				attActionSample < trueNumAttActionSample;
+				attActionSample++) {
 				// Iterate over all samples of attack actions
-				AttackerAction attAction = attActionList.get(attActionSample); // current sample of attack action
-				List<GameState> gameStateList = GameOracle.generateStateSample(gameState, attAction, dAction
-					, rnd, numStateSample, true); // s' <- s, a, d, // Sample new game states
+				// current sample of attack action
+				AttackerAction attAction = 
+					attActionList.get(attActionSample); 
+				// s' <- s, a, d, // Sample new game states
+				List<GameState> gameStateList = 
+					GameOracle.generateStateSample(gameState, attAction, dAction
+					, rnd, numStateSample, true); 
 				int curNumStateSample = gameStateList.size();
-				for (int stateSample = 0; stateSample < curNumStateSample; stateSample++) {
+				for (int stateSample = 0;
+					stateSample < curNumStateSample;
+					stateSample++) {
 					GameState newGameState = gameStateList.get(stateSample);
 					// check if this new game state is already generated
 					Double curProb = newBelief.getProbability(newGameState);
 					double observationProb = 0.0;
 					if (curProb == null) { // new game state
-						observationProb = GameOracle.computeObservationProb(newGameState, dObservation);
+						observationProb = 
+							GameOracle.computeObservationProb(
+								newGameState, dObservation);
 						observationProbMap.put(newGameState, observationProb);
 						curProb = 0.0;
 					} else { // already generated
@@ -205,16 +223,19 @@ public abstract class Defender {
 		
 		// Normalization
 		double sumProb = 0.0;
-		for (Entry<GameState, Double> entry : newBelief.getGameStateMap().entrySet()) {
+		for (Entry<GameState, Double> entry
+			: newBelief.getGameStateMap().entrySet()) {
 			sumProb += entry.getValue();
 		}
-		for (Entry<GameState, Double> entry : newBelief.getGameStateMap().entrySet()) {
+		for (Entry<GameState, Double> entry
+			: newBelief.getGameStateMap().entrySet()) {
 			entry.setValue(entry.getValue() / sumProb); 
 		}
 		
 		// Belief revision
 		DefenderBelief revisedBelief = new DefenderBelief();
-		for (Entry<GameState, Double> entry : newBelief.getGameStateMap().entrySet()) {
+		for (Entry<GameState, Double> entry
+			: newBelief.getGameStateMap().entrySet()) {
 //			System.out.println(entry.getValue());
 			if (entry.getValue() > thres) {
 				revisedBelief.addState(entry.getKey(), entry.getValue());
@@ -222,17 +243,20 @@ public abstract class Defender {
 		}
 		//Re-normalize again
 		sumProb = 0.0;
-		for (Entry<GameState, Double> entry : revisedBelief.getGameStateMap().entrySet()) {
+		for (Entry<GameState, Double> entry
+			: revisedBelief.getGameStateMap().entrySet()) {
 			sumProb += entry.getValue();
 		}
-		for (Entry<GameState, Double> entry : revisedBelief.getGameStateMap().entrySet()) {
+		for (Entry<GameState, Double> entry
+			: revisedBelief.getGameStateMap().entrySet()) {
 			entry.setValue(entry.getValue() / sumProb); 
 		}
 		return revisedBelief;
 	}
 	
 	public static double[] computeCandidateProb(
-		final int totalNumCandidate, final double[] candidateValue, final double logisParam) {
+		final int totalNumCandidate, final double[] candidateValue,
+		final double logisParam) {
 		if (totalNumCandidate < 0 || candidateValue == null) {
 			throw new IllegalArgumentException();
 		}
@@ -249,7 +273,8 @@ public abstract class Defender {
 		}
 		if (maxValue > minValue) {
 			for (int i = 0; i < totalNumCandidate; i++) {
-				candidateValue[i] = (candidateValue[i] - minValue) / (maxValue - minValue);
+				candidateValue[i] =
+					(candidateValue[i] - minValue) / (maxValue - minValue);
 			}
 		} else  {
 			for (int i = 0; i < totalNumCandidate; i++) {

@@ -24,13 +24,17 @@ public final class DefenderCandidate {
 	public Set<Node> getNodeCandidateSet() {
 		return this.nodeCandidateSet;
 	}
+
 	public void print() {
-		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug(
+		"--------------------------------------------------------------------");
 		GameSimulation.printIfDebug("Defender Candidate...");
 		for (Node node : this.nodeCandidateSet) {
 			GameSimulation.printIfDebug("Candidate node: " + node.getId()
-				+ "\t Node type: " + node.getType() + "\t Activation Type: " + node.getActivationType().toString());
+				+ "\t Node type: " + node.getType()
+				+ "\t Activation Type: " + node.getActivationType().toString());
 		}
-		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug(
+		"--------------------------------------------------------------------");
 	}
 }

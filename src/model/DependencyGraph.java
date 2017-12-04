@@ -15,7 +15,7 @@ import game.GameSimulation;
 
 // There is a dummy node connecting to entry nodes.
 public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
-	private static final long serialVersionUID = 1L; // I dont know what this is for :)))
+	private static final long serialVersionUID = 1L; 
 	private final Set<Node> targetSet;
 	private Set<Node> minCut;
 	private Set<Node> rootSet;
@@ -64,8 +64,10 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 			}
 			if (edge.gettarget().getActivationType() == NodeActivationType.AND
 				&& (edge.getActProb() != 0.0 || edge.getACost() != 0.0)) {
-				// edges to AND nodes must have placeholder actProb and aCost of 0.0
-				System.out.println("Edge to AND node with nonzero actProb or aCost");
+				// edges to AND nodes must have placeholder
+				// actProb and aCost of 0.0
+				System.out.println(
+					"Edge to AND node with nonzero actProb or aCost");
 				System.out.println(edge);
 				System.out.println(edge.getActProb() + "\t" + edge.getACost());
 				System.out.println(edge.gettarget());
@@ -154,24 +156,28 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 		for (Edge edge: this.edgeSet()) {
 			edge.print();
 		}
-		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug(
+		"--------------------------------------------------------------------");
 		GameSimulation.printIfDebug("Target set: ");
 		for (Node target : this.targetSet) {
 			GameSimulation.printIfDebug(target.getId() + "\t");
 		}
 		GameSimulation.printIfDebug("");
-		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug(
+		"--------------------------------------------------------------------");
 		GameSimulation.printIfDebug("Root set: ");
 		for (Node root : this.rootSet) {
 			GameSimulation.printIfDebug(root.getId() + "\t");
 		}
-		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug(
+		"--------------------------------------------------------------------");
 		GameSimulation.printIfDebug("Mincut set: ");
 		for (Node node : this.minCut) {
 			GameSimulation.printIfDebug(node.getId() + "\t");
 		}
 		GameSimulation.printIfDebug("");
-		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug(
+		"--------------------------------------------------------------------");
 	}
 	
 	private void resetState() {
@@ -189,7 +195,8 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 				}
 			} else {
 				if (this.rootSet.contains(node)) {
-					System.out.println("Root set contains node with nonzero in-degree");
+					System.out.println(
+						"Root set contains node with nonzero in-degree");
 					return false;
 				}
 			}

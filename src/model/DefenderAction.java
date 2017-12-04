@@ -37,13 +37,17 @@ public final class DefenderAction {
 	}
 	
 	public void print() {
-		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug(
+		"--------------------------------------------------------------------");
 		GameSimulation.printIfDebug("Defender Action...");
 		for (Node node : this.action) {
-			GameSimulation.printIfDebug("Protect node: " + node.getId() + "\t Node type: " + node.getType()
+			GameSimulation.printIfDebug(
+				"Protect node: " + node.getId()
+				+ "\t Node type: " + node.getType()
 				+ "\t Activation Type: " + node.getActivationType().toString());
 		}
-		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug(
+		"--------------------------------------------------------------------");
 	}
 
 	@Override

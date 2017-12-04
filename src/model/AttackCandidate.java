@@ -9,7 +9,8 @@ import java.util.Set;
 public final class AttackCandidate {
 	// for AND nodes to attack. does not include OR nodes to attack.
 	private final Set<Node> nodeCandidateSet;
-	// for edges to OR nodes to attack. does not include edges to AND nodes to attack.
+	// for edges to OR nodes to attack. does not
+	// include edges to AND nodes to attack.
 	private final Set<Edge> edgeCandidateSet;
 	
 	public AttackCandidate() {
@@ -18,7 +19,8 @@ public final class AttackCandidate {
 	}
 	
 	public boolean isEmpty() {
-		if (this.nodeCandidateSet.isEmpty() && this.edgeCandidateSet.isEmpty()) {
+		if (this.nodeCandidateSet.isEmpty()
+			&& this.edgeCandidateSet.isEmpty()) {
 			return true;
 		}
 		return false;

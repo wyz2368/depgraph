@@ -8,9 +8,10 @@ public final class GameSample {
 	private final int timeStep;
 	
 	private final DefenderAction defAction; // current defender action
-	private final AttackerAction attAction; // current attacker action         
+	private final AttackerAction attAction; // current attacker action
 	private final GameState gameState; // next game state
-	private final DefenderObservation defObservation; // next defender observation
+	// next defender observation
+	private final DefenderObservation defObservation;
 	
 	public GameSample(
 		final int aTimeStep,
@@ -70,6 +71,6 @@ public final class GameSample {
 		this.gameState.print();
 		this.defObservation.print();
 		GameSimulation.printIfDebug(
-			"--------------------------------------------------------------------------------------------");
+		"---------------------------------------------------------");
 	}
 }

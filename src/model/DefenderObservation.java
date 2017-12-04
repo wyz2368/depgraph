@@ -29,13 +29,16 @@ public final class DefenderObservation {
 	}
 	
 	public void print() {
-		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug(
+		"--------------------------------------------------------------------");
 		GameSimulation.printIfDebug("Defender observation: ");
 		for (SecurityAlert alert : this.alertSet) {
-			GameSimulation.printIfDebug("Node: " + alert.getNode().getId() + "\t" + "Alert: " + alert.isActiveAlert());
+			GameSimulation.printIfDebug("Node: " + alert.getNode().getId()
+				+ "\t" + "Alert: " + alert.isActiveAlert());
 		}
 		GameSimulation.printIfDebug("");
-		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug(
+		"--------------------------------------------------------------------");
 	}
 	
 	private boolean isDuplicateAlert(final SecurityAlert alert) {

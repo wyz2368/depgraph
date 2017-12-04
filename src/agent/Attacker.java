@@ -89,7 +89,8 @@ public abstract class Attacker {
 		return false;
 	}
 	
-	private static boolean isCandidate(final Node node, final DependencyGraph depGraph) {
+	private static boolean isCandidate(final Node node,
+		final DependencyGraph depGraph) {
 		if (node == null || depGraph == null) {
 			throw new IllegalArgumentException();
 		}
@@ -111,13 +112,8 @@ public abstract class Attacker {
 		return false;
 	}
 	
-	/*****************************************************************************************
-	* @param depGraph: dependency graph
-	* @param curTimeStep: current time step 
-	* @param numTimeStep: total number of time step
-	* @return type of AttackCandidate: candidate set for the attacker
-	*****************************************************************************************/
-	public static final AttackCandidate getAttackCandidate(final DependencyGraph depGraph) {
+	public static final AttackCandidate getAttackCandidate(
+		final DependencyGraph depGraph) {
 		if (depGraph == null) {
 			throw new IllegalArgumentException();
 		}
@@ -127,7 +123,8 @@ public abstract class Attacker {
 		}
 		
 		for (final Node node : depGraph.vertexSet()) {
-			if (node.getState() == NodeState.INACTIVE && isCandidate(node, depGraph)) {
+			if (node.getState() == NodeState.INACTIVE
+				&& isCandidate(node, depGraph)) {
 				// only add inactive candidate nodes
 				if (node.getActivationType() == NodeActivationType.AND) {
 					// if AND node, then add node to the candidate set
@@ -178,18 +175,16 @@ public abstract class Attacker {
 		return i >= 0.0 && i <= 1.0;
 	}
 	
-	/*****************************************************************************************
-	 * @param candidateValue: candidate values
-	 * @return QR distribution over candidates
-	 *****************************************************************************************/
 	public static double[] computeCandidateProb(
 		final double[] candidateVals,
 		final double qrParam) {
-		if (candidateVals == null || candidateVals.length == 0 || qrParam < 0.0) {
+		if (candidateVals == null
+			|| candidateVals.length == 0 || qrParam < 0.0) {
 			throw new IllegalArgumentException();
 		}
 
-		// Normalize each candidate value: map to [0, 1] as (val - min) / (max - min).
+		// Normalize each candidate value:
+		// map to [0, 1] as (val - min) / (max - min).
 		normalize(candidateVals);
 		
 		// Compute probability, using quantal response distribution.
@@ -222,8 +217,10 @@ public abstract class Attacker {
 		return result;
 	}
 	
-	public static boolean isValidTopoOrder(final Node[] input, final DependencyGraph depGraph) {
-		if (input == null || depGraph == null || depGraph.vertexSet().size() != input.length) {
+	public static boolean isValidTopoOrder(
+		final Node[] input, final DependencyGraph depGraph) {
+		if (input == null || depGraph == null
+			|| depGraph.vertexSet().size() != input.length) {
 			throw new IllegalArgumentException();
 		}
 		
@@ -244,7 +241,8 @@ public abstract class Attacker {
 		for (final Node node: input) {
 			final Set<Edge> outEdges = depGraph.outgoingEdgesOf(node);
 			for (final Edge outEdge: outEdges) {
-				if (inputList.indexOf(outEdge.gettarget()) < inputList.indexOf(node)) {
+				if (inputList.indexOf(outEdge.gettarget())
+					< inputList.indexOf(node)) {
 					System.out.println("Out-of-order pair:");
 					System.out.println("Edge: " + outEdge);
 					return false;

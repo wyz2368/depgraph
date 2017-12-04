@@ -60,25 +60,35 @@ public final class DGraphUtils {
 		JsonArray targetDataJson = inputJson.get(TARGETS).getAsJsonArray();
 		JsonArray mincutDataJson = inputJson.get(MIN_CUT).getAsJsonArray();
 		
-		/************************************************************************************/
+		/*******************************************/
 		// Add node
 		for (int i = 0; i < nodeDataJson.size(); i++) {
 			JsonObject nodeObject = nodeDataJson.get(i).getAsJsonObject();
 			int nID = nodeObject.get(ID).getAsInt();
 			int nTopoPosition = nodeObject.get(TOPO_POSITION).getAsInt();
-			NodeType nType = NodeType.valueOf(nodeObject.get(NODE_TYPE).getAsString());
-			NodeActivationType nActType = NodeActivationType.valueOf(nodeObject.get(ACT_TYPE).getAsString());
-			NodeState nState = NodeState.valueOf(nodeObject.get(STATE).getAsString());
+			NodeType nType = NodeType.valueOf(
+				nodeObject.get(NODE_TYPE).getAsString());
+			NodeActivationType nActType =
+				NodeActivationType.valueOf(
+					nodeObject.get(ACT_TYPE).getAsString());
+			NodeState nState = NodeState.valueOf(
+				nodeObject.get(STATE).getAsString());
 			double nAReward = nodeObject.get(A_REWARD).getAsDouble();
 			double nDPenalty = nodeObject.get(D_PENALTY).getAsDouble();
 			double nDCost = nodeObject.get(D_COST).getAsDouble();
-			double nPosActiveProb = nodeObject.get(POS_ACTIVE_PROB).getAsDouble();
-			double nPosInactiveProb = nodeObject.get(POS_INACTIVE_PROB).getAsDouble();
-			double nActivationCost = nodeObject.get(A_ACTIVATION_COST).getAsDouble();
-			double nActivationProb = nodeObject.get(A_ACTIVATION_PROB).getAsDouble();
+			double nPosActiveProb =
+				nodeObject.get(POS_ACTIVE_PROB).getAsDouble();
+			double nPosInactiveProb =
+				nodeObject.get(POS_INACTIVE_PROB).getAsDouble();
+			double nActivationCost =
+				nodeObject.get(A_ACTIVATION_COST).getAsDouble();
+			double nActivationProb =
+				nodeObject.get(A_ACTIVATION_PROB).getAsDouble();
 			
-			Node node = new Node(nID, nType, nActType, nAReward, nDPenalty, nDCost
-					, nActivationCost, nPosActiveProb, nPosInactiveProb, nActivationProb);
+			Node node = new Node(nID, nType, nActType,
+				nAReward, nDPenalty, nDCost
+				, nActivationCost, nPosActiveProb, 
+				nPosInactiveProb, nActivationProb);
 			node.setState(nState);
 			node.setTopoPosition(nTopoPosition);
 			
@@ -91,47 +101,50 @@ public final class DGraphUtils {
 			nodeArray[node.getId() - 1] = node;
 		}
 	   
-		/************************************************************************************/
+		/*******************************************/
 		// Add edges
 		for (int i = 0; i < edgeDataJson.size(); i++) {
 			JsonObject edgeObject = edgeDataJson.get(i).getAsJsonObject();
 			int edgeID = edgeObject.get(ID).getAsInt();
 			int srcEdgeID = edgeObject.get(SRC_ID).getAsInt();
 			int desEdgeID = edgeObject.get(DES_ID).getAsInt();
-			EdgeType type = EdgeType.valueOf(edgeObject.get(EDGE_TYPE).getAsString());
+			EdgeType type =
+				EdgeType.valueOf(edgeObject.get(EDGE_TYPE).getAsString());
 			double aCost = edgeObject.get(A_ACTIVATION_COST).getAsDouble();
 			double aProb = edgeObject.get(A_ACTIVATION_PROB).getAsDouble();
-			Edge edge = depGraph.addEdge(nodeArray[srcEdgeID - 1], nodeArray[desEdgeID - 1]);
+			Edge edge = depGraph.addEdge(nodeArray[srcEdgeID - 1],
+				nodeArray[desEdgeID - 1]);
 			edge.setId(edgeID);
 			edge.setType(type);
 			edge.setACost(aCost);
 			edge.setActProb(aProb);
 		}
-		/************************************************************************************/
+		/*******************************************/
 		// Add target set
 		for (int i = 0; i < targetDataJson.size(); i++) {
 			JsonObject targetObject = targetDataJson.get(i).getAsJsonObject();
 			int targetID = targetObject.get(ID).getAsInt();
 			depGraph.addTarget(nodeArray[targetID - 1]);
 		}
-		/************************************************************************************/
-		/************************************************************************************/
+		/*******************************************/
+		/*******************************************/
 		// Add min cut
 		for (int i = 0; i < mincutDataJson.size(); i++) {
 			JsonObject mincutObject = mincutDataJson.get(i).getAsJsonObject();
 			int nodeID = mincutObject.get(ID).getAsInt();
 			depGraph.addMinCut(nodeArray[nodeID - 1]);
 		}
-		/************************************************************************************/
+		/*******************************************/
 		// add root set
 		setRootSet(depGraph);
 		return depGraph;
 	}
 	
-	public static void save(final String filePathName, final DependencyGraph depGraph) {
+	public static void save(final String filePathName,
+		final DependencyGraph depGraph) {
 		assert filePathName != null && depGraph != null;
 		
-		/************************************************************************************/
+		/*******************************************/
 		// Save nodes
 		final JsonArray nodeArray = new JsonArray();
 		for (Node node : depGraph.vertexSet()) {
@@ -139,18 +152,20 @@ public final class DGraphUtils {
 			nodeObject.addProperty(ID, node.getId());
 			nodeObject.addProperty(TOPO_POSITION, node.getTopoPosition());
 			nodeObject.addProperty(NODE_TYPE, node.getType().toString());
-			nodeObject.addProperty(ACT_TYPE, node.getActivationType().toString());
+			nodeObject.addProperty(ACT_TYPE, 
+				node.getActivationType().toString());
 			nodeObject.addProperty(STATE, node.getState().toString());
 			nodeObject.addProperty(A_REWARD, node.getAReward());
 			nodeObject.addProperty(D_PENALTY, node.getDPenalty());
 			nodeObject.addProperty(D_COST, node.getDCost());
 			nodeObject.addProperty(POS_ACTIVE_PROB, node.getPosActiveProb());
-			nodeObject.addProperty(POS_INACTIVE_PROB, node.getPosInactiveProb());
+			nodeObject.addProperty(POS_INACTIVE_PROB, 
+				node.getPosInactiveProb());
 			nodeObject.addProperty(A_ACTIVATION_COST, node.getACost());
 			nodeObject.addProperty(A_ACTIVATION_PROB, node.getActProb());
 			nodeArray.add(nodeObject);
 		}
-		/************************************************************************************/
+		/*******************************************/
 		// Save edges
 		final JsonArray edgeArray = new JsonArray();
 		for (Edge edge : depGraph.edgeSet()) {
@@ -163,7 +178,7 @@ public final class DGraphUtils {
 			edgeObject.addProperty(A_ACTIVATION_PROB, edge.getActProb());
 			edgeArray.add(edgeObject);
 		}
-		/************************************************************************************/
+		/*******************************************/
 		// Save target
 		final JsonArray targetArray = new JsonArray();
 		for (Node target : depGraph.getTargetSet()) {
@@ -171,7 +186,7 @@ public final class DGraphUtils {
 			targetObject.addProperty(ID, target.getId());
 			targetArray.add(targetObject);
 		}
-		/************************************************************************************/
+		/*******************************************/
 		// Save mincut
 		final JsonArray mincutArray = new JsonArray();
 		for (Node node : depGraph.getMinCut()) {
@@ -179,7 +194,7 @@ public final class DGraphUtils {
 			mincutObject.addProperty(ID, node.getId());
 			mincutArray.add(mincutObject);
 		}
-		/************************************************************************************/
+		/*******************************************/
 		final JsonObject graphObject = new JsonObject();
 		graphObject.add(NODES, nodeArray);
 		graphObject.add(EDGES, edgeArray);

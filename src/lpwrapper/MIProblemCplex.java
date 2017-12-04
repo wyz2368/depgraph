@@ -17,8 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import game.GameSimulation;
-
 public abstract class MIProblemCplex extends AMIProblem {
 	protected IloCplex cplex;
 	// IloObjective objectiveFunction;

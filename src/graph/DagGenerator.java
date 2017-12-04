@@ -23,7 +23,8 @@ import org.jgrapht.experimental.dag.DirectedAcyclicGraph.CycleFoundException;
  *  random rooted trees, random rooted DAGs, random tournaments, path digraphs,
  *  cycle digraphs, and the complete digraph.
  *  <p>
- *  For additional documentation, see <a href="http://algs4.cs.princeton.edu/42digraph">Section 4.2</a> of
+ *  For additional documentation, see 
+ *  <a href="http://algs4.cs.princeton.edu/42digraph">Section 4.2</a> of
  *  <i>Algorithms, 4th Edition</i> by Robert Sedgewick and Kevin Wayne.
  *
  *  @author Robert Sedgewick
@@ -35,12 +36,14 @@ public final class DagGenerator {
 	private DagGenerator() { }
 	
 	/**
-	 * Returns a random simple DAG containing {@code numNode} vertices and {@code numEdge} edges.
+	 * Returns a random simple DAG containing {@code numNode} 
+	 * vertices and {@code numEdge} edges.
 	 * Note: it is not uniformly selected at random among all such DAGs.
 	 * @param numNode the number of vertices
 	 * @param numEdge the number of edges
 	 * @param rand a random number generator
-	 * @return a random simple DAG on {@code numNode} vertices, containing a total
+	 * @return a random simple DAG on {@code numNode} vertices, 
+	 * containing a total
 	 *	 of {@code numEdge} edges
 	 * @throws IllegalArgumentException if no such simple DAG exists
 	 */

@@ -6,19 +6,24 @@ public final class Node implements INode {
 	private int id; // starting from 1
 	private NodeType type = NodeType.NONTARGET;
 	private NodeActivationType eType = NodeActivationType.OR;
-	private NodeState state = NodeState.INACTIVE; // use during each game simulation
+	// use during each game simulation
+	private NodeState state = NodeState.INACTIVE;
 	private double aReward = 0.0; // meaningful for targets only
 	private double dPenalty = 0.0; // meaningful for targets only
 	
 	private double dCost = 0.0; // cost of disabling this node
 	private double aCost = 0.0; // meaningful for AND node only
 	
-	private double posActiveProb = 1.0; // prob of sending positive signal if node is active
-	private double posInactiveProb = 0.0; // prob of sending positive signal if node is inactive
+	// prob of sending positive signal if node is active
+	private double posActiveProb = 1.0;
+	// prob of sending positive signal if node is inactive
+	private double posInactiveProb = 0.0;
 	
-	private double actProb = 1.0; // prob of becoming active if being activated, for AND node only
+	// prob of becoming active if being activated, for AND node only
+	private double actProb = 1.0;
 	
-	private int topoPosition = -1; // position of node in the topological order of the graph
+	// position of node in the topological order of the graph
+	private int topoPosition = -1;
 
 	private static int counter = 1;
 	
@@ -34,13 +39,14 @@ public final class Node implements INode {
 			, 0.0);
 	}
 	
-	public Node(final int id, final NodeType type, final NodeActivationType eType
+	public Node(final int aId, final NodeType aType,
+		final NodeActivationType aEType
 		, final double aReward, final double dPenalty
 		, final double dCost, final double aCost
 		, final double posActiveProb, final double posInactiveProb
 		, final double actProb) {
 		if (
-			type == null || eType == null
+			aType == null || aEType == null
 			|| !isProb(posActiveProb) || !isProb(posInactiveProb)
 			|| !isProb(actProb)
 		) {
@@ -49,13 +55,14 @@ public final class Node implements INode {
 		if (aReward < 0.0 || dPenalty > 0.0 || dCost > 0.0 || aCost > 0.0) {
 			throw new IllegalArgumentException();
 		}
-		if (eType == NodeActivationType.OR && (aCost != 0.0 || actProb != 0.0)) {
+		if (aEType == NodeActivationType.OR
+			&& (aCost != 0.0 || actProb != 0.0)) {
 			// OR nodes must have placeholder aCost and actProb of 0.0
 			throw new IllegalArgumentException();
 		}
-		this.id = id;
-		this.type = type; 
-		this.eType = eType;
+		this.id = aId;
+		this.type = aType; 
+		this.eType = aEType;
 		this.aReward = aReward;
 		this.dPenalty = dPenalty;
 		this.dCost = dCost;
@@ -237,16 +244,25 @@ public final class Node implements INode {
 	}
 	
 	public void print() {
-		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug(
+		"--------------------------------------------------------------------");
 		GameSimulation.printIfDebug("ID: " + this.getId());
 		GameSimulation.printIfDebug("State: " + this.getState().toString());
 		GameSimulation.printIfDebug("Type: " + this.getType().toString());
-		GameSimulation.printIfDebug("Exploit Type: " + this.getActivationType().toString());
-		GameSimulation.printIfDebug("aReward: " + this.getAReward() + "\t" + "dPenalty: " + this.getDPenalty());
-		GameSimulation.printIfDebug("aCost: " + this.getACost() + "\t" + "dCost: " + this.getDCost());
-		GameSimulation.printIfDebug("Probability of positive signal given active: " + this.posActiveProb);
-		GameSimulation.printIfDebug("Probability of positive signal given inactive: " + this.posInactiveProb);
-		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug("Exploit Type: "
+			+ this.getActivationType().toString());
+		GameSimulation.printIfDebug("aReward: "
+			+ this.getAReward() + "\t" + "dPenalty: " + this.getDPenalty());
+		GameSimulation.printIfDebug("aCost: "
+			+ this.getACost() + "\t" + "dCost: " + this.getDCost());
+		GameSimulation.printIfDebug(
+			"Probability of positive signal given active: "
+				+ this.posActiveProb);
+		GameSimulation.printIfDebug(
+			"Probability of positive signal given inactive: "
+				+ this.posInactiveProb);
+		GameSimulation.printIfDebug(
+		"--------------------------------------------------------------------");
 	}
 
 	@Override

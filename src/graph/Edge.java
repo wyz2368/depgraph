@@ -25,7 +25,8 @@ public final class Edge extends DefaultWeightedEdge {
 	private EdgeType type = EdgeType.NORMAL;
 	
 	private double cost = 0.0; // for OR node only
-	private double actProb = 1.0; // probability of successfully activating, for OR node only 
+	// probability of successfully activating, for OR node only 
+	private double actProb = 1.0;
 	
 	private static int counter = 1;
 
@@ -140,13 +141,16 @@ public final class Edge extends DefaultWeightedEdge {
 	}
 	
 	public void print() {
-		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug(
+		"--------------------------------------------------------------------");
 		GameSimulation.printIfDebug("ID: " + this.getId() + "\t" + "Source: "
-			+ this.getsource().getId() + "\t" + "Des: " + this.gettarget().getId());
+			+ this.getsource().getId()
+			+ "\t" + "Des: " + this.gettarget().getId());
 		GameSimulation.printIfDebug("Type: " + this.getType().toString());
 		GameSimulation.printIfDebug("aCost: " + this.getACost());
 		GameSimulation.printIfDebug("actProb: " + this.getActProb());
-		GameSimulation.printIfDebug("--------------------------------------------------------------------");
+		GameSimulation.printIfDebug(
+		"--------------------------------------------------------------------");
 	}
 	
 	private static boolean isProb(final double i) {
