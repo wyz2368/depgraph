@@ -37,7 +37,8 @@ public final class ValuePropagationAttacker extends Attacker {
 		final double discFact,
 		final double numCandStdev) {
 		super(AttackerType.VALUE_PROPAGATION);
-		if (minNumSelectCandidate < 1 || maxNumSelectCandidate < minNumSelectCandidate
+		if (minNumSelectCandidate < 1 
+			|| maxNumSelectCandidate < minNumSelectCandidate
 			|| !isProb(numSelectCandidateRatio)
 			|| numCandStdev < 0.0 || qrParam < 0.0) {
 			throw new IllegalArgumentException();
@@ -51,13 +52,13 @@ public final class ValuePropagationAttacker extends Attacker {
 	}
 	
 	@Override
-	/*****************************************************************************************
+	/***************************************
 	 * @param depGraph: dependency graph
 	 * @param curTimeStep: current time step 
 	 * @param numTimeStep: total number of time step
 	 * @param rng: random generator
 	 * @return type of Attacker Action: an attack action
-	 *****************************************************************************************/
+	 ***************************************/
 	public AttackerAction sampleAction(
 		final DependencyGraph depGraph, 
 		final int curTimeStep,
@@ -479,7 +480,8 @@ public final class ValuePropagationAttacker extends Attacker {
 			+ this.maxNumSelectCandidate + ", minNumSelectCandidate="
 			+ this.minNumSelectCandidate + ", numSelectCandidateRatio="
 			+ this.numSelectCandidateRatio + ", qrParam=" + this.qrParam
-			+ ", discFact=" + this.discFact + ", numCandStdev=" + this.numCandStdev
+			+ ", discFact=" + this.discFact 
+			+ ", numCandStdev=" + this.numCandStdev
 			+ ", propagationParam=" + this.propagationParam + ", useMaxOnly="
 			+ this.useMaxOnly + "]";
 	}

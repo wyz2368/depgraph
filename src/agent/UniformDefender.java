@@ -24,7 +24,8 @@ public final class UniformDefender extends Defender {
 		final double numResRatio,
 		final double numCandStdev) {
 		super(DefenderType.UNIFORM);
-		if (maxNumRes < 0 || minNumRes > maxNumRes || numResRatio < 0.0 || numResRatio > 1.0
+		if (maxNumRes < 0 || minNumRes > maxNumRes
+			|| numResRatio < 0.0 || numResRatio > 1.0
 			|| numCandStdev < 0.0) {
 			throw new IllegalArgumentException();
 		}
@@ -36,22 +37,30 @@ public final class UniformDefender extends Defender {
 
 	@Override
 	public DefenderAction sampleAction(final DependencyGraph depGraph,
-		final int curTimeStep, final int numTimeStep, final DefenderBelief dBelief, final RandomGenerator rng) {
-		if (depGraph == null || curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null) {
+		final int curTimeStep, final int numTimeStep, 
+		final DefenderBelief dBelief, final RandomGenerator rng) {
+		if (depGraph == null || curTimeStep < 0
+			|| numTimeStep < curTimeStep || dBelief == null || rng == null) {
 			throw new IllegalArgumentException();
 		}
-		List<Node> dCandidateNodeList = new ArrayList<Node>(depGraph.vertexSet());
+		List<Node> dCandidateNodeList =
+			new ArrayList<Node>(depGraph.vertexSet());
 		
 		final int goalCount =
-			(int) (dCandidateNodeList.size() * this.numResRatio + rng.nextGaussian() * this.numCandStdev);
+			(int) (dCandidateNodeList.size() * this.numResRatio
+				+ rng.nextGaussian() * this.numCandStdev);
 		final int numNodetoProtect =
-			Attacker.getActionCount(this.minNumRes, this.maxNumRes, dCandidateNodeList.size(), goalCount);
+			Attacker.getActionCount(
+				this.minNumRes, this.maxNumRes, 
+				dCandidateNodeList.size(), goalCount);
 
 		if (dCandidateNodeList.size() == 0 || numNodetoProtect == 0) {
 			return new DefenderAction();
 		}
 		// Sample nodes
-		UniformIntegerDistribution rnd = new UniformIntegerDistribution(rng, 0, dCandidateNodeList.size() - 1);
+		UniformIntegerDistribution rnd = 
+			new UniformIntegerDistribution(
+				rng, 0, dCandidateNodeList.size() - 1);
 		return simpleSampleAction(dCandidateNodeList, numNodetoProtect, rnd);	
 	}
 

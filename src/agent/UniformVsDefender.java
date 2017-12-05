@@ -19,7 +19,8 @@ public final class UniformVsDefender extends Defender {
 	private int maxNumRes;
 	private int minNumRes;
 	private double numResRatio;
-	private double logisParam; // Logistic parameter to randomize defense strategies
+	// Logistic parameter to randomize defense strategies
+	private double logisParam;
 	private double discFact; // reward discount factor
 	private double thres; // to remove game state from belief
 	
@@ -33,14 +34,19 @@ public final class UniformVsDefender extends Defender {
 	private int numStateSample = DEFAULT_NUM_STATE_SAMPLE;
 	private int numAttActionSample = DEFAULT_NUM_ACTION_SAMPLE;
 	
-	public UniformVsDefender(final double logisParam, final double discFact, final double thres
-		, final double maxNumRes, final double minNumRes, final double numResRatio
+	public UniformVsDefender(final double logisParam,
+		final double discFact, final double thres
+		, final double maxNumRes, final double minNumRes, 
+		final double numResRatio
 		, final double maxNumSelectACandidate,
-		final double minNumSelectACandidate, final double numSelectACandidateRatio) {
+		final double minNumSelectACandidate, 
+		final double numSelectACandidateRatio) {
 		super(DefenderType.vsUNIFORM);
 		if (discFact <= 0.0 || discFact > 1.0 || thres < 0.0 || thres > 1.0
-			|| minNumRes < 1 || maxNumRes < minNumRes || numResRatio < 0.0 || numResRatio > 1.0
-			|| minNumSelectACandidate < 1 || maxNumSelectACandidate < minNumSelectACandidate
+			|| minNumRes < 1 || maxNumRes < minNumRes 
+			|| numResRatio < 0.0 || numResRatio > 1.0
+			|| minNumSelectACandidate < 1 
+			|| maxNumSelectACandidate < minNumSelectACandidate
 			|| numSelectACandidateRatio < 0.0 || numSelectACandidateRatio > 1.0
 		) {
 			throw new IllegalArgumentException();
@@ -63,12 +69,16 @@ public final class UniformVsDefender extends Defender {
 		final int curTimeStep, final int numTimeStep
 		, final DefenderBelief dBelief
 		, final RandomGenerator rng) {
-		if (curTimeStep < 0 || numTimeStep < curTimeStep || dBelief == null || rng == null) {
+		if (curTimeStep < 0 || numTimeStep < curTimeStep 
+			|| dBelief == null || rng == null) {
 			throw new IllegalArgumentException();
 		}
 		Attacker attacker = new UniformAttacker(
-			this.maxNumSelectACandidate, this.minNumSelectACandidate, this.numSelectACandidateRatio, 0.0);
-		Map<Node, Double> dValueMap = ValuePropagationVsDefender.computeCandidateValueTopo(depGraph, dBelief, 
+			this.maxNumSelectACandidate, 
+			this.minNumSelectACandidate, this.numSelectACandidateRatio, 0.0);
+		Map<Node, Double> dValueMap = 
+			ValuePropagationVsDefender.computeCandidateValueTopo(
+				depGraph, dBelief, 
 				curTimeStep, numTimeStep, this.discFact, rng,
 				attacker, this.numAttActionSample);
 		List<Node> dCandidateNodeList = new ArrayList<Node>();
@@ -85,7 +95,9 @@ public final class UniformVsDefender extends Defender {
 		int totalNumCandidate = dValueMap.size();
 		
 		// Compute probability to choose each node
-		double[] probabilities = computeCandidateProb(totalNumCandidate, candidateValue, this.logisParam);
+		double[] probabilities = 
+			computeCandidateProb(totalNumCandidate, 
+				candidateValue, this.logisParam);
 
 		// Only keep candidates with non-trivial probability
 		int numGoodCandidate = 0;
@@ -99,7 +111,9 @@ public final class UniformVsDefender extends Defender {
 		if (dCandidateNodeList.size() < this.minNumRes) {
 			numNodetoProtect = dCandidateNodeList.size();
 		} else {
-			numNodetoProtect = Math.max(this.minNumRes, (int) (this.numResRatio * dCandidateNodeList.size()));
+			numNodetoProtect = Math.max(
+				this.minNumRes, 
+				(int) (this.numResRatio * dCandidateNodeList.size()));
 			numNodetoProtect = Math.min(this.maxNumRes, numNodetoProtect);
 		}
 		if (numNodetoProtect > numGoodCandidate) {
@@ -115,7 +129,8 @@ public final class UniformVsDefender extends Defender {
 		for (int i = 0; i < dCandidateNodeList.size(); i++) {
 			nodeIndexes[i] = i;
 		}
-		EnumeratedIntegerDistribution rnd = new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
+		EnumeratedIntegerDistribution rnd = 
+			new EnumeratedIntegerDistribution(rng, nodeIndexes, probabilities);
 
 		return simpleSampleAction(dCandidateNodeList, numNodetoProtect, rnd);
 	}
@@ -127,13 +142,15 @@ public final class UniformVsDefender extends Defender {
 		, final DefenderObservation dObservation
 		, final int curTimeStep, final int numTimeStep
 		, final RandomGenerator rng) {
-		if (depGraph == null || dBelief == null || dAction == null || dObservation == null 
+		if (depGraph == null || dBelief == null 
+			|| dAction == null || dObservation == null 
 			|| curTimeStep < 0 || numTimeStep < curTimeStep || rng == null
 		) {
 			throw new IllegalArgumentException();
 		}
 		Attacker attacker = new UniformAttacker(
-			this.maxNumSelectACandidate, this.minNumSelectACandidate, this.numSelectACandidateRatio, 0.0);
+			this.maxNumSelectACandidate, this.minNumSelectACandidate, 
+			this.numSelectACandidateRatio, 0.0);
 		return updateBelief(depGraph
 				, dBelief
 				, dAction

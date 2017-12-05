@@ -47,7 +47,7 @@ public final class ValuePropagationVsDefender extends Defender {
 	
 	private boolean isTopo = true;
 	
-	/*****************************************************************************************
+	/************************************************
 	 * 
 	 * @param maxNumRes
 	 * @param minNumRes
@@ -59,10 +59,13 @@ public final class ValuePropagationVsDefender extends Defender {
 	 * @param maxNumAttCandidate
 	 * @param minNumAttCandidate
 	 * @param numAttCandidateRatio
-	 *****************************************************************************************/
-	public ValuePropagationVsDefender(final double maxNumRes, final double minNumRes, final double numResRatio,
-		final double logisParam, final double discFact, final double thres,
-		final double qrParam, final double maxNumAttCandidate, final double minNumAttCandidate,
+	 ************************************************/
+	public ValuePropagationVsDefender(final double maxNumRes, 
+		final double minNumRes, final double numResRatio,
+		final double logisParam, final double discFact, 
+		final double thres,
+		final double qrParam, final double maxNumAttCandidate, 
+		final double minNumAttCandidate,
 		final double numAttCandidateRatio, final double numAttCandStdev,
 		final double isTopo) {
 		super(DefenderType.vsVALUE_PROPAGATION);
@@ -580,14 +583,16 @@ public final class ValuePropagationVsDefender extends Defender {
 	@Override
 	public String toString() {
 		return "ValuePropagationVsDefender [maxNumRes=" + this.maxNumRes
-			+ ", minNumRes=" + this.minNumRes + ", numResRatio=" + this.numResRatio
+			+ ", minNumRes=" + this.minNumRes 
+			+ ", numResRatio=" + this.numResRatio
 			+ ", logisParam=" + this.logisParam + ", discFact=" + this.discFact
 			+ ", thres=" + this.thres + ", qrParam=" + this.qrParam
 			+ ", maxNumAttCandidate=" + this.maxNumAttCandidate
 			+ ", minNumAttCandidate=" + this.minNumAttCandidate
 			+ ", numAttCandidateRatio=" + this.numAttCandidateRatio
 			+ ", numAttCandStdev=" + this.numAttCandStdev + ", numStateSample="
-			+ this.numStateSample + ", numAttActionSample=" + this.numAttActionSample
+			+ this.numStateSample + ", numAttActionSample=" 
+			+ this.numAttActionSample
 			+ "]";
 	}
 }
