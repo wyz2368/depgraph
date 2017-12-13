@@ -97,6 +97,10 @@ public final class Node implements INode {
 		this.actProb = aActProb;
 	}
 	
+	public boolean isOrType() {
+		return this.eType == NodeActivationType.OR;
+	}
+	
 	@Override
 	public int getId() {
 		return this.id;
