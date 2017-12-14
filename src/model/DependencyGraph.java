@@ -4,9 +4,14 @@ import graph.Edge;
 import graph.INode;
 import graph.INode.NodeActivationType;
 import graph.INode.NodeState;
+import graph.INode.NodeType;
 import graph.Node;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
@@ -19,6 +24,12 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 	private final Set<Node> targetSet;
 	private Set<Node> minCut;
 	private Set<Node> rootSet;
+	private final Map<Integer, Integer> distToGoal = 
+		new HashMap<Integer, Integer>();
+	private final Map<Integer, Double> subtreeAttReward = 
+		new HashMap<Integer, Double>();
+	private final Map<Integer, Double> subtreeDefPenalty = 
+		new HashMap<Integer, Double>();
 	
 	public DependencyGraph() {
 		super(Edge.class);
@@ -178,6 +189,87 @@ public final class DependencyGraph extends DirectedAcyclicGraph<Node, Edge> {
 		GameSimulation.printIfDebug("");
 		GameSimulation.printIfDebug(
 		"--------------------------------------------------------------------");
+	}
+	
+	public double subtreeDefensePenalty(final Node node) {
+		if (this.subtreeDefPenalty.containsKey(node.getId())) {
+			return this.subtreeDefPenalty.get(node.getId());
+		}
+		
+		final List<Node> queue = new ArrayList<Node>();
+		Node curNode = node;
+		queue.add(curNode);
+		double totalPenalty = 0.0;
+		while (!queue.isEmpty()) {
+			curNode = queue.remove(0);
+			
+			if (curNode.getType() == NodeType.TARGET) {
+				totalPenalty += curNode.getDPenalty();
+			}
+			
+			for (final Edge edge: outgoingEdgesOf(curNode)) {
+				queue.add(edge.gettarget());
+			}
+		}
+		
+		this.subtreeDefPenalty.put(node.getId(), totalPenalty);
+		return totalPenalty;
+	}
+	
+	public double subtreeAttackReward(final Node node) {
+		if (this.subtreeAttReward.containsKey(node.getId())) {
+			return this.subtreeAttReward.get(node.getId());
+		}
+		
+		final List<Node> queue = new ArrayList<Node>();
+		Node curNode = node;
+		queue.add(curNode);
+		double totalReward = 0.0;
+		while (!queue.isEmpty()) {
+			curNode = queue.remove(0);
+			
+			if (curNode.getType() == NodeType.TARGET) {
+				totalReward += curNode.getAReward();
+			}
+			
+			for (final Edge edge: outgoingEdgesOf(curNode)) {
+				queue.add(edge.gettarget());
+			}
+		}
+		
+		this.subtreeAttReward.put(node.getId(), totalReward);
+		return totalReward;
+	}
+	
+	public int distanceToGoal(final Node node) {
+		if (this.distToGoal.containsKey(node.getId())) {
+			return this.distToGoal.get(node.getId());
+		}
+		
+		final List<Node> queue = new ArrayList<Node>();
+		final List<Integer> depths = new ArrayList<Integer>();
+		Node curNode = node;
+		int curDepth = 0;
+		queue.add(curNode);
+		depths.add(curDepth);
+		while (!queue.isEmpty()) {
+			curNode = queue.remove(0);
+			curDepth = depths.remove(0);
+			
+			if (curNode.getType() == NodeType.TARGET) {
+				this.distToGoal.put(node.getId(), curDepth);
+				return curDepth;
+			}
+			
+			for (final Edge edge: outgoingEdgesOf(curNode)) {
+				queue.add(edge.gettarget());
+				depths.add(curDepth + 1);
+			}
+		}
+		
+		// no path to a goal node
+		this.distToGoal.put(node.getId(), -1);
+		return -1;
 	}
 	
 	private void resetState() {

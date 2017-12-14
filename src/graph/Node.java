@@ -1,5 +1,6 @@
 package graph;
 
+
 import game.GameSimulation;
 
 public final class Node implements INode {

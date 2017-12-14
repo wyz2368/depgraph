@@ -48,12 +48,111 @@ public final class RLDefenderObservation {
 	
 	private final Map<Integer, Double> attackCost;
 	
+	private final Map<Integer, Double> attackValue;
+	
+	private final Map<Integer, Double> defenseCost;
+	
+	private final Map<Integer, Double> defenseValue;
+	
+	private final Map<Integer, Integer> distanceToGoal;
+	
+	private final Map<Integer, Double> subtreeAttackReward;
+	
+	private final Map<Integer, Double> subtreeDefensePenalty;
+
+	
 	public RLDefenderObservation(final DefenderObservation defObs, 
 		final DependencyGraph depGraph) {
 		this.probActive = getProbActive(defObs, depGraph);
 		this.probCanActivate = getProbCanActivate(depGraph);
 		this.successProbability = getSuccessProb(depGraph);
 		this.attackCost = getAttackCost(depGraph);
+		this.attackValue = getAttackValue(depGraph);
+		this.defenseValue = getDefenseValue(depGraph);
+		this.defenseCost = getDefenseCost(depGraph);
+		this.distanceToGoal = getDistanceToGoal(depGraph);
+		this.subtreeAttackReward = getSubtreeAttReward(depGraph);
+		this.subtreeDefensePenalty = getSubtreeDefPenalty(depGraph);
+	}
+	
+	@Override
+	public String toString() {
+		return "RLDefenderObservation [probActive=" + this.probActive 
+			+ "\n, probCanActivate=" + this.probCanActivate
+			+ "\n, successProbability=" + this.successProbability 
+			+ "\n, attackCost=" + this.attackCost + "\n, attackValue="
+			+ this.attackValue + "\n, defenseCost=" + this.defenseCost 
+			+ "\n, defenseValue=" + this.defenseValue + "\n, distanceToGoal="
+			+ this.distanceToGoal + "\n, subtreeAttackReward=" 
+			+ this.subtreeAttackReward + "\n, subtreeDefensePenalty="
+			+ this.subtreeDefensePenalty + "]";
+	}
+
+	private static Map<Integer, Double> getSubtreeDefPenalty(
+		final DependencyGraph depGraph) {
+		final Map<Integer, Double> result = new HashMap<Integer, Double>();
+		for (Node node: depGraph.vertexSet()) {
+			final int id = node.getId();
+			final double subtreeDefPenalty = 
+				depGraph.subtreeDefensePenalty(node);
+			result.put(id, subtreeDefPenalty);
+		}
+		return result;
+	}
+	
+	private static Map<Integer, Double> getSubtreeAttReward(
+		final DependencyGraph depGraph) {
+		final Map<Integer, Double> result = new HashMap<Integer, Double>();
+		for (Node node: depGraph.vertexSet()) {
+			final int id = node.getId();
+			final double subtreeAttReward = depGraph.subtreeAttackReward(node);
+			result.put(id, subtreeAttReward);
+		}
+		return result;
+	}
+	
+	private static Map<Integer, Integer> getDistanceToGoal(
+		final DependencyGraph depGraph) {
+		final Map<Integer, Integer> result = new HashMap<Integer, Integer>();
+		for (Node node: depGraph.vertexSet()) {
+			final int id = node.getId();
+			final int distToGoal = depGraph.distanceToGoal(node);
+			result.put(id, distToGoal);
+		}
+		return result;
+	}
+	
+	private static Map<Integer, Double> getAttackValue(
+		final DependencyGraph depGraph) {
+		final Map<Integer, Double> result = new HashMap<Integer, Double>();
+		for (Node node: depGraph.vertexSet()) {
+			final int id = node.getId();
+			final double attackValue = node.getAReward();
+			result.put(id, attackValue);
+		}
+		return result;
+	}
+	
+	private static Map<Integer, Double> getDefenseCost(
+		final DependencyGraph depGraph) {
+		final Map<Integer, Double> result = new HashMap<Integer, Double>();
+		for (Node node: depGraph.vertexSet()) {
+			final int id = node.getId();
+			final double defenseCost = node.getDCost();
+			result.put(id, defenseCost);
+		}
+		return result;
+	}
+	
+	private static Map<Integer, Double> getDefenseValue(
+		final DependencyGraph depGraph) {
+		final Map<Integer, Double> result = new HashMap<Integer, Double>();
+		for (Node node: depGraph.vertexSet()) {
+			final int id = node.getId();
+			final double defenseValue = node.getDPenalty();
+			result.put(id, defenseValue);
+		}
+		return result;
 	}
 	
 	private static Map<Integer, Double> getAttackCost(
