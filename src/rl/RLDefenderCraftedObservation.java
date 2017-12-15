@@ -13,7 +13,7 @@ import model.DefenderObservation;
 import model.DependencyGraph;
 import model.SecurityAlert;
 
-public final class RLDefenderObservation {
+public final class RLDefenderCraftedObservation {
 
 	/*
 	 * lists for each node in vertexSet() of DependencyGraph, in order:
@@ -61,8 +61,10 @@ public final class RLDefenderObservation {
 	private final Map<Integer, Double> subtreeDefensePenalty;
 
 	
-	public RLDefenderObservation(final DefenderObservation defObs, 
+	public RLDefenderCraftedObservation(final DefenderObservation defObs, 
 		final DependencyGraph depGraph) {
+		assert defObs != null;
+		assert depGraph != null;
 		this.probActive = getProbActive(defObs, depGraph);
 		this.probCanActivate = getProbCanActivate(depGraph);
 		this.successProbability = getSuccessProb(depGraph);
@@ -90,6 +92,7 @@ public final class RLDefenderObservation {
 
 	private static Map<Integer, Double> getSubtreeDefPenalty(
 		final DependencyGraph depGraph) {
+		assert !depGraph.vertexSet().isEmpty();
 		final Map<Integer, Double> result = new HashMap<Integer, Double>();
 		for (Node node: depGraph.vertexSet()) {
 			final int id = node.getId();
@@ -102,6 +105,7 @@ public final class RLDefenderObservation {
 	
 	private static Map<Integer, Double> getSubtreeAttReward(
 		final DependencyGraph depGraph) {
+		assert !depGraph.vertexSet().isEmpty();
 		final Map<Integer, Double> result = new HashMap<Integer, Double>();
 		for (Node node: depGraph.vertexSet()) {
 			final int id = node.getId();
@@ -113,6 +117,7 @@ public final class RLDefenderObservation {
 	
 	private static Map<Integer, Integer> getDistanceToGoal(
 		final DependencyGraph depGraph) {
+		assert !depGraph.vertexSet().isEmpty();
 		final Map<Integer, Integer> result = new HashMap<Integer, Integer>();
 		for (Node node: depGraph.vertexSet()) {
 			final int id = node.getId();
@@ -124,6 +129,7 @@ public final class RLDefenderObservation {
 	
 	private static Map<Integer, Double> getAttackValue(
 		final DependencyGraph depGraph) {
+		assert !depGraph.vertexSet().isEmpty();
 		final Map<Integer, Double> result = new HashMap<Integer, Double>();
 		for (Node node: depGraph.vertexSet()) {
 			final int id = node.getId();
@@ -135,6 +141,7 @@ public final class RLDefenderObservation {
 	
 	private static Map<Integer, Double> getDefenseCost(
 		final DependencyGraph depGraph) {
+		assert !depGraph.vertexSet().isEmpty();
 		final Map<Integer, Double> result = new HashMap<Integer, Double>();
 		for (Node node: depGraph.vertexSet()) {
 			final int id = node.getId();
@@ -146,6 +153,7 @@ public final class RLDefenderObservation {
 	
 	private static Map<Integer, Double> getDefenseValue(
 		final DependencyGraph depGraph) {
+		assert !depGraph.vertexSet().isEmpty();
 		final Map<Integer, Double> result = new HashMap<Integer, Double>();
 		for (Node node: depGraph.vertexSet()) {
 			final int id = node.getId();
@@ -157,6 +165,7 @@ public final class RLDefenderObservation {
 	
 	private static Map<Integer, Double> getAttackCost(
 		final DependencyGraph depGraph) {
+		assert !depGraph.vertexSet().isEmpty();
 		final Map<Integer, Double> result = new HashMap<Integer, Double>();
 		for (Node node: depGraph.vertexSet()) {
 			final int id = node.getId();
@@ -178,6 +187,7 @@ public final class RLDefenderObservation {
 	
 	private static Map<Integer, Double> getSuccessProb(
 		final DependencyGraph depGraph) {
+		assert !depGraph.vertexSet().isEmpty();
 		final Map<Integer, Double> result = new HashMap<Integer, Double>();
 		for (Node node: depGraph.vertexSet()) {
 			final int id = node.getId();
@@ -199,6 +209,7 @@ public final class RLDefenderObservation {
 	
 	private static Set<Integer> getParentIds(
 		final Node node, final DependencyGraph depGraph) {
+		assert depGraph.vertexSet().contains(node);
 		final Set<Integer> result = new HashSet<Integer>();
 		for (Edge edge: depGraph.incomingEdgesOf(node)) {
 			result.add(edge.getsource().getId());
@@ -209,6 +220,7 @@ public final class RLDefenderObservation {
 	private Map<Integer, Double> getProbCanActivate(
 		final DependencyGraph depGraph
 	) {
+		assert !depGraph.vertexSet().isEmpty();
 		final Map<Integer, Double> result = new HashMap<Integer, Double>();
 		for (Node node: depGraph.vertexSet()) {
 			final int id = node.getId();

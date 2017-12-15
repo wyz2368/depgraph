@@ -18,6 +18,9 @@ import model.DefenderObservation;
 import model.DependencyGraph;
 import model.GameSample;
 import model.GameState;
+import rl.RLDefenderAction;
+import rl.RLDefenderCraftedObservation;
+import rl.RLDefenderRawObservation;
 import agent.Attacker;
 import agent.Defender;
 
@@ -118,6 +121,11 @@ public final class GameSimulation {
 				dBelief,
 				this.rng.getRandomGenerator()
 			);
+			
+			@SuppressWarnings("unused")
+			RLDefenderAction rlAction = new RLDefenderAction(defAction);
+			// System.out.println(rlAction);
+
 			end = System.currentTimeMillis();
 			printIfDebug("Elapsed time: " + (end - start) / thousand);
 			
@@ -133,6 +141,16 @@ public final class GameSimulation {
 			// observation based on game state
 			dObservation = GameOracle.generateDefObservation(
 				this.depGraph, gameState, this.rng); 
+			
+			@SuppressWarnings("unused")
+			RLDefenderCraftedObservation rlCraftedObs = 
+				new RLDefenderCraftedObservation(dObservation, this.depGraph);
+			// System.out.println(rlCraftedObs);
+			@SuppressWarnings("unused")
+			RLDefenderRawObservation rlRawObs =
+				new RLDefenderRawObservation(dObservation);
+			// System.out.println(rlRawObs);
+			
 			end = System.currentTimeMillis();
 			printIfDebug("Elapsed time: " + (end - start) / thousand);
 			

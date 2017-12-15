@@ -110,7 +110,7 @@ public final class RandomWalkVsDefender extends Defender {
 			depGraph, curTimeStep, numTimeStep, dBelief, rng);
 	}
 	
-	public DefenderAction sampleActionRandomize(
+	private DefenderAction sampleActionRandomize(
 		final DependencyGraph depGraph, 
 		final int curTimeStep, 
 		final int numTimeStep, 
@@ -215,7 +215,7 @@ public final class RandomWalkVsDefender extends Defender {
 		return candidates[sampleIdx];
 	}
 	
-	public DefenderAction sampleActionStatic(
+	private DefenderAction sampleActionStatic(
 		final DependencyGraph depGraph,
 		final int curTimeStep, 
 		final int numTimeStep, 
@@ -473,7 +473,7 @@ public final class RandomWalkVsDefender extends Defender {
 		return value;
 	}
 	
-	public static double computeDValue(
+	static double computeDValue(
 		final DependencyGraph depGraph,
 		final DefenderBelief dBelief,
 		final RandomWalkTuple[][][] rwTuplesLists,
@@ -510,7 +510,7 @@ public final class RandomWalkVsDefender extends Defender {
 	}
 	
 	// depGraph has current game state the defender is examining
-	public static double computeDValue(
+	private static double computeDValue(
 		final DependencyGraph depGraph,
 		final RandomWalkTuple[][] rwTuplesList,
 		final AttackerAction[] attActions,
@@ -580,7 +580,7 @@ public final class RandomWalkVsDefender extends Defender {
 		return dValue;
 	}
 	
-	public double greedyAction(
+	private double greedyAction(
 		final DependencyGraph depGraph, 
 		final int curTimeStep, 
 		final int numTimeStep, 
