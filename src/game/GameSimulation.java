@@ -6,6 +6,8 @@ import graph.Node;
 import graph.INode.NodeActivationType;
 import graph.INode.NodeState;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -19,7 +21,7 @@ import model.DependencyGraph;
 import model.GameSample;
 import model.GameState;
 import rl.RLDefenderAction;
-import rl.RLDefenderCraftedObservation;
+import rl.RLDefenderEpisode;
 import rl.RLDefenderRawObservation;
 import agent.Attacker;
 import agent.Defender;
@@ -36,9 +38,11 @@ public final class GameSimulation {
 	private RandomDataGenerator rng;
 	
 	public static final boolean DEBUG_PRINT = false;
-	
+		
 	//Outcome
 	private GameSimulationResult simResult;
+	
+	private final List<RLDefenderEpisode> rlDefenderEpisodes;
 	
 	public GameSimulation(
 		final DependencyGraph aDepGraph, final Attacker aAttacker,
@@ -62,6 +66,7 @@ public final class GameSimulation {
 		this.rng = aRng;
 		
 		this.simResult = new GameSimulationResult();
+		this.rlDefenderEpisodes = new ArrayList<RLDefenderEpisode>();
 	}
 	
 	public void setRandomSeed(final long seed) {
@@ -121,10 +126,6 @@ public final class GameSimulation {
 				dBelief,
 				this.rng.getRandomGenerator()
 			);
-			
-			@SuppressWarnings("unused")
-			RLDefenderAction rlAction = new RLDefenderAction(defAction);
-			// System.out.println(rlAction);
 
 			end = System.currentTimeMillis();
 			printIfDebug("Elapsed time: " + (end - start) / thousand);
@@ -141,15 +142,6 @@ public final class GameSimulation {
 			// observation based on game state
 			dObservation = GameOracle.generateDefObservation(
 				this.depGraph, gameState, this.rng); 
-			
-			@SuppressWarnings("unused")
-			RLDefenderCraftedObservation rlCraftedObs = 
-				new RLDefenderCraftedObservation(dObservation, this.depGraph);
-			// System.out.println(rlCraftedObs);
-			@SuppressWarnings("unused")
-			RLDefenderRawObservation rlRawObs =
-				new RLDefenderRawObservation(dObservation);
-			// System.out.println(rlRawObs);
 			
 			end = System.currentTimeMillis();
 			printIfDebug("Elapsed time: " + (end - start) / thousand);
@@ -180,17 +172,111 @@ public final class GameSimulation {
 				+ "\t" + this.numTimeStep);
 		}
 		this.computePayoff();
+		this.computeRLDefenderEpisodes();
+		for (final RLDefenderEpisode episode: this.rlDefenderEpisodes) {
+			System.out.println(episode);
+			System.out.println("\n\n");
+		}
+	}
+	
+	private void computeRLDefenderEpisodes() {		
+		final List<RLDefenderRawObservation> defRawObs = 
+			new ArrayList<RLDefenderRawObservation>();
+		final List<RLDefenderAction> defActionList =
+			new ArrayList<RLDefenderAction>();
+		// payoffs will include this.discFact discounting,
+		// but not the additional discount factor for RL.
+		final List<Double> payoffs = new ArrayList<Double>();
+
+		for (int time = 1; time <= this.numTimeStep; time++) {
+			for (final GameSample gameSample
+				: this.simResult.getGameSampleList()) {
+				if (gameSample.getTimeStep() == time) {
+					final GameState gameState = gameSample.getGameState();
+					final DefenderAction defAction =
+						gameSample.getDefAction();
+					
+					double defPayoff = 0.0;
+					final double discFactPow =
+						Math.pow(this.discFact, time - 1);
+					for (final Node node : gameState.getEnabledNodeSet()) {
+						if (node.getType() == NodeType.TARGET) {
+							defPayoff += discFactPow * node.getDPenalty();
+						}
+					}
+					for (final Node node : defAction.getAction()) {
+						defPayoff += discFactPow * node.getDCost();
+					}
+					
+					defRawObs.add(new RLDefenderRawObservation(
+						gameSample.getDefObservation()));
+					defActionList.add(new RLDefenderAction(defAction));
+					payoffs.add(defPayoff);
+				}				
+			}
+		}
+		
+		final List<List<RLDefenderRawObservation>> rawObsLists =
+			new ArrayList<List<RLDefenderRawObservation>>();
+		final List<List<RLDefenderAction>> actionLists =
+			new ArrayList<List<RLDefenderAction>>();
+		final List<Double> rlDiscountedPayoffs = new ArrayList<Double>();
+
+		
+		for (int time = 1; time <= this.numTimeStep; time++) {
+			final List<RLDefenderRawObservation> curRawObsList =
+				new ArrayList<RLDefenderRawObservation>();
+			final List<RLDefenderAction> curActionList =
+				new ArrayList<RLDefenderAction>();
+			for (int i = time - 1;
+				i >= 0
+					&& curRawObsList.size()
+						< RLDefenderEpisode.RL_MEMORY_LENGTH;
+				i--) {
+				curRawObsList.add(defRawObs.get(i));
+				curActionList.add(defActionList.get(i));
+			}
+			rawObsLists.add(curRawObsList);
+			actionLists.add(curActionList);
+			
+			double discDefPayoff = 0.0;
+			double discFactor = 1.0;
+			for (int i = time - 1; i < this.numTimeStep; i++) {
+				discDefPayoff += payoffs.get(i) * discFactor;
+				discFactor *= RLDefenderEpisode.RL_DISCOUNT_FACTOR;
+			}
+			rlDiscountedPayoffs.add(discDefPayoff);
+		}
+		
+		final List<RLDefenderEpisode> result =
+			new ArrayList<RLDefenderEpisode>();
+		for (int i = 0; i < defRawObs.size(); i++) {
+			final int timeStepsLeft = this.numTimeStep - i;
+			result.add(new RLDefenderEpisode(
+				rawObsLists.get(i), 
+				actionLists.get(i), 
+				rlDiscountedPayoffs.get(i),
+				timeStepsLeft,
+				this.depGraph.vertexSet().size()
+			));
+		}
+		
+		this.rlDefenderEpisodes.clear();
+		this.rlDefenderEpisodes.addAll(result);
 	}
 	
 	public void computePayoff() {
 		double defPayoff = 0.0;
 		double attPayoff = 0.0;
 
+		// for each state in the game's history
 		for (final GameSample gameSample : this.simResult.getGameSampleList()) {
 			final int timeStep = gameSample.getTimeStep();
 			final GameState gameState = gameSample.getGameState();
 			final DefenderAction defAction = gameSample.getDefAction();
 			final AttackerAction attAction = gameSample.getAttAction();
+			// this.discFact is applied to all time steps exponentially
+			// (first time step has no discounting)
 			final double discFactPow = Math.pow(this.discFact, timeStep - 1);
 			for (final Node node : gameState.getEnabledNodeSet()) {
 				if (node.getType() == NodeType.TARGET) {
@@ -216,6 +302,10 @@ public final class GameSimulation {
 		}
 		this.simResult.setAttPayoff(attPayoff);
 		this.simResult.setDefPayoff(defPayoff);
+	}
+	
+	public List<RLDefenderEpisode> getRLDefenderEpisodes() {
+		return this.rlDefenderEpisodes;
 	}
 	
 	public GameSimulationResult getSimulationResult() {

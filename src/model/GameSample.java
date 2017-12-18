@@ -47,6 +47,10 @@ public final class GameSample {
 		return this.attAction;
 	}
 	
+	public DefenderObservation getDefObservation() {
+		return this.defObservation;
+	}
+	
 	public void clear() {
 		if (!this.gameState.getEnabledNodeSet().isEmpty()) {
 			this.gameState.clear();
