@@ -173,9 +173,15 @@ public final class GameSimulation {
 		}
 		this.computePayoff();
 		this.computeRLDefenderEpisodes();
+		
+		/*
 		for (final RLDefenderEpisode episode: this.rlDefenderEpisodes) {
 			System.out.println(episode);
 			System.out.println("\n\n");
+		}
+		*/
+		for (final RLDefenderEpisode episode: this.rlDefenderEpisodes) {
+			System.out.println(episode.getStringForFile());
 		}
 	}
 	

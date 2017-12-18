@@ -2,7 +2,9 @@ package rl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import model.DefenderObservation;
 import model.SecurityAlert;
@@ -10,6 +12,8 @@ import model.SecurityAlert;
 public final class RLDefenderRawObservation {
 
 	private final List<Integer> activeObservedIds = new ArrayList<Integer>();
+	
+	private final Set<Integer> activeObservedIdSet;
 	
 	public RLDefenderRawObservation(final DefenderObservation defObs) {
 		assert defObs != null;
@@ -19,10 +23,15 @@ public final class RLDefenderRawObservation {
 			}
 		}
 		Collections.sort(this.activeObservedIds);
+		this.activeObservedIdSet = new HashSet<Integer>(this.activeObservedIds);
 	}
 
 	public List<Integer> getActiveObservedIds() {
 		return this.activeObservedIds;
+	}
+	
+	public Set<Integer> activeObservedIdSet() {
+		return this.activeObservedIdSet;
 	}
 
 	@Override
