@@ -2,7 +2,13 @@ package connectfourdomain;
 
 import connectfourdomain.C4Board.Winner;
 
-// always plays as red and goes first
+/**
+ * A simple AI player for Connect Four.
+ * Always plays as red (first player).
+ * Uses a depth-limited minimax search, with the
+ * heuristic of always moving first in the center column
+ * when the game begins.
+ */
 public final class C4Player {
 
 	/**
@@ -14,6 +20,13 @@ public final class C4Player {
 	 * Value for winning the game.
 	 */
 	public static final int MAX_VALUE = 100;
+	
+	/**
+	 * Private constructor of utility class.
+	 */
+	private C4Player() {
+		// not called
+	}
 	
 	/**
 	 * @param board current board state.
@@ -33,6 +46,11 @@ public final class C4Player {
 		return minimaxMove(board);
 	}
 	
+	/**
+	 * Use minimax search to find a good move.
+	 * @param board the current board state.
+	 * @return the index of the best column to move in.
+	 */
 	private static int minimaxMove(final C4Board board) {
 		final C4Board boardCopy = new C4Board(board);
 		
@@ -54,6 +72,18 @@ public final class C4Player {
 		return bestMove;
 	}
 	
+	/**
+	 * Recursively find the minimax-optimal value of this
+	 * search subtree, from the perspective of the current
+	 * player to move at this point in the search tree.
+	 * @param board the board state at this point in the
+	 * search tree
+	 * @param depthLeft the remaining depth to which search
+	 * is allowed in this path of the search tree
+	 * @return the best value, from the current player's
+	 * perspective in the search tree, based on minimax
+	 * search. 
+	 */
 	private static int minimaxMoveRecurse(
 		final C4Board board,
 		final int depthLeft
@@ -110,6 +140,11 @@ public final class C4Player {
 		return maxValue;
 	}
 	
+	/**
+	 * @param redPieces true at red piece locations
+	 * @param blackPieces true at black piece locations
+	 * @return true if all values are false (no pieces)
+	 */
 	private static boolean isEmpty(
 		final boolean[][] redPieces,
 		final boolean[][] blackPieces) {
@@ -121,6 +156,14 @@ public final class C4Player {
 		return true;
 	}
 	
+	/**
+	 * @param board the current board state, somewhere in the
+	 * minimax search tree
+	 * @return the heuristic value of the board to the red player
+	 * (self). This will be MAX_VALUE if red won, -1 * MAX_VALUE
+	 * if black won, or the difference in length of longest runs
+	 * between red and black otherwise.
+	 */
 	private static int boardValue(
 		final C4Board board
 	) {
@@ -135,6 +178,12 @@ public final class C4Player {
 		return redLength - blackLength;
 	}
 	
+	/**
+	 * @param colorPieces true at the locations of a certain color's
+	 * pieces (either red or black)
+	 * @return the length of the longest run of that color's pieces
+	 * in a row, which will be in {0, . . ., C4Board.GOAL}.
+	 */
 	private static int maxColorLength(
 		final boolean[][] colorPieces
 	) {

@@ -1,5 +1,10 @@
 package connectfourdomain;
 
+/**
+ * Represents a game of Connect Four, including
+ * the red and black pieces on the board,
+ * and whether it is red's turn to play (first player is red).
+ */
 public final class C4Board {
 
 	/**
@@ -47,12 +52,20 @@ public final class C4Board {
 	 */
 	private boolean blackTurn;
 	
+	/**
+	 * Constructor of an empty board, with
+	 * first move for red.
+	 */
 	public C4Board() {
 		this.redPieces = new boolean[HEIGHT][WIDTH];
 		this.blackPieces = new boolean[HEIGHT][WIDTH];
 		this.blackTurn = false;
 	}
 	
+	/**
+	 * Copy constructor.
+	 * @param toCopy the board to copy
+	 */
 	public C4Board(final C4Board toCopy) {
 		this.redPieces = new boolean[HEIGHT][WIDTH];
 		this.blackPieces = new boolean[HEIGHT][WIDTH];
@@ -77,6 +90,12 @@ public final class C4Board {
 			&& !this.blackPieces[HEIGHT - 1][col];
 	}
 	
+	/**
+	 * @return true if black should be next to move.
+	 * Assumes red plays first.
+	 * If true, red should have one more piece on the
+	 * board than black.
+	 */
 	private boolean shouldBeBlackTurn() {
 		int blackCount = 0;
 		int redCount = 0;
@@ -95,6 +114,13 @@ public final class C4Board {
 		return redCount > blackCount;
 	}
 	
+	/**
+	 * Take back the most recent move in column col.
+	 * @param col the column where the most recent piece
+	 * was added.
+	 * This action also switches whose turn it is to
+	 * play, in this.blackTurn.
+	 */
 	public void undoMove(final int col) {
 		assert col >= 0 && col < WIDTH;
 		for (int row = HEIGHT - 1; row >= 0; row--) {
@@ -111,6 +137,12 @@ public final class C4Board {
 		assert shouldBeBlackTurn() == this.blackTurn;
 	}
 	
+	/**
+	 * Adds a token in column col and swaps whose
+	 * turn it is in this.blackTurn.
+	 * The color of the piece added is black is this.blackTurn.
+	 * @param col the column to play in.
+	 */
 	public void makeMove(final int col) {
 		if (!isLegalMove(col)) {
 			throw new IllegalArgumentException();
@@ -134,14 +166,24 @@ public final class C4Board {
 		throw new IllegalStateException();
 	}	
 	
+	/**
+	 * @return true if it's black's move.
+	 */
 	public boolean isBlackTurn() {
 		return this.blackTurn;
 	}
 
+	/**
+	 * @return has true for each cell with a red
+	 * piece.
+	 */
 	public boolean[][] getRedPieces() {
 		return this.redPieces;
 	}
 
+	/**
+	 * @return has true for each cell with a black piece.
+	 */
 	public boolean[][] getBlackPieces() {
 		return this.blackPieces;
 	}
@@ -170,6 +212,9 @@ public final class C4Board {
 		return builder.toString();
 	}
 
+	/**
+	 * @return who won the game, or NONE if not over yet.
+	 */
 	public Winner getWinner() {
 		// check for vertical line
 		for (int col = 0; col < WIDTH; col++) {
