@@ -79,6 +79,37 @@ public final class C4Board {
 	}
 	
 	/**
+	 * @return format: from left to right in each row, from
+	 * bottom to top. First for red, then for black.
+	 */
+	public float[] getAsFloatArray() {
+		final int size = HEIGHT * WIDTH * 2;
+		final float[] result = new float[size];
+		int i = 0;
+		for (int row = 0; row < HEIGHT; row++) {
+			for (int col = 0; col < WIDTH; col++) {
+				if (this.redPieces[row][col]) {
+					result[i] = 1;
+				} else {
+					result[i] = 0;
+				}
+				i++;
+			}
+		}
+		for (int row = 0; row < HEIGHT; row++) {
+			for (int col = 0; col < WIDTH; col++) {
+				if (this.blackPieces[row][col]) {
+					result[i] = 1;
+				} else {
+					result[i] = 0;
+				}
+				i++;
+			}
+		}
+		return result;
+	}
+	
+	/**
 	 * @param col Column in which to move.
 	 * @return True if the column is not full.
 	 */
