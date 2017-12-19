@@ -1,5 +1,9 @@
 package connectfourdomain;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import connectfourdomain.C4Board.Winner;
 
 /**
@@ -54,9 +58,18 @@ public final class C4Player {
 	private static int minimaxMove(final C4Board board) {
 		final C4Board boardCopy = new C4Board(board);
 		
-		int bestMove = 0;
-		int maxValue = -1 * MAX_VALUE;
-		for (int col = 0; col < C4Board.WIDTH; col++) {
+		int bestMove = -1;
+		int maxValue = -1 * MAX_VALUE - 1;
+		
+		// randomize order columns are considered,
+		// so random choice will be made in case of equal values.
+		final List<Integer> cols = new ArrayList<Integer>();
+		for (int i = 0; i < C4Board.WIDTH; i++) {
+			cols.add(i);
+		}
+		Collections.shuffle(cols);
+		
+		for (final int col: cols) {
 			if (boardCopy.isLegalMove(col)) {
 				boardCopy.makeMove(col);
 				final int curValue =
