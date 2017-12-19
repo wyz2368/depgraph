@@ -5,10 +5,20 @@ import connectfourdomain.C4Board.Winner;
 // always plays as red and goes first
 public final class C4Player {
 
-	public static final int SEARCH_DEPTH = 4;
+	/**
+	 * Depth in plies to search.
+	 */
+	public static final int SEARCH_DEPTH = 5;
 	
+	/**
+	 * Value for winning the game.
+	 */
 	public static final int MAX_VALUE = 100;
 	
+	/**
+	 * @param board current board state.
+	 * @return The index of the column to move in.
+	 */
 	public static int getRedMove(final C4Board board) {
 		assert !board.isBlackTurn();
 		assert board.getWinner() == Winner.NONE;
@@ -20,15 +30,84 @@ public final class C4Player {
 			return C4Board.WIDTH / 2;
 		}
 		
-		
-		return 0;
+		return minimaxMove(board);
 	}
 	
-	private static int getMinimaxMove(final C4Board board) {
+	private static int minimaxMove(final C4Board board) {
 		final C4Board boardCopy = new C4Board(board);
 		
+		int bestMove = 0;
+		int maxValue = -1 * MAX_VALUE;
+		for (int col = 0; col < C4Board.WIDTH; col++) {
+			if (boardCopy.isLegalMove(col)) {
+				boardCopy.makeMove(col);
+				final int curValue =
+					minimaxMoveRecurse(boardCopy, SEARCH_DEPTH - 1);
+				boardCopy.undoMove(col);
+				if (curValue > maxValue) {
+					maxValue = curValue;
+					bestMove = col;
+				}
+			}
+		}
 		
-		return 0;
+		return bestMove;
+	}
+	
+	private static int minimaxMoveRecurse(
+		final C4Board board,
+		final int depthLeft
+	) {
+		final Winner winner = board.getWinner();
+		if (winner == Winner.RED) {
+			// game is over, red (self) wins
+			return MAX_VALUE;
+		}
+		if (winner == Winner.BLACK) {
+			// game is over, red (self) loses
+			return -1 * MAX_VALUE;
+		}
+		if (winner == Winner.DRAW) {
+			// game is over, tie
+			return 0;
+		}
+		if (depthLeft == 0) {
+			// max search depth reached.
+			// return evaluation benefit for red (self)
+			return boardValue(board);
+		}
+		if (board.isBlackTurn()) {
+			// minimizing player (opponent)
+			int minValue = MAX_VALUE;
+			for (int col = 0; col < C4Board.WIDTH; col++) {
+				if (board.isLegalMove(col)) {
+					board.makeMove(col);
+					final int curValue =
+						minimaxMoveRecurse(board, depthLeft - 1);
+					board.undoMove(col);
+					if (curValue < minValue) {
+						minValue = curValue;
+					}
+				}
+			}
+			return minValue;
+		}
+
+		// maximizing player (self)
+		
+		int maxValue = -1 * MAX_VALUE;
+		for (int col = 0; col < C4Board.WIDTH; col++) {
+			if (board.isLegalMove(col)) {
+				board.makeMove(col);
+				final int curValue =
+					minimaxMoveRecurse(board, depthLeft - 1);
+				board.undoMove(col);
+				if (curValue > maxValue) {
+					maxValue = curValue;
+				}
+			}
+		}
+		return maxValue;
 	}
 	
 	private static boolean isEmpty(
@@ -122,7 +201,7 @@ public final class C4Player {
 			int row = top;
 			int col = right;
 			int colorLength = 0;
-			while (row >= 0 && col < C4Board.WIDTH) {
+			while (row >= 0 && col >= 0) {
 				if (colorPieces[row][col]) {
 					colorLength++;
 					if (colorLength > result) {
@@ -132,7 +211,7 @@ public final class C4Player {
 					colorLength = 0;
 				}
 				
-				row++;
+				row--;
 				col--;
 			}
 		}

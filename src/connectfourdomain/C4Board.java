@@ -2,22 +2,49 @@ package connectfourdomain;
 
 public final class C4Board {
 
+	/**
+	 * Width of board.
+	 */
 	public static final int WIDTH = 7;
+	/**
+	 * Height of board.
+	 */
 	public static final int HEIGHT = 6;
+	/**
+	 * Number in a row needed to win.
+	 */
 	public static final int GOAL = 4;
 	
+	/**
+	 * Indicates who won, if anyone.
+	 */
 	public enum Winner {
-			BLACK,
+			/** Black won. */
+			BLACK, 
+			/** Red won. */
 			RED,
+			/** Board is full, but no one won. */
 			DRAW,
+			/** Board is not full, and no one won yet. */
 			NONE
 	}
-	
-	// red moves first
-	// each inner array is a row from left to right.
-	// outer arrays include rows from bottom to top.
+
+	/**
+	 * True if a red piece is there.
+	 * Outer array per row, from bottom to top.
+	 * Items from left to right.
+	 */
 	private final boolean[][] redPieces;
+	/**
+	 * True if a black piece is there.
+	 * Outer array per row, from bottom to top.
+	 * Items from left to right.
+	 */
 	private final boolean[][] blackPieces;
+	/**
+	 * True if it's black's turn.
+	 * Red moves first, so initially false.
+	 */
 	private boolean blackTurn;
 	
 	public C4Board() {
@@ -38,8 +65,14 @@ public final class C4Board {
 		this.blackTurn = toCopy.isBlackTurn();
 	}
 	
+	/**
+	 * @param col Column in which to move.
+	 * @return True if the column is not full.
+	 */
 	public boolean isLegalMove(final int col) {
-		assert col >= 0 && col < WIDTH;
+		if (col < 0 || col >= WIDTH) {
+			return false;
+		}
 		return !this.redPieces[HEIGHT - 1][col]
 			&& !this.blackPieces[HEIGHT - 1][col];
 	}
@@ -60,6 +93,22 @@ public final class C4Board {
 		
 		assert redCount == blackCount || redCount == blackCount + 1;
 		return redCount > blackCount;
+	}
+	
+	public void undoMove(final int col) {
+		assert col >= 0 && col < WIDTH;
+		for (int row = HEIGHT - 1; row >= 0; row--) {
+			if (this.redPieces[row][col]) {
+				this.redPieces[row][col] = false;
+				break;
+			}
+			if (this.blackPieces[row][col]) {
+				this.blackPieces[row][col] = false;
+				break;
+			}
+		}
+		this.blackTurn = !this.blackTurn;
+		assert shouldBeBlackTurn() == this.blackTurn;
 	}
 	
 	public void makeMove(final int col) {
@@ -137,7 +186,7 @@ public final class C4Board {
 					redLength = 0;
 					blackLength++;
 					if (blackLength == GOAL) {
-						return Winner.RED;
+						return Winner.BLACK;
 					}
 				} else {
 					redLength = 0;
@@ -161,7 +210,7 @@ public final class C4Board {
 					redLength = 0;
 					blackLength++;
 					if (blackLength == GOAL) {
-						return Winner.RED;
+						return Winner.BLACK;
 					}
 				} else {
 					redLength = 0;
@@ -190,7 +239,7 @@ public final class C4Board {
 					redLength = 0;
 					blackLength++;
 					if (blackLength == GOAL) {
-						return Winner.RED;
+						return Winner.BLACK;
 					}
 				} else {
 					redLength = 0;
@@ -210,7 +259,7 @@ public final class C4Board {
 			int col = right;
 			int redLength = 0;
 			int blackLength = 0;
-			while (row >= 0 && col < WIDTH) {
+			while (row >= 0 && col >= 0) {
 				if (this.redPieces[row][col]) {
 					redLength++;
 					if (redLength == GOAL) {
@@ -221,14 +270,14 @@ public final class C4Board {
 					redLength = 0;
 					blackLength++;
 					if (blackLength == GOAL) {
-						return Winner.RED;
+						return Winner.BLACK;
 					}
 				} else {
 					redLength = 0;
 					blackLength = 0;
 				}
 				
-				row++;
+				row--;
 				col--;
 			}
 		}
