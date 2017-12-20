@@ -14,11 +14,22 @@ import connectfourdomain.C4Board.Winner;
  * when the game begins.
  */
 public final class C4Player {
+	
+	/**
+	 * Maximum allowable search depth, based on
+	 * apparent time budget.
+	 */
+	public static final int MAX_SEARCH_DEPTH = 6;
 
+	/**
+	 * Default depth to search.
+	 */
+	private static final int DEFAULT_SEARCH_DEPTH = 5;
+	
 	/**
 	 * Depth in plies to search.
 	 */
-	public static final int SEARCH_DEPTH = 5;
+	private static int searchDepth = DEFAULT_SEARCH_DEPTH;
 	
 	/**
 	 * Value for winning the game.
@@ -30,6 +41,24 @@ public final class C4Player {
 	 */
 	private C4Player() {
 		// not called
+	}
+	
+	/**
+	 * @return the current search depth
+	 */
+	public static int getSearchDepth() {
+		return searchDepth;
+	}
+	
+	/**
+	 * @param aDepth the new search depth to use. Must be
+	 * in {1, . . ., MAX_SEARCH_DEPTH}.
+	 */
+	public static void setSearchDepth(final int aDepth) {
+		if (aDepth < 0 || aDepth > MAX_SEARCH_DEPTH) {
+			throw new IllegalArgumentException("" + aDepth);
+		}
+		searchDepth = aDepth;
 	}
 	
 	/**
@@ -71,9 +100,14 @@ public final class C4Player {
 		
 		for (final int col: cols) {
 			if (boardCopy.isLegalMove(col)) {
+				if (searchDepth == 0) {
+					// make first valid move in random order
+					return col;
+				}
+				
 				boardCopy.makeMove(col);
 				final int curValue =
-					minimaxMoveRecurse(boardCopy, SEARCH_DEPTH - 1);
+					minimaxMoveRecurse(boardCopy, searchDepth - 1);
 				boardCopy.undoMove(col);
 				if (curValue > maxValue) {
 					maxValue = curValue;

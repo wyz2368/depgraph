@@ -4,26 +4,30 @@ import java.util.Arrays;
 
 import connectfourdomain.C4Board;
 
-public class C4Episode {
+public final class C4Episode {
 
 	private final float[] input;
 	private double discReward;
 	private final int column;
 	private final int epoch;
+	private final int opponentLevel;
 	
 	public C4Episode(
 		final float[] aInput,
 		final double aDiscReward,
 		final int aColumn,
-		final int aEpoch
+		final int aEpoch,
+		final int aOpponentLevel
 	) {
 		assert aInput != null && aInput.length == C4SimpleNNPlayer.NUM_INPUTS;
 		assert aColumn >= 0 && aColumn < C4Board.WIDTH;
 		assert aEpoch >= 0;
+		assert aOpponentLevel >= 0;
 		this.input = aInput;
 		this.discReward = aDiscReward;
 		this.column = aColumn;
 		this.epoch = aEpoch;
+		this.opponentLevel = aOpponentLevel;
 	}
 
 	public float[] getInput() {
@@ -45,6 +49,10 @@ public class C4Episode {
 	public int getEpoch() {
 		return this.epoch;
 	}
+	
+	public int getOpponentLevel() {
+		return this.opponentLevel;
+	}
 
 	@Override
 	public String toString() {
@@ -52,6 +60,7 @@ public class C4Episode {
 			+ ",\ndiscReward=" + this.discReward 
 			+ ", \ncolumn=" + this.column
 			+ ", \nepoch=" + this.epoch
+			+ ", \nopponentLevel=" + this.opponentLevel
 			+ "]";
 	}
 }

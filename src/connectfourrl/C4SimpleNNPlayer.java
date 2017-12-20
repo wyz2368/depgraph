@@ -38,10 +38,10 @@ public final class C4SimpleNNPlayer {
 
 	public static void main(final String[] args) {
 		setupNet();
-		// playGameVsComputer();
-		addMemoryEpoch();
-		addMemoryEpoch();
-		final String outFileName = "epochData.csv";
+		// playGameVsComputer(0);
+		addMemoryEpoch(0);
+		addMemoryEpoch(1);
+		final String outFileName = "epochData_01.csv";
 		memory.recordToFile(outFileName);
 	}
 	
@@ -72,13 +72,23 @@ public final class C4SimpleNNPlayer {
         net.init();
 	}
 	
-	public static void addMemoryEpoch() {
+	public static void addMemoryEpoch(
+		final int opponentLevel
+	) {
 		final long startTime = System.currentTimeMillis();
 		
 		final int curEpoch = memory.maxEpoch() + 1;
 		final List<C4Episode> localMemory = new ArrayList<C4Episode>();
+		int wins = 0;
 		for (int game = 0; game < GAMES_PER_EPOCH; game++) {
-			localMemory.addAll(playGameForLearning(curEpoch));
+			localMemory.addAll(playGameForLearning(curEpoch, opponentLevel));
+			final double curReward =
+				localMemory.get(localMemory.size() - 1).getDiscReward();
+			if (curReward > 0.0) {
+				wins++;
+			} else if (curReward < 0.0) {
+				wins--;
+			}
 		}
 		memory.addEpoch(localMemory);
 		
@@ -87,12 +97,19 @@ public final class C4SimpleNNPlayer {
 		final double durationInSec = (endTime - startTime) / thousand;
 		System.out.println("Time taken for epoch: "
 			+ durationInSec + " seconds");
+		System.out.println(
+			"Sec per game: " + (durationInSec / GAMES_PER_EPOCH));
+		System.out.println("Win rate: " + (wins * 1.0 / GAMES_PER_EPOCH));
 	}
 	
-	public static List<C4Episode> playGameForLearning(final int epoch) {
+	public static List<C4Episode> playGameForLearning(
+		final int epoch,
+		final int opponentSearchDepth
+	) {
 		final List<C4Episode> result = new ArrayList<C4Episode>();
 		
 		final C4Board board = new C4Board();
+		C4Player.setSearchDepth(opponentSearchDepth);
 		while (board.getWinner() == Winner.NONE) {
 			if (board.isBlackTurn()) {
 				// NN will play next.
@@ -105,7 +122,7 @@ public final class C4SimpleNNPlayer {
 				
 				// initialize all episodes with 0 reward
 				final C4Episode episode = new C4Episode(
-					nnInput, 0.0, col, epoch);
+					nnInput, 0.0, col, epoch, C4Player.getSearchDepth());
 				result.add(episode);
 				
 				board.makeMove(col);
@@ -134,8 +151,11 @@ public final class C4SimpleNNPlayer {
 		return result;
 	}
 	
-	public static void playGameVsComputer() {
+	public static void playGameVsComputer(
+		final int opponentSearchDepth
+	) {
 		final C4Board board = new C4Board();
+		C4Player.setSearchDepth(opponentSearchDepth);
 		while (board.getWinner() == Winner.NONE) {
 			System.out.println("\n" + board + "\n");
 			if (board.isBlackTurn()) {

@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class C4Memory {
+public final class C4Memory {
 
 	public static final int MAX_EPOCHS = 5;
 	
@@ -77,7 +77,8 @@ public class C4Memory {
 		    		}
 		    	}
 		    	builder.append(episode.getColumn()).append(',');
-		    	builder.append(episode.getDiscReward()).append('\n');
+		    	builder.append(episode.getDiscReward()).append(',');
+		    	builder.append(episode.getOpponentLevel()).append('\n');
 		    	writer.write(builder.toString());
 		    }
 		    writer.close();
