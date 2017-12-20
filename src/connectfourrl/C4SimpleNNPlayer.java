@@ -66,7 +66,7 @@ public final class C4SimpleNNPlayer {
                 .weightInit(WeightInit.XAVIER)
                 .build())
             .layer(1, new OutputLayer
-        		.Builder(LossFunction.NEGATIVELOGLIKELIHOOD)
+        		.Builder(new PolicyGradientLoss())
                 .weightInit(WeightInit.XAVIER)
                 .activation(Activation.SOFTMAX).weightInit(WeightInit.XAVIER)
                 .nIn(NUM_HIDDEN_NODES).nOut(C4Board.WIDTH).build())
