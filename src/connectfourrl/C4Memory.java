@@ -8,7 +8,11 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
+import org.nd4j.linalg.factory.Nd4j;
+
+import connectfourdomain.C4Board;
 
 public final class C4Memory {
 
@@ -25,6 +29,10 @@ public final class C4Memory {
 		if (epoch.get(0).getEpoch() <= maxEpoch()) {
 			throw new IllegalArgumentException("duplicate addition");
 		}
+		if (!this.isEmpty() 
+			&& (epoch.get(0).getOpponentLevel() != opponentLevel())) {
+			throw new IllegalStateException("mixing opponent level data");
+		}
 		if (maxEpoch() - minEpoch() == MAX_EPOCHS - 1) {
 			dropOldestEpoch();
 		}
@@ -33,15 +41,44 @@ public final class C4Memory {
 		this.episodes.addAll(epoch);
 	}
 	
+	public int opponentLevel() {
+		if (this.isEmpty()) {
+			return -1;
+		}
+		return this.episodes.get(0).getOpponentLevel();
+	}
+	
+	public void clear() {
+		this.episodes.clear();
+	}
+	
+	// features will be an N * 84 INDArray,
+	// where N is the number of training examples
+	// labels will be an N * 7 INDArray,
+	// where N is the number of training examples
 	public DataSet getDataSetWithMasks() {
-		// features will be an N * 84 INDArray,
-		// where N is the number of training examples
-		// labels will be an N * 7 INDArray,
-		// where N is the number of training examples
-		// DataSet(INDArray features, INDArray labels,
-		//     INDArray featuresMask, INDArray labelsMask)
-		// TODO
-		return null;
+		final float[][] inputs =
+			new float[this.episodes.size()][C4SimpleNNPlayer.NUM_INPUTS];
+		final float[][] labels =
+			new float[this.episodes.size()][C4Board.WIDTH];
+		final float[][] labelsMask =
+			new float[this.episodes.size()][C4Board.WIDTH];
+		
+		for (int i = 0; i < this.episodes.size(); i++) {
+			final C4Episode episode = this.episodes.get(i);
+			inputs[i] = episode.getInput();
+			labels[i][episode.getColumn()] = 1.0f;
+			labelsMask[i][episode.getColumn()] = (float) episode.getAdvantage();
+		}
+		
+		final INDArray inputsIND = Nd4j.create(inputs);
+		final INDArray labelsIND = Nd4j.create(labels);
+		final INDArray featuresMaskIND =
+			Nd4j.ones(this.episodes.size(), C4SimpleNNPlayer.NUM_INPUTS);
+		final INDArray labelsMaskIND = Nd4j.create(labelsMask);
+		
+		return new DataSet(
+			inputsIND, labelsIND, featuresMaskIND, labelsMaskIND);
 	}
 	
 	public boolean isEmpty() {
@@ -145,6 +182,7 @@ public final class C4Memory {
 			+ "\nepisodeCount = " + this.episodes.size()
 			+ "\nminEpoch = " + minEpoch()
 			+ "\nmaxEpoch = " + maxEpoch()
+			+ "\nopponentLevel = " + opponentLevel()
 			+ "\n]";
 	}
 }
