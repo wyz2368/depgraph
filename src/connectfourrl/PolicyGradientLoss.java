@@ -1,12 +1,16 @@
 package connectfourrl;
 
 import org.nd4j.linalg.activations.IActivation;
+import org.nd4j.linalg.activations.impl.ActivationSoftmax;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.lossfunctions.ILossFunction;
 import org.nd4j.linalg.ops.transforms.Transforms;
 import org.nd4j.linalg.primitives.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+
+import org.nd4j.linalg.lossfunctions.LossUtil;
 
 /**
  * Created by susaneraly on 11/8/16.
@@ -44,19 +48,27 @@ public final class PolicyGradientLoss implements ILossFunction {
     private static INDArray scoreArray(
 		final INDArray labels, final INDArray preOutput, 
 		final IActivation activationFn, final INDArray mask) {
-        INDArray scoreArr;
-        // This is the output of the neural network, 
-        // the y_hat in the notation above
-        //To obtain y_hat: pre-output is transformed by the 
-        // activation function to give the output of the neural network
-        INDArray output = activationFn.getActivation(preOutput.dup(), true);
-        //The score is calculated as the sum of (y-y_hat)^2 + |y - y_hat|
-        INDArray yMinusyHat = Transforms.abs(labels.sub(output));
-        scoreArr = yMinusyHat.mul(yMinusyHat);
-        scoreArr.addi(yMinusyHat);
-        if (mask != null) {
-            scoreArr.muliColumnVector(mask);
+        if (labels.size(1) != preOutput.size(1)) {
+            throw new IllegalArgumentException(
+                "Labels array numColumns (size(1) = " 
+        		+ labels.size(1) + ") does not match output layer"
+                + " number of outputs (nOut = " + preOutput.size(1) + ") ");
+
         }
+
+        INDArray output = activationFn.getActivation(preOutput.dup(), true);
+        INDArray scoreArr = Transforms.log(output, false).muli(labels);
+
+        //Weighted loss function
+        if (mask != null) {
+            if (mask.length() != scoreArr.size(1)) {
+                throw new IllegalStateException(
+        		"Weights vector (length " + mask.length()
+                + ") does not match output.size(1)=" + preOutput.size(1));
+            }
+            scoreArr.muliRowVector(mask);
+        }
+
         return scoreArr;
     }
 
@@ -99,40 +111,63 @@ public final class PolicyGradientLoss implements ILossFunction {
     Needs modification depending on your loss function
         Compute the gradient wrt to the preout 
         (which is the input to the final layer of the neural net)
-        Use the chain rule
-        In this case L = (y - yhat)^2 + |y - yhat|
-        dL/dyhat = -2*(y-yhat) - sign(y-yhat), 
-        sign of y - yhat = +1 if y-yhat>= 0 else -1
-        dyhat/dpreout = d(Activation(preout))/dpreout = Activation'(preout)
-        dL/dpreout = dL/dyhat * dyhat/dpreout
     */
     // TODO
     @Override
     public INDArray computeGradient(
 		final INDArray labels, final INDArray preOutput, 
 		final IActivation activationFn, final INDArray mask) {
-        INDArray output = activationFn.getActivation(preOutput.dup(), true);
-        /*
-        //NOTE: There are many ways to do this same set of operations in nd4j
-        //The following is the most readable for the 
-        // sake of this example, not necessarily the fastest
-        //Refer to the Implementation of LossL1 and
-         LossL2 for more efficient ways
-        */
-        INDArray yMinusyHat = labels.sub(output);
-        //d(L)/d(yhat) -> this is the line 
-        // that will change with your loss function
-        INDArray dldyhat = yMinusyHat.mul(-2).sub(Transforms.sign(yMinusyHat)); 
+        if (labels.size(1) != preOutput.size(1)) {
+            throw new IllegalArgumentException(
+                "Labels array numColumns (size(1) = " 
+        		+ labels.size(1) + ") does not match output layer"
+                + " number of outputs (nOut = " + preOutput.size(1) + ") ");
 
-        //Everything below remains the same
-        INDArray dLdPreOut = 
-    		activationFn.backprop(preOutput.dup(), dldyhat).getFirst();
-        //multiply with masks, always
-        if (mask != null) {
-            dLdPreOut.muliColumnVector(mask);
+        }
+        INDArray grad;
+        INDArray output = activationFn.getActivation(preOutput.dup(), true);
+
+        if (activationFn instanceof ActivationSoftmax) {
+            if (mask != null && LossUtil.isPerOutputMasking(output, mask)) {
+                throw new UnsupportedOperationException(
+            		"Per output masking for MCXENT + softmax: not supported");
+            }
+
+            //Weighted loss function
+            if (mask != null) {
+                if (mask.length() != output.size(1)) {
+                    throw new IllegalStateException(
+            		"Weights vector (length " + mask.length()
+                    + ") does not match output.size(1)=" + output.size(1));
+                }
+                INDArray temp = labels.mulRowVector(mask);
+                INDArray col = temp.sum(1);
+                grad = output.mulColumnVector(col).sub(temp);
+            } else {
+                grad = output.subi(labels);
+            }
+        } else {
+            INDArray dLda = output.rdivi(labels).negi();
+
+            grad = activationFn.backprop(preOutput, dLda).getFirst(); 
+
+            //Weighted loss function
+            if (mask != null) {
+                if (mask.length() != output.size(1)) {
+                    throw new IllegalStateException(
+                		"Weights vector (length " + mask.length()
+                        + ") does not match output.size(1)=" + output.size(1));
+                }
+                grad.muliRowVector(mask);
+            }
         }
 
-        return dLdPreOut;
+        //Loss function with masking
+        if (mask != null) {
+            LossUtil.applyMask(grad, mask);
+        }
+
+        return grad;
     }
 
     //remains the same for a custom loss function
