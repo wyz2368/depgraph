@@ -73,12 +73,20 @@ public final class C4SimpleNNPlayer {
 	}
 	
 	public static void addMemoryEpoch() {
+		final long startTime = System.currentTimeMillis();
+		
 		final int curEpoch = memory.maxEpoch() + 1;
 		final List<C4Episode> localMemory = new ArrayList<C4Episode>();
 		for (int game = 0; game < GAMES_PER_EPOCH; game++) {
 			localMemory.addAll(playGameForLearning(curEpoch));
 		}
 		memory.addEpoch(localMemory);
+		
+		long endTime = System.currentTimeMillis();
+		final double thousand = 1000.0;
+		final double durationInSec = (endTime - startTime) / thousand;
+		System.out.println("Time taken for epoch: "
+			+ durationInSec + " seconds");
 	}
 	
 	public static List<C4Episode> playGameForLearning(final int epoch) {
