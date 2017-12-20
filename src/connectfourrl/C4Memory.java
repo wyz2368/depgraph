@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,38 @@ public final class C4Memory {
 		if (maxEpoch() - minEpoch() == MAX_EPOCHS - 1) {
 			dropOldestEpoch();
 		}
+		
+		setAdvantages(epoch);
 		this.episodes.addAll(epoch);
+	}
+	
+	private static void setAdvantages(final List<C4Episode> epoch) {
+		final double meanReward = meanReward(epoch);
+		final double stdReward = stdReward(epoch);
+		for (final C4Episode episode: epoch) {
+			final double reward = episode.getDiscReward();
+			final double advantage = (reward - meanReward) / stdReward;
+			episode.setAdvantage(advantage);
+		}
+	}
+	
+	private static double stdReward(final List<C4Episode> epoch) {
+		final double meanReward = meanReward(epoch);
+		double sumSquaredDiff = 0.0;
+		for (final C4Episode episode: epoch) {
+			sumSquaredDiff +=
+				Math.pow(episode.getDiscReward() - meanReward, 2.0);
+		}
+		final double meanSquaredDiff = sumSquaredDiff / epoch.size();
+		return Math.sqrt(meanSquaredDiff);
+	}
+	
+	private static double meanReward(final List<C4Episode> epoch) {
+		double totalReward = 0.0;
+		for (final C4Episode episode: epoch) {
+			totalReward += episode.getDiscReward();
+		}
+		return totalReward / epoch.size();
 	}
 	
 	private void dropOldestEpoch() {
@@ -60,6 +92,8 @@ public final class C4Memory {
 			throw new IllegalArgumentException();
 		}
 		
+		// up to 4 decimals in reward
+		final DecimalFormat fmt = new DecimalFormat("#.####"); 
 	    try {
 		    final File file = new File(fileName);
 			file.createNewFile();
@@ -77,7 +111,8 @@ public final class C4Memory {
 		    		}
 		    	}
 		    	builder.append(episode.getColumn()).append(',');
-		    	builder.append(episode.getDiscReward()).append(',');
+		    	builder.append(fmt.format(episode.getDiscReward())).append(',');
+		    	builder.append(fmt.format(episode.getAdvantage())).append(',');
 		    	builder.append(episode.getOpponentLevel()).append('\n');
 		    	writer.write(builder.toString());
 		    }

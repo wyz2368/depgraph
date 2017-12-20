@@ -32,6 +32,8 @@ public final class C4SimpleNNPlayer {
 	
 	private static final double DISC_FACTOR = 0.99;
 	
+	private static final double REGULARIZER = 0.0001;
+	
 	private static MultiLayerNetwork net;
 	
 	private static final C4Memory memory = new C4Memory();
@@ -40,7 +42,7 @@ public final class C4SimpleNNPlayer {
 		setupNet();
 		// playGameVsComputer(0);
 		addMemoryEpoch(0);
-		addMemoryEpoch(1);
+		addMemoryEpoch(0);
 		final String outFileName = "epochData_01.csv";
 		memory.recordToFile(outFileName);
 	}
@@ -56,6 +58,8 @@ public final class C4SimpleNNPlayer {
             .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
             .learningRate(LEARNING_RATE)
             .updater(Updater.NESTEROVS)
+            .updater(Updater.ADAM)
+            .regularization(true).l2(REGULARIZER)
             .list()
             .layer(0, new DenseLayer.Builder().nIn(NUM_INPUTS).
         		nOut(NUM_HIDDEN_NODES)

@@ -8,6 +8,7 @@ public final class C4Episode {
 
 	private final float[] input;
 	private double discReward;
+	private double advantage;
 	private final int column;
 	private final int epoch;
 	private final int opponentLevel;
@@ -25,6 +26,7 @@ public final class C4Episode {
 		assert aOpponentLevel >= 0;
 		this.input = aInput;
 		this.discReward = aDiscReward;
+		this.advantage = 0.0;
 		this.column = aColumn;
 		this.epoch = aEpoch;
 		this.opponentLevel = aOpponentLevel;
@@ -32,6 +34,14 @@ public final class C4Episode {
 
 	public float[] getInput() {
 		return this.input;
+	}
+	
+	public double getAdvantage() {
+		return this.advantage;
+	}
+	
+	public void setAdvantage(final double aAdvantage) {
+		this.advantage = aAdvantage;
 	}
 
 	public double getDiscReward() {
@@ -58,6 +68,7 @@ public final class C4Episode {
 	public String toString() {
 		return "C4Episode [\ninput=" + Arrays.toString(this.input)
 			+ ",\ndiscReward=" + this.discReward 
+			+ ",\nadvantage=" + this.advantage 
 			+ ", \ncolumn=" + this.column
 			+ ", \nepoch=" + this.epoch
 			+ ", \nopponentLevel=" + this.opponentLevel
