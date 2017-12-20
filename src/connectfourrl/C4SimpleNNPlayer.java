@@ -1,5 +1,8 @@
 package connectfourrl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
@@ -19,43 +22,108 @@ import connectfourdomain.C4Board.Winner;
 
 public final class C4SimpleNNPlayer {
 	
+	private static final int NUM_HIDDEN_NODES = 200;
+	
+	private static final double LEARNING_RATE = 0.0001;
+	
+	public static final int NUM_INPUTS = 84;
+	
+	private static final int GAMES_PER_EPOCH = 600;
+	
+	private static final double DISC_FACTOR = 0.99;
+	
 	private static MultiLayerNetwork net;
+	
+	private static final C4Memory memory = new C4Memory();
 
 	public static void main(final String[] args) {
 		setupNet();
-		playGameVsComputer();
+		// playGameVsComputer();
+		addMemoryEpoch();
+		addMemoryEpoch();
+		final String outFileName = "epochData.csv";
+		memory.recordToFile(outFileName);
 	}
 	
 	private C4SimpleNNPlayer() {
 		// not called
 	}
 	
-	public static void setupNet() {
-		final double learningRate = 0.0001;
-        final int numInputs = 84;
-        final int numHiddenNodes = 200;
-        final int numOutputs = 7;
-        
+	public static void setupNet() {        
         final MultiLayerConfiguration conf =
     		new NeuralNetConfiguration.Builder()
             .iterations(1)
             .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-            .learningRate(learningRate)
+            .learningRate(LEARNING_RATE)
             .updater(Updater.NESTEROVS)
             .list()
-            .layer(0, new DenseLayer.Builder().nIn(numInputs).
-        		nOut(numHiddenNodes)
+            .layer(0, new DenseLayer.Builder().nIn(NUM_INPUTS).
+        		nOut(NUM_HIDDEN_NODES)
                 .weightInit(WeightInit.XAVIER)
                 .build())
             .layer(1, new OutputLayer
         		.Builder(LossFunction.NEGATIVELOGLIKELIHOOD)
                 .weightInit(WeightInit.XAVIER)
                 .activation(Activation.SOFTMAX).weightInit(WeightInit.XAVIER)
-                .nIn(numHiddenNodes).nOut(numOutputs).build())
+                .nIn(NUM_HIDDEN_NODES).nOut(C4Board.WIDTH).build())
             .pretrain(false).backprop(true).build();
         
         net = new MultiLayerNetwork(conf);
         net.init();
+	}
+	
+	public static void addMemoryEpoch() {
+		final int curEpoch = memory.maxEpoch() + 1;
+		final List<C4Episode> localMemory = new ArrayList<C4Episode>();
+		for (int game = 0; game < GAMES_PER_EPOCH; game++) {
+			localMemory.addAll(playGameForLearning(curEpoch));
+		}
+		memory.addEpoch(localMemory);
+	}
+	
+	public static List<C4Episode> playGameForLearning(final int epoch) {
+		final List<C4Episode> result = new ArrayList<C4Episode>();
+		
+		final C4Board board = new C4Board();
+		while (board.getWinner() == Winner.NONE) {
+			if (board.isBlackTurn()) {
+				// NN will play next.
+				final float[] nnInput = board.getAsFloatArray();
+				
+				int col = getNNMove(board);
+				while (!board.isLegalMove(col)) {
+					col = getNNMove(board);
+				}
+				
+				// initialize all episodes with 0 reward
+				final C4Episode episode = new C4Episode(
+					nnInput, 0.0, col, epoch);
+				result.add(episode);
+				
+				board.makeMove(col);
+			} else {
+				board.makeMove(C4Player.getRedMove(board));
+			}
+		}
+		
+		// set the correct discounted rewards.
+		// 0 reward for draws
+		double reward = 0.0;
+		if (board.getWinner() == Winner.BLACK) {
+			// +1 reward for winning
+			reward = 1.0;
+		} else if (board.getWinner() == Winner.RED) {
+			// -1 reward for losing
+			reward = -1.0;
+		}
+		for (int i = result.size() - 1; i >= 0; i--) {
+			// discount rewards exponentially for
+			// previous time steps.
+			result.get(i).setDiscReward(reward);
+			reward *= DISC_FACTOR;
+		}
+		
+		return result;
 	}
 	
 	public static void playGameVsComputer() {
