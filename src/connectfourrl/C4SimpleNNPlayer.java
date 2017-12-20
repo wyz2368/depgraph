@@ -22,11 +22,11 @@ import connectfourdomain.C4Board.Winner;
 
 public final class C4SimpleNNPlayer {
 	
+	public static final int NUM_INPUTS = 84;
+	
 	private static final int NUM_HIDDEN_NODES = 200;
 	
 	private static final double LEARNING_RATE = 0.0001;
-	
-	public static final int NUM_INPUTS = 84;
 	
 	private static final int GAMES_PER_EPOCH = 600;
 	
@@ -34,16 +34,16 @@ public final class C4SimpleNNPlayer {
 	
 	private static final double REGULARIZER = 0.0001;
 	
+	private static final C4Memory memory = new C4Memory();
+	
 	private static MultiLayerNetwork net;
 	
-	private static final C4Memory memory = new C4Memory();
-
 	public static void main(final String[] args) {
 		setupNet();
 		// playGameVsComputer(0);
 		addMemoryEpoch(0);
 		addMemoryEpoch(0);
-		final String outFileName = "epochData_01.csv";
+		final String outFileName = "epochData.csv";
 		memory.recordToFile(outFileName);
 	}
 	
@@ -74,6 +74,19 @@ public final class C4SimpleNNPlayer {
         
         net = new MultiLayerNetwork(conf);
         net.init();
+	}
+	
+	public static void trainFromMemory() {
+		if (memory.isEmpty()) {
+			throw new IllegalStateException();
+		}
+		
+		/*
+		 * Loss function:
+		 * sum over episodes: advantage * log-likelihood of action taken
+		 */
+		
+		// TODO
 	}
 	
 	public static void addMemoryEpoch(

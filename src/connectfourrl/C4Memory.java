@@ -31,6 +31,10 @@ public final class C4Memory {
 		this.episodes.addAll(epoch);
 	}
 	
+	public boolean isEmpty() {
+		return this.episodes.isEmpty();
+	}
+	
 	private static void setAdvantages(final List<C4Episode> epoch) {
 		final double meanReward = meanReward(epoch);
 		final double stdReward = stdReward(epoch);
