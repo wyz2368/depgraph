@@ -13,8 +13,8 @@ import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.factory.Nd4j;
-import org.nd4j.linalg.lossfunctions.LossFunctions.LossFunction;
 
 import connectfourdomain.C4Board;
 import connectfourdomain.C4Player;
@@ -43,8 +43,11 @@ public final class C4SimpleNNPlayer {
 		// playGameVsComputer(0);
 		addMemoryEpoch(0);
 		addMemoryEpoch(0);
-		final String outFileName = "epochData.csv";
-		memory.recordToFile(outFileName);
+		// final String outFileName = "epochData.csv";
+		// memory.recordToFile(outFileName);
+		trainFromMemory();
+		addMemoryEpoch(0);
+		addMemoryEpoch(0);
 	}
 	
 	private C4SimpleNNPlayer() {
@@ -85,8 +88,8 @@ public final class C4SimpleNNPlayer {
 		 * Loss function:
 		 * sum over episodes: advantage * log-likelihood of action taken
 		 */
-		
-		// TODO
+		final DataSet ds = memory.getDataSetWithMasks();
+		net.fit(ds);
 	}
 	
 	public static void addMemoryEpoch(

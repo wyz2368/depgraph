@@ -8,6 +8,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nd4j.linalg.dataset.DataSet;
+
 public final class C4Memory {
 
 	public static final int MAX_EPOCHS = 5;
@@ -29,6 +31,17 @@ public final class C4Memory {
 		
 		setAdvantages(epoch);
 		this.episodes.addAll(epoch);
+	}
+	
+	public DataSet getDataSetWithMasks() {
+		// features will be an N * 84 INDArray,
+		// where N is the number of training examples
+		// labels will be an N * 7 INDArray,
+		// where N is the number of training examples
+		// DataSet(INDArray features, INDArray labels,
+		//     INDArray featuresMask, INDArray labelsMask)
+		// TODO
+		return null;
 	}
 	
 	public boolean isEmpty() {

@@ -46,14 +46,15 @@ public final class PolicyGradientLoss implements ILossFunction {
      */
     // TODO
     private static INDArray scoreArray(
-		final INDArray labels, final INDArray preOutput, 
-		final IActivation activationFn, final INDArray mask) {
+		final INDArray labels,
+		final INDArray preOutput, 
+		final IActivation activationFn,
+		final INDArray mask) {
         if (labels.size(1) != preOutput.size(1)) {
             throw new IllegalArgumentException(
                 "Labels array numColumns (size(1) = " 
         		+ labels.size(1) + ") does not match output layer"
                 + " number of outputs (nOut = " + preOutput.size(1) + ") ");
-
         }
 
         INDArray output = activationFn.getActivation(preOutput.dup(), true);
@@ -93,18 +94,12 @@ public final class PolicyGradientLoss implements ILossFunction {
         return score;
     }
 
-    /*
-    Remains the same for all loss functions
-    Compute Score computes the loss function for many datapoints.
-    The loss for a single datapoint is the loss summed over all output features.
-    Returns an array that is #of samples x size of the output feature
-     */
     @Override
     public INDArray computeScoreArray(
 		final INDArray labels, final INDArray preOutput, 
 		final IActivation activationFn, final INDArray mask) {
         INDArray scoreArr = scoreArray(labels, preOutput, activationFn, mask);
-        return scoreArr.sum(1);
+        return scoreArr.sum(1).muli(-1);
     }
 
     /*
