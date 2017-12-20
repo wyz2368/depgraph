@@ -12,9 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import org.nd4j.linalg.lossfunctions.LossUtil;
 
-/**
- * Created by susaneraly on 11/8/16.
- */
 @SuppressWarnings("serial")
 public final class PolicyGradientLoss implements ILossFunction {
 
@@ -44,7 +41,6 @@ public final class PolicyGradientLoss implements ILossFunction {
         neural network - activationFn
         the mask - (if there is a) mask associated with the label
      */
-    // TODO
     private static INDArray scoreArray(
 		final INDArray labels,
 		final INDArray preOutput, 
@@ -62,12 +58,14 @@ public final class PolicyGradientLoss implements ILossFunction {
 
         //Weighted loss function
         if (mask != null) {
+        	/*
             if (mask.length() != scoreArr.size(1)) {
                 throw new IllegalStateException(
         		"Weights vector (length " + mask.length()
                 + ") does not match output.size(1)=" + preOutput.size(1));
             }
-            scoreArr.muliRowVector(mask);
+            */
+            scoreArr = scoreArr.muli(mask);
         }
 
         return scoreArr;
@@ -99,7 +97,7 @@ public final class PolicyGradientLoss implements ILossFunction {
 		final INDArray labels, final INDArray preOutput, 
 		final IActivation activationFn, final INDArray mask) {
         INDArray scoreArr = scoreArray(labels, preOutput, activationFn, mask);
-        return scoreArr.sum(1).muli(-1);
+        return scoreArr.sum(1);
     }
 
     /*
@@ -107,7 +105,6 @@ public final class PolicyGradientLoss implements ILossFunction {
         Compute the gradient wrt to the preout 
         (which is the input to the final layer of the neural net)
     */
-    // TODO
     @Override
     public INDArray computeGradient(
 		final INDArray labels, final INDArray preOutput, 
@@ -123,19 +120,23 @@ public final class PolicyGradientLoss implements ILossFunction {
         INDArray output = activationFn.getActivation(preOutput.dup(), true);
 
         if (activationFn instanceof ActivationSoftmax) {
-            if (mask != null && LossUtil.isPerOutputMasking(output, mask)) {
+            /*
+        	if (mask != null && LossUtil.isPerOutputMasking(output, mask)) {
                 throw new UnsupportedOperationException(
             		"Per output masking for MCXENT + softmax: not supported");
             }
+            */
 
             //Weighted loss function
             if (mask != null) {
+            	/*
                 if (mask.length() != output.size(1)) {
                     throw new IllegalStateException(
             		"Weights vector (length " + mask.length()
                     + ") does not match output.size(1)=" + output.size(1));
                 }
-                INDArray temp = labels.mulRowVector(mask);
+                */
+                INDArray temp = labels.muli(mask);
                 INDArray col = temp.sum(1);
                 grad = output.mulColumnVector(col).sub(temp);
             } else {

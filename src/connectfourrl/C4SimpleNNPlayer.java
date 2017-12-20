@@ -1,5 +1,6 @@
 package connectfourrl;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,28 +27,41 @@ public final class C4SimpleNNPlayer {
 	
 	private static final int NUM_HIDDEN_NODES = 200;
 	
-	private static final double LEARNING_RATE = 0.0001;
+	private static final double LEARNING_RATE = 0.1;
 	
 	private static final int GAMES_PER_EPOCH = 600;
 	
 	private static final double DISC_FACTOR = 0.99;
 	
-	private static final double REGULARIZER = 0.0001;
+	private static final double REGULARIZER = 0.01;
 	
 	private static final C4Memory memory = new C4Memory();
 	
 	private static MultiLayerNetwork net;
 	
 	public static void main(final String[] args) {
-		setupNet();
+		trainRounds(10, 1);
+		
 		// playGameVsComputer(0);
-		addMemoryEpoch(0);
-		addMemoryEpoch(0);
 		// final String outFileName = "epochData.csv";
 		// memory.recordToFile(outFileName);
-		trainFromMemory();
-		addMemoryEpoch(0);
-		addMemoryEpoch(0);
+	}
+	
+	public static void trainRounds(
+		final int rounds,
+		final int epochsPerRound
+	) {
+		if (rounds < 1 || epochsPerRound < 1) {
+			throw new IllegalArgumentException();
+		}
+
+		setupNet();
+		for (int i = 0; i < rounds; i++) {
+			for (int j = 0; j < epochsPerRound; j++) {
+				addMemoryEpoch(0);
+			}
+			trainFromMemory();
+		}
 	}
 	
 	private C4SimpleNNPlayer() {
@@ -61,7 +75,6 @@ public final class C4SimpleNNPlayer {
             .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
             .learningRate(LEARNING_RATE)
             .updater(Updater.NESTEROVS)
-            .updater(Updater.ADAM)
             .regularization(true).l2(REGULARIZER)
             .list()
             .layer(0, new DenseLayer.Builder().nIn(NUM_INPUTS).
@@ -88,8 +101,16 @@ public final class C4SimpleNNPlayer {
 		 * Loss function:
 		 * sum over episodes: advantage * log-likelihood of action taken
 		 */
+		final long startTime = System.currentTimeMillis();
+		
 		final DataSet ds = memory.getDataSetWithMasks();
 		net.fit(ds);
+		
+		long endTime = System.currentTimeMillis();
+		final double thousand = 1000.0;
+		final double durationInSec = (endTime - startTime) / thousand;
+		System.out.println("Time taken for training: "
+			+ durationInSec + " seconds");
 	}
 	
 	public static void addMemoryEpoch(
@@ -115,11 +136,13 @@ public final class C4SimpleNNPlayer {
 		long endTime = System.currentTimeMillis();
 		final double thousand = 1000.0;
 		final double durationInSec = (endTime - startTime) / thousand;
+		final DecimalFormat fmt = new DecimalFormat("#.###"); 
 		System.out.println("Time taken for epoch: "
-			+ durationInSec + " seconds");
+			+ fmt.format(durationInSec) + " seconds");
 		System.out.println(
-			"Sec per game: " + (durationInSec / GAMES_PER_EPOCH));
-		System.out.println("Win rate: " + (wins * 1.0 / GAMES_PER_EPOCH));
+			"Sec per game: " + fmt.format((durationInSec / GAMES_PER_EPOCH)));
+		System.out.println("Win rate: "
+			+ fmt.format((wins * 1.0 / GAMES_PER_EPOCH)));
 	}
 	
 	public static List<C4Episode> playGameForLearning(

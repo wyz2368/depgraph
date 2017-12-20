@@ -16,7 +16,7 @@ import connectfourdomain.C4Board;
 
 public final class C4Memory {
 
-	public static final int MAX_EPOCHS = 5;
+	public static final int MAX_EPOCHS = 10;
 	
 	private final List<C4Episode> episodes = new ArrayList<C4Episode>();
 
@@ -73,12 +73,10 @@ public final class C4Memory {
 		
 		final INDArray inputsIND = Nd4j.create(inputs);
 		final INDArray labelsIND = Nd4j.create(labels);
-		final INDArray featuresMaskIND =
-			Nd4j.ones(this.episodes.size(), C4SimpleNNPlayer.NUM_INPUTS);
 		final INDArray labelsMaskIND = Nd4j.create(labelsMask);
 		
 		return new DataSet(
-			inputsIND, labelsIND, featuresMaskIND, labelsMaskIND);
+			inputsIND, labelsIND, null, labelsMaskIND);
 	}
 	
 	public boolean isEmpty() {
