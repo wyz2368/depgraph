@@ -96,7 +96,27 @@ public final class C4Memory {
 	// where N is the number of training examples
 	// labels will be an N * 7 INDArray,
 	// where N is the number of training examples
+	/**
+	 * Use bootstrapping to sample a dataset for 
+	 * training in a format suitable for
+	 * DeepLearning4J.
+	 * 
+	 * A set of DATASET_SIZE episodes will be sampled
+	 * with replacement from the memory, in arbitrary
+	 * order.
+	 * 
+	 * The "output mask" field of the DataSet is
+	 * overloaded with a an INDArray of arbitrary
+	 * real numbers, containing the advantage value
+	 * or each episode, which will be multiplied by
+	 * the log likelihood when the gradient is
+	 * taken.
+	 * 
+	 * @return a DataSet for DeepLearning4J to use
+	 * for training.
+	 */
 	public DataSet getDataSetWithMasks() {
+		assert !isEmpty();
 		final float[][] inputs =
 			new float[DATASET_SIZE][C4SimpleNNPlayer.NUM_INPUTS];
 		final float[][] labels =
@@ -125,10 +145,24 @@ public final class C4Memory {
 			inputsIND, labelsIND, null, labelsMaskIND);
 	}
 	
+	/**
+	 * @return true if no episodes are in memory
+	 */
 	public boolean isEmpty() {
 		return this.episodes.isEmpty();
 	}
 	
+	/**
+	 * Set the advantage of each episode to the correct value, based on
+	 * the distribution of rewards in the epoch.
+	 * The advantage of an episode is:
+	 * 		a_i <- (r_i - \mu) \sigma,
+	 * where a_i is the episode's advantage, r_i is the episode's
+	 * discounted reward, \mu is the sample mean reward of the epoch,
+	 * and \sigma is the sample standard deviation of rewards in the epoch.
+	 * @param epoch the epoch to use for normalization. its advantage
+	 * values will be updated.
+	 */
 	private static void setAdvantages(final List<C4Episode> epoch) {
 		final double meanReward = meanReward(epoch);
 		final double stdReward = stdReward(epoch);
@@ -139,6 +173,11 @@ public final class C4Memory {
 		}
 	}
 	
+	/**
+	 * @param epoch an epoch of episodes
+	 * @return the sample standard deviation of rewards in the
+	 * epoch
+	 */
 	private static double stdReward(final List<C4Episode> epoch) {
 		final double meanReward = meanReward(epoch);
 		double sumSquaredDiff = 0.0;
@@ -150,6 +189,10 @@ public final class C4Memory {
 		return Math.sqrt(meanSquaredDiff);
 	}
 	
+	/**
+	 * @param epoch an epoch of episodes
+	 * @return the sample mean discounted reward in the epoch
+	 */
 	private static double meanReward(final List<C4Episode> epoch) {
 		double totalReward = 0.0;
 		for (final C4Episode episode: epoch) {
@@ -158,6 +201,9 @@ public final class C4Memory {
 		return totalReward / epoch.size();
 	}
 	
+	/**
+	 * Delete all episodes from the earliest epoch in memory.
+	 */
 	private void dropOldestEpoch() {
 		final int oldMinEpoch = minEpoch();
 		for (int i = this.episodes.size() - 1; i >= 0; i--) {
@@ -167,10 +213,17 @@ public final class C4Memory {
 		}
 	}
 
+	/**
+	 * @return the list of episodes currently in memory
+	 */
 	public List<C4Episode> getEpisodes() {
 		return this.episodes;
 	}
 	
+	/**
+	 * @return the epoch of the earliest episode in memory,
+	 * or -1 if none
+	 */
 	public int minEpoch() {
 		if (this.episodes.isEmpty()) {
 			return -1;
@@ -178,6 +231,10 @@ public final class C4Memory {
 		return this.episodes.get(0).getEpoch();
 	}
 	
+	/**
+	 * @return the epoch of the latest episode in memory,
+	 * or -1 if none
+	 */
 	public int maxEpoch() {
 		if (this.episodes.isEmpty()) {
 			return -1;
@@ -185,6 +242,13 @@ public final class C4Memory {
 		return this.episodes.get(this.episodes.size() - 1).getEpoch();
 	}
 	
+	/**
+	 * Record all episodes in memory in CSV format,
+	 * with one episode per line,
+	 * at the given file name.
+	 * 
+	 * @param fileName the file name to store under
+	 */
 	public void recordToFile(final String fileName) {
 		if (fileName == null || fileName.isEmpty()) {
 			throw new IllegalArgumentException();

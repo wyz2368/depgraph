@@ -12,35 +12,39 @@ import org.slf4j.LoggerFactory;
 
 import org.nd4j.linalg.lossfunctions.LossUtil;
 
-@SuppressWarnings("serial")
+/**
+ * The loss function for policy gradient learning.
+ * 
+ * The loss is defined as the log likelihood of the
+ * action actually sampled (i.e., taken) by the agent,
+ * after softmax activation of the output layer,
+ * multiplied by the advantage of the result (i.e.,
+ * the discounted reward, after normalization over an
+ * epoch to be zero-mean and unit variance).
+ */
 public final class PolicyGradientLoss implements ILossFunction {
 
-    /* This example illustrates how to implements a custom loss function 
-     * that can then be applied to training your neural net
-       All loss functions have to implement the ILossFunction interface
-       The loss function implemented here is:
-       L = (y - y_hat)^2 +  |y - y_hat|
-        y is the true label, y_hat is the predicted output
-     */
-
-    @SuppressWarnings("unused")
+	/**
+	 * For serialization.
+	 */
+	private static final long serialVersionUID = -1914178080356540759L;
+	
+	/**
+	 * Logger included to match example code.
+	 */
+	@SuppressWarnings("unused")
 	private static Logger logger =
 		LoggerFactory.getLogger(PolicyGradientLoss.class);
 
-    /*
-    Needs modification depending on your loss function
-        scoreArray calculates the loss for a single data point 
-        or in other words a batch size of one
-        It returns an array the shape and size of the output of the neural net.
-        Each element in the array is the loss function applied to 
-        the prediction and it's true value
-        scoreArray takes in:
-        true labels - labels
-        the input to the final/output layer of the neural network - preOutput,
-        the activation function on the final layer of the 
-        neural network - activationFn
-        the mask - (if there is a) mask associated with the label
-     */
+	/**
+	 * @param labels the output labels
+	 * @param preOutput (not sure what this does)
+	 * @param activationFn the loss function
+	 * @param mask normally used to mask (set to 0) the loss for
+	 * ignored elements, but we use to multiply loss by the
+	 * activation of an episode
+	 * @return the score of each episode
+	 */
     private static INDArray scoreArray(
 		final INDArray labels,
 		final INDArray preOutput, 
@@ -56,26 +60,14 @@ public final class PolicyGradientLoss implements ILossFunction {
         INDArray output = activationFn.getActivation(preOutput.dup(), true);
         INDArray scoreArr = Transforms.log(output, false).muli(labels);
 
-        //Weighted loss function
+        // Weighted loss function
         if (mask != null) {
-        	/*
-            if (mask.length() != scoreArr.size(1)) {
-                throw new IllegalStateException(
-        		"Weights vector (length " + mask.length()
-                + ") does not match output.size(1)=" + preOutput.size(1));
-            }
-            */
             scoreArr = scoreArr.muli(mask);
         }
 
         return scoreArr;
     }
 
-    /*
-    Remains the same for all loss functions
-    Compute Score computes the average loss function across many datapoints.
-    The loss for a single datapoint is summed over all output features.
-     */
     @Override
     public double computeScore(
 		final INDArray labels, final INDArray preOutput, 
@@ -100,11 +92,6 @@ public final class PolicyGradientLoss implements ILossFunction {
         return scoreArr.sum(1);
     }
 
-    /*
-    Needs modification depending on your loss function
-        Compute the gradient wrt to the preout 
-        (which is the input to the final layer of the neural net)
-    */
     @Override
     public INDArray computeGradient(
 		final INDArray labels, final INDArray preOutput, 
@@ -120,22 +107,9 @@ public final class PolicyGradientLoss implements ILossFunction {
         INDArray output = activationFn.getActivation(preOutput.dup(), true);
 
         if (activationFn instanceof ActivationSoftmax) {
-            /*
-        	if (mask != null && LossUtil.isPerOutputMasking(output, mask)) {
-                throw new UnsupportedOperationException(
-            		"Per output masking for MCXENT + softmax: not supported");
-            }
-            */
 
-            //Weighted loss function
+            // Weighted loss function
             if (mask != null) {
-            	/*
-                if (mask.length() != output.size(1)) {
-                    throw new IllegalStateException(
-            		"Weights vector (length " + mask.length()
-                    + ") does not match output.size(1)=" + output.size(1));
-                }
-                */
                 INDArray temp = labels.muli(mask);
                 INDArray col = temp.sum(1);
                 grad = output.mulColumnVector(col).sub(temp);
@@ -147,7 +121,7 @@ public final class PolicyGradientLoss implements ILossFunction {
 
             grad = activationFn.backprop(preOutput, dLda).getFirst(); 
 
-            //Weighted loss function
+            // Weighted loss function
             if (mask != null) {
                 if (mask.length() != output.size(1)) {
                     throw new IllegalStateException(
@@ -158,7 +132,7 @@ public final class PolicyGradientLoss implements ILossFunction {
             }
         }
 
-        //Loss function with masking
+        // Loss function with masking
         if (mask != null) {
             LossUtil.applyMask(grad, mask);
         }
@@ -166,7 +140,6 @@ public final class PolicyGradientLoss implements ILossFunction {
         return grad;
     }
 
-    //remains the same for a custom loss function
     @Override
     public Pair<Double, INDArray> computeGradientAndScore(
 		final INDArray labels, final INDArray preOutput, 
@@ -209,6 +182,10 @@ public final class PolicyGradientLoss implements ILossFunction {
         return result;
     }
 
+    /**
+     * @param other test object
+     * @return true if the object is a PolicyGradientLoss
+     */
     @SuppressWarnings("static-method")
 	protected boolean canEqual(final Object other) {
         return other instanceof PolicyGradientLoss;
