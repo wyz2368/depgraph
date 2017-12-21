@@ -68,14 +68,16 @@ public final class C4SimpleNNPlayer {
 	 * @param args not used
 	 */
 	public static void main(final String[] args) {
-		// trainRounds(10, 1, 0);
+		 trainRounds(10, 1, 1);
 		
+		/*
 		final int maxEpochsPerRound = 10;
 		final double targetWinRate = 0.3;
 		final int maxOpponentLevel = 2;
 		final boolean success = 
 			trainUntilDone(maxEpochsPerRound, targetWinRate, maxOpponentLevel);
 		System.out.println("Training result success: " + success);
+		*/
 		
 		// playGameVsComputer(0);
 		// final String outFileName = "epochData.csv";
@@ -190,7 +192,8 @@ public final class C4SimpleNNPlayer {
 	 * PolicyGradientLoss custom loss function.
 	 * 
 	 * TODO
-	 * add RELU activation to dense layer.
+	 * add RELU activation to dense layer,
+	 * with another dense layer after it.
 	 * try adding dropout and Adam optimizer.
 	 */
 	public static void setupNet() {        
@@ -202,8 +205,8 @@ public final class C4SimpleNNPlayer {
             .updater(Updater.NESTEROVS)
             .regularization(true).l2(REGULARIZER)
             .list()
-            .layer(0, new DenseLayer.Builder().nIn(NUM_INPUTS).
-        		nOut(NUM_HIDDEN_NODES)
+            .layer(0, new DenseLayer.Builder().nIn(NUM_INPUTS)
+        		.nOut(NUM_HIDDEN_NODES)
                 .weightInit(WeightInit.XAVIER)
                 .build())
             .layer(1, new OutputLayer
