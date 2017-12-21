@@ -173,8 +173,8 @@ public final class PolicyGradientLoss implements ILossFunction {
 		final IActivation activationFn, 
 		final INDArray mask, final boolean average) {
         return new Pair<>(
-                computeScore(labels, preOutput, activationFn, mask, average),
-                computeGradient(labels, preOutput, activationFn, mask));
+            computeScore(labels, preOutput, activationFn, mask, average),
+            computeGradient(labels, preOutput, activationFn, mask));
     }
 
     @Override

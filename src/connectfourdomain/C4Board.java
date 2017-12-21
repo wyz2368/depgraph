@@ -1,5 +1,9 @@
 package connectfourdomain;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Represents a game of Connect Four, including
  * the red and black pieces on the board,
@@ -107,6 +111,25 @@ public final class C4Board {
 			}
 		}
 		return result;
+	}
+	
+	/**
+	 * @return get a uniform random choice over legal
+	 * columns to move in. There must exist some legal
+	 * move if this method is called.
+	 */
+	public int randomLegalMove() {
+		final List<Integer> cols = new ArrayList<Integer>();
+		for (int i = 0; i < WIDTH; i++) {
+			cols.add(i);
+		}
+		Collections.shuffle(cols);
+		for (final int col: cols) {
+			if (isLegalMove(col)) {
+				return col;
+			}
+		}
+		throw new IllegalStateException("no legal moves");
 	}
 	
 	/**
