@@ -40,7 +40,7 @@ public final class C4SimpleNNPlayer {
 	private static MultiLayerNetwork net;
 	
 	public static void main(final String[] args) {
-		trainRounds(10, 1);
+		trainRounds(15, 1);
 		
 		// playGameVsComputer(0);
 		// final String outFileName = "epochData.csv";
@@ -129,6 +129,10 @@ public final class C4SimpleNNPlayer {
 				wins++;
 			} else if (curReward < 0.0) {
 				wins--;
+			}
+			final int printFrequency = 100;
+			if (game % printFrequency == 0) {
+				System.out.println(game);
 			}
 		}
 		memory.addEpoch(localMemory);

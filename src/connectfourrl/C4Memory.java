@@ -16,7 +16,7 @@ import connectfourdomain.C4Board;
 
 public final class C4Memory {
 
-	public static final int MAX_EPOCHS = 10;
+	public static final int MAX_EPOCHS = 5;
 	
 	private final List<C4Episode> episodes = new ArrayList<C4Episode>();
 
