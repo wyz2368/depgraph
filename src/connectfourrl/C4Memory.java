@@ -33,7 +33,7 @@ public final class C4Memory {
 	 * How many episodes to include in datasets for training
 	 * of neural net.
 	 */
-	public static final int DATASET_SIZE = 10000;
+	public static final int DATASET_SIZE = 1000;
 	/**
 	 * Used to store the episodes from play.
 	 */
@@ -112,10 +112,14 @@ public final class C4Memory {
 	 * the log likelihood when the gradient is
 	 * taken.
 	 * 
+	 * @param isConv if true, return as 6 * 7 * 2 tensor
+	 * for convolutional net. If false, return as 84-item
+	 * vector for fully-connected net.
+	 * 
 	 * @return a DataSet for DeepLearning4J to use
 	 * for training.
 	 */
-	public DataSet getDataSetWithMasks() {
+	public DataSet getDataSetWithMasks(final boolean isConv) {
 		assert !isEmpty();
 		final float[][] inputs =
 			new float[DATASET_SIZE][C4SimpleNNPlayer.NUM_INPUTS];
@@ -130,14 +134,29 @@ public final class C4Memory {
 			// from this.episodes.
 			final C4Episode episode = this.episodes.get(
 				RAND.nextInt(this.episodes.size()));
+			// FIXME make sure board will be correctly oriented
 			inputs[i] = episode.getInput();
 			labels[i][episode.getColumn()] = 1.0f;
 			labelsMask[i][episode.getColumn()] =
 				(float) episode.getAdvantage();
 		}
 
-		
-		final INDArray inputsIND = Nd4j.create(inputs);
+
+		INDArray inputsIND = null;
+		if (isConv) {
+			final float[] inputsFlat =
+				new float[DATASET_SIZE * C4SimpleNNPlayer.NUM_INPUTS];
+			for (int i = 0; i < DATASET_SIZE; i++) {
+				for (int j = 0; j < C4SimpleNNPlayer.NUM_INPUTS; j++) {
+					inputsFlat[i * C4SimpleNNPlayer.NUM_INPUTS + j] =
+						inputs[i][j];
+				}
+			}
+			inputsIND = Nd4j.create(inputsFlat,
+				new int[]{DATASET_SIZE, 2, C4Board.HEIGHT, C4Board.WIDTH});
+		} else {
+			inputsIND = Nd4j.create(inputs);
+		}
 		final INDArray labelsIND = Nd4j.create(labels);
 		final INDArray labelsMaskIND = Nd4j.create(labelsMask);
 		
