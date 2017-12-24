@@ -211,7 +211,7 @@ public final class C4Player {
 	 * if black won, or the difference in length of longest runs
 	 * between red and black otherwise.
 	 */
-	private static int boardValue(
+	public static int boardValue(
 		final C4Board board
 	) {
 		if (board.getWinner() == Winner.RED) {

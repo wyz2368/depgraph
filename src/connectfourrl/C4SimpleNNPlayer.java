@@ -13,6 +13,8 @@ import org.deeplearning4j.nn.conf.inputs.InputType;
 import org.deeplearning4j.nn.conf.layers.ConvolutionLayer;
 import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
+import org.deeplearning4j.nn.conf.layers.PoolingType;
+import org.deeplearning4j.nn.conf.layers.SubsamplingLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.nd4j.linalg.activations.Activation;
@@ -139,7 +141,7 @@ public final class C4SimpleNNPlayer {
 		
 		final long startTime = System.currentTimeMillis();
 		if (isConv) {
-			setupNetConv();
+			setupNetConvPooling();
 		} else {
 			setupNetSimple();
 		}
@@ -201,7 +203,7 @@ public final class C4SimpleNNPlayer {
 
 		final long startTime = System.currentTimeMillis();
 		if (isConv) {
-			setupNetConv();
+			setupNetConvPooling();
 		} else {
 			setupNetSimple();
 		}
@@ -299,6 +301,57 @@ public final class C4SimpleNNPlayer {
                 .activation(Activation.RELU)
                 .build())
             .layer(2, new OutputLayer.Builder(
+        		new PolicyGradientLoss())
+                .weightInit(WeightInit.XAVIER)
+                .activation(Activation.SOFTMAX)
+            	.nIn(denseNeurons)
+                .nOut(C4Board.WIDTH).build())
+            .setInputType(
+        		InputType.convolutional(C4Board.HEIGHT, C4Board.WIDTH, 2))
+            .pretrain(false).backprop(true).build();
+        net = new MultiLayerNetwork(conf);
+        net.init();
+	}
+	
+	/**
+	 * Set up a conv net with a max pooling layer.
+	 */
+	public static void setupNetConvPooling() {
+		final int kernelWidth = 4;
+		final int convFilters = 64;
+		final int denseNeurons = 128;
+		final double dropout = 0.5;
+        final MultiLayerConfiguration conf =
+    		new NeuralNetConfiguration.Builder()
+            .iterations(1)
+            .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
+            .learningRate(LEARNING_RATE)
+            .updater(Updater.NESTEROVS)
+            .regularization(true)
+            .l2(REGULARIZER)
+            .list()
+            .layer(0, new ConvolutionLayer.Builder(
+        		new int[]{kernelWidth, kernelWidth},
+        		new int[]{1, 1})
+        		.nOut(convFilters)
+        		.weightInit(WeightInit.XAVIER)
+        		.convolutionMode(ConvolutionMode.Same)
+        		.activation(Activation.RELU)
+        		.build())
+            .layer(1, new SubsamplingLayer.Builder(
+        		SubsamplingLayer.PoolingType.MAX)
+                .kernelSize(C4Board.HEIGHT, 1)
+                .stride(1, 1)
+                .dropOut(dropout)
+                .build())
+            .layer(2, new DenseLayer.Builder()
+            	.nIn(convFilters * C4Board.WIDTH)
+        		.nOut(denseNeurons)
+                .weightInit(WeightInit.XAVIER)
+                .dropOut(dropout)
+                .activation(Activation.RELU)
+                .build())
+            .layer(3, new OutputLayer.Builder(
         		new PolicyGradientLoss())
                 .weightInit(WeightInit.XAVIER)
                 .activation(Activation.SOFTMAX)

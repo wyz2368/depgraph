@@ -28,14 +28,14 @@ public final class C4Board {
 	 * Indicates who won, if anyone.
 	 */
 	public enum Winner {
-			/** Black won. */
-			BLACK, 
-			/** Red won. */
-			RED,
-			/** Board is full, but no one won. */
-			DRAW,
-			/** Board is not full, and no one won yet. */
-			NONE
+		/** Black won. */
+		BLACK, 
+		/** Red won. */
+		RED,
+		/** Board is full, but no one won. */
+		DRAW,
+		/** Board is not full, and no one won yet. */
+		NONE
 	}
 
 	/**
