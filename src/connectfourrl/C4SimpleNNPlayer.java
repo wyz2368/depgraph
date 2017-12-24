@@ -13,7 +13,6 @@ import org.deeplearning4j.nn.conf.inputs.InputType;
 import org.deeplearning4j.nn.conf.layers.ConvolutionLayer;
 import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
-import org.deeplearning4j.nn.conf.layers.PoolingType;
 import org.deeplearning4j.nn.conf.layers.SubsamplingLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
@@ -94,7 +93,7 @@ public final class C4SimpleNNPlayer {
 	public static void main(final String[] args) {
 		final boolean isConv = true;
 		final int roundCount = 100;
-		 trainRounds(roundCount, 1, 0, isConv);
+		 trainRounds(roundCount, 1, 1, isConv);
 		
 		/*
 		final int maxEpochsPerRound = 10;
@@ -321,6 +320,7 @@ public final class C4SimpleNNPlayer {
 		final int convFilters = 64;
 		final int denseNeurons = 128;
 		final double dropout = 0.5;
+		final int thirdLayer = 3;
         final MultiLayerConfiguration conf =
     		new NeuralNetConfiguration.Builder()
             .iterations(1)
@@ -351,7 +351,7 @@ public final class C4SimpleNNPlayer {
                 .dropOut(dropout)
                 .activation(Activation.RELU)
                 .build())
-            .layer(3, new OutputLayer.Builder(
+            .layer(thirdLayer, new OutputLayer.Builder(
         		new PolicyGradientLoss())
                 .weightInit(WeightInit.XAVIER)
                 .activation(Activation.SOFTMAX)
