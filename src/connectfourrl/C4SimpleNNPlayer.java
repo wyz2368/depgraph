@@ -39,13 +39,9 @@ public final class C4SimpleNNPlayer {
 	 */
 	public static final int NUM_INPUTS = 84;
 	/**
-	 * Number of neurons in hidden layer.
-	 */
-	private static final int NUM_HIDDEN_NODES = 200;
-	/**
 	 * Learning rate.
 	 */
-	private static final double LEARNING_RATE = 0.1;
+	private static final double LEARNING_RATE = 0.01;
 	/**
 	 * Games per epoch of play vs. opponent.
 	 */
@@ -88,14 +84,14 @@ public final class C4SimpleNNPlayer {
 	/**
 	 * The level of verbosity to use in output.
 	 */
-	public static final Verbosity PRINT_LEVEL = Verbosity.MEDIUM;
+	public static final Verbosity PRINT_LEVEL = Verbosity.LOW;
 	/**
 	 * Main method.
 	 * @param args not used
 	 */
 	public static void main(final String[] args) {
 		final boolean isConv = true;
-		final int roundCount = 10;
+		final int roundCount = 100;
 		 trainRounds(roundCount, 1, 0, isConv);
 		
 		/*
@@ -246,7 +242,8 @@ public final class C4SimpleNNPlayer {
 	 * with another dense layer after it.
 	 * try adding dropout and Adam optimizer.
 	 */
-	public static void setupNetSimple() {        
+	public static void setupNetSimple() {
+		final int numHiddenNodes = 200;
         final MultiLayerConfiguration conf =
     		new NeuralNetConfiguration.Builder()
             .iterations(1)
@@ -256,13 +253,13 @@ public final class C4SimpleNNPlayer {
             .regularization(true).l2(REGULARIZER)
             .list()
             .layer(0, new DenseLayer.Builder().nIn(NUM_INPUTS)
-        		.nOut(NUM_HIDDEN_NODES)
+        		.nOut(numHiddenNodes)
                 .weightInit(WeightInit.XAVIER)
                 .build())
             .layer(1, new OutputLayer
         		.Builder(new PolicyGradientLoss())
                 .activation(Activation.SOFTMAX).weightInit(WeightInit.XAVIER)
-                .nIn(NUM_HIDDEN_NODES).nOut(C4Board.WIDTH).build())
+                .nIn(numHiddenNodes).nOut(C4Board.WIDTH).build())
             .pretrain(false).backprop(true).build();
         
         net = new MultiLayerNetwork(conf);
@@ -276,6 +273,7 @@ public final class C4SimpleNNPlayer {
 		final int kernelWidth = 4;
 		final int convFilters = 32;
 		final int denseNeurons = 64;
+		final double dropout = 0.5;
         final MultiLayerConfiguration conf =
     		new NeuralNetConfiguration.Builder()
             .iterations(1)
@@ -297,6 +295,7 @@ public final class C4SimpleNNPlayer {
             	.nIn(convFilters * C4Board.WIDTH * C4Board.HEIGHT)
         		.nOut(denseNeurons)
                 .weightInit(WeightInit.XAVIER)
+                .dropOut(dropout)
                 .activation(Activation.RELU)
                 .build())
             .layer(2, new OutputLayer.Builder(
@@ -587,7 +586,9 @@ public final class C4SimpleNNPlayer {
 		if (modeIndex != -1) {
 			return modeIndex;
 		}
-		System.err.println("Making random legal move.");
+		if (PRINT_LEVEL == Verbosity.MEDIUM || PRINT_LEVEL == Verbosity.HIGH) {
+			System.err.println("Making random legal move.");
+		}
 		return board.randomLegalMove();
 	}
 
