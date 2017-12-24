@@ -1,5 +1,7 @@
 package connectfourrl;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,7 @@ import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.conf.layers.SubsamplingLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
+import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
@@ -46,7 +49,7 @@ public final class C4SimpleNNPlayer {
 	/**
 	 * Games per epoch of play vs. opponent.
 	 */
-	private static final int GAMES_PER_EPOCH = 1000;
+	private static final int GAMES_PER_EPOCH = 500;
 	/**
 	 * Discount factor for future rewards in game.
 	 */
@@ -91,9 +94,18 @@ public final class C4SimpleNNPlayer {
 	 * @param args not used
 	 */
 	public static void main(final String[] args) {
+		/*
 		final boolean isConv = true;
 		final int roundCount = 100;
 		 trainRounds(roundCount, 1, 1, isConv);
+		*/
+		
+		final int roundCount = 100;
+		final int opponentLevel = 1;
+		final boolean isConv = true;
+		final int roundsBetweenUpdates = 5;
+		trainRoundsWithBestModel(
+			roundCount, opponentLevel, isConv, roundsBetweenUpdates);
 		
 		/*
 		final int maxEpochsPerRound = 10;
@@ -107,6 +119,66 @@ public final class C4SimpleNNPlayer {
 		// playGameVsComputer(0);
 		// final String outFileName = "epochData.csv";
 		// memory.recordToFile(outFileName);
+	}
+	
+	/**
+	 * @param opponentLevel opponent search depth
+	 * @param isConv true if should use convolutional net
+	 * @param gameCount number of games for test
+	 * @return the win rate, in [-1, 1]
+	 */
+	public static double testCurrentModel(
+		final int opponentLevel, final boolean isConv, final int gameCount) {
+		if (opponentLevel < 0 || opponentLevel > C4Player.MAX_SEARCH_DEPTH
+			|| gameCount < 1) {
+			throw new IllegalArgumentException();
+		}
+		
+		int wins = 0;
+		for (int game = 0; game < gameCount; game++) {
+			final List<C4Episode> gameResult =
+				playGameForLearning(0, opponentLevel, true);
+			final double curReward = gameResult.get(0).getDiscReward();
+			if (curReward > 0.0) {
+				wins++;
+			} else if (curReward < 0.0) {
+				wins--;
+			}
+		}
+
+		return wins * 1.0 / gameCount;
+	}
+	
+	/**
+	 * Restore net from save file, with the updater.
+	 * 
+	 * @param saveFileName name of saved network file
+	 */
+	public static void loadNetFromFile(
+		final String saveFileName
+	) {
+		final File inFile = new File(saveFileName);
+		try {
+			net = ModelSerializer.restoreMultiLayerNetwork(inFile, true);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new IllegalStateException();
+		}
+	}
+	
+	/**
+	 * Save the current neural net at the given file name.
+	 * 
+	 * @param saveFileName file name to save the neural net under
+	 */
+	public static void saveModel(final String saveFileName) {
+		final File outFile = new File(saveFileName);
+		try {
+			ModelSerializer.writeModel(net, outFile, true);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new IllegalStateException();
+		}
 	}
 	
 	/**
@@ -140,7 +212,7 @@ public final class C4SimpleNNPlayer {
 		
 		final long startTime = System.currentTimeMillis();
 		if (isConv) {
-			setupNetDoubleConvPooling();
+			setupNetConvPooling();
 		} else {
 			setupNetSimple();
 		}
@@ -178,6 +250,57 @@ public final class C4SimpleNNPlayer {
 		System.out.println("Time taken: "
 			+ fmt.format(durationInSec) + " seconds");
 		return true;
+	}
+	
+	/**
+	 * @param rounds total rounds of training count
+	 * @param opponentLevel opponent search depth
+	 * @param isConv true if should use convolutional net
+	 * @param roundsBetweenUpdates number of rounds between check
+	 * to see if current model is the best so far
+	 */
+	public static void trainRoundsWithBestModel(
+		final int rounds,
+		final int opponentLevel,
+		final boolean isConv,
+		final int roundsBetweenUpdates
+	) {
+		if (rounds < 1 || opponentLevel < 0
+			|| opponentLevel > C4Player.MAX_SEARCH_DEPTH) {
+			throw new IllegalArgumentException();
+		}
+
+		final long startTime = System.currentTimeMillis();
+		if (isConv) {
+			setupNetConvPooling();
+		} else {
+			setupNetSimple();
+		}
+
+		final int gamesForEstimate = 4000;
+		double bestModelWinRate = -1.0;
+		final String bestFileName = "bestModel.txt";
+		for (int i = 0; i < rounds; i++) {
+			addMemoryEpoch(opponentLevel, isConv);			
+			trainFromMemory(isConv);
+			if (i % roundsBetweenUpdates == 0) {
+				final double curWinRate =
+					testCurrentModel(opponentLevel, isConv, gamesForEstimate);
+				if (curWinRate > bestModelWinRate) {
+					saveModel(bestFileName);
+					bestModelWinRate = curWinRate;
+					System.out.println("New cur best: " + curWinRate);
+				} else {
+					loadNetFromFile(bestFileName);
+				}
+			}
+		}
+		long endTime = System.currentTimeMillis();
+		final double thousand = 1000.0;
+		final double durationInSec = (endTime - startTime) / thousand;
+		final DecimalFormat fmt = new DecimalFormat("#.###"); 
+		System.out.println("Time taken for all rounds: "
+			+ fmt.format(durationInSec) + " seconds");
 	}
 	
 	/**
@@ -320,7 +443,7 @@ public final class C4SimpleNNPlayer {
 	 */
 	public static void setupNetDoubleConvPooling() {
 		final int kernelWidth = 5;
-		final int convFilters = 32;
+		final int convFilters = 64;
 		final int denseNeurons = 128;
 		final double dropout = 0.5;
 		final int thirdLayer = 3;

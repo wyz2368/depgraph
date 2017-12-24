@@ -28,12 +28,12 @@ public final class C4Memory {
 	 * When new data is added from the next epoch,
 	 * the oldest epoch's data is dropped.
 	 */
-	public static final int MAX_EPOCHS = 5;
+	public static final int MAX_EPOCHS = 10;
 	/**
 	 * How many episodes to include in datasets for training
 	 * of neural net.
 	 */
-	public static final int DATASET_SIZE = 1000;
+	public static final int DATASET_SIZE = 500;
 	/**
 	 * Used to store the episodes from play.
 	 */
