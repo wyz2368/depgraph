@@ -67,9 +67,10 @@ public final class C4SimpleNNPlayer {
 	 */
 	private static MultiLayerNetwork net;
 	/**
-	 * Used for epsilon-greedy policy.
+	 * Epoch count at which the lowest epsilon for an
+	 * epsilon-greedy training policy should be used.
 	 */
-	private static final double EPSILON = 0.5;
+	private static final double MIN_EPSILON_EPOCH = 1000;
 	
 	/**
 	 * Can indicate how verbosely the output should be printed.
@@ -295,7 +296,8 @@ public final class C4SimpleNNPlayer {
 					bestModelWinRate = curWinRate;
 					System.out.println("New cur best: " + curWinRate);
 				} else {
-					loadNetFromFile(bestFileName);
+					// FIXME
+					// loadNetFromFile(bestFileName);
 				}
 			}
 		}
@@ -448,9 +450,10 @@ public final class C4SimpleNNPlayer {
 	 * softmax layer.
 	 */
 	public static void setupNetDoubleConvPooling() {
-		final int kernelWidth = 5;
-		final int convFilters = 64;
-		final int denseNeurons = 128;
+		final int firstKernelWidth = 5;
+		final int secondKernelWidth = 3;
+		final int convFilters = 32;
+		final int denseNeurons = 64;
 		final double dropout = 0.5;
 		final int thirdLayer = 3;
 		final int fourthLayer = 4;
@@ -464,7 +467,7 @@ public final class C4SimpleNNPlayer {
             .l2(REGULARIZER)
             .list()
             .layer(0, new ConvolutionLayer.Builder(
-        		new int[]{kernelWidth, kernelWidth},
+        		new int[]{firstKernelWidth, firstKernelWidth},
         		new int[]{1, 1})
         		.nOut(convFilters)
         		.weightInit(WeightInit.XAVIER)
@@ -472,7 +475,7 @@ public final class C4SimpleNNPlayer {
         		.activation(Activation.RELU)
         		.build())
             .layer(1, new ConvolutionLayer.Builder(
-        		new int[]{kernelWidth, kernelWidth},
+        		new int[]{secondKernelWidth, secondKernelWidth},
         		new int[]{1, 1})
         		.nOut(convFilters)
         		.weightInit(WeightInit.XAVIER)
@@ -509,9 +512,9 @@ public final class C4SimpleNNPlayer {
 	 * Set up a conv net with a max pooling layer.
 	 */
 	public static void setupNetConvPooling() {
-		final int kernelWidth = 4;
-		final int convFilters = 64;
-		final int denseNeurons = 128;
+		final int kernelWidth = 5;
+		final int convFilters = 32;
+		final int denseNeurons = 64;
 		final double dropout = 0.5;
 		final int thirdLayer = 3;
         final MultiLayerConfiguration conf =
@@ -679,6 +682,23 @@ public final class C4SimpleNNPlayer {
 	}
 	
 	/**
+	 * @param epoch the current epoch number
+	 * @return if epoch is less than MIN_EPSILON_EPOCH,
+	 * a weighted mean of 1.0 and 0.1; otherwise, 0.1.
+	 */
+	public static double getEpsilon(final int epoch) {
+		assert epoch >= 0;
+		final double maxEpsilon = 1.0;
+		final double minEpsilon = 0.1;
+		if (epoch < MIN_EPSILON_EPOCH) {
+			final double maxWeight = (MIN_EPSILON_EPOCH - epoch)
+				* 1.0 / MIN_EPSILON_EPOCH;
+			return maxWeight * maxEpsilon + (1 - maxWeight) * minEpsilon;
+		}
+		return minEpsilon;
+	}
+	
+	/**
 	 * Play a game as neural network against the opponent
 	 * of level opponentSearchDepth, with episodes marked
 	 * with epoch "epoch." Return a list of the episodes
@@ -715,7 +735,8 @@ public final class C4SimpleNNPlayer {
 				
 				int col = -1;
 				if (useEpsilonGreedy) {
-					col = getNNMoveEpsilonGreedy(board, isConv, EPSILON);
+					col = getNNMoveEpsilonGreedy(
+						board, isConv, getEpsilon(epoch));
 				} else {
 					col = getNNMove(board, isConv);
 				}
