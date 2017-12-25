@@ -45,7 +45,7 @@ public final class C4SimpleNNPlayer {
 	/**
 	 * Learning rate.
 	 */
-	private static final double LEARNING_RATE = 0.01;
+	private static final double LEARNING_RATE = 0.05;
 	/**
 	 * Games per epoch of play vs. opponent.
 	 */
@@ -57,7 +57,7 @@ public final class C4SimpleNNPlayer {
 	/**
 	 * L2 regularizer for network weights.
 	 */
-	private static final double REGULARIZER = 0.01;
+	private static final double REGULARIZER = 0.05;
 	/**
 	 * Stores episodes from recent games.
 	 */
@@ -66,6 +66,10 @@ public final class C4SimpleNNPlayer {
 	 * The neural network, a multilayer perceptron.
 	 */
 	private static MultiLayerNetwork net;
+	/**
+	 * Used for epsilon-greedy policy.
+	 */
+	private static final double EPSILON = 0.5;
 	
 	/**
 	 * Can indicate how verbosely the output should be printed.
@@ -100,7 +104,7 @@ public final class C4SimpleNNPlayer {
 		 trainRounds(roundCount, 1, 1, isConv);
 		*/
 		
-		final int roundCount = 100;
+		final int roundCount = 1000;
 		final int opponentLevel = 1;
 		final boolean isConv = true;
 		final int roundsBetweenUpdates = 5;
@@ -137,7 +141,7 @@ public final class C4SimpleNNPlayer {
 		int wins = 0;
 		for (int game = 0; game < gameCount; game++) {
 			final List<C4Episode> gameResult =
-				playGameForLearning(0, opponentLevel, true);
+				playGameForLearning(0, opponentLevel, true, false);
 			final double curReward = gameResult.get(0).getDiscReward();
 			if (curReward > 0.0) {
 				wins++;
@@ -174,7 +178,7 @@ public final class C4SimpleNNPlayer {
 	public static void saveModel(final String saveFileName) {
 		final File outFile = new File(saveFileName);
 		try {
-			ModelSerializer.writeModel(net, outFile, true);
+			ModelSerializer.writeModel(net, outFile, false);
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new IllegalStateException();
@@ -212,7 +216,7 @@ public final class C4SimpleNNPlayer {
 		
 		final long startTime = System.currentTimeMillis();
 		if (isConv) {
-			setupNetConvPooling();
+			setupNetDoubleConvPooling();
 		} else {
 			setupNetSimple();
 		}
@@ -272,7 +276,7 @@ public final class C4SimpleNNPlayer {
 
 		final long startTime = System.currentTimeMillis();
 		if (isConv) {
-			setupNetConvPooling();
+			setupNetConv();
 		} else {
 			setupNetSimple();
 		}
@@ -298,7 +302,9 @@ public final class C4SimpleNNPlayer {
 		long endTime = System.currentTimeMillis();
 		final double thousand = 1000.0;
 		final double durationInSec = (endTime - startTime) / thousand;
-		final DecimalFormat fmt = new DecimalFormat("#.###"); 
+		final DecimalFormat fmt = new DecimalFormat("#.###");
+		System.out.println(
+			"Best model performance: " + fmt.format(bestModelWinRate));
 		System.out.println("Time taken for all rounds: "
 			+ fmt.format(durationInSec) + " seconds");
 	}
@@ -325,7 +331,7 @@ public final class C4SimpleNNPlayer {
 
 		final long startTime = System.currentTimeMillis();
 		if (isConv) {
-			setupNetDoubleConvPooling();
+			setupNetConv();
 		} else {
 			setupNetSimple();
 		}
@@ -637,7 +643,7 @@ public final class C4SimpleNNPlayer {
 		final int printFrequency = 1000;
 		for (int game = 0; game < GAMES_PER_EPOCH; game++) {
 			localMemory.addAll(playGameForLearning(
-				curEpoch, opponentLevel, isConv));
+				curEpoch, opponentLevel, isConv, true));
 			final double curReward =
 				localMemory.get(localMemory.size() - 1).getDiscReward();
 			if (curReward > 0.0) {
@@ -683,12 +689,15 @@ public final class C4SimpleNNPlayer {
 	 * against
 	 * @param isConv true if should use tensor board
 	 * representation, false if should use vector
+	 * @param useEpsilonGreedy true if should use epsilon
+	 * greedy policy for neural net
 	 * @return a list of all episodes from the game
 	 */
 	public static List<C4Episode> playGameForLearning(
 		final int epoch,
 		final int opponentSearchDepth,
-		final boolean isConv
+		final boolean isConv,
+		final boolean useEpsilonGreedy
 	) {
 		final List<C4Episode> result = new ArrayList<C4Episode>();
 		
@@ -704,7 +713,12 @@ public final class C4SimpleNNPlayer {
 					nnInput = board.getAsFloatArray();
 				}
 				
-				int col = getNNMove(board, isConv);
+				int col = -1;
+				if (useEpsilonGreedy) {
+					col = getNNMoveEpsilonGreedy(board, isConv, EPSILON);
+				} else {
+					col = getNNMove(board, isConv);
+				}
 				if (!board.isLegalMove(col)) {
 					System.out.println(board);
 					throw new IllegalStateException(
@@ -855,6 +869,25 @@ public final class C4SimpleNNPlayer {
 	}
 	
 	/**
+	 * @param board the current board state
+	 * @param isConv true if should use tensor representation
+	 * of board
+	 * @param epsilon how likely a random legal move should
+	 * be returned, instead of a move sampled from the network
+	 * @return the index of the column to move in
+	 */
+	public static int getNNMoveEpsilonGreedy(
+		final C4Board board,
+		final boolean isConv,
+		final double epsilon) {
+		assert epsilon >= 0.0 && epsilon <= 1.0;
+		if (Math.random() < epsilon) {
+			return board.randomLegalMove();
+		}
+		return getNNMove(board, isConv);
+	}
+	
+	/**
 	 * Pick the random move from the neural net's softmax
 	 * activation, over legal moves only.
 	 * @param board the board state, to check legality.
@@ -876,7 +909,7 @@ public final class C4SimpleNNPlayer {
 			features = Nd4j.create(board.getAsFloatArray());
 		}
 		// not training input, so false
-        final INDArray predicted = net.output(features, false);
+        final INDArray predicted = net.output(features, true);
         int result = constrainedChoice(predicted, board);
         assert board.isLegalMove(result);
         return result;

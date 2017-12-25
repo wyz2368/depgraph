@@ -62,7 +62,7 @@ public final class C4Memory {
 		if (epoch.get(0).getEpoch() <= maxEpoch()) {
 			throw new IllegalArgumentException("duplicate addition");
 		}
-		if (!this.isEmpty() 
+		if (!this.isEmpty()
 			&& (epoch.get(0).getOpponentLevel() != opponentLevel())) {
 			throw new IllegalStateException("mixing opponent level data");
 		}
@@ -70,8 +70,64 @@ public final class C4Memory {
 			dropOldestEpoch();
 		}
 		
+		// balanceEpoch(epoch);
 		setAdvantages(epoch);
 		this.episodes.addAll(epoch);
+	}
+	
+	/**
+	 * Update the epoch by resampling results that are 
+	 * not losses, to equal the number of losses (if
+	 * too many losses).
+	 * (Or of wins, if too may wins.)
+	 * @param epoch the epoch to balance
+	 */
+	@SuppressWarnings("unused")
+	private static void balanceEpoch(final List<C4Episode> epoch) {
+		int lossEpisodes = 0;
+		int tieEpisodes = 0;
+		int winEpisodes = 0;
+		for (C4Episode episode: epoch) {
+			if (episode.getDiscReward() < 0.0) {
+				lossEpisodes++;
+			} else if (episode.getDiscReward() > 0.0) {
+				winEpisodes++;
+			} else {
+				tieEpisodes++;
+			}
+		}
+		
+		if (lossEpisodes > tieEpisodes + winEpisodes
+			&& lossEpisodes < epoch.size()) {
+			// too many losses.
+			final double fractionToAdd =
+				(lossEpisodes - tieEpisodes - winEpisodes) * 1.0
+				/ (tieEpisodes + winEpisodes);
+			final List<C4Episode> toAdd = new ArrayList<C4Episode>();
+			for (C4Episode episode: epoch) {
+				if (episode.getDiscReward() >= 0.0) {
+					if (Math.random() < fractionToAdd) {
+						toAdd.add(new C4Episode(episode));
+					}
+				}
+			}
+			epoch.addAll(toAdd);
+		} else if (winEpisodes > lossEpisodes + tieEpisodes
+			&& winEpisodes < epoch.size()) {
+			// too many wins.
+			final double fractionToAdd =
+				(winEpisodes - tieEpisodes - lossEpisodes) * 1.0
+				/ (tieEpisodes + lossEpisodes);
+			final List<C4Episode> toAdd = new ArrayList<C4Episode>();
+			for (C4Episode episode: epoch) {
+				if (episode.getDiscReward() <= 0.0) {
+					if (Math.random() < fractionToAdd) {
+						toAdd.add(new C4Episode(episode));
+					}
+				}
+			}
+			epoch.addAll(toAdd);
+		}
 	}
 	
 	/**
@@ -134,7 +190,6 @@ public final class C4Memory {
 			// from this.episodes.
 			final C4Episode episode = this.episodes.get(
 				RAND.nextInt(this.episodes.size()));
-			// FIXME make sure board will be correctly oriented
 			inputs[i] = episode.getInput();
 			labels[i][episode.getColumn()] = 1.0f;
 			labelsMask[i][episode.getColumn()] =

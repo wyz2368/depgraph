@@ -66,6 +66,15 @@ public final class C4Episode {
 		this.epoch = aEpoch;
 		this.opponentLevel = aOpponentLevel;
 	}
+	
+	/**
+	 * Copy constructor.
+	 * @param toCopy episode to copy
+	 */
+	public C4Episode(final C4Episode toCopy) {
+		this(toCopy.input, toCopy.discReward,
+			toCopy.column, toCopy.epoch, toCopy.opponentLevel);
+	}
 
 	/**
 	 * @return the board state
