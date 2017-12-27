@@ -18,6 +18,8 @@ public final class C4VsHuman {
 	 * @param args not used
 	 */
 	public static void main(final String[] args) {
+		final int searchDepth = 1;
+		C4Player.setSearchDepth(searchDepth);
 		playGame();
 	}
 	

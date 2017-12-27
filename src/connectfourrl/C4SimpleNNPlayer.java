@@ -4,10 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.ConvolutionMode;
+import org.deeplearning4j.nn.conf.LearningRatePolicy;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
 import org.deeplearning4j.nn.conf.Updater;
@@ -42,10 +45,10 @@ public final class C4SimpleNNPlayer {
 	 * red and black.
 	 */
 	public static final int NUM_INPUTS = 84;
-	/**
+	/*
 	 * Learning rate.
 	 */
-	private static final double LEARNING_RATE = 0.05;
+	// private static final double LEARNING_RATE = 0.05;
 	/**
 	 * Games per epoch of play vs. opponent.
 	 */
@@ -105,10 +108,10 @@ public final class C4SimpleNNPlayer {
 		 trainRounds(roundCount, 1, 1, isConv);
 		*/
 		
-		final int roundCount = 1000;
+		final int roundCount = 400;
 		final int opponentLevel = 1;
 		final boolean isConv = true;
-		final int roundsBetweenUpdates = 5;
+		final int roundsBetweenUpdates = 25;
 		trainRoundsWithBestModel(
 			roundCount, opponentLevel, isConv, roundsBetweenUpdates);
 		
@@ -277,7 +280,7 @@ public final class C4SimpleNNPlayer {
 
 		final long startTime = System.currentTimeMillis();
 		if (isConv) {
-			setupNetConv();
+			setupNetConvPooling();
 		} else {
 			setupNetSimple();
 		}
@@ -296,8 +299,8 @@ public final class C4SimpleNNPlayer {
 					bestModelWinRate = curWinRate;
 					System.out.println("New cur best: " + curWinRate);
 				} else {
-					// FIXME
-					// loadNetFromFile(bestFileName);
+					System.out.println(
+				"Not better: " + curWinRate + " vs. " + bestModelWinRate);
 				}
 			}
 		}
@@ -380,7 +383,9 @@ public final class C4SimpleNNPlayer {
     		new NeuralNetConfiguration.Builder()
             .iterations(1)
             .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-            .learningRate(LEARNING_RATE)
+            // .learningRate(LEARNING_RATE)
+            .learningRateDecayPolicy(LearningRatePolicy.Schedule)
+            .learningRateSchedule(getLearningRateSchedule())
             .updater(Updater.NESTEROVS)
             .regularization(true).l2(REGULARIZER)
             .list()
@@ -410,7 +415,9 @@ public final class C4SimpleNNPlayer {
     		new NeuralNetConfiguration.Builder()
             .iterations(1)
             .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-            .learningRate(LEARNING_RATE)
+            // .learningRate(LEARNING_RATE)
+            .learningRateDecayPolicy(LearningRatePolicy.Schedule)
+            .learningRateSchedule(getLearningRateSchedule())
             .updater(Updater.NESTEROVS)
             .regularization(true)
             .l2(REGULARIZER)
@@ -461,7 +468,9 @@ public final class C4SimpleNNPlayer {
     		new NeuralNetConfiguration.Builder()
             .iterations(1)
             .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-            .learningRate(LEARNING_RATE)
+            // .learningRate(LEARNING_RATE)
+            .learningRateDecayPolicy(LearningRatePolicy.Schedule)
+            .learningRateSchedule(getLearningRateSchedule())
             .updater(Updater.NESTEROVS)
             .regularization(true)
             .l2(REGULARIZER)
@@ -521,7 +530,9 @@ public final class C4SimpleNNPlayer {
     		new NeuralNetConfiguration.Builder()
             .iterations(1)
             .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-            .learningRate(LEARNING_RATE)
+            // .learningRate(LEARNING_RATE)
+            .learningRateDecayPolicy(LearningRatePolicy.Schedule)
+            .learningRateSchedule(getLearningRateSchedule())
             .updater(Updater.NESTEROVS)
             .regularization(true)
             .l2(REGULARIZER)
@@ -566,7 +577,9 @@ public final class C4SimpleNNPlayer {
     		new NeuralNetConfiguration.Builder()
             .iterations(1)
             .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-            .learningRate(LEARNING_RATE)
+            // .learningRate(LEARNING_RATE)
+            .learningRateDecayPolicy(LearningRatePolicy.Schedule)
+            .learningRateSchedule(getLearningRateSchedule())
             .updater(Updater.NESTEROVS)
             .regularization(true).l2(REGULARIZER)
             .list()
@@ -696,6 +709,18 @@ public final class C4SimpleNNPlayer {
 			return maxWeight * maxEpsilon + (1 - maxWeight) * minEpsilon;
 		}
 		return minEpsilon;
+	}
+	
+	/**
+	 * @return the schedule of learning rates to use.
+	 */
+	public static Map<Integer, Double> getLearningRateSchedule() {
+		Map<Integer, Double> result = new HashMap<Integer, Double>();
+		result.put(0, 0.01);
+		result.put(100, 0.005);
+		result.put(300, 0.001);
+		result.put(500, 0.0005);
+        return result;
 	}
 	
 	/**
