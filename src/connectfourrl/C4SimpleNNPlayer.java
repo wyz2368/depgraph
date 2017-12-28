@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// import org.deeplearning4j.gradientcheck.GradientCheckUtil;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.ConvolutionMode;
 import org.deeplearning4j.nn.conf.LearningRatePolicy;
@@ -26,6 +27,7 @@ import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.factory.Nd4j;
+// import org.nd4j.linalg.api.buffer.*;
 
 import connectfourdomain.C4Board;
 import connectfourdomain.C4Player;
@@ -108,12 +110,14 @@ public final class C4SimpleNNPlayer {
 		 trainRounds(roundCount, 1, 1, isConv);
 		*/
 		
-		final int roundCount = 400;
-		final int opponentLevel = 1;
-		final boolean isConv = true;
-		final int roundsBetweenUpdates = 25;
+		final int roundCount = 10;
+		final int opponentLevel = 0;
+		final boolean isConv = false;
+		final int roundsBetweenUpdates = 1;
 		trainRoundsWithBestModel(
 			roundCount, opponentLevel, isConv, roundsBetweenUpdates);
+		
+		// setupAndCheckGradients(false);
 		
 		/*
 		final int maxEpochsPerRound = 10;
@@ -145,7 +149,7 @@ public final class C4SimpleNNPlayer {
 		int wins = 0;
 		for (int game = 0; game < gameCount; game++) {
 			final List<C4Episode> gameResult =
-				playGameForLearning(0, opponentLevel, true, false);
+				playGameForLearning(0, opponentLevel, isConv, false);
 			final double curReward = gameResult.get(0).getDiscReward();
 			if (curReward > 0.0) {
 				wins++;
@@ -402,6 +406,46 @@ public final class C4SimpleNNPlayer {
         net = new MultiLayerNetwork(conf);
         net.init();
 	}
+	
+	/*
+	 * Initialize the memory with input data, then check gradients.
+	 * @param isConv whether the network is convolutional.
+	public static void setupAndCheckGradients(final boolean isConv) {
+		Nd4j.zeros(1);
+		Nd4j.setDataType(DataBuffer.Type.DOUBLE);
+		trainRounds(2, 1, 1, isConv);
+		checkGradients(isConv);
+	}
+	
+	 * Check gradients in the given network.
+	 * @param isConv whether the input is to a convolutional
+	 * network.
+	public static void checkGradients(final boolean isConv) {
+		final double epsilon = 1e-4;
+		final double maxRelError = 1e-4;
+		final double minAbsoluteError = 1e-6;
+		final boolean print = true;
+		final boolean exitOnFirstError = true;
+		final int myRow = 7;
+		INDArray inputOld =
+			MEMORY.getDataSetWithMasks(isConv).getFeatures().getRow(myRow);
+		INDArray labelsOld =
+			MEMORY.getDataSetWithMasks(isConv).getLabels().getRow(myRow);
+		
+		INDArray inputNew = Nd4j.zeros(C4SimpleNNPlayer.NUM_INPUTS);
+		for (int j = 0; j < C4SimpleNNPlayer.NUM_INPUTS; j++) {
+			inputNew.putScalar(new int[]{j}, inputOld.getDouble(j));
+		}
+		INDArray labelsNew = Nd4j.zeros(C4Board.WIDTH);
+		for (int j = 0; j < C4Board.WIDTH; j++) {
+			labelsNew.putScalar(new int[]{j}, labelsOld.getDouble(j));
+		}
+		GradientCheckUtil.checkGradients(
+			net, epsilon, maxRelError, 
+			minAbsoluteError, print, 
+			exitOnFirstError, inputNew, labelsNew);
+	}
+	*/
 	
 	/**
 	 * Setup neural net with convolutions.

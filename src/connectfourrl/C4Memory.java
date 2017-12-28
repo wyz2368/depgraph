@@ -192,6 +192,9 @@ public final class C4Memory {
 				RAND.nextInt(this.episodes.size()));
 			inputs[i] = episode.getInput();
 			labels[i][episode.getColumn()] = 1.0f;
+			for (int j = 0; j < C4Board.WIDTH; j++) {
+				labelsMask[i][j] = 1.0f;
+			}
 			labelsMask[i][episode.getColumn()] =
 				(float) episode.getAdvantage();
 		}
@@ -215,6 +218,7 @@ public final class C4Memory {
 		final INDArray labelsIND = Nd4j.create(labels);
 		final INDArray labelsMaskIND = Nd4j.create(labelsMask);
 		
+		// no featuresMask is used
 		return new DataSet(
 			inputsIND, labelsIND, null, labelsMaskIND);
 	}

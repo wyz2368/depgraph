@@ -1,7 +1,6 @@
 package connectfourrl;
 
 import org.nd4j.linalg.activations.IActivation;
-import org.nd4j.linalg.activations.impl.ActivationSoftmax;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.lossfunctions.ILossFunction;
 import org.nd4j.linalg.ops.transforms.Transforms;
@@ -9,20 +8,26 @@ import org.nd4j.linalg.primitives.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import connectfourdomain.C4Board;
 
 import org.nd4j.linalg.lossfunctions.LossUtil;
 
 /**
  * The loss function for policy gradient learning.
  * 
- * The loss is defined as the log likelihood of the
+ * The loss is defined as the negative log likelihood of the
  * action actually sampled (i.e., taken) by the agent,
- * after softmax activation of the output layer,
+ * (i.e., the softmax output layer's value for the taken action),
  * multiplied by the advantage of the result (i.e.,
  * the discounted reward, after normalization over an
  * epoch to be zero-mean and unit variance).
  */
 public final class PolicyGradientLoss implements ILossFunction {
+	
+	/**
+	 * If true, make debugging checks.
+	 */
+	private static final boolean DEBUG = true;
 
 	/**
 	 * For serialization.
@@ -37,9 +42,10 @@ public final class PolicyGradientLoss implements ILossFunction {
 		LoggerFactory.getLogger(PolicyGradientLoss.class);
 
 	/**
-	 * @param labels the output labels
-	 * @param preOutput (not sure what this does)
-	 * @param activationFn the loss function
+	 * @param labels the output labels. will be all ones.
+	 * @param preOutput input to the softmax activation of last layer
+	 * of network
+	 * @param activationFn the softmax over network outputs
 	 * @param mask normally used to mask (set to 0) the loss for
 	 * ignored elements, but we use to multiply loss by the
 	 * activation of an episode
@@ -56,15 +62,70 @@ public final class PolicyGradientLoss implements ILossFunction {
         		+ labels.size(1) + ") does not match output layer"
                 + " number of outputs (nOut = " + preOutput.size(1) + ") ");
         }
-
-        INDArray output = activationFn.getActivation(preOutput.dup(), true);
-        INDArray scoreArr = Transforms.log(output, false).muli(labels);
-
-        // Weighted loss function
-        if (mask != null) {
-            scoreArr = scoreArr.muli(mask);
+        
+        final int myDebugRow = 7;
+        if (DEBUG) {
+        	double total = 0.0;
+        	for (int i = 0; i < C4Board.WIDTH; i++) {
+        		total += preOutput.getDouble(myDebugRow, i);
+        	}
+        	final double tolerance = 0.0001;
+        	if (Math.abs(1.0 - total) < tolerance) {
+        		throw new IllegalArgumentException(
+    				"preOutput has already had softmax: " + preOutput);
+        	} else {
+        		System.out.println(preOutput.getRow(myDebugRow));
+        	}
         }
-
+        
+        // preOutput has already been multiplied by the mask,
+        // which holds 1.0 for entries to be ignored (masked),
+        // and x for the entry to be used, where x is the activation.
+        
+        // divide preOutput by the mask, to undo the effect of the mask.
+        // the result, preOuputUnmask, is the output of the neural net
+        // before softmax activation.
+        final INDArray preOutputUnmask = preOutput.div(mask);
+        
+        // get the softmax over the output neuron values,
+        // in the array "output".
+        INDArray output = activationFn.getActivation(preOutputUnmask, true);
+        if (DEBUG) {
+        	// should sum to 1
+        	System.out.println("\t" + output.getRow(myDebugRow));
+        }
+        
+        // fixedMask will hold 0.0 for all entries in mask that equal 1.0,
+        // and 1.0 for all entries in mask that do not equal 1.0.
+        // the purpose is to mask entries to ignore (moves not chosen).
+        final INDArray fixedMask = mask.dup();
+        final double tol = 0.0001;
+        for (int i = 0; i < C4Memory.DATASET_SIZE; i++) {
+        	for (int j = 0; j < C4Board.WIDTH; j++) {
+        		if (Math.abs(fixedMask.getDouble(i, j) - 1.0) < tol) {
+        			// entry had value 1.0 -> mask it with 0.0
+        			fixedMask.putScalar(new int[]{i, j}, 0.0f);
+        		} else {
+        			// entry had the activation level -> leave unmasked,
+        			// with 1.0
+        			fixedMask.putScalar(new int[]{i, j}, 1.0f);
+        		}
+        	}
+        }
+        
+        // take the negative log of each probability from the
+        // softmax activations.
+        INDArray scoreArr = Transforms.log(output, false).mul(-1.0);
+        
+        // multiply each output entry by its fixedMask,
+        // which will be zero unless it's
+        // the output actually used, else 1.
+        scoreArr = scoreArr.muli(fixedMask);
+        if (DEBUG) {
+        	System.out.println("\t\t" + mask.getRow(myDebugRow));
+        	System.out.println("\t\t" + fixedMask.getRow(myDebugRow));
+        	System.out.println("\t\t" + scoreArr.getRow(myDebugRow));
+        }
         return scoreArr;
     }
 
@@ -89,9 +150,17 @@ public final class PolicyGradientLoss implements ILossFunction {
 		final INDArray labels, final INDArray preOutput, 
 		final IActivation activationFn, final INDArray mask) {
         INDArray scoreArr = scoreArray(labels, preOutput, activationFn, mask);
-        return scoreArr.sum(1);
+        INDArray result = scoreArr.sum(1);
+        
+        if (DEBUG) {
+        	final int myRow = 7;
+        	System.out.println("SCORE: " + result.getRow(myRow));
+        }
+        
+        return result;
     }
 
+    // FIXME
     @Override
     public INDArray computeGradient(
 		final INDArray labels, final INDArray preOutput, 
@@ -101,41 +170,18 @@ public final class PolicyGradientLoss implements ILossFunction {
                 "Labels array numColumns (size(1) = " 
         		+ labels.size(1) + ") does not match output layer"
                 + " number of outputs (nOut = " + preOutput.size(1) + ") ");
-
         }
+        
         INDArray grad;
         INDArray output = activationFn.getActivation(preOutput.dup(), true);
 
-        if (activationFn instanceof ActivationSoftmax) {
-
-            // Weighted loss function
-            if (mask != null) {
-                INDArray temp = labels.muli(mask);
-                INDArray col = temp.sum(1);
-                grad = output.mulColumnVector(col).sub(temp);
-            } else {
-                grad = output.subi(labels);
-            }
-        } else {
-            INDArray dLda = output.rdivi(labels).negi();
-
-            grad = activationFn.backprop(preOutput, dLda).getFirst(); 
-
-            // Weighted loss function
-            if (mask != null) {
-                if (mask.length() != output.size(1)) {
-                    throw new IllegalStateException(
-                		"Weights vector (length " + mask.length()
-                        + ") does not match output.size(1)=" + output.size(1));
-                }
-                grad.muliRowVector(mask);
-            }
-        }
+        // Weighted loss function
+        INDArray temp = labels.muli(mask);
+        INDArray col = temp.sum(1);
+        grad = output.mulColumnVector(col).sub(temp);
 
         // Loss function with masking
-        if (mask != null) {
-            LossUtil.applyMask(grad, mask);
-        }
+        LossUtil.applyMask(grad, mask);
 
         return grad;
     }
