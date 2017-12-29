@@ -10,8 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import connectfourdomain.C4Board;
 
-import org.nd4j.linalg.lossfunctions.LossUtil;
-
 /**
  * The loss function for policy gradient learning.
  * 
@@ -64,19 +62,6 @@ public final class PolicyGradientLoss implements ILossFunction {
         }
         
         final int myDebugRow = 7;
-        if (DEBUG) {
-        	double total = 0.0;
-        	for (int i = 0; i < C4Board.WIDTH; i++) {
-        		total += preOutput.getDouble(myDebugRow, i);
-        	}
-        	final double tolerance = 0.0001;
-        	if (Math.abs(1.0 - total) < tolerance) {
-        		throw new IllegalArgumentException(
-    				"preOutput has already had softmax: " + preOutput);
-        	} else {
-        		System.out.println(preOutput.getRow(myDebugRow));
-        	}
-        }
         
         // preOutput has already been multiplied by the mask,
         // which holds 1.0 for entries to be ignored (masked),
@@ -87,12 +72,29 @@ public final class PolicyGradientLoss implements ILossFunction {
         // before softmax activation.
         final INDArray preOutputUnmask = preOutput.div(mask);
         
+        if (DEBUG) {
+        	double total = 0.0;
+        	for (int i = 0; i < C4Board.WIDTH; i++) {
+        		total += preOutputUnmask.getDouble(myDebugRow, i);
+        	}
+        	final double tolerance = 0.0001;
+        	if (Math.abs(1.0 - total) < tolerance) {
+        		throw new IllegalArgumentException(
+    				"preOutput has already had softmax: " + preOutputUnmask);
+        	} else {
+        		System.out.println(
+    				"output before softmax: "
+						+ preOutputUnmask.getRow(myDebugRow));
+        	}
+        }
+        
         // get the softmax over the output neuron values,
         // in the array "output".
         INDArray output = activationFn.getActivation(preOutputUnmask, true);
         if (DEBUG) {
         	// should sum to 1
-        	System.out.println("\t" + output.getRow(myDebugRow));
+        	System.out.println(
+    			"\toutput after softmax: " + output.getRow(myDebugRow));
         }
         
         // fixedMask will hold 0.0 for all entries in mask that equal 1.0,
@@ -122,9 +124,10 @@ public final class PolicyGradientLoss implements ILossFunction {
         // the output actually used, else 1.
         scoreArr = scoreArr.muli(fixedMask);
         if (DEBUG) {
-        	System.out.println("\t\t" + mask.getRow(myDebugRow));
-        	System.out.println("\t\t" + fixedMask.getRow(myDebugRow));
-        	System.out.println("\t\t" + scoreArr.getRow(myDebugRow));
+        	System.out.println("\t\tmask: " + mask.getRow(myDebugRow));
+        	System.out.println(
+    			"\t\tfixedMask: " + fixedMask.getRow(myDebugRow));
+        	System.out.println("\t\tscores: " + scoreArr.getRow(myDebugRow));
         }
         return scoreArr;
     }
@@ -142,6 +145,9 @@ public final class PolicyGradientLoss implements ILossFunction {
             score /= scoreArr.size(0);
         }
 
+        if (DEBUG) {
+            System.out.println("score: " + score);
+        }
         return score;
     }
 
@@ -151,39 +157,49 @@ public final class PolicyGradientLoss implements ILossFunction {
 		final IActivation activationFn, final INDArray mask) {
         INDArray scoreArr = scoreArray(labels, preOutput, activationFn, mask);
         INDArray result = scoreArr.sum(1);
-        
-        if (DEBUG) {
-        	final int myRow = 7;
-        	System.out.println("SCORE: " + result.getRow(myRow));
-        }
-        
         return result;
     }
-
-    // FIXME
+    
     @Override
     public INDArray computeGradient(
-		final INDArray labels, final INDArray preOutput, 
-		final IActivation activationFn, final INDArray mask) {
-        if (labels.size(1) != preOutput.size(1)) {
-            throw new IllegalArgumentException(
-                "Labels array numColumns (size(1) = " 
-        		+ labels.size(1) + ") does not match output layer"
-                + " number of outputs (nOut = " + preOutput.size(1) + ") ");
+		final INDArray labels,
+		final INDArray preOutput, 
+		final IActivation activationFn,
+		final INDArray mask
+	) {
+        final INDArray preOutputUnmask = preOutput.div(mask);
+        INDArray output = activationFn.getActivation(preOutputUnmask, true);
+        final int myDebugRow = 7;
+        if (DEBUG) {
+        	// should sum to 1
+        	System.out.println(
+    			"\tgradient output after softmax: "
+					+ output.getRow(myDebugRow));
         }
         
-        INDArray grad;
-        INDArray output = activationFn.getActivation(preOutput.dup(), true);
-
-        // Weighted loss function
-        INDArray temp = labels.muli(mask);
-        INDArray col = temp.sum(1);
-        grad = output.mulColumnVector(col).sub(temp);
-
-        // Loss function with masking
-        LossUtil.applyMask(grad, mask);
-
-        return grad;
+        final INDArray fixedMask = mask.dup();
+        final double tol = 0.0001;
+        for (int i = 0; i < C4Memory.DATASET_SIZE; i++) {
+        	for (int j = 0; j < C4Board.WIDTH; j++) {
+        		if (Math.abs(fixedMask.getDouble(i, j) - 1.0) < tol) {
+        			// entry had value 1.0 -> mask it with 0.0
+        			fixedMask.putScalar(new int[]{i, j}, 0.0f);
+        		} else {
+        			// entry had the activation level -> leave unmasked,
+        			// with 1.0
+        			fixedMask.putScalar(new int[]{i, j}, 1.0f);
+        		}
+        	}
+        }
+        INDArray scoreArr = output.muli(fixedMask).muli(mask);
+        if (DEBUG) {
+        	final int myRow = 7;
+        	System.out.println("\t\tgradient mask: " + mask.getRow(myDebugRow));
+        	System.out.println(
+    			"\t\tgradient fixedMask: " + fixedMask.getRow(myDebugRow));
+        	System.out.println("gradient: " + scoreArr.getRow(myRow));
+        }
+        return scoreArr;
     }
 
     @Override

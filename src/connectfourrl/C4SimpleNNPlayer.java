@@ -47,10 +47,10 @@ public final class C4SimpleNNPlayer {
 	 * red and black.
 	 */
 	public static final int NUM_INPUTS = 84;
-	/*
+	/**
 	 * Learning rate.
 	 */
-	// private static final double LEARNING_RATE = 0.05;
+	private static final double LEARNING_RATE = 0.1;
 	/**
 	 * Games per epoch of play vs. opponent.
 	 */
@@ -62,7 +62,7 @@ public final class C4SimpleNNPlayer {
 	/**
 	 * L2 regularizer for network weights.
 	 */
-	private static final double REGULARIZER = 0.05;
+	private static final double REGULARIZER = 0.01;
 	/**
 	 * Stores episodes from recent games.
 	 */
@@ -75,7 +75,7 @@ public final class C4SimpleNNPlayer {
 	 * Epoch count at which the lowest epsilon for an
 	 * epsilon-greedy training policy should be used.
 	 */
-	private static final double MIN_EPSILON_EPOCH = 1000;
+	private static final double MIN_EPSILON_EPOCH = 50;
 	
 	/**
 	 * Can indicate how verbosely the output should be printed.
@@ -110,7 +110,7 @@ public final class C4SimpleNNPlayer {
 		 trainRounds(roundCount, 1, 1, isConv);
 		*/
 		
-		final int roundCount = 10;
+		final int roundCount = 100;
 		final int opponentLevel = 0;
 		final boolean isConv = false;
 		final int roundsBetweenUpdates = 1;
@@ -387,9 +387,9 @@ public final class C4SimpleNNPlayer {
     		new NeuralNetConfiguration.Builder()
             .iterations(1)
             .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-            // .learningRate(LEARNING_RATE)
-            .learningRateDecayPolicy(LearningRatePolicy.Schedule)
-            .learningRateSchedule(getLearningRateSchedule())
+            .learningRate(LEARNING_RATE)
+            // .learningRateDecayPolicy(LearningRatePolicy.Schedule)
+            // .learningRateSchedule(getLearningRateSchedule())
             .updater(Updater.NESTEROVS)
             .regularization(true).l2(REGULARIZER)
             .list()
