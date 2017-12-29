@@ -122,7 +122,7 @@ public final class PolicyGradientLoss implements ILossFunction {
         // multiply each output entry by its fixedMask,
         // which will be zero unless it's
         // the output actually used, else 1.
-        scoreArr = scoreArr.muli(fixedMask);
+        scoreArr = scoreArr.muli(fixedMask).muli(mask);
         if (DEBUG) {
         	System.out.println("\t\tmask: " + mask.getRow(myDebugRow));
         	System.out.println(

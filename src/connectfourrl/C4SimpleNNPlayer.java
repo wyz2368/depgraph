@@ -760,10 +760,18 @@ public final class C4SimpleNNPlayer {
 	 */
 	public static Map<Integer, Double> getLearningRateSchedule() {
 		Map<Integer, Double> result = new HashMap<Integer, Double>();
-		result.put(0, 0.01);
-		result.put(100, 0.005);
-		result.put(300, 0.001);
-		result.put(500, 0.0005);
+		final int cutoff0 = 0;
+		final double lr0 = 0.1;
+		result.put(cutoff0, lr0);
+		final int cutoff1 = 100;
+		final double lr1 = 0.01;
+		result.put(cutoff1, lr1);
+		final int cutoff2 = 300;
+		final double lr2 = 0.005;
+		result.put(cutoff2, lr2);
+		final int cutoff3 = 500;
+		final double lr3 = 0.001;
+		result.put(cutoff3, lr3);
         return result;
 	}
 	
