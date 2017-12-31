@@ -1,7 +1,10 @@
 package connectfourrl;
 
+import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.nd4j.linalg.activations.IActivation;
+import org.nd4j.linalg.activations.impl.ActivationSoftmax;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.lossfunctions.ILossFunction;
 import org.nd4j.linalg.ops.transforms.Transforms;
 import org.nd4j.linalg.primitives.Pair;
@@ -25,7 +28,7 @@ public final class PolicyGradientLoss implements ILossFunction {
 	/**
 	 * If true, make debugging checks.
 	 */
-	private static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 
 	/**
 	 * For serialization.
@@ -77,7 +80,7 @@ public final class PolicyGradientLoss implements ILossFunction {
         	for (int i = 0; i < C4Board.WIDTH; i++) {
         		total += preOutputUnmask.getDouble(myDebugRow, i);
         	}
-        	final double tolerance = 0.0001;
+        	final double tolerance = 0.01;
         	if (Math.abs(1.0 - total) < tolerance) {
         		throw new IllegalArgumentException(
     				"preOutput has already had softmax: " + preOutputUnmask);
@@ -130,6 +133,24 @@ public final class PolicyGradientLoss implements ILossFunction {
         	System.out.println("\t\tscores: " + scoreArr.getRow(myDebugRow));
         }
         return scoreArr;
+    }
+    
+    /**
+     * Compute the score of a give DataSet for a MultiLayerNetwork.
+     * @param data the dataset
+     * @param net the network for scoring
+     * @return the mean reward
+     */
+    public double computeScoreConvenience(
+		final DataSet data, 
+		final MultiLayerNetwork net
+	) {
+    	final INDArray labels = data.getLabels();
+    	final INDArray preOutput = net.output(data.getFeatures());
+    	final IActivation activation = new ActivationSoftmax();
+    	final INDArray mask = data.getLabelsMaskArray();
+    	final boolean average = true;
+    	return computeScore(labels, preOutput, activation, mask, average);
     }
 
     @Override
@@ -191,15 +212,15 @@ public final class PolicyGradientLoss implements ILossFunction {
         		}
         	}
         }
-        INDArray scoreArr = output.muli(fixedMask).muli(mask);
+        INDArray gradient = output.muli(fixedMask).muli(mask);
         if (DEBUG) {
         	final int myRow = 7;
         	System.out.println("\t\tgradient mask: " + mask.getRow(myDebugRow));
         	System.out.println(
     			"\t\tgradient fixedMask: " + fixedMask.getRow(myDebugRow));
-        	System.out.println("gradient: " + scoreArr.getRow(myRow));
+        	System.out.println("gradient: " + gradient.getRow(myRow));
         }
-        return scoreArr;
+        return gradient;
     }
 
     @Override

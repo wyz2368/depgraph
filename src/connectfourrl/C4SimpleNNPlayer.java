@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// import org.deeplearning4j.gradientcheck.GradientCheckUtil;
+import org.deeplearning4j.gradientcheck.GradientCheckUtil;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.ConvolutionMode;
 import org.deeplearning4j.nn.conf.LearningRatePolicy;
@@ -27,7 +27,7 @@ import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.factory.Nd4j;
-// import org.nd4j.linalg.api.buffer.*;
+import org.nd4j.linalg.api.buffer.DataBuffer;
 
 import connectfourdomain.C4Board;
 import connectfourdomain.C4Player;
@@ -50,7 +50,7 @@ public final class C4SimpleNNPlayer {
 	/**
 	 * Learning rate.
 	 */
-	private static final double LEARNING_RATE = 0.1;
+	private static final double LEARNING_RATE = 1.0;
 	/**
 	 * Games per epoch of play vs. opponent.
 	 */
@@ -293,7 +293,7 @@ public final class C4SimpleNNPlayer {
 		double bestModelWinRate = -1.0;
 		final String bestFileName = "bestModel.txt";
 		for (int i = 0; i < rounds; i++) {
-			addMemoryEpoch(opponentLevel, isConv);			
+			addMemoryEpoch(opponentLevel, isConv);
 			trainFromMemory(isConv);
 			if (i % roundsBetweenUpdates == 0) {
 				final double curWinRate =
@@ -390,8 +390,8 @@ public final class C4SimpleNNPlayer {
             .learningRate(LEARNING_RATE)
             // .learningRateDecayPolicy(LearningRatePolicy.Schedule)
             // .learningRateSchedule(getLearningRateSchedule())
-            .updater(Updater.NESTEROVS)
-            .regularization(true).l2(REGULARIZER)
+            //.updater(Updater.NESTEROVS)
+            //.regularization(true).l2(REGULARIZER)
             .list()
             .layer(0, new DenseLayer.Builder().nIn(NUM_INPUTS)
         		.nOut(numHiddenNodes)
@@ -407,9 +407,10 @@ public final class C4SimpleNNPlayer {
         net.init();
 	}
 	
-	/*
+	/**
 	 * Initialize the memory with input data, then check gradients.
 	 * @param isConv whether the network is convolutional.
+	 */
 	public static void setupAndCheckGradients(final boolean isConv) {
 		Nd4j.zeros(1);
 		Nd4j.setDataType(DataBuffer.Type.DOUBLE);
@@ -417,9 +418,10 @@ public final class C4SimpleNNPlayer {
 		checkGradients(isConv);
 	}
 	
-	 * Check gradients in the given network.
+	 /** Check gradients in the given network.
 	 * @param isConv whether the input is to a convolutional
 	 * network.
+	 */
 	public static void checkGradients(final boolean isConv) {
 		final double epsilon = 1e-4;
 		final double maxRelError = 1e-4;
@@ -445,7 +447,7 @@ public final class C4SimpleNNPlayer {
 			minAbsoluteError, print, 
 			exitOnFirstError, inputNew, labelsNew);
 	}
-	*/
+	
 	
 	/**
 	 * Setup neural net with convolutions.
@@ -666,7 +668,18 @@ public final class C4SimpleNNPlayer {
 		final long startTime = System.currentTimeMillis();
 		
 		final DataSet ds = MEMORY.getDataSetWithMasks(isConv);
+		
+		PolicyGradientLoss loss = new PolicyGradientLoss();
+		if (PolicyGradientLoss.DEBUG) {
+			System.out.println(
+				"Score before: " + loss.computeScoreConvenience(ds, net));
+			System.out.println(loss.computeScoreConvenience(ds, net));
+		}
 		net.fit(ds);
+		if (PolicyGradientLoss.DEBUG) {
+			System.out.println(
+				"Score after: " + loss.computeScoreConvenience(ds, net));
+		}
 		
 		long endTime = System.currentTimeMillis();
 		final double thousand = 1000.0;
