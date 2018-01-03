@@ -50,7 +50,7 @@ public final class C4SimpleNNPlayer {
 	/**
 	 * Learning rate.
 	 */
-	private static final double LEARNING_RATE = 1.0;
+	private static final double LEARNING_RATE = 0.1;
 	/**
 	 * Games per epoch of play vs. opponent.
 	 */
@@ -111,8 +111,8 @@ public final class C4SimpleNNPlayer {
 		*/
 		
 		final int roundCount = 100;
-		final int opponentLevel = 0;
-		final boolean isConv = false;
+		final int opponentLevel = 1;
+		final boolean isConv = true;
 		final int roundsBetweenUpdates = 1;
 		trainRoundsWithBestModel(
 			roundCount, opponentLevel, isConv, roundsBetweenUpdates);
@@ -284,7 +284,7 @@ public final class C4SimpleNNPlayer {
 
 		final long startTime = System.currentTimeMillis();
 		if (isConv) {
-			setupNetConvPooling();
+			setupNetDoubleConvPooling();
 		} else {
 			setupNetSimple();
 		}
@@ -388,10 +388,10 @@ public final class C4SimpleNNPlayer {
             .iterations(1)
             .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
             .learningRate(LEARNING_RATE)
-            // .learningRateDecayPolicy(LearningRatePolicy.Schedule)
-            // .learningRateSchedule(getLearningRateSchedule())
-            //.updater(Updater.NESTEROVS)
-            //.regularization(true).l2(REGULARIZER)
+            .learningRateDecayPolicy(LearningRatePolicy.Schedule)
+            .learningRateSchedule(getLearningRateSchedule())
+            .updater(Updater.NESTEROVS)
+            .regularization(true).l2(REGULARIZER)
             .list()
             .layer(0, new DenseLayer.Builder().nIn(NUM_INPUTS)
         		.nOut(numHiddenNodes)
