@@ -11,6 +11,7 @@ def main():
     env_name = "Connect4MaxConvAug-v0"
     # env_name = "Connect4MaxConvAugD2-v0"
     print("Environment: " + env_name)
+    env = gym.make(env_name)
     model = deepq.models.cnn_to_mlp(
         convs=[(64, 5, 1), (64, 5, 1), (64, 3, 1), (64, 3, 1), (64, 3, 1)],
         hiddens=[128],
