@@ -219,10 +219,11 @@ class C4Env(gym.Env):
         # action space is {0, . . ., WIDTH}, indicating column or resign
         self.action_space = spaces.Discrete(WIDTH)
 
-        obs_types = ['vector', 'tensor']
+        obs_types = ['vector', 'tensor', 'tensor_aug']
         if obs_type not in obs_types:
             raise ValueError("Unrecognized obs_type: " + str(obs_type))
         self.is_vector = (obs_type == 'vector')
+        self.is_augmented = (obs_type == 'tensor_aug')
 
         self._seed()
         observation = self.reset()
@@ -262,10 +263,20 @@ class C4Env(gym.Env):
         ''' 
         If self.is_vector, return the flattened (vector) version of the state.
         Otherwise, return the unalterered, tensor version of the state.
+        But if is_augmented is true, augment the tensor version with a plane
+        that has all zeros in columns that are not legal moves, all ones in
+        columns that are legal moves.
         '''
         if self.is_vector:
             return C4Env.as_vector(self.state)
-        return self.state
+        if not self.is_augmented:
+            return self.state
+        result = np.zeros((4, HEIGHT, WIDTH))
+        result[1:, :, :] = self.state
+        possible_moves = C4Env.get_possible_actions(self.state)
+        for col in possible_moves:
+            result[0, :, col] = 1
+        return result
 
     def _step(self, action):
         assert self.to_play == self.player_color

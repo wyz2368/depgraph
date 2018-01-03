@@ -8,7 +8,7 @@ def callback(lcl, glb):
     return is_solved
 
 def main():
-    env = gym.make("Connect4MaxConv-v0")
+    env = gym.make("Connect4MaxConvAug-v0")
     model = deepq.models.cnn_to_mlp(
         convs=[(32, 4, 1), (64, 4, 1), (64, 3, 1)],
         hiddens=[256],

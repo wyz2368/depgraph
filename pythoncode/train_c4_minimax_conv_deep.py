@@ -8,17 +8,17 @@ def callback(lcl, glb):
     return is_solved
 
 def main():
-    env = gym.make("Connect4ConvAug-v0")
+    env = gym.make("Connect4MaxConvAug-v0")
     model = deepq.models.cnn_to_mlp(
-        convs=[(32, 4, 1), (64, 4, 1), (64, 3, 1)],
-        hiddens=[256],
+        convs=[(64, 5, 1), (64, 5, 1), (64, 3, 1), (64, 3, 1), (64, 3, 1)],
+        hiddens=[128],
         dueling=True,
     )
     act = deepq.learn(
         env,
         q_func=model,
-        lr=1e-2,
-        max_timesteps=30000,
+        lr=1e-3,
+        max_timesteps=60000,
         buffer_size=10000,
         exploration_fraction=0.3,
         exploration_final_eps=0.02,
@@ -27,8 +27,8 @@ def main():
         gamma=0.99,
         callback=callback
     )
-    print("Saving model to c4_deepq_model.pkl")
-    act.save("c4_deepq_model.pkl")
+    print("Saving model to c4_deepq_model_deep.pkl")
+    act.save("c4_deepq_model_deep.pkl")
 
 if __name__ == '__main__':
     main()

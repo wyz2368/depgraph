@@ -457,6 +457,18 @@ register(
 )
 
 register(
+    id='Connect4ConvAug-v0',
+    entry_point='gym.envs.board_game:C4Env',
+    kwargs={
+        'player_color': 'black',
+        'opponent': 'random',
+        'observation_type': 'numpy3c',
+        'illegal_move_mode': 'lose',
+        'obs_type': 'tensor_aug',
+    },
+)
+
+register(
     id='Connect4MaxConv-v0',
     entry_point='gym.envs.board_game:C4Env',
     kwargs={
@@ -465,6 +477,18 @@ register(
         'observation_type': 'numpy3c',
         'illegal_move_mode': 'lose',
         'obs_type': 'tensor',
+    },
+)
+
+register(
+    id='Connect4MaxConvAug-v0',
+    entry_point='gym.envs.board_game:C4Env',
+    kwargs={
+        'player_color': 'black',
+        'opponent': 'minimax',
+        'observation_type': 'numpy3c',
+        'illegal_move_mode': 'lose',
+        'obs_type': 'tensor_aug',
     },
 )
 
