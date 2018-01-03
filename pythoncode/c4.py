@@ -17,6 +17,7 @@ RED = 0
 BLACK = 1
 MAX_VALUE = 100
 SEARCH_DEPTH = 1
+MAX_SEARCH_DEPTH = 5
 
 def make_random_policy(np_random):
     ''' Create the random policy action function. '''
@@ -186,7 +187,8 @@ class C4Env(gym.Env):
     """
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self, player_color, opponent, observation_type, illegal_move_mode, obs_type):
+    def __init__(self, player_color, opponent, observation_type, illegal_move_mode, \
+        obs_type, search_depth):
         """
         Args:
             opponent: An opponent policy
@@ -202,6 +204,11 @@ class C4Env(gym.Env):
         except KeyError:
             raise error.Error( \
                 "player_color must be 'black' or 'red', not {}".format(player_color))
+
+        if search_depth < 0 or search_depth > MAX_SEARCH_DEPTH:
+            raise ValueError("Illegal search depth: " + str(search_depth))
+        global SEARCH_DEPTH
+        SEARCH_DEPTH = search_depth
 
         self.opponent = opponent
 

@@ -429,6 +429,7 @@ register(
         'observation_type': 'numpy3c',
         'illegal_move_mode': 'lose',
         'obs_type': 'vector',
+        'search_depth': 0,
     },
 )
 
@@ -441,6 +442,7 @@ register(
         'observation_type': 'numpy3c',
         'illegal_move_mode': 'lose',
         'obs_type': 'vector',
+        'search_depth': 1,
     },
 )
 
@@ -453,6 +455,7 @@ register(
         'observation_type': 'numpy3c',
         'illegal_move_mode': 'lose',
         'obs_type': 'tensor',
+        'search_depth': 0,
     },
 )
 
@@ -465,6 +468,7 @@ register(
         'observation_type': 'numpy3c',
         'illegal_move_mode': 'lose',
         'obs_type': 'tensor_aug',
+        'search_depth': 1,
     },
 )
 
@@ -477,6 +481,7 @@ register(
         'observation_type': 'numpy3c',
         'illegal_move_mode': 'lose',
         'obs_type': 'tensor',
+        'search_depth': 1,
     },
 )
 
@@ -489,6 +494,20 @@ register(
         'observation_type': 'numpy3c',
         'illegal_move_mode': 'lose',
         'obs_type': 'tensor_aug',
+        'search_depth': 1,
+    },
+)
+
+register(
+    id='Connect4MaxConvAugD2-v0',
+    entry_point='gym.envs.board_game:C4Env',
+    kwargs={
+        'player_color': 'black',
+        'opponent': 'minimax',
+        'observation_type': 'numpy3c',
+        'illegal_move_mode': 'lose',
+        'obs_type': 'tensor_aug',
+        'search_depth': 2,
     },
 )
 
