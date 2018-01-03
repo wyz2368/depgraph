@@ -1,0 +1,58 @@
+Setup notes for OpenAI:
+
+-- need to install for Python3:
+        -- OpenAI Gym
+                https://gym.openai.com/docs/
+                mkdir gym
+                cd gym
+                git clone https://github.com/openai/gym
+                cd gym
+                pip3 install -e .[all]
+                -- note: this may fail if swig is not installed yet.
+                        sudo apt-get install swig
+                        . . . works on Linux.
+                        http://www.swig.org/download.html
+        -- OpenAI Baselines
+                https://github.com/openai/baselines
+                mkdir baselines
+                cd baselines
+                git clone https://github.com/openai/baselines.git
+                cd baselines
+                pip3 install -e .
+-- check installations:
+        -- OpenAI Gym check:
+                python3
+                import gym
+                env = gym.make('Hex9x9-v0')
+                env.reset()
+                env.render()
+        -- OpenAI baselines check:
+                cd ~/baselines/baselines/baselines/deepq/experiments
+                python3 train_cartpole.py
+                -- note: this may fail if TensorFlow is not installed.
+                        pip3 install tensorflow
+                -- note: this may fail if CloudPickle is not installed.
+                        pip3 install cloudpickle
+                        https://pypi.python.org/pypi/cloudpickle/0.2.1
+                python3 enjoy_cartpole.py
+                -- note: this will fail if there is no display on the server.
+-- need to modify certain scripts:
+        gym/gym/envs/__init__.py
+        -- register your environments
+        gym/gym/envs/board_games/__init__.py
+        -- register your environment
+        gym/gym/envs/board_games/c4.py
+        baselines/baselines/deepq/experiments/train_c4_conv.py
+        baselines/baselines/deepq/experiments/train_c4_minimax_conv.py
+        baselines/baselines/deepq/experiments/train_c4_minimax_conv_deep.py
+-- call your gym code to test:
+        python3
+        import gym
+        env = gym.make('Connect4MaxConvAug-v0')
+        env.reset()
+        env.render()
+        env.step(3)
+        env.render()
+-- call your baselines code to test:
+        cd ~/baselines/baselines/baselines/deepq/experiments
+        python3 train_c4_minimax_conv.py
