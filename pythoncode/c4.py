@@ -267,7 +267,7 @@ class C4Env(gym.Env):
         return self.get_obs()
 
     def get_obs(self):
-        ''' 
+        '''
         If self.is_vector, return the flattened (vector) version of the state.
         Otherwise, return the unalterered, tensor version of the state.
         But if is_augmented is true, augment the tensor version with a plane

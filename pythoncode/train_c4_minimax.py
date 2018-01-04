@@ -1,14 +1,26 @@
+'''
+Trains a multilayer perceptron to play Connect Four against a minimax agent.
+'''
+import time
 import gym
 
 from baselines import deepq
 
 def callback(lcl, glb):
-    # stop training if reward exceeds 0.5
+    ''' Indicates training should stop if mean reward is at least 0.5 over 100 episodes. '''
     is_solved = lcl['t'] > 100 and sum(lcl['episode_rewards'][-101:-1]) / 100 >= 0.5
     return is_solved
 
 def main():
-    env = gym.make("Connect4Max-v0")
+    '''
+    Makes the Connect Four environment, builds a multilayer perceptron model,
+    trains the model, and saves the result.
+    '''
+    env_name = "Connect4Max-v0"
+    print("Environment: " + env_name)
+
+    start = time.time()
+    env = gym.make(env_name)
     model = deepq.models.mlp([256])
     act = deepq.learn(
         env,
@@ -25,6 +37,11 @@ def main():
     )
     print("Saving model to c4_deepq_model.pkl")
     act.save("c4_deepq_model.pkl")
+    end = time.time()
+    elapsed = end - start
+    minutes = elapsed // 60
+    print("Minutes taken: " + str(minutes))
+    print("Opponent was: " + env_name)
 
 if __name__ == '__main__':
     main()

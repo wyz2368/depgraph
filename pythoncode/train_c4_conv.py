@@ -1,14 +1,27 @@
+'''
+Trains a convolutional network with 3 conv layers to play Connect Four against a random agent.
+'''
+import time
 import gym
 
 from baselines import deepq
 
 def callback(lcl, glb):
-    # stop training if reward exceeds 0.5
+    ''' Indicates training should stop if mean reward is at least 0.5 over 100 episodes. '''
     is_solved = lcl['t'] > 100 and sum(lcl['episode_rewards'][-101:-1]) / 100 >= 0.5
     return is_solved
 
 def main():
-    env = gym.make("Connect4ConvAug-v0")
+    '''
+    Makes the Connect Four environment, builds a convolutional network with 3 conv layers
+    and one fully-connected layer,
+    trains the model, and saves the result.
+    '''
+    env_name = "Connect4ConvAug-v0"
+    print("Environment: " + env_name)
+
+    start = time.time()
+    env = gym.make(env_name)
     model = deepq.models.cnn_to_mlp(
         convs=[(32, 4, 1), (64, 4, 1), (64, 3, 1)],
         hiddens=[256],
@@ -29,6 +42,11 @@ def main():
     )
     print("Saving model to c4_deepq_model.pkl")
     act.save("c4_deepq_model.pkl")
+    end = time.time()
+    elapsed = end - start
+    minutes = elapsed // 60
+    print("Minutes taken: " + str(minutes))
+    print("Opponent was: " + env_name)
 
 if __name__ == '__main__':
     main()
