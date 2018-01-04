@@ -6,8 +6,14 @@ from baselines import deepq
 
 def main():
     ''' Load the network from file, and play games of Connect Four against opponent. '''
+
+    '''
     env_name = "Connect4-v0"
     model_name = "c4_deepq_model.pkl"
+    '''
+
+    env_name = "Connect4Max-v0"
+    model_name = "c4_deepq_d1_model.pkl"
 
     env = gym.make(env_name)
     print("Environment: " + env_name)
@@ -28,6 +34,7 @@ def main():
             episode_rew += rew
             time.sleep(move_sleep)
             print("")
+        env.render()
         print("Episode reward", episode_rew)
         total_reward += episode_rew
         episode_count += 1
