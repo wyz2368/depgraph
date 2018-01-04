@@ -1,3 +1,4 @@
+import time
 import gym
 
 from baselines import deepq
@@ -11,6 +12,8 @@ def main():
     env_name = "Connect4MaxConvAug-v0"
     # env_name = "Connect4MaxConvAugD2-v0"
     print("Environment: " + env_name)
+
+    start = time.time()
     env = gym.make(env_name)
     model = deepq.models.cnn_to_mlp(
         convs=[(64, 5, 1), (64, 5, 1), (64, 3, 1), (64, 3, 1), (64, 3, 1)],
@@ -32,6 +35,10 @@ def main():
     )
     print("Saving model to c4_deepq_model_deep.pkl")
     act.save("c4_deepq_model_deep.pkl")
+    end = time.time()
+    elapsed = end - start
+    minutes = elapsed // 60
+    print("Minutes taken: " + str(minutes))
 
 if __name__ == '__main__':
     main()
