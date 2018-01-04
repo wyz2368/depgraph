@@ -23,17 +23,18 @@ def main():
     act = deepq.learn(
         env,
         q_func=model,
-        lr=1e-3,
-        max_timesteps=10000,
+        lr=5e-4,
+        max_timesteps=60000,
         buffer_size=5000,
-        exploration_fraction=0.1,
-        exploration_final_eps=0.02,
+        exploration_fraction=0.3,
+        exploration_final_eps=0.01,
         print_freq=10,
         param_noise=False,
         callback=callback
     )
-    print("Saving model to c4_deepq_model.pkl")
-    act.save("c4_deepq_model.pkl")
+    model_name = "c4_deepq_model.pkl"
+    print("Saving model to: " + model_name)
+    act.save(model_name)
     end = time.time()
     elapsed = end - start
     minutes = elapsed // 60

@@ -42,8 +42,9 @@ def main():
         gamma=0.99,
         callback=callback
     )
-    print("Saving model to c4_deepq_model.pkl")
-    act.save("c4_deepq_model.pkl")
+    model_name = "c4_deepq_conv_d1_model.pkl"
+    print("Saving model: " + model_name)
+    act.save(model_name)
     end = time.time()
     elapsed = end - start
     minutes = elapsed // 60
