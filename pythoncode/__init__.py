@@ -486,6 +486,19 @@ register(
 )
 
 register(
+    id='Connect4HumanConvAug-v0',
+    entry_point='gym.envs.board_game:C4Env',
+    kwargs={
+        'player_color': 'black',
+        'opponent': 'human',
+        'observation_type': 'numpy3c',
+        'illegal_move_mode': 'lose',
+        'obs_type': 'tensor_aug',
+        'search_depth': 0,
+    },
+)
+
+register(
     id='Connect4MaxConvAug-v0',
     entry_point='gym.envs.board_game:C4Env',
     kwargs={

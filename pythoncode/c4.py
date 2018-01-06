@@ -19,6 +19,47 @@ MAX_VALUE = 100
 SEARCH_DEPTH = 1
 MAX_SEARCH_DEPTH = 5
 
+def make_human_policy():
+    ''' Create the policy where the agent plays against human opponent. '''
+    def show_board(board):
+        ''' Display the board for human to choose move. '''
+        my_str = ''
+        for row in reversed(range(HEIGHT)):
+            for col in range(WIDTH):
+                if board[2, row, col] == 1:
+                    my_str += '_\t'
+                elif board[RED, row, col] == 1:
+                    my_str += 'O\t'
+                else:
+                    my_str += 'X\t'
+            my_str += '\n'
+            my_str += '\n'
+        print(my_str)
+
+    def human_policy(state):
+        '''
+        Return None if no legal moves left, else prompt the user for a move,
+        as the integer column name. Wait until a valid move is entered, then return it.
+        '''
+        move = -1
+        possible_moves = C4Env.get_possible_actions(state)
+        # No moves left
+        if not possible_moves:
+            return None
+
+        show_board(state)
+        highest_move = WIDTH - 1
+        while move not in possible_moves:
+            text = input("Enter move, 0 to " + str(highest_move) + ": ")
+            try:
+                move = int(text)
+                if move not in possible_moves:
+                    print("Not a legal move. Try: " + str(possible_moves))
+            except ValueError:
+                print('Please enter an integer')
+        return move
+    return human_policy
+
 def make_random_policy(np_random):
     ''' Create the random policy action function. '''
     def random_policy(state):
@@ -247,6 +288,8 @@ class C4Env(gym.Env):
                 self.opponent_policy = make_random_policy(self.np_random)
             elif self.opponent == 'minimax':
                 self.opponent_policy = make_minimax_policy(self.np_random)
+            elif self.opponent == 'human':
+                self.opponent_policy = make_human_policy()
             else:
                 raise error.Error('Unrecognized opponent policy {}'.format(self.opponent))
         else:
