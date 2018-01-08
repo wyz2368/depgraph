@@ -1,5 +1,9 @@
 '''
-Game of Connect Four
+Game of Connect Four.
+
+Requirements:
+    Py4J        https://www.py4j.org/download.html
+    OpenAI Gym  https://github.com/openai/gym#installation
 '''
 
 from py4j.java_gateway import JavaGateway
