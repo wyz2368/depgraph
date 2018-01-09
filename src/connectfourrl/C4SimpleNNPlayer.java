@@ -669,8 +669,9 @@ public final class C4SimpleNNPlayer {
 		
 		final DataSet ds = MEMORY.getDataSetWithMasks(isConv);
 		
-		PolicyGradientLoss loss = new PolicyGradientLoss();
+		PolicyGradientLoss loss = null;
 		if (PolicyGradientLoss.DEBUG) {
+			loss = new PolicyGradientLoss();
 			System.out.println(
 				"Score before: " + loss.computeScoreConvenience(ds, net));
 			System.out.println(loss.computeScoreConvenience(ds, net));

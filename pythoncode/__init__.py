@@ -447,6 +447,11 @@ register(
 )
 
 register(
+    id='Connect4MaxJava-v0',
+    entry_point='gym.envs.board_game:C4JavaEnv',
+)
+
+register(
     id='Connect4Conv-v0',
     entry_point='gym.envs.board_game:C4Env',
     kwargs={

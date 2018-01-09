@@ -33,13 +33,15 @@ public final class C4BoardPy4J {
 	 * @param args not used
 	 */
 	public static void main(final String[] args) {
-		// set up Py4J server
-		final GatewayServer gatewayServer = new GatewayServer(new C4Board());
-		gatewayServer.start();
-		
 		// opponent (RED) will search to depth 1.
 		final int searchDepth = 1;
 		C4Player.setSearchDepth(searchDepth);
+		
+		// set up Py4J server
+		final GatewayServer gatewayServer =
+			new GatewayServer(new C4BoardPy4J());
+		gatewayServer.start();
+		System.out.println("Gateway Server Started");
 	}
 	
 	/**
