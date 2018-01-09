@@ -11,8 +11,8 @@ import numpy as np
 import gym
 from gym import spaces
 
-WIDTH = 6
-HEIGHT = 7
+HEIGHT = 6
+WIDTH = 7
 JAVA_BOARD = None
 GATEWAY = None
 
@@ -23,19 +23,22 @@ class C4JavaEnv(gym.Env):
     metadata = {"render.modes": ["human"]}
 
     def __init__(self):
-        # One action for each board position or resign
-        # action space is {0, . . ., WIDTH}, indicating column or resign
-        self.action_space = spaces.Discrete(WIDTH)
-
-        observation = self.reset()
-        self.observation_space = \
-            spaces.Box(np.zeros(observation.shape), np.ones(observation.shape))
-
         # https://www.py4j.org/getting_started.html
         global GATEWAY
         GATEWAY = JavaGateway()
         global JAVA_BOARD
         JAVA_BOARD = GATEWAY.entry_point.getBoard()
+
+        # One action for each board position or resign
+        # action space is {0, . . ., WIDTH}, indicating column or resign
+        self.action_space = spaces.Discrete(WIDTH)
+
+        observation = self.reset()
+        # convert from JavaMember object to JavaList
+        observation = observation[:]
+        my_shape = (len(observation),)
+        self.observation_space = \
+            spaces.Box(np.zeros(my_shape), np.ones(my_shape))
 
     def _reset(self):
         return JAVA_BOARD.reset()
@@ -43,8 +46,7 @@ class C4JavaEnv(gym.Env):
     def _step(self, action):
         # https://www.py4j.org/advanced_topics.html#collections-conversion
         action_for_java = GATEWAY.jvm.java.util.ArrayList()
-        for item in action:
-            action_for_java.add(item)
+        action_for_java.add(action)
         return C4JavaEnv.step_result_from_flat_list(JAVA_BOARD.step(action_for_java))
 
     @staticmethod
