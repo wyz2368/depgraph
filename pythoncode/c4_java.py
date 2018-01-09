@@ -41,12 +41,16 @@ class C4JavaEnv(gym.Env):
             spaces.Box(np.zeros(my_shape), np.ones(my_shape))
 
     def _reset(self):
-        return JAVA_BOARD.reset()
+        result_values = JAVA_BOARD.reset()
+        # result_values is a Py4J JavaList -> should convert to Python list
+        return [x for x in result_values]
 
     def _step(self, action):
         # https://www.py4j.org/advanced_topics.html#collections-conversion
         action_for_java = GATEWAY.jvm.java.util.ArrayList()
-        action_for_java.add(action)
+        # action is a numpy.int64, need to convert to Python int before using with Py4J
+        action_scalar = np.asscalar(action)
+        action_for_java.add(action_scalar)
         return C4JavaEnv.step_result_from_flat_list(JAVA_BOARD.step(action_for_java))
 
     @staticmethod
@@ -63,7 +67,11 @@ class C4JavaEnv(gym.Env):
         The last element represents whether the game is done, in {0.0, 1.0}.
         '''
         board_size = WIDTH * HEIGHT * 2
-        obs = a_list[:board_size]
+
+        obs_values = a_list[:board_size]
+        # obs_values is a Py4J JavaList -> should convert to Python list
+        obs = [x for x in obs_values]
+
         reward = a_list[board_size]
 
         tolerance = 0.01
