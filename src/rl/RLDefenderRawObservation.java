@@ -15,6 +15,8 @@ public final class RLDefenderRawObservation {
 	
 	private final Set<Integer> activeObservedIdSet;
 	
+	private final int timeStepsLeft;
+	
 	public RLDefenderRawObservation(final DefenderObservation defObs) {
 		assert defObs != null;
 		for (final SecurityAlert alert: defObs.getAlertSet()) {
@@ -24,6 +26,7 @@ public final class RLDefenderRawObservation {
 		}
 		Collections.sort(this.activeObservedIds);
 		this.activeObservedIdSet = new HashSet<Integer>(this.activeObservedIds);
+		this.timeStepsLeft = defObs.getTimeStepsLeft();
 	}
 
 	public List<Integer> getActiveObservedIds() {
@@ -33,10 +36,15 @@ public final class RLDefenderRawObservation {
 	public Set<Integer> activeObservedIdSet() {
 		return this.activeObservedIdSet;
 	}
+	
+	public int getTimeStepsLeft() {
+		return this.timeStepsLeft;
+	}
 
 	@Override
 	public String toString() {
 		return "RLDefenderRawObservation [activeObservedIds="
-			+ this.activeObservedIds + "]";
+			+ this.activeObservedIds + ", timeStepsLeft="
+			+ this.timeStepsLeft + "]";
 	}
 }

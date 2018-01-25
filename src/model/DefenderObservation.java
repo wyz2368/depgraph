@@ -7,9 +7,14 @@ import game.GameSimulation;
 
 public final class DefenderObservation {
 	private final Set<SecurityAlert> alertSet;
+	private final int timeStepsLeft;
 	
-	public DefenderObservation() {
+	public DefenderObservation(final int aTimeStepsLeft) {
+		if (aTimeStepsLeft < 0) {
+			throw new IllegalArgumentException();
+		}
 		this.alertSet = new HashSet<SecurityAlert>();
+		this.timeStepsLeft = aTimeStepsLeft;
 	}
 	
 	public boolean addAlert(final SecurityAlert alert) {
@@ -28,6 +33,10 @@ public final class DefenderObservation {
 		this.alertSet.clear();
 	}
 	
+	public int getTimeStepsLeft() {
+		return this.timeStepsLeft;
+	}
+	
 	public void print() {
 		GameSimulation.printIfDebug(
 		"--------------------------------------------------------------------");
@@ -36,6 +45,7 @@ public final class DefenderObservation {
 			GameSimulation.printIfDebug("Node: " + alert.getNode().getId()
 				+ "\t" + "Alert: " + alert.isActiveAlert());
 		}
+		System.out.println("Time steps left: " + this.timeStepsLeft);
 		GameSimulation.printIfDebug("");
 		GameSimulation.printIfDebug(
 		"--------------------------------------------------------------------");

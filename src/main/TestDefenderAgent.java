@@ -86,7 +86,8 @@ public final class TestDefenderAgent {
 			}
 		}
 		gameState.createID();
-		GameOracle.generateDefObservation(depGraph, gameState, rnd);
+		GameOracle.generateDefObservation(
+			depGraph, gameState, rnd, numTimeStep);
 		DefenderBelief defBelief = new DefenderBelief();
 		final double prob = 0.7;
 		defBelief.addState(gameState, prob);

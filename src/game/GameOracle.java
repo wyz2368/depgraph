@@ -57,17 +57,20 @@ public final class GameOracle {
 	 * @param depGraph dependency graph with node states included
 	 * @param gameState current game state
 	 * @param rnd random data generator
+	 * @param timeStepsLeft how many time steps remain
 	 * @return observation of the defender
 	 */
 	public static DefenderObservation generateDefObservation(
 		final DependencyGraph depGraph,
 		final GameState gameState,
-		final RandomDataGenerator rnd
+		final RandomDataGenerator rnd,
+		final int timeStepsLeft
 	) {
 		if (depGraph == null || gameState == null || rnd == null) {
 			throw new IllegalArgumentException();
 		}
-		DefenderObservation defObservation = new DefenderObservation();
+		DefenderObservation defObservation =
+			new DefenderObservation(timeStepsLeft);
 		final boolean[] isActive = new boolean[depGraph.vertexSet().size()];
 		for (int i = 0; i < depGraph.vertexSet().size(); i++) {
 			isActive[i] = false;

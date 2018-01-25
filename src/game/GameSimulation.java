@@ -97,7 +97,8 @@ public final class GameSimulation {
 			throw new IllegalStateException();
 		}
 		// Start simulation
-		DefenderObservation dObservation = new DefenderObservation();
+		DefenderObservation dObservation =
+			new DefenderObservation(this.numTimeStep);
 		GameState gameState = new GameState();
 		gameState.createID();
 		DefenderBelief dBelief = new DefenderBelief(); 
@@ -141,7 +142,7 @@ public final class GameSimulation {
 			start = System.currentTimeMillis();
 			// observation based on game state
 			dObservation = GameOracle.generateDefObservation(
-				this.depGraph, gameState, this.rng); 
+				this.depGraph, gameState, this.rng, this.numTimeStep - t); 
 			
 			end = System.currentTimeMillis();
 			printIfDebug("Elapsed time: " + (end - start) / thousand);
