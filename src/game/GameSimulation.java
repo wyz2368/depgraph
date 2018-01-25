@@ -216,7 +216,7 @@ public final class GameSimulation {
 					}
 					
 					defRawObs.add(new RLDefenderRawObservation(
-						gameSample.getDefObservation()));
+						gameSample.getDefObservation(), null));
 					defActionList.add(new RLDefenderAction(defAction));
 					payoffs.add(defPayoff);
 				}				

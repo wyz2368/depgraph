@@ -68,6 +68,11 @@ public final class RLGameSimulation {
 	private double defenderTotalPayoff;
 	
 	/**
+	 * Most recent defender action, if any.
+	 */
+	private DefenderAction mostRecentDefAct;
+	
+	/**
 	 * Constructor for the game logic class.
 	 * @param aDepGraph the game's dependency graph
 	 * @param aAttacker the attacker agent
@@ -94,6 +99,7 @@ public final class RLGameSimulation {
 		this.attacker = aAttacker;
 		
 		this.rng = aRng;
+		this.mostRecentDefAct = null;
 	}
 	
 	/**
@@ -121,6 +127,7 @@ public final class RLGameSimulation {
 		this.depGraph.setState(this.gameState);
 		this.timeStepsLeft = this.numTimeStep;
 		this.defenderTotalPayoff = 0.0;
+		this.mostRecentDefAct = null;
 	}
 	
 	/**
@@ -184,13 +191,14 @@ public final class RLGameSimulation {
 			this.rng.getRandomGenerator()
 		);
 		
-		final DefenderAction defAction = new DefenderAction();
+		this.mostRecentDefAct = new DefenderAction();
 		for (final int idToDefend: idsToDefend) {
-			defAction.addNodetoProtect(this.depGraph.getNodeById(idToDefend));
+			this.mostRecentDefAct.addNodetoProtect(
+				this.depGraph.getNodeById(idToDefend));
 		}
 		
 		this.gameState = GameOracle.generateStateSample(
-			this.gameState, attAction, defAction, this.rng);
+			this.gameState, attAction, this.mostRecentDefAct, this.rng);
 		this.depGraph.setState(this.gameState);
 		
 		this.timeStepsLeft--;
@@ -198,7 +206,7 @@ public final class RLGameSimulation {
 			this.depGraph, this.gameState, this.rng, this.timeStepsLeft);
 		
 		final double defenderCurPayoff =
-			getDefenderPayoffCurrentTimeStep(defAction);
+			getDefenderPayoffCurrentTimeStep(this.mostRecentDefAct);
 		this.defenderTotalPayoff += defenderCurPayoff;
 	}
 	
@@ -211,11 +219,20 @@ public final class RLGameSimulation {
 	}
 	
 	/**
+	 * Return number of nodes in graph.
+	 * @return graph node count
+	 */
+	public int getNodeCount() {
+		return this.depGraph.vertexSet().size();
+	}
+	
+	/**
 	 * Returns a "raw" version of the defender's observation.
 	 * @return the defender's observation of current game state
 	 */
 	public RLDefenderRawObservation getDefenderObservation() {
-		return new RLDefenderRawObservation(this.dObservation);
+		return new RLDefenderRawObservation(
+			this.dObservation, this.mostRecentDefAct);
 	}
 	
 	/**
