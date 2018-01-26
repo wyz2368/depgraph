@@ -29,8 +29,8 @@ class DepgraphJavaEnv(gym.Env):
         JAVA_GAME = GATEWAY.entry_point.getGame()
 
         # One action for each node or pass
-        # action space is {0, . . ., NODE_COUNT}, indicating node or pass
-        self.action_space = spaces.Discrete(NODE_COUNT)
+        # action space is {0, . . ., NODE_COUNT}, indicating node or pass.
+        self.action_space = spaces.Discrete(NODE_COUNT + 1)
 
         observation = self.reset()
         # convert from JavaMember object to JavaList
@@ -47,7 +47,9 @@ class DepgraphJavaEnv(gym.Env):
     def _step(self, action):
         # action is a numpy.int64, need to convert to Python int before using with Py4J
         action_scalar = np.asscalar(action)
-        return DepgraphJavaEnv.step_result_from_flat_list(JAVA_GAME.step(action_scalar))
+        # {1, . . ., NODE_COUNT} are node ids, (NODE_COUNT + 1) means "pass"
+        action_id = action_scalar + 1
+        return DepgraphJavaEnv.step_result_from_flat_list(JAVA_GAME.step(action_id))
 
     @staticmethod
     def step_result_from_flat_list(a_list):
@@ -62,8 +64,6 @@ class DepgraphJavaEnv(gym.Env):
 
         The last element represents whether the game is done, in {0.0, 1.0}.
         '''
-        print(a_list)
-        print(len(a_list))
         game_size = NODE_COUNT * 4
 
         obs_values = a_list[:game_size]

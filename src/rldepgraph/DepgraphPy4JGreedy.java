@@ -154,14 +154,15 @@ public final class DepgraphPy4JGreedy {
 	 * the reward of the step for player taking action (in R-),
 	 * whether the game is done (in {0, 1}).
 	 * 
-	 * Legal actions are -1 to pass, or any integer that
+	 * Legal actions are (NODE_COUNT + 1) to pass, or any integer that
 	 * is a node ID in the graph but is NOT in this.nodesToDefend.
 	 * 
 	 * If the action is illegal, do not update the game state,
 	 * but consider the game as lost (i.e., minimal reward)
 	 * and thus done (i.e., 1).
 	 * 
-	 * If the move is -1, or if this.nodesToDefend is not empty and with 
+	 * If the move is (NODE_COUNT + 1), 
+	 * or if this.nodesToDefend is not empty and with 
 	 * probability this.probGreedySelectionCutOff,
 	 * the self agent (defender) and opponent (attacker)
 	 * move simultaneously, where the defender protects this.nodesToDefend
@@ -173,7 +174,8 @@ public final class DepgraphPy4JGreedy {
 	 * 
 	 * @param action an Integer, the action to take.
 	 * The action should be the index of a node to add to
-	 * this.nodesToDefend, or -1 to indicate no more nodes should be added.
+	 * this.nodesToDefend, or (NODE_COUNT + 1) to indicate
+	 * no more nodes should be added.
 	 * @return the list representing the new game state,
 	 * including the defender observation, reward, and whether the game is over,
 	 * as one flat list.
@@ -183,12 +185,13 @@ public final class DepgraphPy4JGreedy {
 			throw new IllegalArgumentException();
 		}
 		final List<Double> result = new ArrayList<Double>();
-		if (action == -1
+		final int nodeCount = this.sim.getNodeCount();
+		if (action == (nodeCount + 1)
 			|| (!this.nodesToDefend.isEmpty()
 				&& RAND.nextDouble() < this.probGreedySelectionCutOff)
 		) {
 			// no more selections allowed.
-			// either action was -1 (pass),
+			// either action was (nodeCount + 1) (pass),
 			// or there is some nodesToDefend selected already
 			// AND the random draw is below probGreedySelectionCutoff.
 			if (!this.sim.isValidMove(this.nodesToDefend)) {
@@ -274,28 +277,28 @@ public final class DepgraphPy4JGreedy {
 		final Set<Integer> activeObservedIds = defObs.activeObservedIdSet();
 		final Set<Integer> defendedIds = defObs.getDefendedIds();
 		final int timeStepsLeft = defObs.getTimeStepsLeft();
-		for (int i = 0; i < this.sim.getNodeCount(); i++) {
+		for (int i = 1; i <= this.sim.getNodeCount(); i++) {
 			if (activeObservedIds.contains(i)) {
 				result.add(1.0);
 			} else {
 				result.add(0.0);
 			}
 		}
-		for (int i = 0; i < this.sim.getNodeCount(); i++) {
+		for (int i = 1; i <= this.sim.getNodeCount(); i++) {
 			if (defendedIds.contains(i)) {
 				result.add(1.0);
 			} else {
 				result.add(0.0);
 			}
 		}
-		for (int i = 0; i < this.sim.getNodeCount(); i++) {
+		for (int i = 1; i <= this.sim.getNodeCount(); i++) {
 			if (this.nodesToDefend.contains(i)) {
 				result.add(1.0);
 			} else {
 				result.add(0.0);
 			}
 		}
-		for (int i = 0; i < this.sim.getNodeCount(); i++) {
+		for (int i = 1; i <= this.sim.getNodeCount(); i++) {
 			result.add((double) timeStepsLeft);
 		}
 		return result;

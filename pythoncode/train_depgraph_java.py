@@ -6,11 +6,6 @@ import gym
 
 from baselines import deepq
 
-def callback(lcl, glb):
-    ''' Indicates training should stop if mean reward is at least 0.5 over 100 episodes. '''
-    is_solved = lcl['t'] > 100 and sum(lcl['episode_rewards'][-101:-1]) / 100 >= 0.5
-    return is_solved
-
 def main():
     '''
     Makes the Connect Four environment, builds a multilayer perceptron model,
@@ -32,8 +27,7 @@ def main():
         exploration_final_eps=0.1,
         print_freq=10,
         param_noise=False,
-        gamma=0.99,
-        callback=callback
+        gamma=0.99
     )
     model_name = "depgraph_java_deepq_model.pkl"
     print("Saving model to: " + model_name)
