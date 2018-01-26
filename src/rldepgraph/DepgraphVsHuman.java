@@ -125,6 +125,10 @@ public final class DepgraphVsHuman {
 			new BufferedReader(new InputStreamReader(System.in));
 		try {
 			final String input = reader.readLine();
+			if (input == null) {
+				System.out.println("Please try again.");
+				return getHumanIdsToDefend();
+			}
 			List<String> items = Arrays.asList(input.split(","));
 			for (final String item: items) {
 				final String itemStripped = StringUtils.strip(item);
