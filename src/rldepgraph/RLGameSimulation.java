@@ -166,6 +166,15 @@ public final class RLGameSimulation {
 	}
 	
 	/**
+	 * Returns true if the nodeId is the ID of a node in the graph.
+	 * @param nodeId a nodeId to check
+	 * @return true if nodeId is in {0, . . ., nodeCount - 1}.
+	 */
+	public boolean isValidId(final int nodeId) {
+		return nodeId >= 0 && nodeId < this.depGraph.vertexSet().size();
+	}
+	
+	/**
 	 * Whether the defender move is legal.
 	 * @param idsToDefend the set of node IDs to protect
 	 * @return true if all IDs refer to nodes in the network,
