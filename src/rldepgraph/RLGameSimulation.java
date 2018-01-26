@@ -68,9 +68,19 @@ public final class RLGameSimulation {
 	private double defenderTotalPayoff;
 	
 	/**
+	 * Defender's discounted payoff in most recent time step only.
+	 */
+	private double defenderMarginalPayoff;
+	
+	/**
 	 * Most recent defender action, if any.
 	 */
 	private DefenderAction mostRecentDefAct;
+	
+	/**
+	 * The most penalty that is possible in one time step.
+	 */
+	private double maxPenalty;
 	
 	/**
 	 * Constructor for the game logic class.
@@ -100,6 +110,30 @@ public final class RLGameSimulation {
 		
 		this.rng = aRng;
 		this.mostRecentDefAct = null;
+		setupMaxPenalty();
+	}
+	
+	/**
+	 * Set up the maximum penalty for a single time step,
+	 * which is the sum over nodes of their penalty if compromised
+	 * and their cost of defending.
+	 */
+	private void setupMaxPenalty() {
+		double result = 0.0;
+		for (final Node node: this.depGraph.vertexSet()) {
+			result += Math.max(node.getDPenalty(), node.getDCost());
+		}
+		this.maxPenalty = result;
+	}
+	
+	/**
+	 * Get the lowest discounted reward possible in this time step.
+	 * @return the lowest possible discounted reward in this time step.
+	 */
+	public double getMinTimeStepReward() {
+		final int timeStep = this.numTimeStep - this.timeStepsLeft;
+		final double discFactPow = Math.pow(this.discFact, timeStep);
+		return -1.0 * this.maxPenalty * discFactPow;
 	}
 	
 	/**
@@ -127,6 +161,7 @@ public final class RLGameSimulation {
 		this.depGraph.setState(this.gameState);
 		this.timeStepsLeft = this.numTimeStep;
 		this.defenderTotalPayoff = 0.0;
+		this.defenderMarginalPayoff = 0.0;
 		this.mostRecentDefAct = null;
 	}
 	
@@ -168,7 +203,7 @@ public final class RLGameSimulation {
 		for (final Node node : defAction.getAction()) {
 			result += discFactPow * node.getDCost();
 		}
-		return result;
+		return -1.0 * result;
 	}
 	
 	/**
@@ -208,6 +243,7 @@ public final class RLGameSimulation {
 		final double defenderCurPayoff =
 			getDefenderPayoffCurrentTimeStep(this.mostRecentDefAct);
 		this.defenderTotalPayoff += defenderCurPayoff;
+		this.defenderMarginalPayoff = defenderCurPayoff;
 	}
 	
 	/**
@@ -216,6 +252,14 @@ public final class RLGameSimulation {
 	 */
 	public double getDefenderTotalPayoff() {
 		return this.defenderTotalPayoff;
+	}
+	
+	/**
+	 * Returns the discounted payoff of the most recent time step.
+	 * @return the discounted payoff of the most recent time step
+	 */
+	public double getDefenderMarginalPayoff() {
+		return this.defenderMarginalPayoff;
 	}
 	
 	/**

@@ -2,6 +2,7 @@ package rldepgraph;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -105,6 +106,64 @@ public final class DepgraphPy4J {
 		this.sim.reset();
 		
 		return getDefObsAsListDouble();
+	}
+
+	/**
+	 * Take a step based on the given action, represented as
+	 * a list of integers.
+	 * 
+	 * Return a flat list representing, in order:
+	 * the new defender observation state,
+	 * the reward of the step for player taking action (in R-),
+	 * whether the game is done (in {0, 1}).
+	 * 
+	 * If the action is illegal, do not update the game state,
+	 * but consider the game as lost (i.e., minimal reward)
+	 * and thus done (i.e., 1).
+	 * 
+	 * The self agent (defender) and opponent (attacker)
+	 * move simultaneously, unless the defender move was illegal,
+	 * in which case the game ends immediately.
+	 * 
+	 * @param action the list representing the action to take.
+	 * The action list will have indexes of nodes to defend.
+	 * @return the list representing the new game state,
+	 * including the defender observation, reward, and whether the game is over,
+	 * as one flat list.
+	 */
+	public List<Double> step(final List<Integer> action) {
+		if (action == null) {
+			throw new IllegalArgumentException();
+		}
+		
+		final Set<Integer> idsToDefend = new HashSet<Integer>(action);
+		final List<Double> result = new ArrayList<Double>();
+		if (!this.sim.isValidMove(idsToDefend)) {
+			// illegal move. game is lost.
+			final List<Double> defObs = getDefObsAsListDouble();
+			// self player (defender) gets minimal reward for illegal move.
+			final double reward = this.sim.getMinTimeStepReward();
+			// game is over.
+			final double isOver = 1.0;
+			result.addAll(defObs);
+			result.add(reward);
+			result.add(isOver);
+			return result;
+		}
+		
+		// move is valid.
+		this.sim.step(idsToDefend);
+		
+		final List<Double> defObs = getDefObsAsListDouble();
+		final double reward = this.sim.getDefenderMarginalPayoff();
+		double isOver = 0.0;
+		if (this.sim.isGameOver()) {
+			isOver = 1.0;
+		}
+		result.addAll(defObs);
+		result.add(reward);
+		result.add(isOver);
+		return result;
 	}
 	
 	/**
