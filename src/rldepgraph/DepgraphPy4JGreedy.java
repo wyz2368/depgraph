@@ -123,11 +123,12 @@ public final class DepgraphPy4JGreedy {
 	}
 	
 	/**
-	 * Get a new DepgraphPy4J object for Py4J.
-	 * @return the DepgraphPy4J for Py4J to use.
+	 * Get a new DepgraphPy4JGreedy object for Py4J.
+	 * @return the DepgraphPy4JGreedy for Py4J to use.
 	 */
-	public static DepgraphPy4J getGame() {
-		return new DepgraphPy4J();
+	public static DepgraphPy4JGreedy getGame() {
+		final double myProbGreedySelectionCutOff = 0.1;
+		return new DepgraphPy4JGreedy(myProbGreedySelectionCutOff);
 	}
 	
 	/**
@@ -146,7 +147,7 @@ public final class DepgraphPy4JGreedy {
 
 	/**
 	 * Take a step based on the given action, represented as
-	 * a list of exactly 1 integer.
+	 * an integer.
 	 * 
 	 * Return a flat list representing, in order:
 	 * the new defender observation state,
@@ -170,22 +171,19 @@ public final class DepgraphPy4JGreedy {
 	 * and control returns to the defender without the attack making a move,
 	 * the marginal reward is 0.0, and the time step does not advance.
 	 * 
-	 * @param action the list representing the action to take.
-	 * The action list will have the index of a node to add to
+	 * @param action an Integer, the action to take.
+	 * The action should be the index of a node to add to
 	 * this.nodesToDefend, or -1 to indicate no more nodes should be added.
 	 * @return the list representing the new game state,
 	 * including the defender observation, reward, and whether the game is over,
 	 * as one flat list.
 	 */
-	public List<Double> step(final List<Integer> action) {
-		if (action == null || action.size() != 1) {
+	public List<Double> step(final Integer action) {
+		if (action == null) {
 			throw new IllegalArgumentException();
 		}
-		
-		final int actionId = action.get(0);
-		
 		final List<Double> result = new ArrayList<Double>();
-		if (actionId == -1
+		if (action == -1
 			|| (!this.nodesToDefend.isEmpty()
 				&& RAND.nextDouble() < this.probGreedySelectionCutOff)
 		) {
@@ -225,7 +223,8 @@ public final class DepgraphPy4JGreedy {
 		
 		// selection is allowed; will try to add to nodesToDefend.
 		
-		if (this.nodesToDefend.contains(actionId)) {
+		if (this.nodesToDefend.contains(action)
+			|| !this.sim.isValidId(action)) {
 			// illegal move. game is lost.
 			final List<Double> defObs = getDefObsAsListDouble();
 			// self player (defender) gets minimal reward for illegal move.
@@ -239,7 +238,7 @@ public final class DepgraphPy4JGreedy {
 		}
 
 		// selection is valid. add to nodesToDefend.
-		this.nodesToDefend.add(actionId);
+		this.nodesToDefend.add(action);
 		final List<Double> defObs = getDefObsAsListDouble();
 		final double reward = 0.0; // no marginal reward for adding nodes to set
 		final double isOver = 0.0; // game is not over.
@@ -273,8 +272,8 @@ public final class DepgraphPy4JGreedy {
 		final RLDefenderRawObservation defObs = 
 			this.sim.getDefenderObservation();
 		final Set<Integer> activeObservedIds = defObs.activeObservedIdSet();
-		final int timeStepsLeft = defObs.getTimeStepsLeft();
 		final Set<Integer> defendedIds = defObs.getDefendedIds();
+		final int timeStepsLeft = defObs.getTimeStepsLeft();
 		for (int i = 0; i < this.sim.getNodeCount(); i++) {
 			if (activeObservedIds.contains(i)) {
 				result.add(1.0);

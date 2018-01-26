@@ -45,12 +45,9 @@ class DepgraphJavaEnv(gym.Env):
         return [x for x in result_values]
 
     def _step(self, action):
-        # https://www.py4j.org/advanced_topics.html#collections-conversion
-        action_for_java = GATEWAY.jvm.java.util.ArrayList()
         # action is a numpy.int64, need to convert to Python int before using with Py4J
         action_scalar = np.asscalar(action)
-        action_for_java.add(action_scalar)
-        return DepgraphJavaEnv.step_result_from_flat_list(JAVA_GAME.step(action_for_java))
+        return DepgraphJavaEnv.step_result_from_flat_list(JAVA_GAME.step(action_scalar))
 
     @staticmethod
     def step_result_from_flat_list(a_list):
@@ -65,6 +62,8 @@ class DepgraphJavaEnv(gym.Env):
 
         The last element represents whether the game is done, in {0.0, 1.0}.
         '''
+        print(a_list)
+        print(len(a_list))
         game_size = NODE_COUNT * 4
 
         obs_values = a_list[:game_size]
