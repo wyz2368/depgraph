@@ -191,21 +191,21 @@ public final class DepgraphPy4J {
 		final Set<Integer> activeObservedIds = defObs.activeObservedIdSet();
 		final int timeStepsLeft = defObs.getTimeStepsLeft();
 		final Set<Integer> defendedIds = defObs.getDefendedIds();
-		for (int i = 0; i < this.sim.getNodeCount(); i++) {
+		for (int i = 1; i <= this.sim.getNodeCount(); i++) {
 			if (activeObservedIds.contains(i)) {
 				result.add(1.0);
 			} else {
 				result.add(0.0);
 			}
 		}
-		for (int i = 0; i < this.sim.getNodeCount(); i++) {
+		for (int i = 1; i <= this.sim.getNodeCount(); i++) {
 			if (defendedIds.contains(i)) {
 				result.add(1.0);
 			} else {
 				result.add(0.0);
 			}
 		}
-		for (int i = 0; i < this.sim.getNodeCount(); i++) {
+		for (int i = 1; i <= this.sim.getNodeCount(); i++) {
 			result.add((double) timeStepsLeft);
 		}
 		return result;

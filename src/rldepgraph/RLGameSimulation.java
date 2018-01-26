@@ -78,9 +78,9 @@ public final class RLGameSimulation {
 	private DefenderAction mostRecentDefAct;
 	
 	/**
-	 * The most penalty that is possible in one time step.
+	 * The worst reward that is possible in one time step.
 	 */
-	private double maxPenalty;
+	private double worstReward;
 	
 	/**
 	 * Constructor for the game logic class.
@@ -110,20 +110,20 @@ public final class RLGameSimulation {
 		
 		this.rng = aRng;
 		this.mostRecentDefAct = null;
-		setupMaxPenalty();
+		setupWorstReward();
 	}
 	
 	/**
-	 * Set up the maximum penalty for a single time step,
-	 * which is the sum over nodes of their penalty if compromised
-	 * and their cost of defending.
+	 * Set up the worst (minimum) reward for a single time step,
+	 * which is the sum over nodes of the min of their reward if compromised
+	 * and their reward (cost in R-) of defending.
 	 */
-	private void setupMaxPenalty() {
+	private void setupWorstReward() {
 		double result = 0.0;
 		for (final Node node: this.depGraph.vertexSet()) {
-			result += Math.max(node.getDPenalty(), node.getDCost());
+			result += Math.min(node.getDPenalty(), node.getDCost());
 		}
-		this.maxPenalty = result;
+		this.worstReward = result;
 	}
 	
 	/**
@@ -132,8 +132,11 @@ public final class RLGameSimulation {
 	 */
 	public double getMinTimeStepReward() {
 		final int timeStep = this.numTimeStep - this.timeStepsLeft;
+		System.out.println("time step: " + timeStep);
+		System.out.println("discFact: " + this.discFact);
+		System.out.println("worst reward: " + this.worstReward);
 		final double discFactPow = Math.pow(this.discFact, timeStep);
-		return -1.0 * this.maxPenalty * discFactPow;
+		return this.worstReward * discFactPow;
 	}
 	
 	/**
@@ -212,7 +215,7 @@ public final class RLGameSimulation {
 		for (final Node node : defAction.getAction()) {
 			result += discFactPow * node.getDCost();
 		}
-		return -1.0 * result;
+		return result;
 	}
 	
 	/**
