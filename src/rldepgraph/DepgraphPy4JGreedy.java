@@ -126,7 +126,7 @@ public final class DepgraphPy4JGreedy {
 	 * Get a new DepgraphPy4J object for Py4J.
 	 * @return the DepgraphPy4J for Py4J to use.
 	 */
-	public static DepgraphPy4J getBoard() {
+	public static DepgraphPy4J getGame() {
 		return new DepgraphPy4J();
 	}
 	
