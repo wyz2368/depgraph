@@ -132,9 +132,6 @@ public final class RLGameSimulation {
 	 */
 	public double getMinTimeStepReward() {
 		final int timeStep = this.numTimeStep - this.timeStepsLeft;
-		System.out.println("time step: " + timeStep);
-		System.out.println("discFact: " + this.discFact);
-		System.out.println("worst reward: " + this.worstReward);
 		final double discFactPow = Math.pow(this.discFact, timeStep);
 		return this.worstReward * discFactPow;
 	}
