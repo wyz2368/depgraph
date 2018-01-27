@@ -27,8 +27,8 @@ def main():
         lr=1e-3,
         max_timesteps=60000,
         buffer_size=10000,
-        exploration_fraction=0.2,
-        exploration_final_eps=0.02,
+        exploration_fraction=0.5,
+        exploration_final_eps=0.1,
         print_freq=10,
         param_noise=False,
         gamma=0.99

@@ -58,6 +58,15 @@ public final class DepgraphPy4JGreedy {
 	private static final Random RAND = new Random();
 	
 	/**
+	 * If true, adding the same node to nodesToDefend
+	 * repeatedly in one turn loses the game.
+	 * 
+	 * Otherwise, doing so is equivalent to the "pass"
+	 * move and lead to selecting the current nodesToDefend.
+	 */
+	private static final boolean LOSE_IF_REPEAT = false;
+	
+	/**
 	 * Public constructor.
 	 * 
 	 * @param aProbGreedySelectionCutOff likelihood that after each
@@ -189,11 +198,14 @@ public final class DepgraphPy4JGreedy {
 		if (action == (nodeCount + 1)
 			|| (!this.nodesToDefend.isEmpty()
 				&& RAND.nextDouble() < this.probGreedySelectionCutOff)
+			|| (this.nodesToDefend.contains(action) && !LOSE_IF_REPEAT)
 		) {
 			// no more selections allowed.
 			// either action was (nodeCount + 1) (pass),
 			// or there is some nodesToDefend selected already
-			// AND the random draw is below probGreedySelectionCutoff.
+			// AND the random draw is below probGreedySelectionCutoff,
+			// or the action is already in nodesToDefend AND
+			// !LOSE_IF_REPEAT, so repeated selection counts as "pass".
 			if (!this.sim.isValidMove(this.nodesToDefend)) {
 				// illegal move. game is lost.
 				final List<Double> defObs = getDefObsAsListDouble();
@@ -226,8 +238,9 @@ public final class DepgraphPy4JGreedy {
 		
 		// selection is allowed; will try to add to nodesToDefend.
 		
-		if (this.nodesToDefend.contains(action)
-			|| !this.sim.isValidId(action)) {
+		if (!this.sim.isValidId(action)
+			|| (this.nodesToDefend.contains(action) && LOSE_IF_REPEAT)
+		) {
 			// illegal move. game is lost.
 			final List<Double> defObs = getDefObsAsListDouble();
 			// self player (defender) gets minimal reward for illegal move.
@@ -240,7 +253,7 @@ public final class DepgraphPy4JGreedy {
 			return result;
 		}
 
-		// selection is valid. add to nodesToDefend.
+		// selection is valid and not a repeat. add to nodesToDefend.
 		this.nodesToDefend.add(action);
 		final List<Double> defObs = getDefObsAsListDouble();
 		final double reward = 0.0; // no marginal reward for adding nodes to set
