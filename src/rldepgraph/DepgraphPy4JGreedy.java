@@ -198,7 +198,7 @@ public final class DepgraphPy4JGreedy {
 				// illegal move. game is lost.
 				final List<Double> defObs = getDefObsAsListDouble();
 				// self player (defender) gets minimal reward for illegal move.
-				final double reward = this.sim.getMinTimeStepReward();
+				final double reward = this.sim.getWorstRemainingReward();
 				// game is over.
 				final double isOver = 1.0;
 				result.addAll(defObs);
@@ -231,7 +231,7 @@ public final class DepgraphPy4JGreedy {
 			// illegal move. game is lost.
 			final List<Double> defObs = getDefObsAsListDouble();
 			// self player (defender) gets minimal reward for illegal move.
-			final double reward = this.sim.getMinTimeStepReward();
+			final double reward = this.sim.getWorstRemainingReward();
 			// game is over.
 			final double isOver = 1.0;
 			result.addAll(defObs);

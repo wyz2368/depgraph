@@ -130,10 +130,15 @@ public final class RLGameSimulation {
 	 * Get the lowest discounted reward possible in this time step.
 	 * @return the lowest possible discounted reward in this time step.
 	 */
-	public double getMinTimeStepReward() {
+	public double getWorstRemainingReward() {
 		final int timeStep = this.numTimeStep - this.timeStepsLeft;
-		final double discFactPow = Math.pow(this.discFact, timeStep);
-		return this.worstReward * discFactPow;
+		double discFactPow = Math.pow(this.discFact, timeStep);
+		double totalProduct = discFactPow;
+		for (int t = timeStep + 1; t <= this.numTimeStep; t++) {
+			discFactPow *= this.discFact;
+			totalProduct += discFactPow;
+		}
+		return this.worstReward * totalProduct;
 	}
 	
 	/**
