@@ -25,10 +25,10 @@ def main():
         env,
         q_func=model,
         lr=1e-3,
-        max_timesteps=60000,
-        buffer_size=10000,
+        max_timesteps=600000,
+        buffer_size=30000,
         exploration_fraction=0.5,
-        exploration_final_eps=0.1,
+        exploration_final_eps=0.05,
         print_freq=10,
         param_noise=False,
         gamma=0.99

@@ -20,16 +20,16 @@ def main():
     act = deepq.learn(
         env,
         q_func=model,
-        lr=5e-3,
-        max_timesteps=60000,
-        buffer_size=10000,
+        lr=1e-3,
+        max_timesteps=600000,
+        buffer_size=30000,
         exploration_fraction=0.5,
-        exploration_final_eps=0.1,
-        print_freq=10,
+        exploration_final_eps=0.05,
+        print_freq=30,
         param_noise=False,
         gamma=0.99
     )
-    model_name = "depgraph_java_deepq_model.pkl"
+    model_name = "depgraph_java_deepq_model2.pkl"
     print("Saving model to: " + model_name)
     act.save(model_name)
     end = time.time()
