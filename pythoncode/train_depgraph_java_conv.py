@@ -24,12 +24,12 @@ def main():
     act = deepq.learn(
         env,
         q_func=model,
-        lr=1e-3,
+        lr=5e-5,
         max_timesteps=600000,
         buffer_size=30000,
         exploration_fraction=0.5,
         exploration_final_eps=0.05,
-        print_freq=10,
+        print_freq=150,
         param_noise=False,
         gamma=0.99
     )
