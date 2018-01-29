@@ -182,7 +182,7 @@ public final class GameSimulation {
 		}
 		*/
 		for (final RLDefenderEpisode episode: this.rlDefenderEpisodes) {
-			System.out.println(episode.getStringForFile());
+			printIfDebug(episode.getStringForFile());
 		}
 	}
 	
