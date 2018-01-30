@@ -18,20 +18,20 @@ import utils.DGraphUtils;
 import utils.EncodingUtils;
 import utils.JsonUtils;
 
-public final class MainGameStaticGraph {
+public final class MainGameFixedGraph {
 	
-	private MainGameStaticGraph() {
+	private MainGameFixedGraph() {
 		// private constructor
 	}
 
 	public static void main(final String[] args) {
 		if (args == null || args.length != 2) {
 			throw new IllegalStateException(
-				"Need two arguments: simspecFolder, graphFolder"
+				"Need two arguments: simulationFolder, samplesToGather"
 			);
 		}
 		final long startTime = System.nanoTime();
-		runSimulationsAndPrint(args[0], args[1]);
+		runSimulationsAndPrint(args[0], Integer.parseInt(args[1]));
 		final long endTime = System.nanoTime();
 		final long diff = endTime - startTime;
 		final long millis = diff / 1000000;
@@ -41,11 +41,11 @@ public final class MainGameStaticGraph {
 	/**
 	 * @param simspecFolderName the local path to the folder
 	 * containing simulation_spec.json
-	 * @param graphFolderName path to graph folder
+	 * @param samplesToGather how many samples to collect
 	 */
 	public static void runSimulationsAndPrint(
-		final String simspecFolderName, final String graphFolderName) {
-		if (simspecFolderName == null || graphFolderName == null) {
+		final String simspecFolderName, final int samplesToGather) {
+		if (simspecFolderName == null) {
 			throw new IllegalArgumentException();
 		}
   
@@ -79,7 +79,7 @@ public final class MainGameStaticGraph {
 		final MeanGameSimulationResult simResult = runSimulations(
 			depGraph, simSpec, attackerName,
 			attackerParams, defenderName, defenderParams,
-			simSpec.getNumSim());
+			samplesToGather);
 		final String obsString =
 			JsonUtils.getObservationString(
 				simResult, attackerString, defenderString, simSpec);
