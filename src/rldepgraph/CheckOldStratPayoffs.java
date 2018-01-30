@@ -43,7 +43,7 @@ public final class CheckOldStratPayoffs {
 		final String defStratStringFileName = "defStratStrings.txt";
 		final List<String> defStratStrings =
 			getDefenderStrings(defStratStringFileName);
-		final int iterationsPerStrategy = 10;
+		final int iterationsPerStrategy = 2;
 		final CheckOldStratPayoffs checker = new CheckOldStratPayoffs();
 		checker.printAllPayoffs(defStratStrings, iterationsPerStrategy);
 	}
@@ -62,7 +62,9 @@ public final class CheckOldStratPayoffs {
 	) {
 		System.out.println(
 			"Iterations per strategy: " + iterationsPerStrategy + "\n");
-		final DecimalFormat format = new DecimalFormat("#.##"); 
+		final DecimalFormat format = new DecimalFormat("#.##");
+
+		final long startTime = System.currentTimeMillis();
 		for (final String defenderString: defenderStrings) {
 			setupEnvironment(defenderString);
 			final double[] payoffStats  = getPayoffStats(iterationsPerStrategy);
@@ -73,6 +75,11 @@ public final class CheckOldStratPayoffs {
 			System.out.println("\t" + format.format(meanPayoff) + ", "
 				+ format.format(stdev) + ", " + format.format(standardError));
 		}
+		
+		final long stopTime = System.currentTimeMillis();
+	    final long elapsedTime = stopTime - startTime;
+	    final double minutesTaken = elapsedTime / (1000.0 * 60.0);
+	    System.out.println("Minutes taken: " + format.format(minutesTaken));
 	}
 	
 	/**
