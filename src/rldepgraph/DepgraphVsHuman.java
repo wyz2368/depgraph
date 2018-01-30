@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.random.RandomDataGenerator;
 
 import agent.AgentFactory;
@@ -131,7 +130,7 @@ public final class DepgraphVsHuman {
 			}
 			List<String> items = Arrays.asList(input.split(","));
 			for (final String item: items) {
-				final String itemStripped = StringUtils.strip(item);
+				final String itemStripped = item.trim();
 				if (itemStripped.isEmpty()) {
 					return result; // empty set to defend
 				}
