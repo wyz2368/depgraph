@@ -1,7 +1,7 @@
 ''' Play back the dependency graph network that was learned. '''
 import time
-import gym
 import numpy as np
+import gym
 from baselines import deepq
 
 def main():
