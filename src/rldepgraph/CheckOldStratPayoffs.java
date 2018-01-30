@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.random.RandomDataGenerator;
 
 import agent.AgentFactory;
@@ -40,10 +39,18 @@ public final class CheckOldStratPayoffs {
 	 * @param args not used
 	 */
 	public static void main(final String[] args) {
+		if (args == null || args.length != 1) {
+			throw new IllegalArgumentException(
+				"Need 1 arg: iterationsPerStrategy");
+		}
+		final int iterationsPerStrategy = Integer.parseInt(args[0]);
+		if (iterationsPerStrategy < 2) {
+			throw new IllegalArgumentException();
+		}
+		
 		final String defStratStringFileName = "defStratStrings.txt";
 		final List<String> defStratStrings =
 			getDefenderStrings(defStratStringFileName);
-		final int iterationsPerStrategy = 2;
 		final CheckOldStratPayoffs checker = new CheckOldStratPayoffs();
 		checker.printAllPayoffs(defStratStrings, iterationsPerStrategy);
 	}
@@ -108,7 +115,10 @@ public final class CheckOldStratPayoffs {
 		final double meanSquareResult =
 			sumSquaredPayoff * 1.0 / simulationCount;
 		final double variance = meanSquareResult - meanResult * meanResult;
-		final double stdev = Math.sqrt(variance);
+		double stdev = 0.0;
+		if (variance > 0.0) {
+			stdev = Math.sqrt(variance);
+		}
 		final double standardError = stdev / Math.sqrt(simulationCount);
 		return new double[]{meanResult, stdev, standardError};
 	}
@@ -126,7 +136,7 @@ public final class CheckOldStratPayoffs {
 			new BufferedReader(new FileReader(fileName))) {
 		    String line;
 		    while ((line = br.readLine()) != null) {
-		    	String lineStripped = StringUtils.strip(line);
+		    	String lineStripped = line.trim();
 		    	if (lineStripped.length() > 0) {
 			    	result.add(lineStripped);
 		    	}
