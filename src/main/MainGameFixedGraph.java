@@ -25,13 +25,13 @@ public final class MainGameFixedGraph {
 	}
 
 	public static void main(final String[] args) {
-		if (args == null || args.length != 2) {
+		if (args == null || args.length != 1) {
 			throw new IllegalStateException(
-				"Need two arguments: simulationFolder, samplesToGather"
+				"Need 1 argument: simulationFolder"
 			);
 		}
 		final long startTime = System.nanoTime();
-		runSimulationsAndPrint(args[0], Integer.parseInt(args[1]));
+		runSimulationsAndPrint(args[0]);
 		final long endTime = System.nanoTime();
 		final long diff = endTime - startTime;
 		final long millis = diff / 1000000;
@@ -41,10 +41,9 @@ public final class MainGameFixedGraph {
 	/**
 	 * @param simspecFolderName the local path to the folder
 	 * containing simulation_spec.json
-	 * @param samplesToGather how many samples to collect
 	 */
 	public static void runSimulationsAndPrint(
-		final String simspecFolderName, final int samplesToGather) {
+		final String simspecFolderName) {
 		if (simspecFolderName == null) {
 			throw new IllegalArgumentException();
 		}
@@ -79,7 +78,7 @@ public final class MainGameFixedGraph {
 		final MeanGameSimulationResult simResult = runSimulations(
 			depGraph, simSpec, attackerName,
 			attackerParams, defenderName, defenderParams,
-			samplesToGather);
+			simSpec.getNumSim());
 		final String obsString =
 			JsonUtils.getObservationString(
 				simResult, attackerString, defenderString, simSpec);
