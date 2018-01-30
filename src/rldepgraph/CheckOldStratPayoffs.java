@@ -23,10 +23,22 @@ import utils.DGraphUtils;
 import utils.EncodingUtils;
 import utils.JsonUtils;
 
+/**
+ * Get the mean payoff for each old defense strategy,
+ * against the given attack strategy.
+ */
 public final class CheckOldStratPayoffs {
 	
+	/**
+	 * Used to run the game logic.
+	 */
 	private GameSimulation sim;
 
+	/**
+	 * Main method.
+	 * 
+	 * @param args not used
+	 */
 	public static void main(final String[] args) {
 		final String defStratStringFileName = "defStratStrings.txt";
 		final List<String> defStratStrings =
@@ -36,36 +48,71 @@ public final class CheckOldStratPayoffs {
 		checker.printAllPayoffs(defStratStrings, iterationsPerStrategy);
 	}
 	
+	/**
+	 * Print the mean, standard deviation, and standard error of
+	 * payoffs for each given defender strategy.
+	 * 
+	 * @param defenderStrings list of defender strategy strings
+	 * @param iterationsPerStrategy how many simulations to run
+	 * per strategy
+	 */
 	private void printAllPayoffs(
 		final List<String> defenderStrings,
 		final int iterationsPerStrategy
 	) {
-		// TODO: show time taken overall
-		// TODO: also show variance, SEM for each
 		System.out.println(
 			"Iterations per strategy: " + iterationsPerStrategy + "\n");
 		final DecimalFormat format = new DecimalFormat("#.##"); 
 		for (final String defenderString: defenderStrings) {
 			setupEnvironment(defenderString);
-			final double meanPayoff = getMeanPayoff(iterationsPerStrategy);
+			final double[] payoffStats  = getPayoffStats(iterationsPerStrategy);
+			final double meanPayoff = payoffStats[0];
+			final double stdev = payoffStats[1];
+			final double standardError = payoffStats[2];
 			System.out.println(defenderString);
-			System.out.println("\t" + format.format(meanPayoff) + "\n");
+			System.out.println("\t" + format.format(meanPayoff) + ", "
+				+ format.format(stdev) + ", " + format.format(standardError));
 		}
 	}
 	
-	private double getMeanPayoff(
+	/**
+	 * Run the given number of simulations, and return
+	 * the mean, standard deviation, and standard error
+	 * of the defender payoffs.
+	 * 
+	 * @param simulationCount how many simulations to use
+	 * @return a double array with the mean defender payoff,
+	 * standard deviation, and standard error of the mean in order.
+	 */
+	private double[] getPayoffStats(
 		final int simulationCount
 	) {
-		// TODO: also get variance, SEM for each
 		double defPayoffTotal = 0.0;
+		double sumSquaredPayoff = 0.0;
 		for (int i = 0; i < simulationCount; i++) {
 			this.sim.reset();
 			this.sim.runSimulation();
-			defPayoffTotal += this.sim.getSimulationResult().getDefPayoff();
+			final double curPayoff =
+				this.sim.getSimulationResult().getDefPayoff();
+			defPayoffTotal += curPayoff;
+			sumSquaredPayoff += curPayoff * curPayoff;
 		}
-		return defPayoffTotal * 1.0 / simulationCount;
+		final double meanResult = defPayoffTotal * 1.0 / simulationCount;
+		final double meanSquareResult =
+			sumSquaredPayoff * 1.0 / simulationCount;
+		final double variance = meanSquareResult - meanResult * meanResult;
+		final double stdev = Math.sqrt(variance);
+		final double standardError = stdev / Math.sqrt(simulationCount);
+		return new double[]{meanResult, stdev, standardError};
 	}
 	
+	/**
+	 * Get the list of defender strategy strings from the given file.
+	 * 
+	 * @param fileName the name of the file with the defender strategy
+	 * strings
+	 * @return a list of the defender strategy strings from the file
+	 */
 	private static List<String> getDefenderStrings(final String fileName) {
 		final List<String> result = new ArrayList<String>();
 		try (final BufferedReader br =
@@ -85,6 +132,11 @@ public final class CheckOldStratPayoffs {
 		return result;
 	}
 	
+	/**
+	 * Set up the game environment.
+	 * @param defenderString the string name of the defender
+	 * strategy
+	 */
 	private void setupEnvironment(final String defenderString) {
 		final String simspecFolderName = "simspecs";
 		final String graphFolderName = "graphs";
