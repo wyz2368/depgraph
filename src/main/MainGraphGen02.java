@@ -25,7 +25,7 @@ public final class MainGraphGen02 {
 				"Need 1 argument: graphFolder");
 		}
 		String folderPath = args[0];
-		final int numTarget = 10;
+		final int numTarget = 6;
 		final double nodeActTypeRatio = 1.0;
 		final double aRewardLB = 10.0;
 		final double aRewardUB = 20.0;
@@ -53,9 +53,9 @@ public final class MainGraphGen02 {
 		RandomDataGenerator rnd = new RandomDataGenerator();
 		rnd.reSeed(System.currentTimeMillis());
 
-		final int numLayer = 5;
-		final int numNode1Layer = 25;
-		final double numNodeRatio = 0.8;
+		final int numLayer = 3;
+		final int numNode1Layer = 13;
+		final double numNodeRatio = 0.75;
 		final double numEdgeRatio = 0.5;
 		
 		final double aNodeCostFactor = 1.2;
@@ -64,7 +64,7 @@ public final class MainGraphGen02 {
 		final double aRewardFactor = 1.2;
 		final double dPenaltyFactor = 1.2;
 		
-		final int numSample = 50;
+		final int numSample = 2;
 		
 		genSepLayerGraph(
 			folderPath, 
