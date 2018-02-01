@@ -51,13 +51,9 @@ public final class MainGameFixedGraph {
 		final GameSimulationSpec simSpec =
 			JsonUtils.getSimSpecOrDefaults(simspecFolderName);	
 		// Load graph
-		final int numNodes = 30;
-		final int numEdge = 100;
 		String filePathName = "graphs" + File.separator
-			+ "RandomGraph" + numNodes
-			+ "N" + numEdge + "E" 
-			+ 2 + "T"
-			+ 1 + JsonUtils.JSON_SUFFIX;
+			// + "RandomGraph30N100E2T1.json";
+			+ "SepLayerGraph0.json";
 		DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
 		GameSimulation.printIfDebug(filePathName);
 				
