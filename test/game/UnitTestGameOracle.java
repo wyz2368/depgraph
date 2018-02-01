@@ -348,12 +348,14 @@ public final class UnitTestGameOracle {
 		for (int i = 0; i < iters; i++) {
 			final GameState allNodesEnabled = allNodes(depGraph);
 			final DefenderObservation defObsAllEnabled =
-				GameOracle.generateDefObservation(depGraph, allNodesEnabled, rnd);
+				GameOracle.generateDefObservation(
+					depGraph, allNodesEnabled, rnd, 1);
 			countAllEnabled += posAlertCount(defObsAllEnabled);
 			
 			final GameState noneEnabled = new GameState();
 			final DefenderObservation defObsNoneEnabled =
-				GameOracle.generateDefObservation(depGraph, noneEnabled, rnd);
+				GameOracle.generateDefObservation(
+					depGraph, noneEnabled, rnd, 1);
 			countNoneEnabled += posAlertCount(defObsNoneEnabled);
 		}
 		

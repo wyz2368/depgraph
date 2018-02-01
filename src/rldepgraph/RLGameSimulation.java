@@ -35,7 +35,7 @@ public final class RLGameSimulation {
 	/**
 	 * The attacker agent to play against.
 	 */
-	private final Attacker attacker;
+	private Attacker attacker;
 	
 	/**
 	 * The discount factor for future rewards.
@@ -168,6 +168,16 @@ public final class RLGameSimulation {
 		this.defenderTotalPayoff = 0.0;
 		this.defenderMarginalPayoff = 0.0;
 		this.mostRecentDefAct = null;
+	}
+	
+	/**
+	 * Set the attacker agent to a new one.
+	 * Used for playing back mixed attacker strategies without
+	 * generating new simulation objects.
+	 * @param aAttacker the new attacker to use
+	 */
+	public void setAttacker(final Attacker aAttacker) {
+		this.attacker = aAttacker;
 	}
 	
 	/**
