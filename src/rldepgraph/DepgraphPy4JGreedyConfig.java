@@ -112,6 +112,31 @@ public final class DepgraphPy4JGreedyConfig {
 		final double discFact = setupEnvironment(simSpecFolderName);
 		setupAttackersAndWeights(attackMixedStratFileName, discFact);
 	}
+
+	/**
+	 * Entry method, used to set up the Py4J server.
+	 * @param args has two args: simSpecFolder and attackMixedStratFile
+	 */
+	public static void main(final String[] args) {
+		if (args == null || args.length != 2) {
+			throw new IllegalArgumentException(
+				"Need 2 args: simSpecFolder, attackMixedStratFile"
+			);
+		}
+		final String simSpecFolderName = args[0];
+		final String attackMixedStratFileName = args[1];
+		
+		final double probGreedySelectCutOff = 0.1;
+		// set up Py4J server
+		final GatewayServer gatewayServer =
+			new GatewayServer(new DepgraphPy4JGreedyConfig(
+				probGreedySelectCutOff,
+				simSpecFolderName,
+				attackMixedStratFileName
+			));
+		gatewayServer.start();
+		System.out.println("Gateway Server Started");
+	}
 	
 	/**
 	 * Initialize attackers and attackerWeights from the given file.
@@ -140,7 +165,8 @@ public final class DepgraphPy4JGreedyConfig {
 				final String weightString = lineSplit[1];
 				final double weight = Double.parseDouble(weightString);
 				if (weight <= 0.0 || weight > 1.0) {
-					throw new IllegalStateException("Weight is not in [0, 1): " + weight);
+					throw new IllegalStateException(
+						"Weight is not in [0, 1): " + weight);
 				}
 				totalWeight += weight;
 				
@@ -158,10 +184,16 @@ public final class DepgraphPy4JGreedyConfig {
 		}
 		final double tol = 0.001;
 		if (Math.abs(totalWeight - 1.0) > tol) {
-			throw new IllegalStateException("Weights do not sum to 1.0: " + this.attackerWeights);
+			throw new IllegalStateException(
+				"Weights do not sum to 1.0: " + this.attackerWeights);
 		}
 	}
 	
+	/**
+	 * Return the lines from the given file name in order.
+	 * @param fileName the file name to draw from
+	 * @return a list of the lines of the file as strings
+	 */
 	private static List<String> getLines(final String fileName) {
 		final List<String> result = new ArrayList<String>();
 		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
@@ -178,34 +210,11 @@ public final class DepgraphPy4JGreedyConfig {
 	}
 	
 	/**
-	 * Entry method, used to set up the Py4J server.
-	 * @param args has two args: simSpecFolder and attackMixedStratFile
-	 */
-	public static void main(final String[] args) {
-		if (args == null || args.length != 2) {
-			throw new IllegalArgumentException(
-				"Need 2 args: simSpecFolder, attackMixedStratFile"
-			);
-		}
-		final String simSpecFolderName = args[0];
-		final String attackMixedStratFileName = args[1];
-		
-		final double probGreedySelectCutOff = 0.1;
-		// set up Py4J server
-		final GatewayServer gatewayServer =
-			new GatewayServer(new DepgraphPy4JGreedyConfig(
-				probGreedySelectCutOff,
-				simSpecFolderName,
-				attackMixedStratFileName
-			));
-		gatewayServer.start();
-		System.out.println("Gateway Server Started");
-	}
-	
-	/**
 	 * Load the graph and simulation specification, and initialize
 	 * the attacker opponent and environment.
 	 * 
+	 * @param simSpecFolderName the folder the simulation spec
+	 * file should come from
 	 * @return the discount factor of the environment
 	 */
 	private double setupEnvironment(final String simSpecFolderName) {
