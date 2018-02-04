@@ -12,6 +12,8 @@ import gym
 from gym import spaces
 
 NODE_COUNT = 30
+OBS_LENGTH = 3
+INPUT_DEPTH = 2 + OBS_LENGTH * 2
 JAVA_GAME = None
 GATEWAY = None
 
@@ -34,8 +36,8 @@ class DepgraphJavaEnvConv(gym.Env):
 
         observation = self.reset()
         # convert from JavaMember object to JavaList
-        obs_2darr = np.reshape(observation, (1, 4, NODE_COUNT))
-        
+        obs_2darr = np.reshape(observation, (1, INPUT_DEPTH, NODE_COUNT))
+
         self.observation_space = \
             spaces.Box(np.zeros(obs_2darr.shape), np.ones(obs_2darr.shape))
 
@@ -43,7 +45,7 @@ class DepgraphJavaEnvConv(gym.Env):
         result_values = JAVA_GAME.reset()
         # result_values is a Py4J JavaList -> should convert to Python list
         result_list = [x for x in result_values]
-        result_2darr = np.reshape(result_list, (1, 4, NODE_COUNT))
+        result_2darr = np.reshape(result_list, (1, INPUT_DEPTH, NODE_COUNT))
         return result_2darr
 
     def _step(self, action):
@@ -58,20 +60,20 @@ class DepgraphJavaEnvConv(gym.Env):
         '''
         Convert a flat list input, a_list, to the observation, reward,
         is_done, and state dictionary.
-        a_list will be a list of floats, of length (NODE_COUNT * 4 + 2).
+        a_list will be a list of floats, of length (NODE_COUNT * INPUT_DEPTH + 2).
 
-        The first (NODE_COUNT * 4) elements of a_list represent the game state.
+        The first (NODE_COUNT * INPUT_DEPTH) elements of a_list represent the game state.
 
         The next element represents the reward, in R-.
 
         The last element represents whether the game is done, in {0.0, 1.0}.
         '''
-        game_size = NODE_COUNT * 4
+        game_size = NODE_COUNT * INPUT_DEPTH
 
         obs_values = a_list[:game_size]
         # obs_values is a Py4J JavaList -> should convert to Python list
         obs = [x for x in obs_values]
-        obs_2darr = np.reshape(obs, (1, 4, NODE_COUNT))
+        obs_2darr = np.reshape(obs, (1, INPUT_DEPTH, NODE_COUNT))
 
         reward = a_list[game_size]
 
