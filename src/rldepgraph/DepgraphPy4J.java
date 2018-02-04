@@ -92,7 +92,7 @@ public final class DepgraphPy4J {
 	 * Get a new DepgraphPy4J object for Py4J.
 	 * @return the DepgraphPy4J for Py4J to use.
 	 */
-	public static DepgraphPy4J getBoard() {
+	public static DepgraphPy4J getGame() {
 		return new DepgraphPy4J();
 	}
 	
@@ -110,7 +110,7 @@ public final class DepgraphPy4J {
 
 	/**
 	 * Take a step based on the given action, represented as
-	 * a list of integers.
+	 * an int in {1, . . ., nodeCount}.
 	 * 
 	 * Return a flat list representing, in order:
 	 * the new defender observation state,
@@ -131,11 +131,10 @@ public final class DepgraphPy4J {
 	 * including the defender observation, reward, and whether the game is over,
 	 * as one flat list.
 	 */
-	public List<Double> step(final List<Integer> action) {
-		if (action == null) {
+	public List<Double> step(final int action) {
+		if (action < 1 || action > this.sim.getNodeCount()) {
 			throw new IllegalArgumentException();
 		}
-		
 		final Set<Integer> idsToDefend = new HashSet<Integer>(action);
 		final List<Double> result = new ArrayList<Double>();
 		if (!this.sim.isValidMove(idsToDefend)) {
