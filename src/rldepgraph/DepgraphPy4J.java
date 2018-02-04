@@ -175,12 +175,14 @@ public final class DepgraphPy4J {
 	}
 	
 	/**
-	 * Observation list is of size 3 * N,
+	 * Observation list is of size (1 + OBS_LENGTH) * N,
 	 * where N is the number of nodes in the graph.
 	 * 
-	 * First N items are 1.0 if an attack was observed, else 0.0.
-	 * Next N items are 1.0 if the node was defended, else 0.0.
-	 * Next N items are 1.0 * timeStepsLeft.
+	 * First N items are 1.0 * timeStepsLeft.
+	 * 
+	 * For each i in {0, OBS_LENGTH - 1}:
+	 * Next N items are 1.0 if an attack was observed i steps ago, else 0.0.
+	 * Next N items are 1.0 if the node was defended i steps ago, else 0.0.
 	 * 
 	 * @return get the defender observation as a list of Double
 	 */
@@ -188,25 +190,28 @@ public final class DepgraphPy4J {
 		final List<Double> result = new ArrayList<Double>();
 		final RLDefenderRawObservation defObs = 
 			this.sim.getDefenderObservation();
-		final Set<Integer> activeObservedIds = defObs.activeObservedIdSet(0);
 		final int timeStepsLeft = defObs.getTimeStepsLeft();
-		final Set<Integer> defendedIds = defObs.getDefendedIds(0);
-		for (int i = 1; i <= this.sim.getNodeCount(); i++) {
-			if (activeObservedIds.contains(i)) {
-				result.add(1.0);
-			} else {
-				result.add(0.0);
-			}
-		}
-		for (int i = 1; i <= this.sim.getNodeCount(); i++) {
-			if (defendedIds.contains(i)) {
-				result.add(1.0);
-			} else {
-				result.add(0.0);
-			}
-		}
 		for (int i = 1; i <= this.sim.getNodeCount(); i++) {
 			result.add((double) timeStepsLeft);
+		}
+		for (int t = 0; t < RLDefenderRawObservation.OBS_LENGTH; t++) {
+			final Set<Integer> activeObservedIds =
+				defObs.activeObservedIdSet(t);
+			final Set<Integer> defendedIds = defObs.getDefendedIds(t);
+			for (int i = 1; i <= this.sim.getNodeCount(); i++) {
+				if (activeObservedIds.contains(i)) {
+					result.add(1.0);
+				} else {
+					result.add(0.0);
+				}
+			}
+			for (int i = 1; i <= this.sim.getNodeCount(); i++) {
+				if (defendedIds.contains(i)) {
+					result.add(1.0);
+				} else {
+					result.add(0.0);
+				}
+			}
 		}
 		return result;
 	}

@@ -118,7 +118,7 @@ public final class DepgraphVsHuman {
 	 * @return a set of IDs to defend.
 	 */
 	private static Set<Integer> getHumanIdsToDefend() {
-		System.out.println("Enter your move, as IDs 0-29, comma-separated:");
+		System.out.println("Enter your move, as IDs 1-30, comma-separated:");
 		final Set<Integer> result = new HashSet<Integer>();
 		final BufferedReader reader =
 			new BufferedReader(new InputStreamReader(System.in));
