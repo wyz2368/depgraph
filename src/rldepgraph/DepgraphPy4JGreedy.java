@@ -45,7 +45,7 @@ public final class DepgraphPy4JGreedy {
 	 * round of adding one node to the set to defend in an episode,
 	 * the defender agent will not be allowed to add more nodes.
 	 */
-	private final double probGreedySelectionCutOff;
+	private final double probGreedySelectionCutOff = 0.1;
 	
 	/**
 	 * The set of node IDs to be defended in a given episode.
@@ -68,17 +68,8 @@ public final class DepgraphPy4JGreedy {
 	
 	/**
 	 * Public constructor.
-	 * 
-	 * @param aProbGreedySelectionCutOff likelihood that after each
-	 * round of adding one node to the set to defend in an episode,
-	 * the defender agent will not be allowed to add more nodes.
 	 */
-	public DepgraphPy4JGreedy(final double aProbGreedySelectionCutOff) {
-		if (aProbGreedySelectionCutOff < 0.0
-			|| aProbGreedySelectionCutOff >= 1.0) {
-			throw new IllegalArgumentException();
-		}
-		this.probGreedySelectionCutOff = aProbGreedySelectionCutOff;
+	public DepgraphPy4JGreedy() {
 		this.nodesToDefend = new HashSet<Integer>();
 		setupEnvironment();
 	}
@@ -88,10 +79,9 @@ public final class DepgraphPy4JGreedy {
 	 * @param args not used
 	 */
 	public static void main(final String[] args) {
-		final double probGreedySelectCutOff = 0.1;
 		// set up Py4J server
 		final GatewayServer gatewayServer =
-			new GatewayServer(new DepgraphPy4JGreedy(probGreedySelectCutOff));
+			new GatewayServer(new DepgraphPy4JGreedy());
 		gatewayServer.start();
 		System.out.println("Gateway Server Started");
 	}
@@ -136,8 +126,7 @@ public final class DepgraphPy4JGreedy {
 	 * @return the DepgraphPy4JGreedy for Py4J to use.
 	 */
 	public static DepgraphPy4JGreedy getGame() {
-		final double myProbGreedySelectionCutOff = 0.1;
-		return new DepgraphPy4JGreedy(myProbGreedySelectionCutOff);
+		return new DepgraphPy4JGreedy();
 	}
 	
 	/**
@@ -273,13 +262,16 @@ public final class DepgraphPy4JGreedy {
 	}
 	
 	/**
-	 * Observation list is of size 4 * N,
+	 * Observation list is of size (2 + OBS_LENGTH) * N,
 	 * where N is the number of nodes in the graph.
 	 * 
-	 * First N items are 1.0 if an attack was observed, else 0.0.
-	 * Next N items are 1.0 if the node was defended, else 0.0.
-	 * Next N items are 1.0 if the node is currently in set to defend, else 0.0.
+	 * First N items are 1.0 if the node is
+	 * currently in set to defend, else 0.0.
 	 * Next N items are 1.0 * timeStepsLeft.
+	 * 
+	 * For each i in {0, OBS_LENGTH - 1}:
+	 * Next N items are 1.0 if an attack was observed i steps ago, else 0.0.
+	 * Next N items are 1.0 if the node was defended i steps ago, else 0.0.
 	 * 
 	 * @return get the defender observation as a list of Double
 	 */
@@ -287,23 +279,7 @@ public final class DepgraphPy4JGreedy {
 		final List<Double> result = new ArrayList<Double>();
 		final RLDefenderRawObservation defObs = 
 			this.sim.getDefenderObservation();
-		final Set<Integer> activeObservedIds = defObs.activeObservedIdSet();
-		final Set<Integer> defendedIds = defObs.getDefendedIds();
 		final int timeStepsLeft = defObs.getTimeStepsLeft();
-		for (int i = 1; i <= this.sim.getNodeCount(); i++) {
-			if (activeObservedIds.contains(i)) {
-				result.add(1.0);
-			} else {
-				result.add(0.0);
-			}
-		}
-		for (int i = 1; i <= this.sim.getNodeCount(); i++) {
-			if (defendedIds.contains(i)) {
-				result.add(1.0);
-			} else {
-				result.add(0.0);
-			}
-		}
 		for (int i = 1; i <= this.sim.getNodeCount(); i++) {
 			if (this.nodesToDefend.contains(i)) {
 				result.add(1.0);
@@ -313,6 +289,25 @@ public final class DepgraphPy4JGreedy {
 		}
 		for (int i = 1; i <= this.sim.getNodeCount(); i++) {
 			result.add((double) timeStepsLeft);
+		}
+		for (int t = 0; t < RLDefenderRawObservation.OBS_LENGTH; t++) {
+			final Set<Integer> activeObservedIds =
+				defObs.activeObservedIdSet(t);
+			final Set<Integer> defendedIds = defObs.getDefendedIds(t);
+			for (int i = 1; i <= this.sim.getNodeCount(); i++) {
+				if (activeObservedIds.contains(i)) {
+					result.add(1.0);
+				} else {
+					result.add(0.0);
+				}
+			}
+			for (int i = 1; i <= this.sim.getNodeCount(); i++) {
+				if (defendedIds.contains(i)) {
+					result.add(1.0);
+				} else {
+					result.add(0.0);
+				}
+			}
 		}
 		return result;
 	}

@@ -1,5 +1,7 @@
 package rldepgraph;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
@@ -48,9 +50,10 @@ public final class RLGameSimulation {
 	private final RandomDataGenerator rng;
 	
 	/**
-	 * The defender's current observation state.
+	 * Past defender observation states, if any.
+	 * Most recent observation is last.
 	 */
-	private DefenderObservation dObservation;
+	private final List<DefenderObservation> dObservations;
 	
 	/**
 	 * The current game state, including which nodes are compromised.
@@ -73,9 +76,9 @@ public final class RLGameSimulation {
 	private double defenderMarginalPayoff;
 	
 	/**
-	 * Most recent defender action, if any.
+	 * Past defender actions, if any. Most recent is last.
 	 */
-	private DefenderAction mostRecentDefAct;
+	private List<DefenderAction> mostRecentDefActs;
 	
 	/**
 	 * The worst reward that is possible in one time step.
@@ -109,7 +112,8 @@ public final class RLGameSimulation {
 		this.attacker = aAttacker;
 		
 		this.rng = aRng;
-		this.mostRecentDefAct = null;
+		this.dObservations = new ArrayList<DefenderObservation>();
+		this.mostRecentDefActs = new ArrayList<DefenderAction>();
 		setupWorstReward();
 	}
 	
@@ -160,14 +164,15 @@ public final class RLGameSimulation {
 	 * and set the total payoff for defender to 0.
 	 */
 	public void reset() {
-		this.dObservation = new DefenderObservation(this.numTimeStep);
+		this.dObservations.clear();
+		this.dObservations.add(new DefenderObservation(this.numTimeStep));
 		this.gameState = new GameState();
 		this.gameState.createID();
 		this.depGraph.setState(this.gameState);
 		this.timeStepsLeft = this.numTimeStep;
 		this.defenderTotalPayoff = 0.0;
 		this.defenderMarginalPayoff = 0.0;
-		this.mostRecentDefAct = null;
+		this.mostRecentDefActs.clear();
 	}
 	
 	/**
@@ -250,26 +255,27 @@ public final class RLGameSimulation {
 			this.rng.getRandomGenerator()
 		);
 		
-		this.mostRecentDefAct = new DefenderAction();
+		final DefenderAction curDefAct = new DefenderAction();
 		for (final int idToDefend: idsToDefend) {
-			this.mostRecentDefAct.addNodetoProtect(
+			curDefAct.addNodetoProtect(
 				this.depGraph.getNodeById(idToDefend));
 		}
+		this.mostRecentDefActs.add(curDefAct);
 		
 		this.gameState = GameOracle.generateStateSample(
-			this.gameState, attAction, this.mostRecentDefAct, this.rng);
+			this.gameState, attAction, curDefAct, this.rng);
 		this.depGraph.setState(this.gameState);
 		
 		this.timeStepsLeft--;
-		this.dObservation = GameOracle.generateDefObservation(
-			this.depGraph, this.gameState, this.rng, this.timeStepsLeft);
+		this.dObservations.add(GameOracle.generateDefObservation(
+			this.depGraph, this.gameState, this.rng, this.timeStepsLeft));
 		
 		final double defenderCurPayoff =
-			getDefenderPayoffCurrentTimeStep(this.mostRecentDefAct);
+			getDefenderPayoffCurrentTimeStep(curDefAct);
 		this.defenderTotalPayoff += defenderCurPayoff;
 		this.defenderMarginalPayoff = defenderCurPayoff;
 	}
-	
+
 	/**
 	 * Returns the discounted payoff of the current episode so far.
 	 * @return the discounted payoff of the episode so far
@@ -277,7 +283,7 @@ public final class RLGameSimulation {
 	public double getDefenderTotalPayoff() {
 		return this.defenderTotalPayoff;
 	}
-	
+
 	/**
 	 * Returns the discounted payoff of the most recent time step.
 	 * @return the discounted payoff of the most recent time step
@@ -285,7 +291,7 @@ public final class RLGameSimulation {
 	public double getDefenderMarginalPayoff() {
 		return this.defenderMarginalPayoff;
 	}
-	
+
 	/**
 	 * Return number of nodes in graph.
 	 * @return graph node count
@@ -293,16 +299,17 @@ public final class RLGameSimulation {
 	public int getNodeCount() {
 		return this.depGraph.vertexSet().size();
 	}
-	
+
 	/**
 	 * Returns a "raw" version of the defender's observation.
 	 * @return the defender's observation of current game state
 	 */
 	public RLDefenderRawObservation getDefenderObservation() {
 		return new RLDefenderRawObservation(
-			this.dObservation, this.mostRecentDefAct);
+			this.dObservations,
+			this.mostRecentDefActs);
 	}
-	
+
 	/**
 	 * Returns true if game is over (no more time steps left).
 	 * @return true if game is over

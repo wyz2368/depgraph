@@ -253,8 +253,7 @@ public final class DepgraphPy4JGreedyConfig {
 	 * @return the DepgraphPy4JGreedy for Py4J to use.
 	 */
 	public static DepgraphPy4JGreedy getGame() {
-		final double myProbGreedySelectionCutOff = 0.1;
-		return new DepgraphPy4JGreedy(myProbGreedySelectionCutOff);
+		return new DepgraphPy4JGreedy();
 	}
 	
 	/**
@@ -427,8 +426,8 @@ public final class DepgraphPy4JGreedyConfig {
 		final List<Double> result = new ArrayList<Double>();
 		final RLDefenderRawObservation defObs = 
 			this.sim.getDefenderObservation();
-		final Set<Integer> activeObservedIds = defObs.activeObservedIdSet();
-		final Set<Integer> defendedIds = defObs.getDefendedIds();
+		final Set<Integer> activeObservedIds = defObs.activeObservedIdSet(0);
+		final Set<Integer> defendedIds = defObs.getDefendedIds(0);
 		final int timeStepsLeft = defObs.getTimeStepsLeft();
 		for (int i = 1; i <= this.sim.getNodeCount(); i++) {
 			if (activeObservedIds.contains(i)) {

@@ -188,9 +188,9 @@ public final class DepgraphPy4J {
 		final List<Double> result = new ArrayList<Double>();
 		final RLDefenderRawObservation defObs = 
 			this.sim.getDefenderObservation();
-		final Set<Integer> activeObservedIds = defObs.activeObservedIdSet();
+		final Set<Integer> activeObservedIds = defObs.activeObservedIdSet(0);
 		final int timeStepsLeft = defObs.getTimeStepsLeft();
-		final Set<Integer> defendedIds = defObs.getDefendedIds();
+		final Set<Integer> defendedIds = defObs.getDefendedIds(0);
 		for (int i = 1; i <= this.sim.getNodeCount(); i++) {
 			if (activeObservedIds.contains(i)) {
 				result.add(1.0);

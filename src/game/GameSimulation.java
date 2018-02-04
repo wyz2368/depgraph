@@ -215,8 +215,12 @@ public final class GameSimulation {
 						defPayoff += discFactPow * node.getDCost();
 					}
 					
+					final List<DefenderObservation> dObsList =
+						new ArrayList<DefenderObservation>();
+					final List<DefenderAction> dActList =
+						new ArrayList<DefenderAction>();
 					defRawObs.add(new RLDefenderRawObservation(
-						gameSample.getDefObservation(), null));
+						dObsList, dActList));
 					defActionList.add(new RLDefenderAction(defAction));
 					payoffs.add(defPayoff);
 				}				

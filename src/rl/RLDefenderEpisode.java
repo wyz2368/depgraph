@@ -124,7 +124,7 @@ public final class RLDefenderEpisode {
 			if (obsIndex < this.rawObs.size()) {
 				final RLDefenderRawObservation curObs =
 					this.rawObs.get(obsIndex);
-				final Set<Integer> activeIdsObs = curObs.activeObservedIdSet();
+				final Set<Integer> activeIdsObs = curObs.activeObservedIdSet(0);
 				for (int i = 0; i < this.nodeCount; i++) {
 					if (activeIdsObs.contains(i + 1)) {
 						builder.append(1);
