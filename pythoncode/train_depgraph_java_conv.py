@@ -1,5 +1,7 @@
 '''
-Trains a multilayer perceptron to play Connect Four against a minimax agent.
+Trains a convolutional network to play Connect Four against a mixed strategy agent,
+using Deep Q Networks from OpenAI Baselines.
+https://github.com/openai/baselines/tree/master/baselines/deepq
 '''
 import time
 import gym
@@ -8,7 +10,7 @@ from baselines import deepq
 
 def main():
     '''
-    Makes the Connect Four environment, builds a multilayer perceptron model,
+    Makes the depgraph environment, builds a convolutional network model,
     trains the model, and saves the result.
     '''
     env_name = "DepgraphJavaConv-v0"

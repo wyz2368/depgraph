@@ -27,8 +27,8 @@ def main():
     model_name = "depgraph_java_deepq_conv_model_conf2_d3_big.pkl"
     # depgraph_java_deepq_conv_model_conf2
     num_episodes = 1000
-    OBS_LENGTH = 3
-    INPUT_DEPTH = 2 + 2 * OBS_LENGTH
+    obs_length = 3
+    input_depth = 2 + 2 * obs_length
 
     start_time = time.time()
 
@@ -41,11 +41,11 @@ def main():
     rewards = []
     for _ in range(num_episodes):
         obs, done = env.reset(), False
-        obs = np.array(obs).reshape(1, 1, INPUT_DEPTH, NODE_COUNT)
+        obs = np.array(obs).reshape(1, 1, input_depth, NODE_COUNT)
         episode_rew = 0
         while not done:
             obs, rew, done, _ = env.step(act(obs)[0])
-            obs = np.array(obs).reshape(1, 1, INPUT_DEPTH, NODE_COUNT)
+            obs = np.array(obs).reshape(1, 1, input_depth, NODE_COUNT)
             episode_rew += rew
         rewards.append(episode_rew)
     mean_reward = np.mean(rewards)
