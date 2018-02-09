@@ -44,7 +44,7 @@ class DepgraphJavaEnv(gym.Env):
     def _reset(self):
         result_values = JAVA_GAME.reset()
         # result_values is a Py4J JavaList -> should convert to Python list
-        return [x for x in result_values]
+        return np.array([x for x in result_values])
 
     def _step(self, action):
         # action is a numpy.int64, need to convert to Python int before using with Py4J
@@ -70,7 +70,7 @@ class DepgraphJavaEnv(gym.Env):
 
         obs_values = a_list[:game_size]
         # obs_values is a Py4J JavaList -> should convert to Python list
-        obs = [x for x in obs_values]
+        obs = np.array([x for x in obs_values])
 
         reward = a_list[game_size]
 
