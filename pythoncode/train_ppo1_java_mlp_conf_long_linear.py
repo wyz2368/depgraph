@@ -38,7 +38,7 @@ def main():
                         clip_param=0.1, entcoeff=0.01,
                         optim_epochs=3, optim_stepsize=2.5e-4, optim_batchsize=1024,
                         gamma=0.99, lam=0.95,
-                        schedule='constant'
+                        schedule='linear'
                        )
     end = time.time()
     elapsed = end - start
