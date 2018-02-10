@@ -16,8 +16,9 @@ def main():
     '''
 
     env_name = "DepgraphJava-v0"
-    model_name = "depgraph_java_deepq_model2.pkl"
-    num_episodes = 100
+    # model_name = "depgraph_java_deepq_model2.pkl"
+    model_name = "depgraph_java_deepq_mlp_long.pkl"
+    num_episodes = 1000
 
     start_time = time.time()
 
