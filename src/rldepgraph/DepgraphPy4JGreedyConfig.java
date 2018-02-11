@@ -92,11 +92,13 @@ public final class DepgraphPy4JGreedyConfig {
 	 * will be taken
 	 * @param attackMixedStratFileName the file from which the mixed
 	 * strategy of the attacker will be read
+	 * @param graphFileName the name of the graph file to use
 	 */
 	public DepgraphPy4JGreedyConfig(
 		final double aProbGreedySelectionCutOff,
 		final String simSpecFolderName,
-		final String attackMixedStratFileName
+		final String attackMixedStratFileName,
+		final String graphFileName
 	) {
 		if (aProbGreedySelectionCutOff < 0.0
 			|| aProbGreedySelectionCutOff >= 1.0
@@ -109,7 +111,8 @@ public final class DepgraphPy4JGreedyConfig {
 		this.attackers = new ArrayList<Attacker>();
 		this.attackerWeights = new ArrayList<Double>();
 		
-		final double discFact = setupEnvironment(simSpecFolderName);
+		final double discFact = setupEnvironment(
+			simSpecFolderName, graphFileName);
 		setupAttackersAndWeights(attackMixedStratFileName, discFact);
 	}
 
@@ -118,13 +121,17 @@ public final class DepgraphPy4JGreedyConfig {
 	 * @param args has two args: simSpecFolder and attackMixedStratFile
 	 */
 	public static void main(final String[] args) {
-		if (args == null || args.length != 2) {
+		final int argsCount = 3;
+		if (args == null || args.length != argsCount) {
 			throw new IllegalArgumentException(
-				"Need 2 args: simSpecFolder, attackMixedStratFile"
+		"Need 3 args: simSpecFolder, attackMixedStratFile, graphFileName"
 			);
 		}
 		final String simSpecFolderName = args[0];
 		final String attackMixedStratFileName = args[1];
+		// RandomGraph30N100E2T1.json
+		// SepLayerGraph0.json
+		final String graphFileName = args[2];
 		
 		final double probGreedySelectCutOff = 0.1;
 		// set up Py4J server
@@ -132,7 +139,8 @@ public final class DepgraphPy4JGreedyConfig {
 			new GatewayServer(new DepgraphPy4JGreedyConfig(
 				probGreedySelectCutOff,
 				simSpecFolderName,
-				attackMixedStratFileName
+				attackMixedStratFileName,
+				graphFileName
 			));
 		gatewayServer.start();
 		System.out.println("Gateway Server Started");
@@ -215,18 +223,19 @@ public final class DepgraphPy4JGreedyConfig {
 	 * 
 	 * @param simSpecFolderName the folder the simulation spec
 	 * file should come from
+	 * @param graphFileName the file name of the graph file
 	 * @return the discount factor of the environment
 	 */
-	private double setupEnvironment(final String simSpecFolderName) {
+	private double setupEnvironment(
+		final String simSpecFolderName,
+		final String graphFileName
+	) {
 		final String graphFolderName = "graphs";
 		final GameSimulationSpec simSpec =
 			JsonUtils.getSimSpecOrDefaults(simSpecFolderName);	
 		// Load graph
 		String filePathName = graphFolderName + File.separator
-			+ "RandomGraph" + simSpec.getNumNode()
-			+ "N" + simSpec.getNumEdge() + "E" 
-			+ simSpec.getNumTarget() + "T"
-			+ simSpec.getGraphID() + JsonUtils.JSON_SUFFIX;
+			+ graphFileName;
 		DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
 				
 		// Load players
