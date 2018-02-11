@@ -85,10 +85,11 @@ public final class CheckOldStratPayoffsConfig {
 	 * the file with the attacker mixed strategy
 	 */
 	public static void main(final String[] args) {
-		final int expectedArgs = 3;
+		final int expectedArgs = 4;
 		if (args == null || args.length != expectedArgs) {
 			throw new IllegalArgumentException(
-	"Need 3 args: iterationsPerStrategy, simSpecFolder, attackMixedStratFile");
+			"Need 4 args: iterationsPerStrategy, simSpecFolder, "
+			+ "attackMixedStratFile, graphFile");
 		}
 		final int iterationsPerStrategy = Integer.parseInt(args[0]);
 		if (iterationsPerStrategy < 2) {
@@ -96,6 +97,8 @@ public final class CheckOldStratPayoffsConfig {
 		}
 		final String simSpecFolder = args[1];
 		final String attackMixedStratFileName = args[2];
+		final int nextIndex = 3;
+		final String graphFileName = args[nextIndex];
 		
 		final String defStratStringFileName = "defStratStrings.txt";
 		final List<String> defStratStrings =
@@ -104,7 +107,8 @@ public final class CheckOldStratPayoffsConfig {
 			new CheckOldStratPayoffsConfig(
 				simSpecFolder, attackMixedStratFileName);
 		checker.printAllPayoffs(
-			defStratStrings, iterationsPerStrategy);
+			defStratStrings, iterationsPerStrategy,
+			graphFileName);
 	}
 
 	/**
@@ -185,10 +189,12 @@ public final class CheckOldStratPayoffsConfig {
 	 * @param defenderStrings list of defender strategy strings
 	 * @param iterationsPerStrategy how many simulations to run
 	 * per strategy
+	 * @param graphFileName the name of the graph file to load
 	 */
 	private void printAllPayoffs(
 		final List<String> defenderStrings,
-		final int iterationsPerStrategy
+		final int iterationsPerStrategy,
+		final String graphFileName
 	) {
 		System.out.println(
 			"Iterations per strategy: " + iterationsPerStrategy + "\n");
@@ -198,7 +204,7 @@ public final class CheckOldStratPayoffsConfig {
 
 		final long startTime = System.currentTimeMillis();
 		for (final String defenderString: defenderStrings) {
-			setupEnvironment(defenderString);
+			setupEnvironment(defenderString, graphFileName);
 			final double[] payoffStats  = getPayoffStats(iterationsPerStrategy);
 			final double meanPayoff = payoffStats[0];
 			final double stdev = payoffStats[1];
@@ -314,17 +320,17 @@ public final class CheckOldStratPayoffsConfig {
 	 * Set up the game environment.
 	 * @param defenderString the string name of the defender
 	 * strategy
+	 * @param graphFileName the name of the graph file to load
 	 */
-	private void setupEnvironment(final String defenderString) {
+	private void setupEnvironment(
+		final String defenderString,
+		final String graphFileName) {
 		final String graphFolderName = "graphs";
 		final GameSimulationSpec simSpec =
 			JsonUtils.getSimSpecOrDefaults(this.simSpecFolderName);	
 		// Load graph
 		String filePathName = graphFolderName + File.separator
-			+ "RandomGraph" + simSpec.getNumNode()
-			+ "N" + simSpec.getNumEdge() + "E" 
-			+ simSpec.getNumTarget() + "T"
-			+ simSpec.getGraphID() + JsonUtils.JSON_SUFFIX;
+			+ graphFileName;
 		DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
 				
 		// Load players
