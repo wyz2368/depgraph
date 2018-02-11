@@ -132,7 +132,8 @@ public final class CheckOldStratPayoffsConfig {
 			if (strippedLine.length() > 0) {
 				String[] lineSplit = strippedLine.split("\t");
 				if (lineSplit.length != 2) {
-					throw new IllegalStateException();					
+					throw new IllegalStateException(
+						"Wrong split: " + strippedLine);					
 				}
 				final String attackerString = lineSplit[0];
 				final String weightString = lineSplit[1];

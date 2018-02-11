@@ -99,7 +99,12 @@ public final class RLDefenderRawObservation {
 			this.activeObservedIdSet.add(curActiveObservedIdSet);
 		}
 
-		this.timeStepsLeft = defObs.get(defObs.size() - 1).getTimeStepsLeft();
+		if (defObs.isEmpty()) {
+			this.timeStepsLeft = OBS_LENGTH; // hack
+		} else {
+			this.timeStepsLeft =
+				defObs.get(defObs.size() - 1).getTimeStepsLeft();
+		}
 		
 		for (int t = defAct.size() - OBS_LENGTH; t < defAct.size(); t++) {
 			DefenderAction curDefAct = null;
