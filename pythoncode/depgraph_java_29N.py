@@ -17,7 +17,7 @@ OBS_LENGTH = 3
 INPUT_DEPTH = 2 + OBS_LENGTH * 2
 GATEWAY = None
 
-class DepgraphJavaEnv(gym.Env):
+class DepgraphJavaEnv29N(gym.Env):
     """
     Depgraph game environment. Play against a fixed opponent.
     """
@@ -51,7 +51,7 @@ class DepgraphJavaEnv(gym.Env):
         action_scalar = np.asscalar(action)
         # {1, . . ., NODE_COUNT} are node ids, (NODE_COUNT + 1) means "pass"
         action_id = action_scalar + 1
-        return DepgraphJavaEnv.step_result_from_flat_list(JAVA_GAME.step(action_id))
+        return DepgraphJavaEnv29N.step_result_from_flat_list(JAVA_GAME.step(action_id))
 
     @staticmethod
     def step_result_from_flat_list(a_list):
