@@ -140,13 +140,13 @@ public final class DepgraphPy4JGreedyConfig {
 		
 		final double probGreedySelectCutOff = 0.1;
 		// set up Py4J server
-		final GatewayServer gatewayServer =
-			new GatewayServer(new DepgraphPy4JGreedyConfig(
-				probGreedySelectCutOff,
-				simSpecFolderName,
-				attackMixedStratFileName,
-				graphFileName
-			));
+		singleton = new DepgraphPy4JGreedyConfig(
+			probGreedySelectCutOff,
+			simSpecFolderName,
+			attackMixedStratFileName,
+			graphFileName
+		);
+		final GatewayServer gatewayServer = new GatewayServer(singleton);
 		gatewayServer.start();
 		System.out.println("Gateway Server Started");
 	}
