@@ -81,6 +81,11 @@ public final class DepgraphPy4JGreedyConfig {
 	 * in order matching attackerWeights.
 	 */
 	private final List<Attacker> attackers;
+
+	/**
+	 * Used to reply to getGame().
+	 */
+	private static DepgraphPy4JGreedyConfig singleton;
 	
 	/**
 	 * Public constructor.
@@ -94,7 +99,7 @@ public final class DepgraphPy4JGreedyConfig {
 	 * strategy of the attacker will be read
 	 * @param graphFileName the name of the graph file to use
 	 */
-	public DepgraphPy4JGreedyConfig(
+	private DepgraphPy4JGreedyConfig(
 		final double aProbGreedySelectionCutOff,
 		final String simSpecFolderName,
 		final String attackMixedStratFileName,
@@ -234,9 +239,9 @@ public final class DepgraphPy4JGreedyConfig {
 		final GameSimulationSpec simSpec =
 			JsonUtils.getSimSpecOrDefaults(simSpecFolderName);	
 		// Load graph
-		String filePathName = graphFolderName + File.separator
+		final String filePathName = graphFolderName + File.separator
 			+ graphFileName;
-		DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
+		final DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
 				
 		// Load players
 		final String attackerString =
@@ -261,8 +266,8 @@ public final class DepgraphPy4JGreedyConfig {
 	 * Get a new DepgraphPy4JGreedy object for Py4J.
 	 * @return the DepgraphPy4JGreedy for Py4J to use.
 	 */
-	public static DepgraphPy4JGreedy getGame() {
-		return new DepgraphPy4JGreedy();
+	public static DepgraphPy4JGreedyConfig getGame() {
+		return singleton;
 	}
 	
 	/**
@@ -276,8 +281,7 @@ public final class DepgraphPy4JGreedyConfig {
 		// update the attacker at random from the mixed strategy.
 		this.sim.setAttacker(drawRandomAttacker());
 		// no nodesToDefend so far
-		this.nodesToDefend.clear();
-		
+		this.nodesToDefend.clear();		
 		return getDefObsAsListDouble();
 	}
 	
