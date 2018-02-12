@@ -20,16 +20,18 @@ def main():
     act = deepq.learn(
         env,
         q_func=model,
-        lr=1e-5,
-        max_timesteps=1500000,
+        lr=2e-6,
+        max_timesteps=2000000,
         buffer_size=50000,
         exploration_fraction=0.5,
         exploration_final_eps=0.03,
-        print_freq=250,
+        checkpoint_freq=50000,
+        print_freq=1000,
         param_noise=False,
-        gamma=0.99
+        gamma=0.99,
+        ep_mean_length=1000
     )
-    model_name = "depgraph_SepLayer0_deepq_mlp_long.pkl"
+    model_name = "depgraph_SepLayer0_deepqconsrv_mlp_long.pkl"
     print("Saving model to: " + model_name)
     act.save(model_name)
     end = time.time()
