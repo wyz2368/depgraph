@@ -1,5 +1,5 @@
 '''
-Trains a multilayer perceptron to play Connect Four against a minimax agent.
+Trains a multilayer perceptron to play depgraph against an attacker agent.
 '''
 import time
 import gym
@@ -8,7 +8,7 @@ from baselines import deepq
 
 def main():
     '''
-    Makes the Connect Four environment, builds a multilayer perceptron model,
+    Makes the depgraph environment, builds a multilayer perceptron model,
     trains the model, and saves the result.
     '''
     env_name = "DepgraphJava29N-v0"
@@ -20,7 +20,7 @@ def main():
     act = deepq.learn(
         env,
         q_func=model,
-        lr=2e-6,
+        lr=1e-5,
         max_timesteps=2000000,
         buffer_size=50000,
         exploration_fraction=0.5,
