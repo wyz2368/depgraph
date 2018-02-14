@@ -29,7 +29,7 @@ def getValuesList(lines, stringIndicator):
 def myPlot(episodes, rewards, goal_reward, save_name):
     fig, ax = plt.subplots()
     my_lw = 3
-    plt.plot(episodes, rewards, lw=my_lw, c='blue', label="QL exploring")
+    plt.plot(episodes, rewards, lw=my_lw, c='blue', label="RL exploring")
 
    #  plt.axhline(y=own_reward, lw=my_lw, c='blue', linestyle='--', label="QL final")
     plt.axhline(y=goal_reward, lw=my_lw, c='red', linestyle='-.', label="Best heuristic")
@@ -44,7 +44,12 @@ def myPlot(episodes, rewards, goal_reward, save_name):
     plt.savefig(save_name)
 
 def main():
-    base_name = "tdj_ppo_mlp"
+    # base_name = "tdj_ppo_mlp"
+    # base_name = "tdj_ppo_mlp_long"
+    # base_name = "tdj_ppo_constant"
+    # base_name = "tdj_ppo_mlp_long_linear"
+    # base_name = "tdj_ppo_mlp_rand_eq"
+    base_name = "tdj_ppo_mlp_seplay0_eq"
     file_name = base_name + ".txt"
     save_name = base_name + ".pdf"
     lines = getLines(file_name)
@@ -52,11 +57,8 @@ def main():
     rewards_list = getRewardsList(lines)
     # print(rewards_list)
 
-    # goal_reward = -26.9
-    goal_reward = -23.3
-    # own_reward = -21.6
-    # own_reward = -23.6
-    #own_reward = -23.4
+    # goal_reward = -23.3 # for rand eq
+    goal_reward = -7.3 # for sep layer 0 eq
     myPlot(episodes_list, rewards_list, goal_reward, save_name)
 
 if __name__ == "__main__":

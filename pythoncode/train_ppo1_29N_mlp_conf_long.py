@@ -16,7 +16,7 @@ def main():
     Makes the depgraph environment, builds a multilayer perceptron model,
     and trains the model with PPO.
     '''
-    env_name = 'DepgraphJava-v0'
+    env_name = 'DepgraphJava29N-v0'
     print("Environment: " + env_name)
     num_timesteps = 2000000
 

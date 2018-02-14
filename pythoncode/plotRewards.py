@@ -9,7 +9,7 @@ def getLines(fileName):
     return lines
 
 def getRewardsList(lines):
-    return getValuesList(lines, "episode reward")
+    return getValuesList(lines, "episode re")
 
 def getEpisodesList(lines):
     return getValuesList(lines, "episodes")
@@ -44,16 +44,24 @@ def myPlot(episodes, rewards, goal_reward, own_reward, save_name):
     plt.savefig(save_name)
 
 def main():
-    base_name = "tdj_conv3"
+    # base_name = "tdj_convConf_d3_big"
+    # base_name = "tdj_deepq_mlp_long"
+    # base_name = "tdj_deepq_29N_mlp_SepLay0"
+    # base_name = "tdj_deepqconsrv_29N_mlp_SepLay0_fast"
+    base_name = "tdj_deepq_mlp_rand_eq"
     file_name = base_name + ".txt"
     save_name = base_name + ".pdf"
     lines = getLines(file_name)
     episodes_list = getEpisodesList(lines)
     rewards_list = getRewardsList(lines)
+    print(len(episodes_list))
+    print(len(rewards_list))
     # print(rewards_list)
 
-    goal_reward = -26.9
-    own_reward = -21.6
+    goal_reward = -23.3 # for Rand30 equilibrium
+    # goal_reward = -7.3 # for SepLay0 equilibrium
+    # own_reward = -5.0 # for tdj_deepqconserv_29N_mlp_SepLay0_fast
+    own_reward = -21.6 # for depgraph_deepq_mlp_rand_eq.pkl
     myPlot(episodes_list, rewards_list, goal_reward, own_reward, save_name)
 
 if __name__ == "__main__":
