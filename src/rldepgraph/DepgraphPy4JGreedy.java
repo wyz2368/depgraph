@@ -290,7 +290,7 @@ public final class DepgraphPy4JGreedy {
 		for (int i = 1; i <= this.sim.getNodeCount(); i++) {
 			result.add((double) timeStepsLeft);
 		}
-		for (int t = 0; t < RLDefenderRawObservation.OBS_LENGTH; t++) {
+		for (int t = 0; t < RLDefenderRawObservation.DEFENDER_OBS_LENGTH; t++) {
 			final Set<Integer> activeObservedIds =
 				defObs.activeObservedIdSet(t);
 			final Set<Integer> defendedIds = defObs.getDefendedIds(t);

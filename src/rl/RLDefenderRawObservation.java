@@ -55,7 +55,7 @@ public final class RLDefenderRawObservation {
 	 * The number of time steps of recent alert signals
 	 * and defense sets that will be included in the observation.
 	 */
-	public static final int OBS_LENGTH = 3;
+	public static final int DEFENDER_OBS_LENGTH = 3;
 	
 	/**
 	 * Constructor.
@@ -72,13 +72,14 @@ public final class RLDefenderRawObservation {
 		final List<DefenderObservation> defObs,
 		final List<DefenderAction> defAct
 	) {
-		assert defObs != null && defAct != null && OBS_LENGTH >= 1;
+		assert defObs != null && defAct != null && DEFENDER_OBS_LENGTH >= 1;
 		/*
 		if (defObs.isEmpty() || defObs.size() - defAct.size() != 1) {
 			throw new IllegalArgumentException();
 		}
 		*/
-		for (int t = defObs.size() - OBS_LENGTH; t < defObs.size(); t++) {
+		for (int t = defObs.size() - DEFENDER_OBS_LENGTH;
+			t < defObs.size(); t++) {
 			DefenderObservation curDefObs = null;
 			if (t >= 0) {
 				curDefObs = defObs.get(t);
@@ -100,13 +101,14 @@ public final class RLDefenderRawObservation {
 		}
 
 		if (defObs.isEmpty()) {
-			this.timeStepsLeft = OBS_LENGTH; // hack
+			this.timeStepsLeft = DEFENDER_OBS_LENGTH; // hack
 		} else {
 			this.timeStepsLeft =
 				defObs.get(defObs.size() - 1).getTimeStepsLeft();
 		}
 		
-		for (int t = defAct.size() - OBS_LENGTH; t < defAct.size(); t++) {
+		for (int t = defAct.size() - DEFENDER_OBS_LENGTH;
+			t < defAct.size(); t++) {
 			DefenderAction curDefAct = null;
 			if (t >= 0) {
 				curDefAct = defAct.get(t);
@@ -130,10 +132,11 @@ public final class RLDefenderRawObservation {
 	 * @return the list of apparently active node IDs
 	 */
 	public List<Integer> getActiveObservedIds(final int timeStepsAgo) {
-		if (timeStepsAgo < 0 || timeStepsAgo >= OBS_LENGTH) {
+		if (timeStepsAgo < 0 || timeStepsAgo >= DEFENDER_OBS_LENGTH) {
 			throw new IllegalArgumentException();
 		}
-		return this.activeObservedIds.get(OBS_LENGTH - timeStepsAgo - 1);
+		return this.activeObservedIds.get(
+			DEFENDER_OBS_LENGTH - timeStepsAgo - 1);
 	}
 	
 	/**
@@ -145,10 +148,11 @@ public final class RLDefenderRawObservation {
 	 * @return the set of apparently active node IDs
 	 */
 	public Set<Integer> activeObservedIdSet(final int timeStepsAgo) {
-		if (timeStepsAgo < 0 || timeStepsAgo >= OBS_LENGTH) {
+		if (timeStepsAgo < 0 || timeStepsAgo >= DEFENDER_OBS_LENGTH) {
 			throw new IllegalArgumentException();
 		}
-		return this.activeObservedIdSet.get(OBS_LENGTH - timeStepsAgo - 1);
+		return this.activeObservedIdSet.get(
+			DEFENDER_OBS_LENGTH - timeStepsAgo - 1);
 	}
 	
 	/**
@@ -168,10 +172,10 @@ public final class RLDefenderRawObservation {
 	 * @return the set of protected node IDs
 	 */
 	public Set<Integer> getDefendedIds(final int timeStepsAgo) {
-		if (timeStepsAgo < 0 || timeStepsAgo >= OBS_LENGTH) {
+		if (timeStepsAgo < 0 || timeStepsAgo >= DEFENDER_OBS_LENGTH) {
 			throw new IllegalArgumentException();
 		}
-		return this.defendedIds.get(OBS_LENGTH - timeStepsAgo - 1);
+		return this.defendedIds.get(DEFENDER_OBS_LENGTH - timeStepsAgo - 1);
 	}
 
 	@Override
