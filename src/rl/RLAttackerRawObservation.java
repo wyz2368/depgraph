@@ -60,6 +60,23 @@ public final class RLAttackerRawObservation {
 	 */
 	public static final int ATTACKER_OBS_LENGTH = 1;
 	
+	/**
+	 * @param aAttackedNodeIds the list of AND node IDs that were most
+	 * recently attacked, strictly increasing.
+	 * @param aAttackedEdgeIds the list of IDs of edges to OR nodes
+	 * that were most recently attacked, strictly increasing. 
+	 * @param aLegalToAttackNodeIds the list of AND node IDs that it is
+	 * legal to attack currently, strictly increasing.
+	 * @param aLegalToAttackEdgeIds the list of IDs of edges to OR nodes
+	 * that it is legal to attack currently, strictly increasing.
+	 * @param aActiveNodeIdsHistory a list for each previous time step
+	 * in order from earliest to most recent, of the list of node IDs that
+	 * were active (enabled by attacker) at that time, strictly increasing.
+	 * @param aTimeStepsLeft how many time steps are left
+	 * @param aNodeCount how many nodes are in the network
+	 * @param andNodeIds the ID of every AND node
+	 * @param edgeToOrIds the ID of every edge to an OR node
+	 */
 	public RLAttackerRawObservation(
 		final List<Integer> aAttackedNodeIds,
 		final List<Integer> aAttackedEdgeIds,
