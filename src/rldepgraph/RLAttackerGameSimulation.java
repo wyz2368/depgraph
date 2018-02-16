@@ -1,22 +1,32 @@
 package rldepgraph;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
+import org.apache.commons.math3.random.RandomGenerator;
 
 import agent.Defender;
+import game.GameOracle;
 import graph.Edge;
 import graph.INode.NodeActivationType;
 import graph.INode.NodeState;
 import graph.INode.NodeType;
 import graph.Node;
 import model.AttackerAction;
+import model.DefenderAction;
+import model.DefenderBelief;
 import model.DependencyGraph;
 import model.GameState;
 import rl.RLAttackerRawObservation;
 
+/**
+ * This class contains the dependency graph game
+ * logic, for running the game with a reinforcement
+ * learning agent, from the attacker's perspective.
+ */
 public final class RLAttackerGameSimulation {
 
 	/**
@@ -42,13 +52,18 @@ public final class RLAttackerGameSimulation {
 	/**
 	 * A random number generator for state updates.
 	 */
-	private final RandomDataGenerator rng;
+	private final RandomGenerator rng;
+	
+	/**
+	 * A random number generator for state updates.
+	 */
+	private final RandomDataGenerator rDataG;
 	
 	/**
 	 * Past attacker observation states, if any.
 	 * Most recent observation is last.
 	 */
-	private final List<RLAttackerRawObservation> aObservations;
+	private final List<RLAttackerRawObservation> attackerObservations;
 	
 	/**
 	 * The current game state, including which nodes are compromised.
@@ -81,20 +96,32 @@ public final class RLAttackerGameSimulation {
 	private double worstReward;
 	
 	/**
+	 * The nodeIds of AND nodes, ascending.
+	 */
+	private List<Integer> andNodeIds;
+	
+	/**
+	 * The edgeIds of edges to OR nodes, ascending.
+	 */
+	private List<Integer> edgeToOrNodeIds;
+	
+	/**
 	 * Constructor for the game logic class.
 	 * @param aDepGraph the game's dependency graph
 	 * @param aDefender the defender agent
 	 * @param aRng random number generator for game randomness
+	 * @param aRDataG random data generator for game randomness
 	 * @param aNumTimeStep how long each episode is
 	 * @param aDiscFact discount factor for agent rewards
 	 */
 	public RLAttackerGameSimulation(
 		final DependencyGraph aDepGraph,
 		final Defender aDefender,
-		final RandomDataGenerator aRng,
+		final RandomGenerator aRng,
+		final RandomDataGenerator aRDataG,
 		final int aNumTimeStep, final double aDiscFact) {
 		if (aDepGraph == null || aDefender == null
-			|| aRng == null || aNumTimeStep < 1
+			|| aRng == null || aRDataG == null || aNumTimeStep < 1
 			|| aDiscFact <= 0.0 || aDiscFact > 1.0) {
 			throw new IllegalArgumentException();
 		}
@@ -108,9 +135,13 @@ public final class RLAttackerGameSimulation {
 		this.defender = aDefender;
 		
 		this.rng = aRng;
-		this.aObservations = new ArrayList<RLAttackerRawObservation>();
+		this.rDataG = aRDataG;
+		this.attackerObservations = new ArrayList<RLAttackerRawObservation>();
 		this.mostRecentAttActs = new ArrayList<AttackerAction>();
 		setupWorstReward();
+		
+		this.andNodeIds = getAndNodeIds();
+		this.edgeToOrNodeIds = getEdgeToOrNodeIds();
 	}
 	
 	/**
@@ -152,8 +183,9 @@ public final class RLAttackerGameSimulation {
 	 * and set the total payoff for attacker to 0.
 	 */
 	public void reset() {
-		this.aObservations.clear();		
-		this.aObservations.add(new RLAttackerRawObservation(this.numTimeStep));
+		this.attackerObservations.clear();		
+		this.attackerObservations.add(
+			new RLAttackerRawObservation(this.numTimeStep));
 		this.gameState = new GameState();
 		this.gameState.createID();
 		this.depGraph.setState(this.gameState);
@@ -288,6 +320,191 @@ public final class RLAttackerGameSimulation {
 		final double discFactPow = Math.pow(this.discFact, timeStep);
 		result *= discFactPow;
 		return result;
+	}
+	
+	/**
+	 * @param nodeIdsToAttack nodeIds of AND nodes to attack.
+	 * @param edgeIdsToAttack edgeIds of edges (to OR nodes) to attack.
+	 * @return an AttackerAction with the given targets
+	 */
+	private AttackerAction generateAttackerAction(
+		final Set<Integer> nodeIdsToAttack,
+		final Set<Integer> edgeIdsToAttack
+	) {
+		final AttackerAction result = new AttackerAction();
+		
+		for (final int nodeId: nodeIdsToAttack) {
+			final Node andNode = this.depGraph.getNodeById(nodeId);
+			final Set<Edge> inEdges = this.depGraph.incomingEdgesOf(andNode);
+			result.addAndNodeAttack(andNode, inEdges);
+		}
+		for (final int edgeId: edgeIdsToAttack) {
+			final Edge edge = this.depGraph.getEdgeById(edgeId);
+			final Node targetNode = edge.gettarget();
+			result.addOrNodeAttack(targetNode, edge);
+		}
+		return result;
+	}
+	
+	/**
+	 * Update the game state to the next time step, using the given
+	 * attacker action.
+	 * @param nodeIdsToAttack the set of (AND) node IDs
+	 * for the attacker to strike.
+	 * @param edgeIdsToAttack the set of edge (to OR node) IDs
+	 * for the attacker to strike.
+	 * @param dBelief the defender's belief about the game state
+	 */
+	public void step(
+		final Set<Integer> nodeIdsToAttack,
+		final Set<Integer> edgeIdsToAttack,
+		final DefenderBelief dBelief
+	) {
+		if (!isValidMove(nodeIdsToAttack, edgeIdsToAttack)) {
+			throw new IllegalArgumentException(
+				"illegal move: " + nodeIdsToAttack + "\n" + edgeIdsToAttack);
+		}
+		final int t = this.numTimeStep - this.timeStepsLeft + 1;
+		
+		final AttackerAction attAction =
+			generateAttackerAction(nodeIdsToAttack, edgeIdsToAttack);
+		this.mostRecentAttActs.add(attAction);
+		
+		final DefenderAction defAction = this.defender.sampleAction(
+			this.depGraph, this.getNodeCount(), t, dBelief, this.rng);
+		
+		this.gameState = GameOracle.generateStateSample(
+			this.gameState, attAction, defAction, this.rDataG);
+		this.depGraph.setState(this.gameState);
+		
+		this.timeStepsLeft--;
+		this.attackerObservations.add(getAttackerObservation(attAction));
+		
+		final double attackerCurPayoff =
+			getAttackerPayoffCurrentTimeStep(attAction);
+		this.attackerTotalPayoff += attackerCurPayoff;
+		this.attackerMarginalPayoff = attackerCurPayoff;
+	}
+	
+	/**
+	 * @return the list of nodeIds of AND type nodes, ascending.
+	 */
+	private List<Integer> getAndNodeIds() {
+		final List<Integer> result = new ArrayList<Integer>();
+		for (final Node node: this.depGraph.vertexSet()) {
+			if (node.getActivationType() == NodeActivationType.AND) {
+				result.add(node.getId());
+			}
+		}
+		Collections.sort(result);
+		return result;
+	}
+	
+	/**
+	 * @return the list of edgeIds of edges to OR type nodes, ascending.
+	 */
+	private List<Integer> getEdgeToOrNodeIds() {
+		final List<Integer> result = new ArrayList<Integer>();
+		for (final Edge edge: this.depGraph.edgeSet()) {
+			if (edge.gettarget().getActivationType() == NodeActivationType.OR) {
+				result.add(edge.getId());
+			}
+		}
+		Collections.sort(result);
+		return result;
+	}
+	
+	/**
+	 * @return get the list of nodeIds that it is legal to
+	 * attack, ascending. They must be nodeIds of AND nodes
+	 * whose parent nodes are all ACTIVE.
+	 */
+	private List<Integer> getLegalToAttackNodeIds() {
+		final List<Integer> result = new ArrayList<Integer>();
+		for (final int nodeId: this.andNodeIds) {
+			if (areAllParentsOfNodeActive(nodeId)) {
+				result.add(nodeId);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * @return get the list of edgeIds that it is legal to
+	 * attack, ascending. They must be edgeIds of edges to OR nodes
+	 * whose source node is ACTIVE.
+	 */
+	private List<Integer> getLegalToAttackEdgeToOrNodeIds() {
+		final List<Integer> result = new ArrayList<Integer>();
+		for (final int edgeId: this.edgeToOrNodeIds) {
+			if (isParentOfEdgeActive(edgeId)) {
+				result.add(edgeId);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * @return the history of active node ids, before the current
+	 * episode occurred.
+	 */
+	private List<List<Integer>> activeNodeIdsHistory() {
+		if (this.attackerObservations.isEmpty()) {
+			throw new IllegalStateException();
+		}
+		return this.attackerObservations.
+			get(this.attackerObservations.size() - 1).
+			getActiveNodeIdsHistory();
+	}
+	
+	/**
+	 * @return the nodeIds of currently active nodes, ascending.
+	 */
+	private List<Integer> getActiveNodeIds() {
+		final List<Integer> result = new ArrayList<Integer>();
+		for (final Node node: this.gameState.getEnabledNodeSet()) {
+			result.add(node.getId());
+		}
+		Collections.sort(result);
+		return result;
+	}
+	
+	/**
+	 * @param attAction the attacker's current action.
+	 * @return the observation of the attacker after the action
+	 * is taken and game state is updated
+	 */
+	private RLAttackerRawObservation getAttackerObservation(
+		final AttackerAction attAction
+	) {
+		final List<Integer> attackedNodeIds = new ArrayList<Integer>();
+		attackedNodeIds.addAll(attAction.getAttackedAndNodeIds());
+		Collections.sort(attackedNodeIds);
+		
+		final List<Integer> attackedEdgeIds = new ArrayList<Integer>();
+		attackedEdgeIds.addAll(attAction.getAttackedEdgeToOrNodeIds());
+		Collections.sort(attackedEdgeIds);
+		
+		final List<Integer> legalToAttackNodeIds = getLegalToAttackNodeIds();
+		final List<Integer> legalToAttackEdgeIds =
+			getLegalToAttackEdgeToOrNodeIds();
+		
+		final List<List<Integer>> activeNodeIdsHistory = activeNodeIdsHistory();
+		activeNodeIdsHistory.add(getActiveNodeIds());
+		
+		final int nodeCount = this.depGraph.vertexSet().size();
+
+		return new RLAttackerRawObservation(
+			attackedNodeIds,
+			attackedEdgeIds, 
+			legalToAttackNodeIds,
+			legalToAttackEdgeIds,
+			activeNodeIdsHistory,
+			this.timeStepsLeft,
+			nodeCount,
+			this.andNodeIds,
+			this.edgeToOrNodeIds
+		);
 	}
 	
 	/**

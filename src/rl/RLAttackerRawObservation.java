@@ -113,7 +113,7 @@ public final class RLAttackerRawObservation {
 		
 		for (int t = aActiveNodeIdsHistory.size() - ATTACKER_OBS_LENGTH;
 				t < aActiveNodeIdsHistory.size(); t++) {
-				List<Integer> curActiveNodeIds = new ArrayList<Integer>();
+				final List<Integer> curActiveNodeIds = new ArrayList<Integer>();
 				if (t >= 0) {
 					if (!validateIdsList(
 						aActiveNodeIdsHistory.get(t), aNodeCount)) {
