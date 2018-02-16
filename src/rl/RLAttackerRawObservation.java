@@ -128,6 +128,23 @@ public final class RLAttackerRawObservation {
 	}
 	
 	/**
+	 * Convenience constructor for the empty initial observation,
+	 * at the beginning of a game.
+	 * @param aTimeStepsLeft how many time steps in the game
+	 */
+	public RLAttackerRawObservation(final int aTimeStepsLeft) {
+		if (aTimeStepsLeft <= 0) {
+			throw new IllegalArgumentException();
+		}
+		for (int t = 0; t < ATTACKER_OBS_LENGTH; t++) {
+			final List<Integer> curActiveNodeIds = new ArrayList<Integer>();
+			this.activeNodeIdsHistory.add(curActiveNodeIds);
+		}
+		
+		this.timeStepsLeft = aTimeStepsLeft;
+	}
+	
+	/**
 	 * @param idsList a list of IDs of nodes or edges to check.
 	 * @param maxId the highest legal ID
 	 * @return true if the list is valid. the list should
