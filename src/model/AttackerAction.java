@@ -34,6 +34,38 @@ public final class AttackerAction {
 		return this.action.isEmpty();
 	}
 	
+	/**
+	 * @return a set containing the nodeId of every AND node
+	 * attacked.
+	 */
+	public Set<Integer> getAttackedAndNodeIds() {
+		final Set<Integer> result = new HashSet<Integer>();
+		for (Entry<Node, Set<Edge>> entry : this.action.entrySet()) {
+			final Node node = entry.getKey();
+			if (node.getActivationType() == NodeActivationType.AND) {
+				result.add(node.getId());
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * @return a set containing the edgeId of every edge to an OR
+	 * node, where the edge is being attacked.
+	 */
+	public Set<Integer> getAttackedEdgeToOrNodeIds() {
+		final Set<Integer> result = new HashSet<Integer>();
+		for (Entry<Node, Set<Edge>> entry : this.action.entrySet()) {
+			final Node node = entry.getKey();
+			if (node.getActivationType() == NodeActivationType.OR) {
+				for (final Edge edge: entry.getValue()) {
+					result.add(edge.getId());
+				}
+			}
+		}
+		return result;
+	}
+	
 	public void addAndNodeAttack(
 		final Node targetAndNode, final Set<Edge> inEdges) {
 		if (targetAndNode == null || inEdges == null) {

@@ -10,6 +10,7 @@ import agent.Defender;
 import graph.Edge;
 import graph.INode.NodeActivationType;
 import graph.INode.NodeState;
+import graph.INode.NodeType;
 import graph.Node;
 import model.AttackerAction;
 import model.DependencyGraph;
@@ -60,14 +61,14 @@ public final class RLAttackerGameSimulation {
 	private int timeStepsLeft;
 	
 	/**
-	 * Defender's total discounted payoff so far in a simulation episode.
+	 * Attacker's total discounted payoff so far in a simulation episode.
 	 */
-	private double defenderTotalPayoff;
+	private double attackerTotalPayoff;
 	
 	/**
-	 * Defender's discounted payoff in most recent time step only.
+	 * Attacker's discounted payoff in most recent time step only.
 	 */
-	private double defenderMarginalPayoff;
+	private double attackerMarginalPayoff;
 	
 	/**
 	 * Past attacker actions, if any. Most recent is last.
@@ -148,7 +149,7 @@ public final class RLAttackerGameSimulation {
 	 * Set the observation to the initial "empty" observation,
 	 * reset game state to no nodes compromised, 
 	 * set the timeStepsLeft to the max value,
-	 * and set the total payoff for defender to 0.
+	 * and set the total payoff for attacker to 0.
 	 */
 	public void reset() {
 		this.aObservations.clear();		
@@ -157,8 +158,8 @@ public final class RLAttackerGameSimulation {
 		this.gameState.createID();
 		this.depGraph.setState(this.gameState);
 		this.timeStepsLeft = this.numTimeStep;
-		this.defenderTotalPayoff = 0.0;
-		this.defenderMarginalPayoff = 0.0;
+		this.attackerTotalPayoff = 0.0;
+		this.attackerMarginalPayoff = 0.0;
 		this.mostRecentAttActs.clear();
 	}
 	
@@ -257,5 +258,67 @@ public final class RLAttackerGameSimulation {
 			}
 		}
 		return true;
+	}
+	
+	/**
+	 * Returns the discounted payoff to the attacker in current time step.
+	 * @param attAction the AND nodes and edges to OR nodes the attacker
+	 * attacked in this time step
+	 * @return the discounted value of this time step's payoff,
+	 * including the cost of nodes and edges attacked and reward of nodes owned
+	 * by attacker after the time step's update
+	 */
+	private double getAttackerPayoffCurrentTimeStep(
+		final AttackerAction attAction) {
+		double result = 0.0;
+
+		for (final Node node: this.gameState.getEnabledNodeSet()) {
+			if (node.getType() == NodeType.TARGET) {
+				result += node.getAReward();
+			}
+		}
+		for (final int nodeId: attAction.getAttackedAndNodeIds()) {
+			result += this.depGraph.getNodeById(nodeId).getACost();
+		}
+		for (final int edgeId: attAction.getAttackedEdgeToOrNodeIds()) {
+			result += this.depGraph.getEdgeById(edgeId).getACost();
+		}
+		
+		final int timeStep = this.numTimeStep - this.timeStepsLeft;
+		final double discFactPow = Math.pow(this.discFact, timeStep);
+		result *= discFactPow;
+		return result;
+	}
+	
+	/**
+	 * Returns the discounted payoff of the current episode so far.
+	 * @return the discounted payoff of the episode so far
+	 */
+	public double getAttackerTotalPayoff() {
+		return this.attackerTotalPayoff;
+	}
+
+	/**
+	 * Returns the discounted payoff of the most recent time step.
+	 * @return the discounted payoff of the most recent time step
+	 */
+	public double getAttackerMarginalPayoff() {
+		return this.attackerMarginalPayoff;
+	}
+
+	/**
+	 * Return number of nodes in graph.
+	 * @return graph node count
+	 */
+	public int getNodeCount() {
+		return this.depGraph.vertexSet().size();
+	}
+
+	/**
+	 * Returns true if game is over (no more time steps left).
+	 * @return true if game is over
+	 */
+	public boolean isGameOver() {
+		return this.timeStepsLeft == 0;
 	}
 }
