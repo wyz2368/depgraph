@@ -342,10 +342,10 @@ public final class RLAttackerGameSimulation {
 			return false;
 		}
 		for (final int targetNodeId: nodeIdsToAttack) {
-			if (!isNodeInactive(targetNodeId)) {
+			if (!isValidANDNodeId(targetNodeId)) {
 				return false;
 			}
-			if (!isValidANDNodeId(targetNodeId)) {
+			if (!isNodeInactive(targetNodeId)) {
 				return false;
 			}
 			if (!areAllParentsOfNodeActive(targetNodeId)) {
@@ -353,10 +353,10 @@ public final class RLAttackerGameSimulation {
 			}
 		}
 		for (final int targetEdgeId: edgeIdsToAttack) {
-			if (!isEdgeTargetInactive(targetEdgeId)) {
+			if (!isValidIdOfEdgeToORNode(targetEdgeId)) {
 				return false;
 			}
-			if (!isValidIdOfEdgeToORNode(targetEdgeId)) {
+			if (!isEdgeTargetInactive(targetEdgeId)) {
 				return false;
 			}
 			if (!isParentOfEdgeActive(targetEdgeId)) {
