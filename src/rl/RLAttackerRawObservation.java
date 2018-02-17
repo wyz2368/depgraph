@@ -155,6 +155,9 @@ public final class RLAttackerRawObservation {
 		final List<Integer> idsList,
 		final int maxId 
 	) {
+		if (idsList.isEmpty()) {
+			return true;
+		}
 		for (int i = 0; i < idsList.size() - 1; i++) {
 			final int left = idsList.get(i);
 			final int right = idsList.get(i + 1);
@@ -176,13 +179,16 @@ public final class RLAttackerRawObservation {
 	 * @param idsList a list of IDs of nodes or edges to check.
 	 * @param validIdsList the list of legal IDs.
 	 * @return true if the list is valid. the list should
-	 * have all entries in validIdsList, and all entries
+	 * have only entries in validIdsList, and all entries
 	 * strictly increasing.
 	 */
 	private static boolean validateIdsList(
 		final List<Integer> idsList,
 		final List<Integer> validIdsList 
 	) {
+		if (idsList.isEmpty()) {
+			return true;
+		}
 		if (validIdsList.contains(0)) {
 			throw new IllegalArgumentException();
 		}

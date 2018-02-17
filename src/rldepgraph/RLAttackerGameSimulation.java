@@ -413,7 +413,7 @@ public final class RLAttackerGameSimulation {
 		this.mostRecentAttActs.add(attAction);
 		
 		final DefenderAction defAction = this.defender.sampleAction(
-			this.depGraph, this.getNodeCount(), t, dBeliefInput, this.rng);
+			this.depGraph, t, this.numTimeStep, dBeliefInput, this.rng);
 		
 		final DefenderObservation dObservation =
 			GameOracle.generateDefObservation(

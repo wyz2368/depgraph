@@ -41,7 +41,9 @@ public final class UniformDefender extends Defender {
 		final DefenderBelief dBelief, final RandomGenerator rng) {
 		if (depGraph == null || curTimeStep < 0
 			|| numTimeStep < curTimeStep || dBelief == null || rng == null) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(
+				depGraph + "\n" + curTimeStep
+				+ "\n" + numTimeStep + "\n" + dBelief);
 		}
 		List<Node> dCandidateNodeList =
 			new ArrayList<Node>(depGraph.vertexSet());
