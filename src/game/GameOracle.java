@@ -46,9 +46,8 @@ public final class GameOracle {
 			|| defAction == null || rnd == null) {
 			throw new IllegalArgumentException();
 		}
-		List<GameState> stateSampleList = generateStateSample(pastState
-			, attAction, defAction
-			,  rnd, 1, false);
+		final List<GameState> stateSampleList = generateStateSample(
+			pastState, attAction, defAction, rnd, 1, false);
 		return stateSampleList.get(0);
 	}
 	
@@ -222,7 +221,8 @@ public final class GameOracle {
 			if (pastState.containsNode(node)) {
 				// if node is already enabled, the attacker 
 				// must not be allowed to enable it again
-				throw new IllegalStateException();
+				throw new IllegalStateException(
+					"can't enable node already enabled: " + node);
 			}
 			// if the defender is not protecting this node
 			if (!defAction.getAction().contains(node)) {
