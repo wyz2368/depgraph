@@ -201,10 +201,9 @@ public final class RLAttackerGameSimulation {
 		this.depGraph.setState(this.gameState);
 		this.timeStepsLeft = this.numTimeStep;
 		
-		final List<Integer> legalToAttackNodeIds = getLegalToAttackNodeIds();
 		this.attackerObservations.add(
 			new RLAttackerRawObservation(
-				legalToAttackNodeIds, this.andNodeIds, this.numTimeStep));
+				getLegalToAttackNodeIds(), this.andNodeIds, this.numTimeStep));
 		
 		this.attackerTotalPayoff = 0.0;
 		this.attackerMarginalPayoff = 0.0;
@@ -236,12 +235,14 @@ public final class RLAttackerGameSimulation {
 	
 	/**
 	 * @return a list of nodeIds of AND nodes, where each parent
-	 * node is ACTIVE, ascending.
+	 * node is ACTIVE, and the node itself is INACTIVE, ascending.
 	 */
 	public List<Integer> validAndNodesToAttack() {
 		final List<Integer> result = new ArrayList<Integer>();
 		for (int i = 1; i <= this.depGraph.vertexSet().size(); i++) {
-			if (isValidANDNodeId(i) && areAllParentsOfNodeActive(i)) {
+			if (isNodeInactive(i)
+				&& isValidANDNodeId(i)
+				&& areAllParentsOfNodeActive(i)) {
 				result.add(i);
 			}
 		}
@@ -250,12 +251,14 @@ public final class RLAttackerGameSimulation {
 	
 	/**
 	 * @return a list of edgeIds of edges to OR nodes, where the source
-	 * node is ACTIVE, ascending.
+	 * node is ACTIVE, and target node is INACTIVE, ascending.
 	 */
 	public List<Integer> validEdgesToOrNodeToAttack() {
 		final List<Integer> result = new ArrayList<Integer>();
 		for (int i = 1; i <= this.depGraph.edgeSet().size(); i++) {
-			if (isValidIdOfEdgeToORNode(i) && isParentOfEdgeActive(i)) {
+			if (isEdgeTargetInactive(i)
+				&& isValidIdOfEdgeToORNode(i)
+				&& isParentOfEdgeActive(i)) {
 				result.add(i);
 			}
 		}
@@ -274,6 +277,25 @@ public final class RLAttackerGameSimulation {
 			&& edgeId <= this.depGraph.edgeSet().size()
 			&& this.depGraph.getEdgeById(edgeId).gettarget().getActivationType()
 				== NodeActivationType.OR;
+	}
+	
+	/**
+	 * @param nodeId a nodeId to check.
+	 * @return true if the node is in the INACTIVE state.
+	 */
+	public boolean isNodeInactive(final int nodeId) {
+		return this.depGraph.getNodeById(nodeId).
+			getState() == NodeState.INACTIVE;
+	}
+	
+	/**
+	 * @param edgeId the edgeId of an edge to check.
+	 * @return true if the edge's target node is in the
+	 * INACTIVE state.
+	 */
+	public boolean isEdgeTargetInactive(final int edgeId) {
+		return this.depGraph.getEdgeById(edgeId).
+			gettarget().getState() == NodeState.INACTIVE;
 	}
 	
 	/**
@@ -307,8 +329,10 @@ public final class RLAttackerGameSimulation {
 	 * @return true if the move is valid. The move is valid
 	 * if all nodeIds refer to AND nodes in the graph, all
 	 * edgeIds refer to edge to OR nodes in the graph,
-	 * all the AND nodeIds have only ACTIVE parent nodes,
-	 * and all the OR edgeIds have ACTIVE source nodes.
+	 * all the AND nodeIds have only ACTIVE parent nodes and
+	 * an INACTIVE self node,
+	 * and all the OR edgeIds have ACTIVE source nodes
+	 * and INACTIVE target nodes.
 	 */
 	public boolean isValidMove(
 		final Set<Integer> nodeIdsToAttack,
@@ -318,6 +342,9 @@ public final class RLAttackerGameSimulation {
 			return false;
 		}
 		for (final int targetNodeId: nodeIdsToAttack) {
+			if (!isNodeInactive(targetNodeId)) {
+				return false;
+			}
 			if (!isValidANDNodeId(targetNodeId)) {
 				return false;
 			}
@@ -326,6 +353,9 @@ public final class RLAttackerGameSimulation {
 			}
 		}
 		for (final int targetEdgeId: edgeIdsToAttack) {
+			if (!isEdgeTargetInactive(targetEdgeId)) {
+				return false;
+			}
 			if (!isValidIdOfEdgeToORNode(targetEdgeId)) {
 				return false;
 			}

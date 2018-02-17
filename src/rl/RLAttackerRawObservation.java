@@ -38,7 +38,7 @@ public final class RLAttackerRawObservation {
 	 * IDs are not duplicated, and are in ascending order.
 	 */
 	private final List<Integer> legalToAttackEdgeIds =
-			new ArrayList<Integer>();
+		new ArrayList<Integer>();
 	
 	/**
 	 * A list of the past ATTACKER_OBS_LENGTH time steps, of
