@@ -1,6 +1,11 @@
 package rldepgraph;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -105,14 +110,12 @@ public final class DepgraphVsAttackerHuman {
 					sim.getAttackerObservation(attAction));
 			}
 			
-			List<Set<Integer>> idsToAttack = getHumanIdsToDefend();
-			Set<Integer> nodeIdsToAttack = idsToAttack.get(0);
-			Set<Integer> edgeIdsToAttack = idsToAttack.get(1);
+			Set<Integer> nodeIdsToAttack = getHumanNodeIdsToDefend();
+			Set<Integer> edgeIdsToAttack = getHumanEdgeIdsToDefend();
 			while (!sim.isValidMove(nodeIdsToAttack, edgeIdsToAttack)) {
 				System.out.println("Invalid move.");
-				idsToAttack = getHumanIdsToDefend();
-				nodeIdsToAttack = idsToAttack.get(0);
-				edgeIdsToAttack = idsToAttack.get(1);
+				nodeIdsToAttack = getHumanNodeIdsToDefend();
+				edgeIdsToAttack = getHumanEdgeIdsToDefend();
 			}
 			
 			attAction = sim.generateAttackerAction(
@@ -131,11 +134,14 @@ public final class DepgraphVsAttackerHuman {
 		System.out.println("Attacker total payoff: " + attackerTotalPayoff);
 	}
 	
-
-	private static List<Set<Integer>> getHumanIdsToDefend() {
-		// FIXME
-		/*
-		System.out.println("Enter your move, as IDs 1-30, comma-separated:");
+	/**
+	 * @return a set of nodeIds of AND nodes to attack, from
+	 * human command-line input.
+	 */
+	private static Set<Integer> getHumanNodeIdsToDefend() {
+		System.out.println(
+			"Enter AND nodes to attack, as comma-separated IDs from "
+				+ sim.validAndNodesToAttack());
 		final Set<Integer> result = new HashSet<Integer>();
 		final BufferedReader reader =
 			new BufferedReader(new InputStreamReader(System.in));
@@ -143,7 +149,7 @@ public final class DepgraphVsAttackerHuman {
 			final String input = reader.readLine();
 			if (input == null) {
 				System.out.println("Please try again.");
-				return getHumanIdsToDefend();
+				return getHumanNodeIdsToDefend();
 			}
 			List<String> items = Arrays.asList(input.split(","));
 			for (final String item: items) {
@@ -157,7 +163,7 @@ public final class DepgraphVsAttackerHuman {
 				} catch (NumberFormatException e) {
 				    System.out.println(
 			    		"That is not an integer: " + itemStripped);
-				    return getHumanIdsToDefend();
+				    return getHumanNodeIdsToDefend();
 				}
 			}
 
@@ -166,8 +172,47 @@ public final class DepgraphVsAttackerHuman {
 			e.printStackTrace();
 		}
 		System.out.println("Failed to get input. Try again.");
-		return getHumanIdsToDefend();
-		*/
-		return null;
+		return getHumanNodeIdsToDefend();
+	}
+	
+	/**
+	 * @return a set of edgeIds of edges to OR nodes to attack, from
+	 * human command-line input.
+	 */
+	private static Set<Integer> getHumanEdgeIdsToDefend() {
+		System.out.println(
+			"Enter edges to OR nodes to attack, as comma-separated IDs from "
+				+ sim.validEdgesToOrNodeToAttack());
+		final Set<Integer> result = new HashSet<Integer>();
+		final BufferedReader reader =
+			new BufferedReader(new InputStreamReader(System.in));
+		try {
+			final String input = reader.readLine();
+			if (input == null) {
+				System.out.println("Please try again.");
+				return getHumanEdgeIdsToDefend();
+			}
+			List<String> items = Arrays.asList(input.split(","));
+			for (final String item: items) {
+				final String itemStripped = item.trim();
+				if (itemStripped.isEmpty()) {
+					return result; // empty set to defend
+				}
+				try {
+					final int cur = Integer.parseInt(itemStripped);
+				    result.add(cur);
+				} catch (NumberFormatException e) {
+				    System.out.println(
+			    		"That is not an integer: " + itemStripped);
+				    return getHumanNodeIdsToDefend();
+				}
+			}
+
+			return result;
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+		System.out.println("Failed to get input. Try again.");
+		return getHumanEdgeIdsToDefend();
 	}
 }

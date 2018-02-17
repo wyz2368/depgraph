@@ -231,6 +231,34 @@ public final class RLAttackerGameSimulation {
 	}
 	
 	/**
+	 * @return a list of nodeIds of AND nodes, where each parent
+	 * node is ACTIVE, ascending.
+	 */
+	public List<Integer> validAndNodesToAttack() {
+		final List<Integer> result = new ArrayList<Integer>();
+		for (int i = 1; i <= this.depGraph.vertexSet().size(); i++) {
+			if (isValidANDNodeId(i) && areAllParentsOfNodeActive(i)) {
+				result.add(i);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * @return a list of edgeIds of edges to OR nodes, where the source
+	 * node is ACTIVE, ascending.
+	 */
+	public List<Integer> validEdgesToOrNodeToAttack() {
+		final List<Integer> result = new ArrayList<Integer>();
+		for (int i = 1; i <= this.depGraph.edgeSet().size(); i++) {
+			if (isValidIdOfEdgeToORNode(i) && isParentOfEdgeActive(i)) {
+				result.add(i);
+			}
+		}
+		return result;
+	}
+	
+	/**
 	 * Returns true if the edgeID is the ID of an edge to an
 	 * OR node in the graph.
 	 * @param edgeId an edgeId to check
