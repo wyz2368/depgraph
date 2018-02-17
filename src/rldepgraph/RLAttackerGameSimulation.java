@@ -447,7 +447,7 @@ public final class RLAttackerGameSimulation {
 	 * @return the list of nodeIds of AND type nodes, ascending.
 	 */
 	public List<Integer> getAndNodeIds() {
-		if (this.andNodeIds.isEmpty()) {
+		if (this.andNodeIds == null) {
 			final List<Integer> result = new ArrayList<Integer>();
 			for (final Node node: this.depGraph.vertexSet()) {
 				if (node.getActivationType() == NodeActivationType.AND) {
@@ -465,7 +465,7 @@ public final class RLAttackerGameSimulation {
 	 * @return the list of edgeIds of edges to OR type nodes, ascending.
 	 */
 	private List<Integer> getEdgeToOrNodeIds() {
-		if (this.edgeToOrNodeIds.isEmpty()) {
+		if (this.edgeToOrNodeIds == null) {
 			final List<Integer> result = new ArrayList<Integer>();
 			for (final Edge edge: this.depGraph.edgeSet()) {
 				if (edge.gettarget().getActivationType()
