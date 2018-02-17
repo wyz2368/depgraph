@@ -104,7 +104,10 @@ public final class DepgraphVsAttackerHuman {
 			}
 			if (attAction == null) {
 				System.out.println(
-					new RLAttackerRawObservation(sim.getNumTimeStep()));
+					new RLAttackerRawObservation(
+						sim.getLegalToAttackNodeIds(),
+						sim.getAndNodeIds(),
+						sim.getNumTimeStep()));
 			} else {
 				System.out.println(
 					sim.getAttackerObservation(attAction));

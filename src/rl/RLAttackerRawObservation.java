@@ -130,9 +130,23 @@ public final class RLAttackerRawObservation {
 	/**
 	 * Convenience constructor for the empty initial observation,
 	 * at the beginning of a game.
+	 * @param aLegalToAttackNodeIds the list of AND node IDs that it is
+	 * legal to attack currently, strictly increasing. (These are the
+	 * root nodes of the graph.)
+	 * @param andNodeIds the ID of every AND node
 	 * @param aTimeStepsLeft how many time steps in the game
 	 */
-	public RLAttackerRawObservation(final int aTimeStepsLeft) {
+	public RLAttackerRawObservation(
+		final List<Integer> aLegalToAttackNodeIds,
+		final List<Integer> andNodeIds,
+		final int aTimeStepsLeft
+	) {
+		if (aLegalToAttackNodeIds == null || andNodeIds == null) {
+			throw new IllegalArgumentException();
+		}
+		if (!validateIdsList(aLegalToAttackNodeIds, andNodeIds)) {
+			throw new IllegalArgumentException();
+		}
 		if (aTimeStepsLeft <= 0) {
 			throw new IllegalArgumentException();
 		}
@@ -140,7 +154,7 @@ public final class RLAttackerRawObservation {
 			final List<Integer> curActiveNodeIds = new ArrayList<Integer>();
 			this.activeNodeIdsHistory.add(curActiveNodeIds);
 		}
-		
+		this.legalToAttackNodeIds.addAll(aLegalToAttackNodeIds);
 		this.timeStepsLeft = aTimeStepsLeft;
 	}
 	

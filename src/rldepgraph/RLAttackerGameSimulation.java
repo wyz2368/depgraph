@@ -99,12 +99,12 @@ public final class RLAttackerGameSimulation {
 	/**
 	 * The nodeIds of AND nodes, ascending.
 	 */
-	private List<Integer> andNodeIds;
+	private final List<Integer> andNodeIds;
 	
 	/**
 	 * The edgeIds of edges to OR nodes, ascending.
 	 */
-	private List<Integer> edgeToOrNodeIds;
+	private final List<Integer> edgeToOrNodeIds;
 	
 	/**
 	 * Constructor for the game logic class.
@@ -196,12 +196,16 @@ public final class RLAttackerGameSimulation {
 	 */
 	public void reset() {
 		this.attackerObservations.clear();		
-		this.attackerObservations.add(
-			new RLAttackerRawObservation(this.numTimeStep));
 		this.gameState = new GameState();
 		this.gameState.createID();
 		this.depGraph.setState(this.gameState);
 		this.timeStepsLeft = this.numTimeStep;
+		
+		final List<Integer> legalToAttackNodeIds = getLegalToAttackNodeIds();
+		this.attackerObservations.add(
+			new RLAttackerRawObservation(
+				legalToAttackNodeIds, this.andNodeIds, this.numTimeStep));
+		
 		this.attackerTotalPayoff = 0.0;
 		this.attackerMarginalPayoff = 0.0;
 		this.mostRecentAttActs.clear();
@@ -442,29 +446,38 @@ public final class RLAttackerGameSimulation {
 	/**
 	 * @return the list of nodeIds of AND type nodes, ascending.
 	 */
-	private List<Integer> getAndNodeIds() {
-		final List<Integer> result = new ArrayList<Integer>();
-		for (final Node node: this.depGraph.vertexSet()) {
-			if (node.getActivationType() == NodeActivationType.AND) {
-				result.add(node.getId());
+	public List<Integer> getAndNodeIds() {
+		if (this.andNodeIds.isEmpty()) {
+			final List<Integer> result = new ArrayList<Integer>();
+			for (final Node node: this.depGraph.vertexSet()) {
+				if (node.getActivationType() == NodeActivationType.AND) {
+					result.add(node.getId());
+				}
 			}
+			Collections.sort(result);
+			return result;
 		}
-		Collections.sort(result);
-		return result;
+
+		return this.andNodeIds;
 	}
 	
 	/**
 	 * @return the list of edgeIds of edges to OR type nodes, ascending.
 	 */
 	private List<Integer> getEdgeToOrNodeIds() {
-		final List<Integer> result = new ArrayList<Integer>();
-		for (final Edge edge: this.depGraph.edgeSet()) {
-			if (edge.gettarget().getActivationType() == NodeActivationType.OR) {
-				result.add(edge.getId());
+		if (this.edgeToOrNodeIds.isEmpty()) {
+			final List<Integer> result = new ArrayList<Integer>();
+			for (final Edge edge: this.depGraph.edgeSet()) {
+				if (edge.gettarget().getActivationType()
+					== NodeActivationType.OR) {
+					result.add(edge.getId());
+				}
 			}
+			Collections.sort(result);
+			return result;
 		}
-		Collections.sort(result);
-		return result;
+
+		return this.edgeToOrNodeIds;
 	}
 	
 	/**
@@ -472,7 +485,7 @@ public final class RLAttackerGameSimulation {
 	 * attack, ascending. They must be nodeIds of AND nodes
 	 * whose parent nodes are all ACTIVE.
 	 */
-	private List<Integer> getLegalToAttackNodeIds() {
+	public List<Integer> getLegalToAttackNodeIds() {
 		final List<Integer> result = new ArrayList<Integer>();
 		for (final int nodeId: this.andNodeIds) {
 			if (areAllParentsOfNodeActive(nodeId)) {
