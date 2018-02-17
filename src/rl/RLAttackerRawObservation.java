@@ -112,17 +112,17 @@ public final class RLAttackerRawObservation {
 		this.legalToAttackEdgeIds.addAll(aLegalToAttackEdgeIds);
 		
 		for (int t = aActiveNodeIdsHistory.size() - ATTACKER_OBS_LENGTH;
-				t < aActiveNodeIdsHistory.size(); t++) {
-				final List<Integer> curActiveNodeIds = new ArrayList<Integer>();
-				if (t >= 0) {
-					if (!validateIdsList(
-						aActiveNodeIdsHistory.get(t), aNodeCount)) {
-						throw new IllegalArgumentException();
-					}
-					curActiveNodeIds.addAll(aActiveNodeIdsHistory.get(t));
+			t < aActiveNodeIdsHistory.size(); t++) {
+			final List<Integer> curActiveNodeIds = new ArrayList<Integer>();
+			if (t >= 0) {
+				if (!validateIdsList(
+					aActiveNodeIdsHistory.get(t), aNodeCount)) {
+					throw new IllegalArgumentException();
 				}
-				this.activeNodeIdsHistory.add(curActiveNodeIds);
+				curActiveNodeIds.addAll(aActiveNodeIdsHistory.get(t));
 			}
+			this.activeNodeIdsHistory.add(curActiveNodeIds);
+		}
 		
 		this.timeStepsLeft = aTimeStepsLeft;
 	}
@@ -278,8 +278,8 @@ public final class RLAttackerRawObservation {
 		return "RLAttackerRawObservation [attackedNodeIds="
 			+ this.attackedNodeIds + ", attackedEdgeIds=" + this.attackedEdgeIds
 			+ ", legalToAttackNodeIds=" + this.legalToAttackNodeIds
-			+ ", legalToAttackEdgeIds=" + this.legalToAttackEdgeIds
-			+ ", activeNodeIdsHistory=" + this.activeNodeIdsHistory
+			+ ", \nlegalToAttackEdgeIds=" + this.legalToAttackEdgeIds
+			+ ", \nactiveNodeIdsHistory=" + this.activeNodeIdsHistory
 			+ ", timeStepsLeft=" + this.timeStepsLeft + "]";
 	}
 }
