@@ -18,6 +18,7 @@ import graph.Node;
 import model.AttackerAction;
 import model.DefenderAction;
 import model.DefenderBelief;
+import model.DefenderObservation;
 import model.DependencyGraph;
 import model.GameState;
 import rl.RLAttackerRawObservation;
@@ -176,6 +177,17 @@ public final class RLAttackerGameSimulation {
 	}
 	
 	/**
+	 * Get a string representation of current game state.
+	 * @return a string showing the full game state
+	 */
+	public String stateToString() {
+		final StringBuilder builder = new StringBuilder();
+		builder.append(this.gameState.getEnabledSetString());
+		builder.append(", ").append(this.timeStepsLeft).append(" remaining");
+		return builder.toString();
+	}
+	
+	/**
 	 * Return to the initial game state.
 	 * Set the observation to the initial "empty" observation,
 	 * reset game state to no nodes compromised, 
@@ -327,7 +339,7 @@ public final class RLAttackerGameSimulation {
 	 * @param edgeIdsToAttack edgeIds of edges (to OR nodes) to attack.
 	 * @return an AttackerAction with the given targets
 	 */
-	private AttackerAction generateAttackerAction(
+	public AttackerAction generateAttackerAction(
 		final Set<Integer> nodeIdsToAttack,
 		final Set<Integer> edgeIdsToAttack
 	) {
@@ -353,12 +365,14 @@ public final class RLAttackerGameSimulation {
 	 * for the attacker to strike.
 	 * @param edgeIdsToAttack the set of edge (to OR node) IDs
 	 * for the attacker to strike.
-	 * @param dBelief the defender's belief about the game state
+	 * @param dBeliefInput the defender's belief about the game state
+	 * 
+	 * @return the defender's updated belief about the game state
 	 */
-	public void step(
+	public DefenderBelief step(
 		final Set<Integer> nodeIdsToAttack,
 		final Set<Integer> edgeIdsToAttack,
-		final DefenderBelief dBelief
+		final DefenderBelief dBeliefInput
 	) {
 		if (!isValidMove(nodeIdsToAttack, edgeIdsToAttack)) {
 			throw new IllegalArgumentException(
@@ -371,7 +385,16 @@ public final class RLAttackerGameSimulation {
 		this.mostRecentAttActs.add(attAction);
 		
 		final DefenderAction defAction = this.defender.sampleAction(
-			this.depGraph, this.getNodeCount(), t, dBelief, this.rng);
+			this.depGraph, this.getNodeCount(), t, dBeliefInput, this.rng);
+		
+		final DefenderObservation dObservation =
+			GameOracle.generateDefObservation(
+				this.depGraph, this.gameState,
+				this.rDataG, this.numTimeStep - t);
+		final DefenderBelief dBeliefResult = this.defender.updateBelief(
+			this.depGraph, dBeliefInput, defAction,
+			dObservation, t, this.numTimeStep,
+			this.rng);
 		
 		this.gameState = GameOracle.generateStateSample(
 			this.gameState, attAction, defAction, this.rDataG);
@@ -384,6 +407,8 @@ public final class RLAttackerGameSimulation {
 			getAttackerPayoffCurrentTimeStep(attAction);
 		this.attackerTotalPayoff += attackerCurPayoff;
 		this.attackerMarginalPayoff = attackerCurPayoff;
+		
+		return dBeliefResult;
 	}
 	
 	/**
@@ -474,7 +499,7 @@ public final class RLAttackerGameSimulation {
 	 * @return the observation of the attacker after the action
 	 * is taken and game state is updated
 	 */
-	private RLAttackerRawObservation getAttackerObservation(
+	public RLAttackerRawObservation getAttackerObservation(
 		final AttackerAction attAction
 	) {
 		final List<Integer> attackedNodeIds = new ArrayList<Integer>();
@@ -530,6 +555,13 @@ public final class RLAttackerGameSimulation {
 	public int getNodeCount() {
 		return this.depGraph.vertexSet().size();
 	}
+	
+	/**
+	 * @return the total time steps per simulation.
+	 */
+	public int getNumTimeStep() {
+		return this.numTimeStep;
+	}
 
 	/**
 	 * Returns true if game is over (no more time steps left).
@@ -537,5 +569,12 @@ public final class RLAttackerGameSimulation {
 	 */
 	public boolean isGameOver() {
 		return this.timeStepsLeft == 0;
+	}
+	
+	/**
+	 * @return the GameState object.
+	 */
+	public GameState getGameState() {
+		return this.gameState;
 	}
 }

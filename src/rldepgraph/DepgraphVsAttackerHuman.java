@@ -1,14 +1,19 @@
 package rldepgraph;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
 
 import agent.AgentFactory;
 import agent.Defender;
 import game.GameSimulationSpec;
+import model.AttackerAction;
+import model.DefenderBelief;
 import model.DependencyGraph;
+import rl.RLAttackerRawObservation;
 import utils.DGraphUtils;
 import utils.EncodingUtils;
 import utils.JsonUtils;
@@ -31,7 +36,7 @@ public final class DepgraphVsAttackerHuman {
 	 */
 	public static void main(final String[] args) {
 		setupEnvironment();
-		// playGame();
+		playGame();
 	}
 	
 	/**
@@ -76,5 +81,93 @@ public final class DepgraphVsAttackerHuman {
 			depGraph, defender,
 			rDataG.getRandomGenerator(),
 			rDataG, numTimeStep, discFact);
+	}
+	
+	/**
+	 * Prompts AI and human for moves until the game
+	 * is over, then declares the winner.
+	 */
+	public static void playGame() {
+		final boolean showState = false;
+		sim.reset();
+		AttackerAction attAction = null;
+		DefenderBelief curDefBelief = new DefenderBelief();
+		curDefBelief.addState(sim.getGameState(), 1.0);
+		while (!sim.isGameOver()) {
+			if (showState) {
+				System.out.println("\n" + sim.stateToString() + "\n");
+			}
+			if (attAction == null) {
+				System.out.println(
+					new RLAttackerRawObservation(sim.getNumTimeStep()));
+			} else {
+				System.out.println(
+					sim.getAttackerObservation(attAction));
+			}
+			
+			List<Set<Integer>> idsToAttack = getHumanIdsToDefend();
+			Set<Integer> nodeIdsToAttack = idsToAttack.get(0);
+			Set<Integer> edgeIdsToAttack = idsToAttack.get(1);
+			while (!sim.isValidMove(nodeIdsToAttack, edgeIdsToAttack)) {
+				System.out.println("Invalid move.");
+				idsToAttack = getHumanIdsToDefend();
+				nodeIdsToAttack = idsToAttack.get(0);
+				edgeIdsToAttack = idsToAttack.get(1);
+			}
+			
+			attAction = sim.generateAttackerAction(
+				nodeIdsToAttack, edgeIdsToAttack);
+			curDefBelief =
+				sim.step(nodeIdsToAttack, edgeIdsToAttack, curDefBelief);
+		}
+		if (showState) {
+			System.out.println(sim.stateToString());
+		}
+		if (attAction == null) {
+			throw new IllegalStateException();
+		}
+		System.out.println(sim.getAttackerObservation(attAction));
+		final double attackerTotalPayoff = sim.getAttackerTotalPayoff();
+		System.out.println("Attacker total payoff: " + attackerTotalPayoff);
+	}
+	
+
+	private static List<Set<Integer>> getHumanIdsToDefend() {
+		// FIXME
+		/*
+		System.out.println("Enter your move, as IDs 1-30, comma-separated:");
+		final Set<Integer> result = new HashSet<Integer>();
+		final BufferedReader reader =
+			new BufferedReader(new InputStreamReader(System.in));
+		try {
+			final String input = reader.readLine();
+			if (input == null) {
+				System.out.println("Please try again.");
+				return getHumanIdsToDefend();
+			}
+			List<String> items = Arrays.asList(input.split(","));
+			for (final String item: items) {
+				final String itemStripped = item.trim();
+				if (itemStripped.isEmpty()) {
+					return result; // empty set to defend
+				}
+				try {
+					final int cur = Integer.parseInt(itemStripped);
+				    result.add(cur);
+				} catch (NumberFormatException e) {
+				    System.out.println(
+			    		"That is not an integer: " + itemStripped);
+				    return getHumanIdsToDefend();
+				}
+			}
+
+			return result;
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+		System.out.println("Failed to get input. Try again.");
+		return getHumanIdsToDefend();
+		*/
+		return null;
 	}
 }
