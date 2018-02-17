@@ -24,10 +24,10 @@ import utils.EncodingUtils;
 import utils.JsonUtils;
 
 /**
- * Get the mean payoff for each old defense strategy,
- * against the given attack strategy.
+ * Get the mean payoff for each old attacker strategy,
+ * against the given defender strategy.
  */
-public final class CheckOldStratPayoffsConfig {
+public final class CheckOldAttStratPayoffsConfig {
 
 	/**
 	 * Used to run the game logic.
@@ -35,16 +35,16 @@ public final class CheckOldStratPayoffsConfig {
 	private GameSimulation sim;
 
 	/**
-	 * Lists weight of each attacker type in the mixed strategy,
-	 * in order matching attackers.
+	 * Lists weight of each defender type in the mixed strategy,
+	 * in order matching defenders.
 	 */
-	private List<Double> attackerWeights;
+	private List<Double> defenderWeights;
 
 	/**
-	 * Lists agent for each attacker type of the mixed strategy,
-	 * in order matching attackerWeights.
+	 * Lists agent for each defender type of the mixed strategy,
+	 * in order matching defenderWeights.
 	 */
-	private List<Attacker> attackers;
+	private List<Defender> defenders;
 
 	/**
 	 * The name of the folder with simulation_spec.json.
@@ -57,32 +57,32 @@ public final class CheckOldStratPayoffsConfig {
 	private static final Random RAND = new Random();
 
 	/**
-	 * Set up the simulation spec and attacker mixed
+	 * Set up the simulation spec and defender mixed
 	 * strategy from the inputs.
 	 * @param simSpecFolder the folder with the simulation_spec.json
 	 * file
-	 * @param attackMixedStratFile the file with the attacker mixed
+	 * @param defMixedStratFile the file with the defender mixed
 	 * strategy
 	 */
-	private CheckOldStratPayoffsConfig(
+	private CheckOldAttStratPayoffsConfig(
 		final String simSpecFolder,
-		final String attackMixedStratFile
+		final String defMixedStratFile
 	) {
-		if (simSpecFolder == null || attackMixedStratFile == null) {
+		if (simSpecFolder == null || defMixedStratFile == null) {
 			throw new IllegalArgumentException();
 		}
 		this.simSpecFolderName = simSpecFolder;
-		this.attackers = new ArrayList<Attacker>();
-		this.attackerWeights = new ArrayList<Double>();
-		setupAttackersAndWeights(attackMixedStratFile, getDiscFact());
+		this.defenders = new ArrayList<Defender>();
+		this.defenderWeights = new ArrayList<Double>();
+		setupDefendersAndWeights(defMixedStratFile, getDiscFact());
 	}
 
 	/**
 	 * Main method.
 	 * 
-	 * @param args has the number of iterations per defender strategy,
-	 * the folder with the simulation_spec.json file, and
-	 * the file with the attacker mixed strategy, and the 
+	 * @param args has the number of iterations per attacker strategy,
+	 * the folder with the simulation_spec.json file,
+	 * the file with the defender mixed strategy, and the 
 	 * graph file.
 	 */
 	public static void main(final String[] args) {
@@ -90,53 +90,54 @@ public final class CheckOldStratPayoffsConfig {
 		if (args == null || args.length != expectedArgs) {
 			throw new IllegalArgumentException(
 			"Need 4 args: iterationsPerStrategy, simSpecFolder, "
-			+ "attackMixedStratFile, graphFile");
+			+ "defMixedStratFile, graphFile");
 		}
 		final int iterationsPerStrategy = Integer.parseInt(args[0]);
 		if (iterationsPerStrategy < 2) {
 			throw new IllegalArgumentException();
 		}
 		final String simSpecFolder = args[1];
-		final String attackMixedStratFileName = args[2];
+		final String defMixedStratFileName = args[2];
 		final int nextIndex = 3;
 		final String graphFileName = args[nextIndex];
-		
-		final String defStratStringFileName = "defStratStrings.txt";
-		final List<String> defStratStrings =
-			getDefenderStrings(defStratStringFileName);
-		final CheckOldStratPayoffsConfig checker =
-			new CheckOldStratPayoffsConfig(
-				simSpecFolder, attackMixedStratFileName);
+
+		final CheckOldAttStratPayoffsConfig checker =
+			new CheckOldAttStratPayoffsConfig(
+				simSpecFolder, defMixedStratFileName);
+
+		final String attStratStringFileName = "attStratStrings.txt";
+		final List<String> attStratStrings =
+			getAttackerStrings(attStratStringFileName);
 		checker.printAllPayoffs(
-			defStratStrings, iterationsPerStrategy,
+			attStratStrings, iterationsPerStrategy,
 			graphFileName);
 	}
 
 	/**
-	 * Initialize attackers and attackerWeights from the given file.
-	 * @param attackMixedStratFileName a file name for the mixed strategy.
-	 * The mixed strategy should have an attacker type per line,
+	 * Initialize defenders and defenderWeights from the given file.
+	 * @param defMixedStratFileName a file name for the mixed strategy.
+	 * The mixed strategy should have a defender type per line,
 	 * with the type string followed by tab, followed by the weight as a double.
 	 * @param discFact the discount factor of the game
 	 */
-	private void setupAttackersAndWeights(
-		final String attackMixedStratFileName,
+	private void setupDefendersAndWeights(
+		final String defMixedStratFileName,
 		final double discFact
 	) {
-		this.attackers.clear();
-		this.attackerWeights.clear();
+		this.defenders.clear();
+		this.defenderWeights.clear();
 
-		final List<String> lines = getLines(attackMixedStratFileName);
+		final List<String> lines = getLines(defMixedStratFileName);
 		double totalWeight = 0.0;
 		for (final String line: lines) {
 			final String strippedLine = line.trim();
 			if (strippedLine.length() > 0) {
-				String[] lineSplit = strippedLine.split("\t");
+				final String[] lineSplit = strippedLine.split("\t");
 				if (lineSplit.length != 2) {
 					throw new IllegalStateException(
 						"Wrong split: " + strippedLine);					
 				}
-				final String attackerString = lineSplit[0];
+				final String defenderString = lineSplit[0];
 				final String weightString = lineSplit[1];
 				final double weight = Double.parseDouble(weightString);
 				if (weight <= 0.0 || weight > 1.0) {
@@ -145,22 +146,22 @@ public final class CheckOldStratPayoffsConfig {
 				}
 				totalWeight += weight;
 				
-				final String attackerName =
-					EncodingUtils.getStrategyName(attackerString);
-				final Map<String, Double> attackerParams =
-					EncodingUtils.getStrategyParams(attackerString);
+				final String defenderName =
+					EncodingUtils.getStrategyName(defenderString);
+				final Map<String, Double> defenderParams =
+					EncodingUtils.getStrategyParams(defenderString);
 				
-				final Attacker attacker =
-					AgentFactory.createAttacker(
-						attackerName, attackerParams, discFact);
-				this.attackers.add(attacker);
-				this.attackerWeights.add(weight);
+				final Defender defender =
+					AgentFactory.createDefender(
+						defenderName, defenderParams, discFact);
+				this.defenders.add(defender);
+				this.defenderWeights.add(weight);
 			}
 		}
 		final double tol = 0.001;
 		if (Math.abs(totalWeight - 1.0) > tol) {
 			throw new IllegalStateException(
-				"Weights do not sum to 1.0: " + this.attackerWeights);
+				"Weights do not sum to 1.0: " + this.defenderWeights);
 		}
 	}
 
@@ -186,32 +187,32 @@ public final class CheckOldStratPayoffsConfig {
 
 	/**
 	 * Print the mean, standard deviation, and standard error of
-	 * payoffs for each given defender strategy.
+	 * payoffs for each given attacker strategy.
 	 * 
-	 * @param defenderStrings list of defender strategy strings
+	 * @param attackerStrings list of attacker strategy strings
 	 * @param iterationsPerStrategy how many simulations to run
 	 * per strategy
 	 * @param graphFileName the name of the graph file to load
 	 */
 	private void printAllPayoffs(
-		final List<String> defenderStrings,
+		final List<String> attackerStrings,
 		final int iterationsPerStrategy,
 		final String graphFileName
 	) {
 		System.out.println(
 			"Iterations per strategy: " + iterationsPerStrategy + "\n");
-		System.out.println("Attacker strats: " + this.attackers + "\n");
-		System.out.println("Attacker weights: " + this.attackerWeights + "\n");
+		System.out.println("Defender strats: " + this.defenders + "\n");
+		System.out.println("Defender weights: " + this.defenderWeights + "\n");
 		final DecimalFormat format = new DecimalFormat("#.##");
 
 		final long startTime = System.currentTimeMillis();
-		for (final String defenderString: defenderStrings) {
-			setupEnvironment(defenderString, graphFileName);
+		for (final String attackerString: attackerStrings) {
+			setupEnvironment(attackerString, graphFileName);
 			final double[] payoffStats  = getPayoffStats(iterationsPerStrategy);
 			final double meanPayoff = payoffStats[0];
 			final double stdev = payoffStats[1];
 			final double standardError = payoffStats[2];
-			System.out.println(defenderString);
+			System.out.println(attackerString);
 			System.out.println("\t" + format.format(meanPayoff) + ", "
 				+ format.format(stdev) + ", " + format.format(standardError));
 		}
@@ -225,10 +226,10 @@ public final class CheckOldStratPayoffsConfig {
 	/**
 	 * Run the given number of simulations, and return
 	 * the mean, standard deviation, and standard error
-	 * of the defender payoffs.
+	 * of the attacker payoffs.
 	 * 
 	 * @param simulationCount how many simulations to use
-	 * @return a double array with the mean defender payoff,
+	 * @return a double array with the mean attacker payoff,
 	 * standard deviation, and standard error of the mean in order.
 	 */
 	private double[] getPayoffStats(
@@ -238,11 +239,11 @@ public final class CheckOldStratPayoffsConfig {
 		double sumSquaredPayoff = 0.0;
 		for (int i = 0; i < simulationCount; i++) {
 			this.sim.reset();
-			// update the attacker at random from the mixed strategy.
-			this.sim.setAttacker(drawRandomAttacker());
+			// update the defender at random from the mixed strategy.
+			this.sim.setDefender(drawRandomDefender());
 			this.sim.runSimulation();
 			final double curPayoff =
-				this.sim.getSimulationResult().getDefPayoff();
+				this.sim.getSimulationResult().getAttPayoff();
 			defPayoffTotal += curPayoff;
 			sumSquaredPayoff += curPayoff * curPayoff;
 		}
@@ -259,34 +260,34 @@ public final class CheckOldStratPayoffsConfig {
 	}
 
 	/**
-	 * Draw a random attacker from attackers, based on the probabilities
-	 * in attackerWeights.
-	 * @return a randomly drawn attacker from attackers
+	 * Draw a random defender from defenders, based on the probabilities
+	 * in defenderWeights.
+	 * @return a randomly drawn defender from defenders
 	 */
-	private Attacker drawRandomAttacker() {
-		if (this.attackers == null || this.attackers.isEmpty()) {
+	private Defender drawRandomDefender() {
+		if (this.defenders == null || this.defenders.isEmpty()) {
 			throw new IllegalStateException();
 		}
 		
 		final double randDraw = RAND.nextDouble();
 		double total = 0.0;
-		for (int i = 0; i < this.attackerWeights.size(); i++) {
-			total += this.attackerWeights.get(i);
+		for (int i = 0; i < this.defenderWeights.size(); i++) {
+			total += this.defenderWeights.get(i);
 			if (randDraw <= total) {
-				return this.attackers.get(i);
+				return this.defenders.get(i);
 			}
 		}
-		return this.attackers.get(this.attackers.size() - 1);
+		return this.defenders.get(this.defenders.size() - 1);
 	}
 
 	/**
-	 * Get the list of defender strategy strings from the given file.
+	 * Get the list of attacker strategy strings from the given file.
 	 * 
-	 * @param fileName the name of the file with the defender strategy
+	 * @param fileName the name of the file with the attacker strategy
 	 * strings
-	 * @return a list of the defender strategy strings from the file
+	 * @return a list of the attacker strategy strings from the file
 	 */
-	private static List<String> getDefenderStrings(final String fileName) {
+	private static List<String> getAttackerStrings(final String fileName) {
 		final List<String> result = new ArrayList<String>();
 		try (final BufferedReader br =
 			new BufferedReader(new FileReader(fileName))) {
@@ -320,12 +321,12 @@ public final class CheckOldStratPayoffsConfig {
 
 	/**
 	 * Set up the game environment.
-	 * @param defenderString the string name of the defender
+	 * @param attackerString the string name of the attacker
 	 * strategy
 	 * @param graphFileName the name of the graph file to load
 	 */
 	private void setupEnvironment(
-		final String defenderString,
+		final String attackerString,
 		final String graphFileName) {
 		final String graphFolderName = "graphs";
 		final GameSimulationSpec simSpec =
@@ -338,23 +339,23 @@ public final class CheckOldStratPayoffsConfig {
 		// Load players
 		final double discFact = simSpec.getDiscFact();
 
-		final String attackerString =
-			JsonUtils.getAttackerString(this.simSpecFolderName);
+		final String defenderString =
+			JsonUtils.getDefenderString(this.simSpecFolderName);
+		final String defenderName =
+			EncodingUtils.getStrategyName(defenderString);
+		final Map<String, Double> defenderParams =
+			EncodingUtils.getStrategyParams(defenderString);
+		Defender defender =
+			AgentFactory.createDefender(
+				defenderName, defenderParams, discFact);
+		
 		final String attackerName =
 			EncodingUtils.getStrategyName(attackerString);
 		final Map<String, Double> attackerParams =
 			EncodingUtils.getStrategyParams(attackerString);
-		Attacker attacker =
+		final Attacker attacker =
 			AgentFactory.createAttacker(
 				attackerName, attackerParams, discFact);
-		
-		final Map<String, Double> defenderParams =
-			EncodingUtils.getStrategyParams(defenderString);
-		final String defenderName =
-			EncodingUtils.getStrategyName(defenderString);
-		final Defender defender =
-			AgentFactory.createDefender(
-				defenderName, defenderParams, discFact);
 
 		RandomDataGenerator rng = new RandomDataGenerator();
 		final int numTimeStep = simSpec.getNumTimeStep();
