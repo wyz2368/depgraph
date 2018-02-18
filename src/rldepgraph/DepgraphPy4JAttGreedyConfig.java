@@ -704,6 +704,14 @@ public final class DepgraphPy4JAttGreedyConfig {
 		
 		final int timeStepsLeft = attObs.getTimeStepsLeft();
 		result.add((double) timeStepsLeft);
+		
+		final int expectedLength = 
+			((this.actionToAndNodeIndex.keySet().size()
+				+ this.actionToEdgeToOrNodeIndex.keySet().size()) * 2)
+			+ (this.sim.getNodeCount()
+				* RLAttackerRawObservation.ATTACKER_OBS_LENGTH)
+			+ 1;
+		assert result.size() == expectedLength;
 		return result;
 	}
 }
