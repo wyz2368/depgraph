@@ -88,13 +88,15 @@ public final class DepgraphPy4JAttGreedyConfig {
 	/**
 	 * If true, adding the same node to nodesToAttack
 	 * or edge to edgesToAttack
-	 * repeatedly in one turn loses the game.
+	 * repeatedly in one turn loses the game;
+	 * moreover, adding a non-candidate node or edge
+	 * loses the game.
 	 * 
 	 * Otherwise, doing so is equivalent to the "pass"
 	 * move and leads to selecting the current nodesToAttack
 	 * and edgesToAttack.
 	 */
-	private static final boolean LOSE_IF_REPEAT = false;
+	private static final boolean LOSE_IF_REPEAT_OR_NOT_CANDIDATE = false;
 	
 	/**
 	 * Lists weight of each defender type in the mixed strategy,
@@ -303,7 +305,9 @@ public final class DepgraphPy4JAttGreedyConfig {
 		if (action == passAction
 			|| (canPassRandomly
 				&& RAND.nextDouble() < this.probGreedySelectionCutOff)
-			|| (isActionDuplicate(action) && !LOSE_IF_REPEAT)
+			|| (isActionDuplicate(action) && !LOSE_IF_REPEAT_OR_NOT_CANDIDATE)
+			|| (!isCandidateActionId(action)
+				&& !LOSE_IF_REPEAT_OR_NOT_CANDIDATE)
 		) {
 			// "pass": no more selections allowed.
 			// either action was 
@@ -311,16 +315,11 @@ public final class DepgraphPy4JAttGreedyConfig {
 			// or there is some nodesToAttack or edgesToAttack selected already
 			// AND the random draw is below probGreedySelectionCutoff,
 			// or the action is already in nodesToAttack/edgesToAttack AND
-			// !LOSE_IF_REPEAT, so repeated selection counts as "pass".
+			// !LOSE_IF_REPEAT_OR_NOT_CANDIDATE,
+			// so repeated selection counts as "pass",
+			// or the action is not a candidate action AND
+			// !LOSE_IF_REPEAT_OR_NOT_CANDIDATE.
 			if (!this.sim.isValidMove(this.nodesToAttack, this.edgesToAttack)) {
-				// FIXME
-				// if attacker tries to strike an AND node or edge to OR node
-				// not in the candidate set, instead of making game end
-				// with worst possible attacker reward,
-				// make the attacker's action be the legal subset of its
-				// nodes and edges to strike.
-				// (provides more learnable reward shaping.)
-				
 				// illegal move. game is lost.
 				final List<Double> attObs = getAttObsAsListDouble();
 				// self player (attacker) gets minimal reward for illegal move.
@@ -359,7 +358,8 @@ public final class DepgraphPy4JAttGreedyConfig {
 		
 		// selection is allowed; will try to add to nodesToDefend.
 		if (!isValidActionId(action)
-			|| (isActionDuplicate(action) && LOSE_IF_REPEAT)
+			|| (isActionDuplicate(action) && LOSE_IF_REPEAT_OR_NOT_CANDIDATE)
+			|| (!isCandidateActionId(action) && LOSE_IF_REPEAT_OR_NOT_CANDIDATE)
 		) {
 			// illegal action selection. game is lost.
 			// no need to update this.attAction.
@@ -372,6 +372,10 @@ public final class DepgraphPy4JAttGreedyConfig {
 			result.add(reward);
 			result.add(isOver);
 			return result;
+		}
+
+		if (isActionAndNode(action) || !isCandidateActionId(action)) {
+			throw new IllegalStateException("Should be unreachable.");
 		}
 
 		// selection is valid and not a duplicate or "pass".
@@ -432,6 +436,34 @@ public final class DepgraphPy4JAttGreedyConfig {
 		return action >= 1
 			&& action <= this.actionToAndNodeIndex.keySet().size()
 				+ this.actionToEdgeToOrNodeIndex.keySet().size() + 1;
+	}
+	
+	/**
+	 * @param action the action index, must be in
+	 * {1, . . ., count(AND nodes) + count(edge to OR nodes) + 1}.
+	 * @return true if the action is not only "valid" (i.e.,
+	 * corresponds to an AND node, edge to OR node, or "pass"),
+	 * but is also for an "attackable" item or "pass".
+	 * That is, true if the action is an AND node, and the corresponding
+	 * nodeId is "attackable"; or
+	 * if the action is an edge to OR node, and the corresponding
+	 * edgeId is "attackable"; or
+	 * the action is "pass".
+	 */
+	private boolean isCandidateActionId(final int action) {
+		if (!isValidActionId(action)) {
+			throw new IllegalArgumentException();
+		}
+		if (isActionAndNode(action)) {
+			return this.sim.isAttackableAndNodeId(
+				this.actionToAndNodeIndex.get(action));
+		}
+		if (isActionEdgeToOrNode(action)) {
+			return this.sim.isAttackableEdgeToOrNodeId(
+				this.actionToEdgeToOrNodeIndex.get(action));
+		}
+		// action is "pass"
+		return true;
 	}
 	
 	/**

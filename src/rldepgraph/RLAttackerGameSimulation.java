@@ -324,6 +324,32 @@ public final class RLAttackerGameSimulation {
 	}
 	
 	/**
+	 * @param nodeId an ID that must be the ID of an AND
+	 * node, or exception is thrown.
+	 * @return true if the AND node is INACTIVE but its
+	 * parents are all ACTIVE, so it can be attacked.
+	 */
+	public boolean isAttackableAndNodeId(final int nodeId) {
+		if (!isValidANDNodeId(nodeId)) {
+			throw new IllegalArgumentException();
+		}
+		return isNodeInactive(nodeId) && areAllParentsOfNodeActive(nodeId);
+	}
+	
+	/**
+	 * @param edgeId an ID that must be the ID of an edge to OR node
+	 * node, or exception is thrown.
+	 * @return true if the source node of the edge is ACTIVE and its
+	 * target is INACTIVE, so the edge can be attacked.
+	 */
+	public boolean isAttackableEdgeToOrNodeId(final int edgeId) {
+		if (!isValidIdOfEdgeToORNode(edgeId)) {
+			throw new IllegalArgumentException();
+		}
+		return isEdgeTargetInactive(edgeId) && isParentOfEdgeActive(edgeId);
+	}
+	
+	/**
 	 * @param nodeIdsToAttack the set of nodeIds to attack
 	 * @param edgeIdsToAttack the set of edgeIds to attack
 	 * @return true if the move is valid. The move is valid
@@ -345,23 +371,13 @@ public final class RLAttackerGameSimulation {
 			if (!isValidANDNodeId(targetNodeId)) {
 				return false;
 			}
-			if (!isNodeInactive(targetNodeId)) {
-				return false;
-			}
-			if (!areAllParentsOfNodeActive(targetNodeId)) {
-				return false;
-			}
+			return isAttackableAndNodeId(targetNodeId);
 		}
 		for (final int targetEdgeId: edgeIdsToAttack) {
 			if (!isValidIdOfEdgeToORNode(targetEdgeId)) {
 				return false;
 			}
-			if (!isEdgeTargetInactive(targetEdgeId)) {
-				return false;
-			}
-			if (!isParentOfEdgeActive(targetEdgeId)) {
-				return false;
-			}
+			return isAttackableEdgeToOrNodeId(targetEdgeId);
 		}
 		return true;
 	}
