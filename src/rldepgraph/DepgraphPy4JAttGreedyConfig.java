@@ -266,7 +266,7 @@ public final class DepgraphPy4JAttGreedyConfig {
 	 * or if this.nodesToAttack or this.edgesToAttack is not empty and with 
 	 * probability this.probGreedySelectionCutOff,
 	 * the self agent (attacker) and opponent (defender)
-	 * move simultaneously, where the attacker strike this.nodesToAttack
+	 * move simultaneously, where the attacker strikes this.nodesToAttack
 	 * and this.edgesToAttack without adding any more items to them.
 	 * 
 	 * Otherwise, the agent's selected node ID or edge ID is added to
@@ -289,17 +289,23 @@ public final class DepgraphPy4JAttGreedyConfig {
 	public List<Double> step(final Integer action) {
 		if (action == null) {
 			throw new IllegalArgumentException();
-		}
-		final List<Double> result = new ArrayList<Double>();
-		
+		}		
 		final int andNodeCount = this.sim.getAndNodeIds().size();
 		final int edgeToOrCount = this.sim.getEdgeToOrNodeIds().size();
 		final int passId = andNodeCount + edgeToOrCount + 1;
+		
+		// FIXME
+		// if attacker tries to strike an AND node or edge to OR node
+		// not in the candidate set, instead of making game end
+		// with worst possible attacker reward,
+		// make the attacker's action be the legal subset of its
+		// nodes and edges to strike. (provides more learnable reward shaping.)
 
 		// can't be made to pass at random if no attack selected yet
 		final boolean canPassRandomly =
 			!this.nodesToAttack.isEmpty() || !this.edgesToAttack.isEmpty();
 		
+		final List<Double> result = new ArrayList<Double>();
 		if (action == passId
 			|| (canPassRandomly
 				&& RAND.nextDouble() < this.probGreedySelectionCutOff)
