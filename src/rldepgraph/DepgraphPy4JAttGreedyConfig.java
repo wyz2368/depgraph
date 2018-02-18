@@ -163,6 +163,13 @@ public final class DepgraphPy4JAttGreedyConfig {
 			simSpecFolderName, graphFileName);
 		setupDefendersAndWeights(defMixedStratFileName, discFact);
 		setupActionMaps();
+		/*
+		System.out.println(
+			"AND node count: " + this.actionToAndNodeIndex.keySet().size());
+		System.out.println(
+			"Edge to OR node count: "
+				+ this.actionToEdgeToOrNodeIndex.keySet().size());
+		*/
 	}
 	
 	/**
