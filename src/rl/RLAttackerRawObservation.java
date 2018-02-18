@@ -46,6 +46,7 @@ public final class RLAttackerRawObservation {
 	 * at that time step. If there are not enough time steps
 	 * elapsed yet, earlier time steps' lists will be empty.
 	 * Within an inner list, IDs are not duplicated, and are in ascending order.
+	 * Lists are in the same order they occurred, earliest first.
 	 */
 	private final List<List<Integer>> activeNodeIdsHistory =
 		new ArrayList<List<Integer>>();

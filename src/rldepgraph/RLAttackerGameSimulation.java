@@ -494,7 +494,7 @@ public final class RLAttackerGameSimulation {
 	/**
 	 * @return the list of edgeIds of edges to OR type nodes, ascending.
 	 */
-	private List<Integer> getEdgeToOrNodeIds() {
+	public List<Integer> getEdgeToOrNodeIds() {
 		if (this.edgeToOrNodeIds == null) {
 			final List<Integer> result = new ArrayList<Integer>();
 			for (final Edge edge: this.depGraph.edgeSet()) {
@@ -530,7 +530,7 @@ public final class RLAttackerGameSimulation {
 	 * attack, ascending. They must be edgeIds of edges to OR nodes
 	 * whose source node is ACTIVE.
 	 */
-	private List<Integer> getLegalToAttackEdgeToOrNodeIds() {
+	public List<Integer> getLegalToAttackEdgeToOrNodeIds() {
 		final List<Integer> result = new ArrayList<Integer>();
 		for (final int edgeId: this.edgeToOrNodeIds) {
 			if (isParentOfEdgeActive(edgeId)) {
