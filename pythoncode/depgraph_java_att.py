@@ -18,7 +18,7 @@ OBS_LENGTH = 1
 JAVA_GAME = None
 GATEWAY = None
 
-class DepgraphJavaEnv(gym.Env):
+class DepgraphJavaEnvAtt(gym.Env):
     """
     Depgraph game environment. Play against a fixed opponent.
     """
@@ -56,7 +56,7 @@ class DepgraphJavaEnv(gym.Env):
         # correspond to edges to OR nodes,
         # and {AND_NODE_COUNT + EDGE_TO_OR_NODE_COUNT + 1} corresponds to "pass".
         action_id = action_scalar + 1
-        return DepgraphJavaEnv.step_result_from_flat_list(JAVA_GAME.step(action_id))
+        return DepgraphJavaEnvAtt.step_result_from_flat_list(JAVA_GAME.step(action_id))
 
     @staticmethod
     def step_result_from_flat_list(a_list):
