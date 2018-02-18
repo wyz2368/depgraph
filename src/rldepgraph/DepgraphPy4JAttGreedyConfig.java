@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +67,22 @@ public final class DepgraphPy4JAttGreedyConfig {
 	 * Used to get random values for selection cutoff.
 	 */
 	private static final Random RAND = new Random();
+	
+	/**
+	 * Maps action integers in {1, . . ., count(AND nodes)}
+	 * to increasing indexes of AND nodes in the graph.
+	 * (If there are no AND nodes, it will be empty.)
+	 */
+	private final Map<Integer, Integer> actionToAndNodeIndex;
+	
+	/**
+	 * Maps action integers in 
+	 * {count(AND nodes) + 1, . . .,
+	 * count(AND nodes) + count(edges to OR nodes)}
+	 * to increasing indexes of edges to OR nodes in the graph.
+	 * (If there are no edges to OR nodes, it will be empty.)
+	 */
+	private final Map<Integer, Integer> actionToEdgeToOrNodeIndex;
 	
 	/**
 	 * If true, adding the same node to nodesToAttack
@@ -129,10 +146,42 @@ public final class DepgraphPy4JAttGreedyConfig {
 		this.edgesToAttack = new HashSet<Integer>();
 		this.defenders = new ArrayList<Defender>();
 		this.defenderWeights = new ArrayList<Double>();
+		this.actionToAndNodeIndex = new HashMap<Integer, Integer>();
+		this.actionToEdgeToOrNodeIndex = new HashMap<Integer, Integer>();
 		
 		final double discFact = setupEnvironment(
 			simSpecFolderName, graphFileName);
 		setupDefendersAndWeights(defMixedStratFileName, discFact);
+		setupActionMaps();
+	}
+	
+	/**
+	 * Initialize the maps from action integers to the AND node ID
+	 * or edge to OR node ID to attack.
+	 * Actions {1, . . ., count(AND nodes)} refer to the AND nodes
+	 * in increasing ID order.
+	 * Actions 
+	 * {count(AND nodes) + 1, . . ., count(AND nodes) + count(edges to OR node)}
+	 * refer to the edges to OR nodes in increasing ID order.
+	 */
+	private void setupActionMaps() {
+		final List<Integer> andNodeIds = this.sim.getAndNodeIds();
+		for (int action = 1; action <= andNodeIds.size(); action++) {
+			// will be skipped if no AND nodes
+			this.actionToAndNodeIndex.put(action, andNodeIds.get(action - 1));
+		}
+		
+		final List<Integer> edgeToOrNodeIds = this.sim.getEdgeToOrNodeIds();
+		for (int action = andNodeIds.size() + 1;
+			action <= andNodeIds.size() + edgeToOrNodeIds.size();
+			action++
+		) {
+			// will be skipped if no edges to OR nodes
+			this.actionToEdgeToOrNodeIndex.put(
+				action, 
+				edgeToOrNodeIds.get(action - andNodeIds.size() - 1)
+			);
+		}
 	}
 
 	/**
@@ -332,34 +381,44 @@ public final class DepgraphPy4JAttGreedyConfig {
 	 * an integer.
 	 * 
 	 * Return a flat list representing, in order:
-	 * the new defender observation state,
-	 * the reward of the step for player taking action (in R-),
+	 * the new attacker observation state,
+	 * the reward of the step for player taking action (in R),
 	 * whether the game is done (in {0, 1}).
 	 * 
-	 * Legal actions are (NODE_COUNT + 1) to pass, or any integer that
-	 * is a node ID in the graph but is NOT in this.nodesToDefend.
+	 * Legal actions are 
+	 * (count(AND nodes) + count(edges to OR node) + 1) to pass,
+	 * or any integer in {1, . . ., count(AND nodes)} that maps to an AND node
+	 * not currently in nodesToAttack,
+	 * or any integer in 
+	 * {count(AND nodes) + 1, . . ., count(AND nodes) + count(edges to OR node)}
+	 * that maps to an edge to an OR node not currently in edgesToAttack.
 	 * 
 	 * If the action is illegal, do not update the game state,
 	 * but consider the game as lost (i.e., minimal reward)
 	 * and thus done (i.e., 1).
 	 * 
-	 * If the move is (NODE_COUNT + 1), 
-	 * or if this.nodesToDefend is not empty and with 
+	 * If the move is (count(AND nodes) + count(edges to OR node) + 1), 
+	 * or if this.nodesToAttack or this.edgesToAttack is not empty and with 
 	 * probability this.probGreedySelectionCutOff,
-	 * the self agent (defender) and opponent (attacker)
-	 * move simultaneously, where the defender protects this.nodesToDefend
-	 * without adding any more items to it.
+	 * the self agent (attacker) and opponent (defender)
+	 * move simultaneously, where the attacker strike this.nodesToAttack
+	 * and this.edgesToAttack without adding any more items to them.
 	 * 
-	 * Otherwise, the agent's selected node ID is added to this.nodesToDefend
-	 * and control returns to the defender without the attack making a move,
+	 * Otherwise, the agent's selected node ID or edge ID is added to
+	 * this.nodesToAttack or this.edgesToAttack
+	 * and control returns to the attacker without the defender making a move,
 	 * the marginal reward is 0.0, and the time step does not advance.
 	 * 
 	 * @param action an Integer, the action to take.
-	 * The action should be the index of a node to add to
-	 * this.nodesToDefend, or (NODE_COUNT + 1) to indicate
-	 * no more nodes should be added.
+	 * The action should be an int in {1, . . .,  
+	 * (count(AND nodes) + count(edges to OR node) + 1)}.
+	 * The first count(AND nodes) values map to increasing indexes of
+	 * AND nodes.
+	 * The next count(edges to OR node) values map to increasing
+	 * indexes of edges to OR nodes.
+	 * The last value maps to the "pass" action.
 	 * @return the list representing the new game state,
-	 * including the defender observation, reward, and whether the game is over,
+	 * including the attacker observation, reward, and whether the game is over,
 	 * as one flat list.
 	 */
 	public List<Double> step(final Integer action) {
