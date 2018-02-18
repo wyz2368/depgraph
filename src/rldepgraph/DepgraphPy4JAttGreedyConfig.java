@@ -290,35 +290,37 @@ public final class DepgraphPy4JAttGreedyConfig {
 		if (action == null) {
 			throw new IllegalArgumentException();
 		}		
-		final int andNodeCount = this.sim.getAndNodeIds().size();
-		final int edgeToOrCount = this.sim.getEdgeToOrNodeIds().size();
-		final int passId = andNodeCount + edgeToOrCount + 1;
-		
-		// FIXME
-		// if attacker tries to strike an AND node or edge to OR node
-		// not in the candidate set, instead of making game end
-		// with worst possible attacker reward,
-		// make the attacker's action be the legal subset of its
-		// nodes and edges to strike. (provides more learnable reward shaping.)
+		final int passAction =
+			this.sim.getAndNodeIds().size()
+			+ this.sim.getEdgeToOrNodeIds().size()
+			+ 1;
 
 		// can't be made to pass at random if no attack selected yet
 		final boolean canPassRandomly =
 			!this.nodesToAttack.isEmpty() || !this.edgesToAttack.isEmpty();
 		
 		final List<Double> result = new ArrayList<Double>();
-		if (action == passId
+		if (action == passAction
 			|| (canPassRandomly
 				&& RAND.nextDouble() < this.probGreedySelectionCutOff)
 			|| (isActionDuplicate(action) && !LOSE_IF_REPEAT)
 		) {
-			// no more selections allowed.
+			// "pass": no more selections allowed.
 			// either action was 
-			// ((count(AND nodes) + count(edges to OR node) + 1)) (pass),
+			// ((count(AND nodes) + count(edges to OR node) + 1)) [pass],
 			// or there is some nodesToAttack or edgesToAttack selected already
 			// AND the random draw is below probGreedySelectionCutoff,
 			// or the action is already in nodesToAttack/edgesToAttack AND
 			// !LOSE_IF_REPEAT, so repeated selection counts as "pass".
 			if (!this.sim.isValidMove(this.nodesToAttack, this.edgesToAttack)) {
+				// FIXME
+				// if attacker tries to strike an AND node or edge to OR node
+				// not in the candidate set, instead of making game end
+				// with worst possible attacker reward,
+				// make the attacker's action be the legal subset of its
+				// nodes and edges to strike.
+				// (provides more learnable reward shaping.)
+				
 				// illegal move. game is lost.
 				final List<Double> attObs = getAttObsAsListDouble();
 				// self player (attacker) gets minimal reward for illegal move.
@@ -359,9 +361,8 @@ public final class DepgraphPy4JAttGreedyConfig {
 		if (!isValidActionId(action)
 			|| (isActionDuplicate(action) && LOSE_IF_REPEAT)
 		) {
-			// illegal move. game is lost.
-			// no need to update this.attAction, because move was invalid
-			// and game is lost.
+			// illegal action selection. game is lost.
+			// no need to update this.attAction.
 			final List<Double> attObs = getAttObsAsListDouble();
 			// self player (attacker) gets minimal reward for illegal move.
 			final double reward = this.sim.getWorstRemainingReward();
@@ -373,8 +374,8 @@ public final class DepgraphPy4JAttGreedyConfig {
 			return result;
 		}
 
-		// selection is valid and not a repeat or pass. add to nodesToAttack
-		// or edgesToAttack.
+		// selection is valid and not a duplicate or "pass".
+		// add to nodesToAttack or edgesToAttack.
 		if (isActionAndNode(action)) {
 			this.nodesToAttack.add(this.actionToAndNodeIndex.get(action));
 		} else if (isActionEdgeToOrNode(action)) {
