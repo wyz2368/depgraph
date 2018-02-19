@@ -163,13 +163,17 @@ public final class DepgraphPy4JAttGreedyConfig {
 			simSpecFolderName, graphFileName);
 		setupDefendersAndWeights(defMixedStratFileName, discFact);
 		setupActionMaps();
-		/*
+
+		System.out.println("Node count: " + this.sim.getNodeCount());
 		System.out.println(
 			"AND node count: " + this.actionToAndNodeIndex.keySet().size());
 		System.out.println(
 			"Edge to OR node count: "
 				+ this.actionToEdgeToOrNodeIndex.keySet().size());
-		*/
+		System.out.println("Pass action value: "
+			+ (this.actionToAndNodeIndex.keySet().size()
+				+ this.actionToEdgeToOrNodeIndex.keySet().size()
+				+ 1));
 	}
 	
 	/**
@@ -739,7 +743,7 @@ public final class DepgraphPy4JAttGreedyConfig {
 		for (int t = 0; t < RLAttackerRawObservation.ATTACKER_OBS_LENGTH; t++) {
 			final List<Integer> curActiveNodeIds =
 				activeNodeIdsHistory.get(activeNodeIdsHistory.size() - 1 - t);
-			for (int nodeId = 1; nodeId < this.sim.getNodeCount(); nodeId++) {
+			for (int nodeId = 1; nodeId <= this.sim.getNodeCount(); nodeId++) {
 				if (curActiveNodeIds.contains(nodeId)) {
 					result.add(1.0);
 				} else {
@@ -757,7 +761,9 @@ public final class DepgraphPy4JAttGreedyConfig {
 			+ (this.sim.getNodeCount()
 				* RLAttackerRawObservation.ATTACKER_OBS_LENGTH)
 			+ 1;
-		assert result.size() == expectedLength;
+		if (result.size() != expectedLength) {
+			throw new IllegalStateException();
+		}
 		return result;
 	}
 }
