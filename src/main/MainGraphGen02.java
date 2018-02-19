@@ -25,18 +25,18 @@ public final class MainGraphGen02 {
 				"Need 1 argument: graphFolder");
 		}
 		String folderPath = args[0];
-		final int numTarget = 6;
-		final double nodeActTypeRatio = 1.0;
+		final int numTarget = 7;
+		final double nodeActTypeRatio = 0.0;
 		final double aRewardLB = 10.0;
-		final double aRewardUB = 20.0;
-		final double dPenaltyLB = -20.0;
+		final double aRewardUB = 30.0;
+		final double dPenaltyLB = -30.0;
 		final double dPenaltyUB = -10.0;
 		
-		final double aNodeCostLB = -1.0;
+		final double aNodeCostLB = -1.5;
 		final double aNodeCostUB = -0.5;
 		final double aEdgeCostLB = -1.0;
 		final double aEdgeCostUB = -0.5;
-		final double dCostLB = -1.0;
+		final double dCostLB = -1.5;
 		final double dCostUB = -0.5;
 
 		final double aNodeActProbLB = 0.8;

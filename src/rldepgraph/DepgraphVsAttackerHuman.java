@@ -62,10 +62,8 @@ public final class DepgraphVsAttackerHuman {
 			JsonUtils.getSimSpecOrDefaults(simspecFolderName);	
 		// Load graph
 		final String filePathName = graphFolderName + File.separator
-			+ "RandomGraph" + simSpec.getNumNode()
-			+ "N" + simSpec.getNumEdge() + "E" 
-			+ simSpec.getNumTarget() + "T"
-			+ simSpec.getGraphID() + JsonUtils.JSON_SUFFIX;
+			+ "RandomGraph30N100E2T1.json";
+			// + "SepLayerGraph0.json";
 		final DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
 				
 		// Load players
