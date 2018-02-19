@@ -33,8 +33,8 @@ public final class MainGraphGen02 {
 		final int numEdge = 100;
 		final int numTarget = 6;
 		final double nodeActTypeRatio = 0.0;
-		final double aRewardLB = 5.0;
-		final double aRewardUB = 10.0;
+		final double aRewardLB = 10.0;
+		final double aRewardUB = 20.0;
 		final double dPenaltyLB = -10.0;
 		final double dPenaltyUB = -5.0;
 		
