@@ -467,6 +467,11 @@ register(
 )
 
 register(
+    id='DepgraphJavaAtt-v0',
+    entry_point='gym.envs.board_game:DepgraphJavaEnvAtt',
+)
+
+register(
     id='Connect4Conv-v0',
     entry_point='gym.envs.board_game:C4Env',
     kwargs={

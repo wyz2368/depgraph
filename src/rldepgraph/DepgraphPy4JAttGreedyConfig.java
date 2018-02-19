@@ -381,7 +381,7 @@ public final class DepgraphPy4JAttGreedyConfig {
 			return result;
 		}
 
-		if (isActionAndNode(action) || !isCandidateActionId(action)) {
+		if (isActionDuplicate(action) || !isCandidateActionId(action)) {
 			throw new IllegalStateException("Should be unreachable.");
 		}
 
