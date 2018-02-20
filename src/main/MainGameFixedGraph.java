@@ -54,8 +54,10 @@ public final class MainGameFixedGraph {
 		String filePathName = "graphs" + File.separator
 			// + "RandomGraph30N100E2T1.json";
 			// + "RandomGraph30N100E6T1.json";
+			+ "RandomGraph30N100E6T1_B.json";
 			// + "SepLayerGraph0.json";
-			+ "SepLayerGraph0_noAnd.json";
+			// + "SepLayerGraph0_noAnd.json";
+			// "SepLayerGraph0_noAnd_B.json";
 		DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
 		GameSimulation.printIfDebug(filePathName);
 				

@@ -24,7 +24,7 @@ public final class MainGraphGen02 {
 			throw new IllegalStateException(
 				"Need 1 argument: graphFolder");
 		}
-		// makeSepLayerGraph29(args[0]);
+		makeSepLayerGraph29(args[0]);
 		makeRandomGraph30(args[0]);
 	}
 	
@@ -42,8 +42,8 @@ public final class MainGraphGen02 {
 		final double aNodeCostUB = -0.5;
 		final double aEdgeCostLB = -1.0;
 		final double aEdgeCostUB = -0.5;
-		final double dCostLB = -2.0;
-		final double dCostUB = -1.0;
+		final double dCostLB = -4.0;
+		final double dCostUB = -2.0;
 
 		final double aNodeActProbLB = 0.8;
 		final double aNodeActProbUB = 1.0;
@@ -89,8 +89,8 @@ public final class MainGraphGen02 {
 		final double aNodeCostUB = -0.5;
 		final double aEdgeCostLB = -1.0;
 		final double aEdgeCostUB = -0.5;
-		final double dCostLB = -1.5;
-		final double dCostUB = -0.5;
+		final double dCostLB = -10;
+		final double dCostUB = -5;
 
 		final double aNodeActProbLB = 0.8;
 		final double aNodeActProbUB = 1.0;
