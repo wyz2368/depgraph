@@ -9,10 +9,10 @@ def getLines(fileName):
     return lines
 
 def getRewardsList(lines):
-    return getValuesList(lines, "EpRewMean")
+    return getValuesList(lines, "episode re")
 
 def getEpisodesList(lines):
-    return getValuesList(lines, "EpisodesSoFar")
+    return getValuesList(lines, "episodes")
 
 def getValuesList(lines, stringIndicator):
     result = []
@@ -26,39 +26,37 @@ def getValuesList(lines, stringIndicator):
             result.append(floatValue)
     return result
 
-def myPlot(episodes, rewards, goal_reward, save_name):
+def myPlot(episodes, rewards, goal_reward, own_reward, save_name):
     fig, ax = plt.subplots()
     my_lw = 3
-    plt.plot(episodes, rewards, lw=my_lw, c='blue', label="RL exploring")
+    plt.plot(episodes, rewards, lw=my_lw, c='blue', label="QL exploring")
 
+    plt.axhline(y=own_reward, lw=my_lw, c='blue', linestyle='--', label="QL final")
     plt.axhline(y=goal_reward, lw=my_lw, c='red', linestyle='-.', label="Best heuristic")
 
     plt.legend(loc=4) # lower-right
 
     labelSize = 20
     plt.xlabel("Episode", fontsize=labelSize)
-    plt.ylabel("Defender\nreward", fontsize=labelSize)
+    plt.ylabel("Attacker\nreward", fontsize=labelSize)
     plt.tight_layout()
     #plt.show()
     plt.savefig(save_name)
 
 def main():
-    # base_name = "tdj_ppo_mlp"
-    # base_name = "tdj_ppo_mlp_long"
-    # base_name = "tdj_ppo_constant"
-    # base_name = "tdj_ppo_mlp_long_linear"
-    # base_name = "tdj_ppo_mlp_rand_eq"
-    base_name = "tdj_ppo_mlp_seplay0_eq"
+    base_name = "tdj_dqmlp_rand30NoAnd_B_att"
     file_name = base_name + ".txt"
     save_name = base_name + ".pdf"
     lines = getLines(file_name)
     episodes_list = getEpisodesList(lines)
     rewards_list = getRewardsList(lines)
+    print(len(episodes_list))
+    print(len(rewards_list))
     # print(rewards_list)
 
-    # goal_reward = -23.3 # for rand eq
-    goal_reward = -7.3 # for sep layer 0 eq
-    myPlot(episodes_list, rewards_list, goal_reward, save_name)
+    goal_reward = 39.3 # for Random30NoAnd_B
+    own_reward = 113 # for tdj_dqmlp_rand30NoAnd_B_att
+    myPlot(episodes_list, rewards_list, goal_reward, own_reward, save_name)
 
 if __name__ == "__main__":
     main()
