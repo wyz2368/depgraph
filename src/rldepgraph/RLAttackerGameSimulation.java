@@ -107,6 +107,12 @@ public final class RLAttackerGameSimulation {
 	private final List<Integer> edgeToOrNodeIds;
 	
 	/**
+	 * Stores total discounted payoff of defender agent
+	 * (NOT self agent) during the current game.
+	 */
+	private double defenderTotalPayoff;
+	
+	/**
 	 * Constructor for the game logic class.
 	 * @param aDepGraph the game's dependency graph
 	 * @param aDefender the defender agent
@@ -143,6 +149,7 @@ public final class RLAttackerGameSimulation {
 		
 		this.andNodeIds = getAndNodeIds();
 		this.edgeToOrNodeIds = getEdgeToOrNodeIds();
+		this.defenderTotalPayoff = 0.0;
 	}
 	
 	/**
@@ -207,6 +214,7 @@ public final class RLAttackerGameSimulation {
 		
 		this.attackerTotalPayoff = 0.0;
 		this.attackerMarginalPayoff = 0.0;
+		this.defenderTotalPayoff = 0.0;
 		this.mostRecentAttActs.clear();
 	}
 	
@@ -413,6 +421,14 @@ public final class RLAttackerGameSimulation {
 	}
 	
 	/**
+	 * @return the total discounted reward of the defender
+	 * in this game instance.
+	 */
+	public double getDefenderTotalPayoff() {
+		return this.defenderTotalPayoff;
+	}
+	
+	/**
 	 * @param nodeIdsToAttack nodeIds of AND nodes to attack.
 	 * @param edgeIdsToAttack edgeIds of edges (to OR nodes) to attack.
 	 * @return an AttackerAction with the given targets
@@ -486,7 +502,32 @@ public final class RLAttackerGameSimulation {
 		this.attackerTotalPayoff += attackerCurPayoff;
 		this.attackerMarginalPayoff = attackerCurPayoff;
 		
+		this.defenderTotalPayoff += getDefenderPayoffCurrentTimeStep(defAction);
+		
 		return dBeliefResult;
+	}
+	
+	/**
+	 * Returns the discounted payoff to the defender in current time step.
+	 * @param defAction the set of nodes the defender protected this step
+	 * @return the discounted value of this time step's payoff,
+	 * including the cost of nodes defended and penalty of nodes owned
+	 * by attacker after the time step's update
+	 */
+	private double getDefenderPayoffCurrentTimeStep(
+		final DefenderAction defAction) {
+		double result = 0.0;
+		final int timeStep = this.numTimeStep - this.timeStepsLeft;
+		final double discFactPow = Math.pow(this.discFact, timeStep);
+		for (final Node node: this.gameState.getEnabledNodeSet()) {
+			if (node.getType() == NodeType.TARGET) {
+				result += discFactPow * node.getDPenalty();
+			}
+		}
+		for (final Node node : defAction.getAction()) {
+			result += discFactPow * node.getDCost();
+		}
+		return result;
 	}
 	
 	/**

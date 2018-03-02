@@ -86,6 +86,12 @@ public final class RLGameSimulation {
 	private double worstReward;
 	
 	/**
+	 * Stores total discounted payoff of attacker agent
+	 * (NOT self agent) during the current game.
+	 */
+	private double attackerTotalPayoff;
+	
+	/**
 	 * Constructor for the game logic class.
 	 * @param aDepGraph the game's dependency graph
 	 * @param aAttacker the attacker agent
@@ -110,6 +116,7 @@ public final class RLGameSimulation {
 		this.discFact = aDiscFact;
 		
 		this.attacker = aAttacker;
+		this.attackerTotalPayoff = 0.0;
 		
 		this.rng = aRng;
 		this.dObservations = new ArrayList<DefenderObservation>();
@@ -172,6 +179,7 @@ public final class RLGameSimulation {
 		this.timeStepsLeft = this.numTimeStep;
 		this.defenderTotalPayoff = 0.0;
 		this.defenderMarginalPayoff = 0.0;
+		this.attackerTotalPayoff = 0.0;
 		this.mostRecentDefActs.clear();
 	}
 	
@@ -213,6 +221,37 @@ public final class RLGameSimulation {
 	}
 	
 	/**
+	 * Returns the discounted payoff to the attacker in current time step.
+	 * @param attAction the AND nodes and edges to OR nodes the attacker
+	 * attacked in this time step
+	 * @return the discounted value of this time step's payoff,
+	 * including the cost of nodes and edges attacked and reward of nodes owned
+	 * by attacker after the time step's update
+	 */
+	private double getAttackerPayoffCurrentTimeStep(
+		final AttackerAction attAction
+	) {
+		double result = 0.0;
+
+		for (final Node node: this.gameState.getEnabledNodeSet()) {
+			if (node.getType() == NodeType.TARGET) {
+				result += node.getAReward();
+			}
+		}
+		for (final int nodeId: attAction.getAttackedAndNodeIds()) {
+			result += this.depGraph.getNodeById(nodeId).getACost();
+		}
+		for (final int edgeId: attAction.getAttackedEdgeToOrNodeIds()) {
+			result += this.depGraph.getEdgeById(edgeId).getACost();
+		}
+		
+		final int timeStep = this.numTimeStep - this.timeStepsLeft;
+		final double discFactPow = Math.pow(this.discFact, timeStep);
+		result *= discFactPow;
+		return result;
+	}
+	
+	/**
 	 * Returns the discounted payoff to the defender in current time step.
 	 * @param defAction the set of nodes the defender protected this step
 	 * @return the discounted value of this time step's payoff,
@@ -233,6 +272,14 @@ public final class RLGameSimulation {
 			result += discFactPow * node.getDCost();
 		}
 		return result;
+	}
+	
+	/**
+	 * @return the total discounted reward of the attacker
+	 * in this game instance.
+	 */
+	public double getAttackerTotalPayoff() {
+		return this.attackerTotalPayoff;
 	}
 	
 	/**
@@ -274,6 +321,8 @@ public final class RLGameSimulation {
 			getDefenderPayoffCurrentTimeStep(curDefAct);
 		this.defenderTotalPayoff += defenderCurPayoff;
 		this.defenderMarginalPayoff = defenderCurPayoff;
+		
+		this.attackerTotalPayoff += getAttackerPayoffCurrentTimeStep(attAction);
 	}
 
 	/**

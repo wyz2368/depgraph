@@ -669,6 +669,14 @@ public final class DepgraphPy4JAttGreedyConfig {
 	}
 	
 	/**
+	 * @return the total discounted reward of the defender
+	 * in this game instance.
+	 */
+	public double getOpponentTotalPayoff() {
+		return this.sim.getDefenderTotalPayoff();
+	}
+	
+	/**
 	 * Observation list is of size [count(AND nodes) + count(edges to OR)] * 2 +
 	 *     count(nodes) * ATTACKER_OBS_LENGTH +
 	 *     1.

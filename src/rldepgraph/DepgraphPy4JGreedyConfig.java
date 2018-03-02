@@ -281,7 +281,7 @@ public final class DepgraphPy4JGreedyConfig {
 		// update the attacker at random from the mixed strategy.
 		this.sim.setAttacker(drawRandomAttacker());
 		// no nodesToDefend so far
-		this.nodesToDefend.clear();		
+		this.nodesToDefend.clear();
 		return getDefObsAsListDouble();
 	}
 	
@@ -378,6 +378,7 @@ public final class DepgraphPy4JGreedyConfig {
 			
 			final List<Double> defObs = getDefObsAsListDouble();
 			final double reward = this.sim.getDefenderMarginalPayoff();
+			
 			double isOver = 0.0;
 			if (this.sim.isGameOver()) {
 				isOver = 1.0;
@@ -414,6 +415,14 @@ public final class DepgraphPy4JGreedyConfig {
 		result.add(reward);
 		result.add(isOver);
 		return result;
+	}
+	
+	/**
+	 * @return the total discounted reward of the attacker
+	 * in this game instance.
+	 */
+	public double getOpponentTotalPayoff() {
+		return this.sim.getAttackerTotalPayoff();
 	}
 	
 	/**
