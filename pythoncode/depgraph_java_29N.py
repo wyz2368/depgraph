@@ -84,3 +84,10 @@ class DepgraphJavaEnv29N(gym.Env):
         if close:
             return
         print(JAVA_GAME.render())
+
+    def get_opponent_reward(self):
+        '''
+        Get the total discounted reward of the opponent (attacker) in the current game.
+        '''
+        return JAVA_GAME.getOpponentTotalPayoff()
+
