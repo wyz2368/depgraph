@@ -259,6 +259,14 @@ public final class DepgraphPy4JGreedyConfigBoth {
 	 * false.
 	 * If the attacker's play is an invalid move, ending the game, both
 	 * attacker and defender observations will indicate game over.
+	 * Otherwise, if the attacker passed, was forced to pass, or made
+	 * a duplicate move resulting in a pass, the defender's action choice
+	 * and attacker's action choice will be combined to generate the next
+	 * step forward in the game; the result will be returned immediately.
+	 * 
+	 * If you did not take a step and return, you now append the attacker
+	 * observation to the defender observation, and put an indicator of 1.0
+	 * for defender's turn or 0.0 for attacker's turn at the end, and return.
 	 * 
 	 * @param actionInt the action of the current agent, defender
 	 * if this.isDefTurn, else attacker.
@@ -284,9 +292,10 @@ public final class DepgraphPy4JGreedyConfigBoth {
 			attObs = getAttackersTurnObservation(isOver);
 		} else {
 			attObs = attackerStep(actionInt);
-			final boolean attPassed = this.isDefTurn;
 			isOver = attObs.get(attObs.size() - 1) >= half;
+			final boolean attPassed = this.isDefTurn;
 			if (attPassed && !isOver) {
+				// attacker and defender have passed. take step.
 				return takeStep();
 			}
 			defObs = getDefendersTurnObservation(isOver);

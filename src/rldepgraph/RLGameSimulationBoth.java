@@ -184,7 +184,7 @@ public final class RLGameSimulationBoth {
 			discFactPow *= this.discFact;
 			totalProduct += discFactPow;
 		}
-		return this.worstAttackerReward * totalProduct;
+		return this.worstDefenderReward * totalProduct;
 	}
 	
 	/**
@@ -248,6 +248,7 @@ public final class RLGameSimulationBoth {
 		this.defenderMarginalPayoff = 0.0;
 		this.attackerTotalPayoff = 0.0;
 		this.mostRecentDefActs.clear();
+		this.mostRecentAttActs.clear();
 	}
 	
 	/**
@@ -382,6 +383,7 @@ public final class RLGameSimulationBoth {
 		}
 		final AttackerAction attAction =
 			generateAttackerAction(nodeIdsToAttack, edgeIdsToAttack);
+		this.mostRecentAttActs.add(attAction);
 		
 		final DefenderAction curDefAct = new DefenderAction();
 		for (final int idToDefend: idsToDefend) {
