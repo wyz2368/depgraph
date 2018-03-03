@@ -130,6 +130,17 @@ public final class DepgraphPy4JGreedyConfigBoth {
 		
 		setupEnvironment(simSpecFolderName, graphFileName);
 		setupActionMaps();
+		
+		System.out.println("Node count: " + this.sim.getNodeCount());
+		System.out.println(
+			"AND node count: " + this.actionToAndNodeIndex.keySet().size());
+		System.out.println(
+			"Edge to OR node count: "
+			+ this.actionToEdgeToOrNodeIndex.keySet().size());
+		System.out.println("Pass action value: "
+			+ (this.actionToAndNodeIndex.keySet().size()
+			+ this.actionToEdgeToOrNodeIndex.keySet().size()
+			+ 1));
 	}
 	
 	/**
@@ -173,7 +184,7 @@ public final class DepgraphPy4JGreedyConfigBoth {
 			);
 		}
 		final String simSpecFolderName = args[0];
-		final String graphFileName = args[2];
+		final String graphFileName = args[1];
 		
 		final double probGreedySelectCutOff = 0.1;
 		// set up Py4J server
