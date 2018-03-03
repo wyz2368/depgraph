@@ -95,6 +95,12 @@ public final class DepgraphPy4JGreedyConfigBoth {
 	private AttackerAction attAction = null;
 	
 	/**
+	 * Indicates whether it's the defender's turn,
+	 * else attacker's.
+	 */
+	private boolean isDefTurn;
+	
+	/**
 	 * Public constructor.
 	 * 
 	 * @param aProbGreedySelectionCutOff likelihood that after each
@@ -120,6 +126,7 @@ public final class DepgraphPy4JGreedyConfigBoth {
 		this.edgesToAttack = new HashSet<Integer>();
 		this.actionToAndNodeIndex = new HashMap<Integer, Integer>();
 		this.actionToEdgeToOrNodeIndex = new HashMap<Integer, Integer>();
+		this.isDefTurn = true;
 		
 		setupEnvironment(simSpecFolderName, graphFileName);
 		setupActionMaps();
@@ -231,10 +238,144 @@ public final class DepgraphPy4JGreedyConfigBoth {
 		this.nodesToAttack.clear();
 		this.edgesToAttack.clear();
 		this.attAction = null;
-
+		this.isDefTurn = true;
+		
 		return getDefObsAsListDouble();
 	}
 	
+	/**
+	 * Initially, the defender will call this method, and this.defTurn
+	 * is true.
+	 * If the defender's play is an invalid move, ending the game, 
+	 * both the defender and
+	 * attacker observations will indicate the game is over.
+	 * Otherwise, if the defender passes or is forced to pass or makes
+	 * a duplicate move thus passing, this.isDefTurn will be switched to false
+	 * in defenderStep(), which will be reflected in isDefTurnDouble of the
+	 * returned list.
+	 * Otherwise, the defender will get to select again.
+	 * 
+	 * Otherwise, the attacker would be calling, and this.defTurn would be
+	 * false.
+	 * If the attacker's play is an invalid move, ending the game, both
+	 * attacker and defender observations will indicate game over.
+	 * 
+	 * @param actionInt the action of the current agent, defender
+	 * if this.isDefTurn, else attacker.
+	 * @return the observations and current player as a flat list,
+	 * first defender observation list, then attacker observation
+	 * list, then 1.0 if it's defender's turn now, else 0.0
+	 * to indicate attacker's turn.
+	 */
+	public List<Double> stepCurrent(
+		final Integer actionInt
+	) {
+		if (actionInt == null) {
+			throw new IllegalArgumentException();
+		}
+
+		final double half = 0.5;
+		List<Double> defObs = null;
+		List<Double> attObs = null;
+		boolean isOver = false;
+		if (this.isDefTurn) {
+			defObs = defenderStep(actionInt);
+			isOver = defObs.get(defObs.size() - 1) >= half;
+			attObs = getAttackersTurnObservation(isOver);
+		} else {
+			attObs = attackerStep(actionInt);
+			final boolean attPassed = this.isDefTurn;
+			isOver = attObs.get(attObs.size() - 1) >= half;
+			if (attPassed && !isOver) {
+				return takeStep();
+			}
+			defObs = getDefendersTurnObservation(isOver);
+		}
+		final List<Double> result = new ArrayList<Double>();
+		result.addAll(defObs);
+		result.addAll(attObs);
+		
+		double isDefTurnDouble = 1.0;
+		if (!this.isDefTurn) {
+			isDefTurnDouble = 0.0;
+		}
+		result.add(isDefTurnDouble);
+		return result;
+	}
+	
+	/**
+	 * @param isGameOver whether the game has ended.
+	 * @return the observation of the defender.
+	 */
+	private List<Double> getDefendersTurnObservation(final boolean isGameOver) {
+		final List<Double> result = new ArrayList<Double>();
+		final List<Double> defObs = getDefObsAsListDouble();
+		final double reward = 0.0; // no marginal reward for adding nodes to set
+		double isOver = 0.0;
+		if (isGameOver) {
+			isOver = 1.0;
+		}
+		result.addAll(defObs);
+		result.add(reward);
+		result.add(isOver);
+		return result;
+	}
+	
+	/**
+	 * @param isGameOver whether the game has ended.
+	 * @return the observation of the attacker.
+	 */
+	private List<Double> getAttackersTurnObservation(final boolean isGameOver) {
+		final List<Double> result = new ArrayList<Double>();
+		final List<Double> attObs = getAttObsAsListDouble();
+		final double reward = 0.0; // no marginal reward for adding nodes to set
+		double isOver = 0.0;
+		if (isGameOver) {
+			isOver = 1.0;
+		}
+		result.addAll(attObs);
+		result.add(reward);
+		result.add(isOver);
+		return result;
+	}
+	
+	/**
+	 * Update the game state with the current actions for attacker and
+	 * defender.
+	 * Clear those actions for the next step.
+	 * 
+	 * @return the observation of the defender, then of the attacker,
+	 * then 1.0 to indicate it's now the defender's turn.
+	 */
+	private List<Double> takeStep() {
+		this.sim.step(
+			this.nodesToDefend, this.nodesToAttack, this.edgesToAttack);
+		this.nodesToDefend.clear();
+		this.nodesToAttack.clear();
+		this.edgesToAttack.clear();
+		
+		final List<Double> result = new ArrayList<Double>();
+		final List<Double> defObs = getDefObsAsListDouble();
+		final double defReward = this.sim.getDefenderMarginalPayoff();
+		result.addAll(defObs);
+		result.add(defReward);
+		double isOver = 0.0;
+		if (this.sim.isGameOver()) {
+			isOver = 1.0;
+		}
+		result.add(isOver);
+		
+		final List<Double> attObs = getAttObsAsListDouble();
+		final double attReward = this.sim.getAttackerMarginalPayoff();
+		result.addAll(attObs);
+		result.add(attReward);
+		result.add(isOver);
+		
+		final double isDefTurnDouble = 1.0;
+		result.add(isDefTurnDouble);
+		return result;
+	}
+
 	/**
 	 * Take a step based on the given action, represented as
 	 * an integer.
@@ -327,21 +468,11 @@ public final class DepgraphPy4JGreedyConfigBoth {
 			
 			// move is valid.
 			// take a step.
-			this.sim.step(this.nodesToAttack, this.edgesToAttack);
-			
-			// reset nodesToAttack and edgesToAttack to empty set
-			// before next move, after storing them in this.attAction.
-			this.attAction = this.sim.generateAttackerAction(
-				this.nodesToAttack, this.edgesToAttack);
-			this.nodesToAttack.clear();
-			this.edgesToAttack.clear();
+			this.isDefTurn = true;
 			
 			final List<Double> attObs = getAttObsAsListDouble();
 			final double reward = this.sim.getAttackerMarginalPayoff();
-			double isOver = 0.0;
-			if (this.sim.isGameOver()) {
-				isOver = 1.0;
-			}
+			final double isOver = 0.0;
 			result.addAll(attObs);
 			result.add(reward);
 			result.add(isOver);
@@ -454,17 +585,10 @@ public final class DepgraphPy4JGreedyConfigBoth {
 			}
 			
 			// move is valid.
-			this.sim.step(this.nodesToDefend);
-			// reset nodesToDefend to empty set before next move.
-			this.nodesToDefend.clear();
-			
+			this.isDefTurn = false;
 			final List<Double> defObs = getDefObsAsListDouble();
-			final double reward = this.sim.getDefenderMarginalPayoff();
-			
-			double isOver = 0.0;
-			if (this.sim.isGameOver()) {
-				isOver = 1.0;
-			}
+			final double reward = 0.0;
+			final double isOver = 0.0;
 			result.addAll(defObs);
 			result.add(reward);
 			result.add(isOver);
@@ -473,8 +597,7 @@ public final class DepgraphPy4JGreedyConfigBoth {
 		
 		// selection is allowed; will try to add to nodesToDefend.
 		
-		if (!this.sim.isValidId(action)
-		) {
+		if (!this.sim.isValidId(action)) {
 			// illegal move. game is lost.
 			final List<Double> defObs = getDefObsAsListDouble();
 			// self player (defender) gets minimal reward for illegal move.
