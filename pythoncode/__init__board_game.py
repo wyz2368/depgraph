@@ -6,4 +6,5 @@ from gym.envs.board_game.depgraph_java import DepgraphJavaEnv
 from gym.envs.board_game.depgraph_java_conv import DepgraphJavaEnvConv
 from gym.envs.board_game.depgraph_java_29N import DepgraphJavaEnv29N
 from gym.envs.board_game.depgraph_java_att import DepgraphJavaEnvAtt
-
+from gym.envs.board_game.depgraph_java_att_29N import DepgraphJavaEnvAtt29N
+from gym.envs.board_game.dg_java_both import DepgraphJavaEnvBoth
