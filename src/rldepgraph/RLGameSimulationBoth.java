@@ -173,6 +173,13 @@ public final class RLGameSimulationBoth {
 	}
 	
 	/**
+	 * Set game to be over now.
+	 */
+	public void setGameOver() {
+		this.timeStepsLeft = 0;
+	}
+	
+	/**
 	 * Get the lowest discounted reward possible in this time step.
 	 * @return the lowest possible discounted reward in this time step.
 	 */

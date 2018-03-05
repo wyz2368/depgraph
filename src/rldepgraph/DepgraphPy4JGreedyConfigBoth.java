@@ -247,30 +247,32 @@ public final class DepgraphPy4JGreedyConfigBoth {
 			throw new IllegalArgumentException();
 		}
 
-		final double half = 0.5;
 		List<Double> defObs = null;
 		List<Double> attObs = null;
-		boolean isOver = false;
 		if (this.isDefTurn) {
+			System.out.println("Defender's action input.");
 			defObs = defenderStep(actionInt);
-			isOver = defObs.get(defObs.size() - 1) >= half;
 			attObs = getAttObsAsListDouble();
 		} else {
+			System.out.println("Attacker's action input.");
 			attObs = attackerStep(actionInt);
-			isOver = attObs.get(attObs.size() - 1) >= half;
 			final boolean attPassed = this.isDefTurn;
-			if (attPassed && !isOver) {
+			if (attPassed && !this.sim.isGameOver()) {
 				// attacker and defender have passed. take step.
+				System.out.println(
+					"Attacker passed, but game isn't over. Will take step.");
 				return takeStep();
 			}
+			System.out.println("Either attacker didn't pass, or game is over");
 			defObs = getDefObsAsListDouble();
 		}
+		System.out.println("Not time to take a step yet.");
 		final List<Double> result = new ArrayList<Double>();
 		result.addAll(defObs);
 		result.addAll(attObs);
 		
 		double isOverDouble = 1.0;
-		if (!isOver) {
+		if (!this.sim.isGameOver()) {
 			isOverDouble = 0.0;
 		}
 		result.add(isOverDouble);
@@ -470,6 +472,7 @@ public final class DepgraphPy4JGreedyConfigBoth {
 			if (!this.sim.isValidMove(this.nodesToDefend)) {
 				// illegal move. game is lost.
 				this.sim.addDefenderWorstPayoff();
+				this.sim.setGameOver();
 				return getDefObsAsListDouble();
 			}
 			
@@ -483,6 +486,7 @@ public final class DepgraphPy4JGreedyConfigBoth {
 		if (!this.sim.isValidId(action)) {
 			// illegal move. game is lost.
 			this.sim.addDefenderWorstPayoff();
+			this.sim.setGameOver();
 			return getDefObsAsListDouble();
 		}
 
@@ -569,6 +573,7 @@ public final class DepgraphPy4JGreedyConfigBoth {
 				this.nodesToAttack, this.edgesToAttack)) {
 				// illegal move. game is lost.
 				this.sim.addAttackerWorstPayoff();
+				this.sim.setGameOver();
 				return getAttObsAsListDouble();
 			}
 			
@@ -583,6 +588,7 @@ public final class DepgraphPy4JGreedyConfigBoth {
 			// illegal action selection. game is lost.
 			// no need to update this.attAction.
 			this.sim.addAttackerWorstPayoff();
+			this.sim.setGameOver();
 			return getAttObsAsListDouble();
 		}
 
