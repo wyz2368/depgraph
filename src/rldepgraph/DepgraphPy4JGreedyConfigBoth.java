@@ -28,7 +28,8 @@ import utils.JsonUtils;
  * and to attack
  * one at a time, in a greedy fashion.
  * Game state indicates which nodes are currently in the
- * list to defend and attack.
+ * list to defend and attack, and which player's
+ * turn it is (although agents act simultaneously).
  * 
  * Requirements: Py4J,
  * https://www.py4j.org/install.html
@@ -43,8 +44,8 @@ public final class DepgraphPy4JGreedyConfigBoth {
 	
 	/**
 	 * The likelihood that after each
-	 * round of adding one node to the set to defend in an episode,
-	 * the defender agent will not be allowed to add more nodes.
+	 * round of adding one node to the set to attack/defend in an episode,
+	 * the current agent will not be allowed to add more items.
 	 */
 	private final double probGreedySelectionCutOff;
 	
@@ -105,7 +106,7 @@ public final class DepgraphPy4JGreedyConfigBoth {
 	 * 
 	 * @param aProbGreedySelectionCutOff likelihood that after each
 	 * round of adding one item to the set to attack or defend in an episode,
-	 * the agent will not be allowed to add more nodes.
+	 * the agent will not be allowed to add more items.
 	 * @param simSpecFolderName the folder from which simulation_spec.json
 	 * will be taken
 	 * @param graphFileName the name of the graph file to use
@@ -180,7 +181,9 @@ public final class DepgraphPy4JGreedyConfigBoth {
 	/**
 	 * Reset the game (clear all actions and reset time steps left).
 	 * 
-	 * @return the state of the game as a list of doubles
+	 * @return the state of the game as a list of doubles, from
+	 * the defender's view (because defender selects first, although
+	 * both players act simultaneously).
 	 */
 	public List<Double> reset() {
 		// clear the game state.
@@ -189,8 +192,6 @@ public final class DepgraphPy4JGreedyConfigBoth {
 		this.nodesToAttack.clear();
 		this.edgesToAttack.clear();
 		
-		this.nodesToAttack.clear();
-		this.edgesToAttack.clear();
 		this.attAction = null;
 		this.isDefTurn = true;
 		
@@ -265,15 +266,7 @@ public final class DepgraphPy4JGreedyConfigBoth {
 		result.add(isDefTurnDouble);
 		return result;
 	}
-	
-	/**
-	 * @return the total discounted reward of the attacker
-	 * in this game instance.
-	 */
-	public double getAttackerTotalPayoff() {
-		return this.sim.getAttackerTotalPayoff();
-	}
-	
+
 	/**
 	 * @return the total discounted reward of the defender
 	 * in this game instance.
@@ -281,16 +274,27 @@ public final class DepgraphPy4JGreedyConfigBoth {
 	public double getDefenderTotalPayoff() {
 		return this.sim.getDefenderTotalPayoff();
 	}
-	
+
+	/**
+	 * @return the total discounted reward of the attacker
+	 * in this game instance.
+	 */
+	public double getAttackerTotalPayoff() {
+		return this.sim.getAttackerTotalPayoff();
+	}
+
 	/**
 	 * Get a human-readable game state string.
 	 * @return the string representing the human-readable game state.
+	 * Has the defender observation, then the attacker observation,
+	 * then an indicator for whether it's the defender's turn.
 	 */
 	public String render() {
 		return this.sim.getDefenderObservation().toString() + "\n\n"
-			+ this.sim.getAttackerObservation(new AttackerAction());
+			+ this.sim.getAttackerObservation(new AttackerAction()) + "\n\n"
+			+ "this.isDefTurn: " + this.isDefTurn;
 	}
-	
+
 	/**
 	 * Load the graph and simulation specification, and initialize
 	 * the attacker opponent and environment.
@@ -318,7 +322,7 @@ public final class DepgraphPy4JGreedyConfigBoth {
 		this.sim = new RLGameSimulationBoth(
 			depGraph, rng, numTimeStep, discFact);
 	}
-	
+
 	/**
 	 * Initialize the maps from action integers to the AND node ID
 	 * or edge to OR node ID to attack.
@@ -390,7 +394,7 @@ public final class DepgraphPy4JGreedyConfigBoth {
 	 * Clear those actions for the next step.
 	 * 
 	 * @return the observation of the defender, then of the attacker,
-	 * then 1.0 to indicate it's now the defender's turn.
+	 * then 1.0 to indicate it is now the defender's turn.
 	 */
 	private List<Double> takeStep() {
 		this.sim.step(
