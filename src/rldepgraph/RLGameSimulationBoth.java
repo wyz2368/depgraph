@@ -247,6 +247,7 @@ public final class RLGameSimulationBoth {
 		this.defenderTotalPayoff = 0.0;
 		this.defenderMarginalPayoff = 0.0;
 		this.attackerTotalPayoff = 0.0;
+		this.attackerMarginalPayoff = 0.0;
 		this.mostRecentDefActs.clear();
 		this.mostRecentAttActs.clear();
 	}
@@ -338,6 +339,20 @@ public final class RLGameSimulationBoth {
 	 */
 	public double getAttackerTotalPayoff() {
 		return this.attackerTotalPayoff;
+	}
+	
+	/**
+	 * Punish defender for illegal move by giving worst remaining reward.
+	 */
+	public void addDefenderWorstPayoff() {
+		this.defenderTotalPayoff += this.getWorstDefenderRemainingReward();
+	}
+	
+	/**
+	 * Punish attacker for illegal move by giving worst remaining reward.
+	 */
+	public void addAttackerWorstPayoff() {
+		this.attackerTotalPayoff += this.getWorstAttackerRemainingReward();
 	}
 	
 	/**

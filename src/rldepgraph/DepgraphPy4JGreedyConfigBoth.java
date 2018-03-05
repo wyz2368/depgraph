@@ -235,8 +235,8 @@ public final class DepgraphPy4JGreedyConfigBoth {
 	 * if this.isDefTurn, else attacker.
 	 * @return the observations and current player as a flat list,
 	 * first defender observation list, then attacker observation
-	 * list, then 1.0 if it's defender's turn now, else 0.0
-	 * to indicate attacker's turn.
+	 * list, then 1.0 if game is over, then 1.0 if it's defender's
+	 * turn now.
 	 */
 	public List<Double> stepCurrent(
 		final Integer actionInt
@@ -261,11 +261,17 @@ public final class DepgraphPy4JGreedyConfigBoth {
 				// attacker and defender have passed. take step.
 				return takeStep();
 			}
-			defObs = getDefendersTurnObservation(isOver);
+			defObs = getDefObsAsListDouble();
 		}
 		final List<Double> result = new ArrayList<Double>();
 		result.addAll(defObs);
 		result.addAll(attObs);
+		
+		double isOverDouble = 1.0;
+		if (!isOver) {
+			isOverDouble = 0.0;
+		}
+		result.add(isOverDouble);
 		
 		double isDefTurnDouble = 1.0;
 		if (!this.isDefTurn) {
@@ -362,24 +368,6 @@ public final class DepgraphPy4JGreedyConfigBoth {
 	
 	/**
 	 * @param isGameOver whether the game has ended.
-	 * @return the observation of the defender.
-	 */
-	private List<Double> getDefendersTurnObservation(final boolean isGameOver) {
-		final List<Double> result = new ArrayList<Double>();
-		final List<Double> defObs = getDefObsAsListDouble();
-		final double reward = 0.0; // no marginal reward for adding nodes to set
-		double isOver = 0.0;
-		if (isGameOver) {
-			isOver = 1.0;
-		}
-		result.addAll(defObs);
-		result.add(reward);
-		result.add(isOver);
-		return result;
-	}
-	
-	/**
-	 * @param isGameOver whether the game has ended.
 	 * @return the observation of the attacker.
 	 */
 	private List<Double> getAttackersTurnObservation(final boolean isGameOver) {
@@ -412,20 +400,13 @@ public final class DepgraphPy4JGreedyConfigBoth {
 		this.edgesToAttack.clear();
 		
 		final List<Double> result = new ArrayList<Double>();
-		final List<Double> defObs = getDefObsAsListDouble();
-		final double defReward = this.sim.getDefenderMarginalPayoff();
-		result.addAll(defObs);
-		result.add(defReward);
+		result.addAll(getDefObsAsListDouble());
+		result.addAll(getAttObsAsListDouble());
+		
 		double isOver = 0.0;
 		if (this.sim.isGameOver()) {
 			isOver = 1.0;
 		}
-		result.add(isOver);
-		
-		final List<Double> attObs = getAttObsAsListDouble();
-		final double attReward = this.sim.getAttackerMarginalPayoff();
-		result.addAll(attObs);
-		result.add(attReward);
 		result.add(isOver);
 		
 		final double isDefTurnDouble = 1.0;
@@ -472,7 +453,6 @@ public final class DepgraphPy4JGreedyConfigBoth {
 		if (action == null) {
 			throw new IllegalArgumentException();
 		}
-		final List<Double> result = new ArrayList<Double>();
 		final int nodeCount = this.sim.getNodeCount();
 		if (action == (nodeCount + 1)
 			|| (!this.nodesToDefend.isEmpty()
@@ -487,53 +467,26 @@ public final class DepgraphPy4JGreedyConfigBoth {
 			// !LOSE_IF_REPEAT, so repeated selection counts as "pass".
 			if (!this.sim.isValidMove(this.nodesToDefend)) {
 				// illegal move. game is lost.
-				final List<Double> defObs = getDefObsAsListDouble();
-				// self player (defender) gets minimal reward for illegal move.
-				final double reward =
-					this.sim.getWorstDefenderRemainingReward();
-				// game is over.
-				final double isOver = 1.0;
-				result.addAll(defObs);
-				result.add(reward);
-				result.add(isOver);
-				return result;
+				this.sim.addDefenderWorstPayoff();
+				return getDefObsAsListDouble();
 			}
 			
 			// move is valid.
 			this.isDefTurn = false;
-			final List<Double> defObs = getDefObsAsListDouble();
-			final double reward = 0.0;
-			final double isOver = 0.0;
-			result.addAll(defObs);
-			result.add(reward);
-			result.add(isOver);
-			return result;
+			return getDefObsAsListDouble();
 		}
 		
 		// selection is allowed; will try to add to nodesToDefend.
 		
 		if (!this.sim.isValidId(action)) {
 			// illegal move. game is lost.
-			final List<Double> defObs = getDefObsAsListDouble();
-			// self player (defender) gets minimal reward for illegal move.
-			final double reward = this.sim.getWorstDefenderRemainingReward();
-			// game is over.
-			final double isOver = 1.0;
-			result.addAll(defObs);
-			result.add(reward);
-			result.add(isOver);
-			return result;
+			this.sim.addDefenderWorstPayoff();
+			return getDefObsAsListDouble();
 		}
 
 		// selection is valid and not a repeat. add to nodesToDefend.
 		this.nodesToDefend.add(action);
-		final List<Double> defObs = getDefObsAsListDouble();
-		final double reward = 0.0; // no marginal reward for adding nodes to set
-		final double isOver = 0.0; // game is not over.
-		result.addAll(defObs);
-		result.add(reward);
-		result.add(isOver);
-		return result;
+		return getDefObsAsListDouble();
 	}
 
 	/**
@@ -594,7 +547,6 @@ public final class DepgraphPy4JGreedyConfigBoth {
 		final boolean canPassRandomly =
 			!this.nodesToAttack.isEmpty() || !this.edgesToAttack.isEmpty();
 		
-		final List<Double> result = new ArrayList<Double>();
 		if (action == passAction
 			|| (canPassRandomly
 				&& RAND.nextDouble() < this.probGreedySelectionCutOff)
@@ -614,44 +566,22 @@ public final class DepgraphPy4JGreedyConfigBoth {
 			if (!this.sim.isValidAttackerMove(
 				this.nodesToAttack, this.edgesToAttack)) {
 				// illegal move. game is lost.
-				final List<Double> attObs = getAttObsAsListDouble();
-				// self player (attacker) gets minimal reward for illegal move.
-				final double reward =
-					this.sim.getWorstAttackerRemainingReward();
-				// game is over.
-				final double isOver = 1.0;
-				result.addAll(attObs);
-				result.add(reward);
-				result.add(isOver);
-				return result;
+				this.sim.addAttackerWorstPayoff();
+				return getAttObsAsListDouble();
 			}
 			
 			// move is valid.
 			// take a step.
 			this.isDefTurn = true;
-			
-			final List<Double> attObs = getAttObsAsListDouble();
-			final double reward = this.sim.getAttackerMarginalPayoff();
-			final double isOver = 0.0;
-			result.addAll(attObs);
-			result.add(reward);
-			result.add(isOver);
-			return result;
+			return getAttObsAsListDouble();
 		}
 		
 		// selection is allowed; will try to add to nodesToDefend.
 		if (!isValidActionId(action)) {
 			// illegal action selection. game is lost.
 			// no need to update this.attAction.
-			final List<Double> attObs = getAttObsAsListDouble();
-			// self player (attacker) gets minimal reward for illegal move.
-			final double reward = this.sim.getWorstAttackerRemainingReward();
-			// game is over.
-			final double isOver = 1.0;
-			result.addAll(attObs);
-			result.add(reward);
-			result.add(isOver);
-			return result;
+			this.sim.addAttackerWorstPayoff();
+			return getAttObsAsListDouble();
 		}
 
 		if (isActionDuplicate(action) || !isCandidateActionId(action)) {
@@ -669,13 +599,7 @@ public final class DepgraphPy4JGreedyConfigBoth {
 		}
 		this.attAction = this.sim.generateAttackerAction(
 			this.nodesToAttack, this.edgesToAttack);
-		final List<Double> attObs = getAttObsAsListDouble();
-		final double reward = 0.0; // no marginal reward for adding nodes to set
-		final double isOver = 0.0; // game is not over.
-		result.addAll(attObs);
-		result.add(reward);
-		result.add(isOver);
-		return result;
+		return getAttObsAsListDouble();
 	}
 	
 	/**
