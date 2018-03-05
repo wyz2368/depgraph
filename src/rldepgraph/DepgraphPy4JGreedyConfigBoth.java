@@ -142,35 +142,6 @@ public final class DepgraphPy4JGreedyConfigBoth {
 			+ this.actionToEdgeToOrNodeIndex.keySet().size()
 			+ 1));
 	}
-	
-	/**
-	 * Initialize the maps from action integers to the AND node ID
-	 * or edge to OR node ID to attack.
-	 * Actions {1, . . ., count(AND nodes)} refer to the AND nodes
-	 * in increasing ID order.
-	 * Actions 
-	 * {count(AND nodes) + 1, . . ., count(AND nodes) + count(edges to OR node)}
-	 * refer to the edges to OR nodes in increasing ID order.
-	 */
-	private void setupActionMaps() {
-		final List<Integer> andNodeIds = this.sim.getAndNodeIds();
-		for (int action = 1; action <= andNodeIds.size(); action++) {
-			// will be skipped if no AND nodes
-			this.actionToAndNodeIndex.put(action, andNodeIds.get(action - 1));
-		}
-		
-		final List<Integer> edgeToOrNodeIds = this.sim.getEdgeToOrNodeIds();
-		for (int action = andNodeIds.size() + 1;
-			action <= andNodeIds.size() + edgeToOrNodeIds.size();
-			action++
-		) {
-			// will be skipped if no edges to OR nodes
-			this.actionToEdgeToOrNodeIndex.put(
-				action, 
-				edgeToOrNodeIds.get(action - andNodeIds.size() - 1)
-			);
-		}
-	}
 
 	/**
 	 * Entry method, used to set up the Py4J server.
@@ -196,34 +167,6 @@ public final class DepgraphPy4JGreedyConfigBoth {
 		final GatewayServer gatewayServer = new GatewayServer(singleton);
 		gatewayServer.start();
 		System.out.println("Gateway Server Started");
-	}
-	
-	/**
-	 * Load the graph and simulation specification, and initialize
-	 * the attacker opponent and environment.
-	 * 
-	 * @param simSpecFolderName the folder the simulation spec
-	 * file should come from
-	 * @param graphFileName the file name of the graph file
-	 */
-	private void setupEnvironment(
-		final String simSpecFolderName,
-		final String graphFileName
-	) {
-		final String graphFolderName = "graphs";
-		final GameSimulationSpec simSpec =
-			JsonUtils.getSimSpecOrDefaults(simSpecFolderName);	
-		// Load graph
-		final String filePathName = graphFolderName + File.separator
-			+ graphFileName;
-		final DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
-		
-		final RandomDataGenerator rng = new RandomDataGenerator();
-		final int numTimeStep = simSpec.getNumTimeStep();
-		final double discFact = simSpec.getDiscFact();
-		
-		this.sim = new RLGameSimulationBoth(
-			depGraph, rng, numTimeStep, discFact);
 	}
 	
 	/**
@@ -324,6 +267,80 @@ public final class DepgraphPy4JGreedyConfigBoth {
 	}
 	
 	/**
+	 * @return the total discounted reward of the attacker
+	 * in this game instance.
+	 */
+	public double getOpponentTotalPayoff() {
+		return this.sim.getAttackerTotalPayoff();
+	}
+	
+	/**
+	 * Get a human-readable game state string.
+	 * @return the string representing the human-readable game state.
+	 */
+	public String render() {
+		return this.sim.getDefenderObservation().toString() + "\n\n"
+			+ this.sim.getAttackerObservation(new AttackerAction());
+	}
+	
+	/**
+	 * Load the graph and simulation specification, and initialize
+	 * the attacker opponent and environment.
+	 * 
+	 * @param simSpecFolderName the folder the simulation spec
+	 * file should come from
+	 * @param graphFileName the file name of the graph file
+	 */
+	private void setupEnvironment(
+		final String simSpecFolderName,
+		final String graphFileName
+	) {
+		final String graphFolderName = "graphs";
+		final GameSimulationSpec simSpec =
+			JsonUtils.getSimSpecOrDefaults(simSpecFolderName);	
+		// Load graph
+		final String filePathName = graphFolderName + File.separator
+			+ graphFileName;
+		final DependencyGraph depGraph = DGraphUtils.loadGraph(filePathName);
+		
+		final RandomDataGenerator rng = new RandomDataGenerator();
+		final int numTimeStep = simSpec.getNumTimeStep();
+		final double discFact = simSpec.getDiscFact();
+		
+		this.sim = new RLGameSimulationBoth(
+			depGraph, rng, numTimeStep, discFact);
+	}
+	
+	/**
+	 * Initialize the maps from action integers to the AND node ID
+	 * or edge to OR node ID to attack.
+	 * Actions {1, . . ., count(AND nodes)} refer to the AND nodes
+	 * in increasing ID order.
+	 * Actions 
+	 * {count(AND nodes) + 1, . . ., count(AND nodes) + count(edges to OR node)}
+	 * refer to the edges to OR nodes in increasing ID order.
+	 */
+	private void setupActionMaps() {
+		final List<Integer> andNodeIds = this.sim.getAndNodeIds();
+		for (int action = 1; action <= andNodeIds.size(); action++) {
+			// will be skipped if no AND nodes
+			this.actionToAndNodeIndex.put(action, andNodeIds.get(action - 1));
+		}
+		
+		final List<Integer> edgeToOrNodeIds = this.sim.getEdgeToOrNodeIds();
+		for (int action = andNodeIds.size() + 1;
+			action <= andNodeIds.size() + edgeToOrNodeIds.size();
+			action++
+		) {
+			// will be skipped if no edges to OR nodes
+			this.actionToEdgeToOrNodeIndex.put(
+				action, 
+				edgeToOrNodeIds.get(action - andNodeIds.size() - 1)
+			);
+		}
+	}
+	
+	/**
 	 * @param isGameOver whether the game has ended.
 	 * @return the observation of the defender.
 	 */
@@ -395,6 +412,109 @@ public final class DepgraphPy4JGreedyConfigBoth {
 		result.add(isDefTurnDouble);
 		return result;
 	}
+	
+	/**
+	 * Take a step based on the given action, represented as
+	 * an integer.
+	 * 
+	 * Return a flat list representing, in order:
+	 * the new defender observation state,
+	 * the reward of the step for player taking action (in R-),
+	 * whether the game is done (in {0, 1}).
+	 * 
+	 * Legal actions are (NODE_COUNT + 1) to pass, or any integer that
+	 * is a node ID in the graph but is NOT in this.nodesToDefend.
+	 * 
+	 * If the action is illegal, do not update the game state,
+	 * but consider the game as lost (i.e., minimal reward)
+	 * and thus done (i.e., 1).
+	 * 
+	 * If the move is (NODE_COUNT + 1), 
+	 * or if this.nodesToDefend is not empty and with 
+	 * probability this.probGreedySelectionCutOff,
+	 * the self agent (defender) and opponent (attacker)
+	 * move simultaneously, where the defender protects this.nodesToDefend
+	 * without adding any more items to it.
+	 * 
+	 * Otherwise, the agent's selected node ID is added to this.nodesToDefend
+	 * and control returns to the defender without the attack making a move,
+	 * the marginal reward is 0.0, and the time step does not advance.
+	 * 
+	 * @param action an Integer, the action to take.
+	 * The action should be the index of a node to add to
+	 * this.nodesToDefend, or (NODE_COUNT + 1) to indicate
+	 * no more nodes should be added.
+	 * @return the list representing the new game state,
+	 * including the defender observation, reward, and whether the game is over,
+	 * as one flat list.
+	 */
+	private List<Double> defenderStep(final Integer action) {
+		if (action == null) {
+			throw new IllegalArgumentException();
+		}
+		final List<Double> result = new ArrayList<Double>();
+		final int nodeCount = this.sim.getNodeCount();
+		if (action == (nodeCount + 1)
+			|| (!this.nodesToDefend.isEmpty()
+				&& RAND.nextDouble() < this.probGreedySelectionCutOff)
+			|| (this.nodesToDefend.contains(action))
+		) {
+			// no more selections allowed.
+			// either action was (nodeCount + 1) (pass),
+			// or there is some nodesToDefend selected already
+			// AND the random draw is below probGreedySelectionCutoff,
+			// or the action is already in nodesToDefend AND
+			// !LOSE_IF_REPEAT, so repeated selection counts as "pass".
+			if (!this.sim.isValidMove(this.nodesToDefend)) {
+				// illegal move. game is lost.
+				final List<Double> defObs = getDefObsAsListDouble();
+				// self player (defender) gets minimal reward for illegal move.
+				final double reward =
+					this.sim.getWorstDefenderRemainingReward();
+				// game is over.
+				final double isOver = 1.0;
+				result.addAll(defObs);
+				result.add(reward);
+				result.add(isOver);
+				return result;
+			}
+			
+			// move is valid.
+			this.isDefTurn = false;
+			final List<Double> defObs = getDefObsAsListDouble();
+			final double reward = 0.0;
+			final double isOver = 0.0;
+			result.addAll(defObs);
+			result.add(reward);
+			result.add(isOver);
+			return result;
+		}
+		
+		// selection is allowed; will try to add to nodesToDefend.
+		
+		if (!this.sim.isValidId(action)) {
+			// illegal move. game is lost.
+			final List<Double> defObs = getDefObsAsListDouble();
+			// self player (defender) gets minimal reward for illegal move.
+			final double reward = this.sim.getWorstDefenderRemainingReward();
+			// game is over.
+			final double isOver = 1.0;
+			result.addAll(defObs);
+			result.add(reward);
+			result.add(isOver);
+			return result;
+		}
+
+		// selection is valid and not a repeat. add to nodesToDefend.
+		this.nodesToDefend.add(action);
+		final List<Double> defObs = getDefObsAsListDouble();
+		final double reward = 0.0; // no marginal reward for adding nodes to set
+		final double isOver = 0.0; // game is not over.
+		result.addAll(defObs);
+		result.add(reward);
+		result.add(isOver);
+		return result;
+	}
 
 	/**
 	 * Take a step based on the given action, represented as
@@ -441,7 +561,7 @@ public final class DepgraphPy4JGreedyConfigBoth {
 	 * including the attacker observation, reward, and whether the game is over,
 	 * as one flat list.
 	 */
-	public List<Double> attackerStep(final Integer action) {
+	private List<Double> attackerStep(final Integer action) {
 		if (action == null) {
 			throw new IllegalArgumentException();
 		}		
@@ -536,125 +656,6 @@ public final class DepgraphPy4JGreedyConfigBoth {
 		result.add(reward);
 		result.add(isOver);
 		return result;
-	}
-
-	/**
-	 * Take a step based on the given action, represented as
-	 * an integer.
-	 * 
-	 * Return a flat list representing, in order:
-	 * the new defender observation state,
-	 * the reward of the step for player taking action (in R-),
-	 * whether the game is done (in {0, 1}).
-	 * 
-	 * Legal actions are (NODE_COUNT + 1) to pass, or any integer that
-	 * is a node ID in the graph but is NOT in this.nodesToDefend.
-	 * 
-	 * If the action is illegal, do not update the game state,
-	 * but consider the game as lost (i.e., minimal reward)
-	 * and thus done (i.e., 1).
-	 * 
-	 * If the move is (NODE_COUNT + 1), 
-	 * or if this.nodesToDefend is not empty and with 
-	 * probability this.probGreedySelectionCutOff,
-	 * the self agent (defender) and opponent (attacker)
-	 * move simultaneously, where the defender protects this.nodesToDefend
-	 * without adding any more items to it.
-	 * 
-	 * Otherwise, the agent's selected node ID is added to this.nodesToDefend
-	 * and control returns to the defender without the attack making a move,
-	 * the marginal reward is 0.0, and the time step does not advance.
-	 * 
-	 * @param action an Integer, the action to take.
-	 * The action should be the index of a node to add to
-	 * this.nodesToDefend, or (NODE_COUNT + 1) to indicate
-	 * no more nodes should be added.
-	 * @return the list representing the new game state,
-	 * including the defender observation, reward, and whether the game is over,
-	 * as one flat list.
-	 */
-	public List<Double> defenderStep(final Integer action) {
-		if (action == null) {
-			throw new IllegalArgumentException();
-		}
-		final List<Double> result = new ArrayList<Double>();
-		final int nodeCount = this.sim.getNodeCount();
-		if (action == (nodeCount + 1)
-			|| (!this.nodesToDefend.isEmpty()
-				&& RAND.nextDouble() < this.probGreedySelectionCutOff)
-			|| (this.nodesToDefend.contains(action))
-		) {
-			// no more selections allowed.
-			// either action was (nodeCount + 1) (pass),
-			// or there is some nodesToDefend selected already
-			// AND the random draw is below probGreedySelectionCutoff,
-			// or the action is already in nodesToDefend AND
-			// !LOSE_IF_REPEAT, so repeated selection counts as "pass".
-			if (!this.sim.isValidMove(this.nodesToDefend)) {
-				// illegal move. game is lost.
-				final List<Double> defObs = getDefObsAsListDouble();
-				// self player (defender) gets minimal reward for illegal move.
-				final double reward =
-					this.sim.getWorstDefenderRemainingReward();
-				// game is over.
-				final double isOver = 1.0;
-				result.addAll(defObs);
-				result.add(reward);
-				result.add(isOver);
-				return result;
-			}
-			
-			// move is valid.
-			this.isDefTurn = false;
-			final List<Double> defObs = getDefObsAsListDouble();
-			final double reward = 0.0;
-			final double isOver = 0.0;
-			result.addAll(defObs);
-			result.add(reward);
-			result.add(isOver);
-			return result;
-		}
-		
-		// selection is allowed; will try to add to nodesToDefend.
-		
-		if (!this.sim.isValidId(action)) {
-			// illegal move. game is lost.
-			final List<Double> defObs = getDefObsAsListDouble();
-			// self player (defender) gets minimal reward for illegal move.
-			final double reward = this.sim.getWorstDefenderRemainingReward();
-			// game is over.
-			final double isOver = 1.0;
-			result.addAll(defObs);
-			result.add(reward);
-			result.add(isOver);
-			return result;
-		}
-
-		// selection is valid and not a repeat. add to nodesToDefend.
-		this.nodesToDefend.add(action);
-		final List<Double> defObs = getDefObsAsListDouble();
-		final double reward = 0.0; // no marginal reward for adding nodes to set
-		final double isOver = 0.0; // game is not over.
-		result.addAll(defObs);
-		result.add(reward);
-		result.add(isOver);
-		return result;
-	}
-	
-	/**
-	 * @return the total discounted reward of the attacker
-	 * in this game instance.
-	 */
-	public double getOpponentTotalPayoff() {
-		return this.sim.getAttackerTotalPayoff();
-	}
-	
-	/**
-	 * Get a human-readable game state string.
-	 * @return the string representing the human-readable game state.
-	 */
-	public String render() {
-		return this.sim.getDefenderObservation().toString();
 	}
 	
 	/**
