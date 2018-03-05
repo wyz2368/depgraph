@@ -270,8 +270,16 @@ public final class DepgraphPy4JGreedyConfigBoth {
 	 * @return the total discounted reward of the attacker
 	 * in this game instance.
 	 */
-	public double getOpponentTotalPayoff() {
+	public double getAttackerTotalPayoff() {
 		return this.sim.getAttackerTotalPayoff();
+	}
+	
+	/**
+	 * @return the total discounted reward of the defender
+	 * in this game instance.
+	 */
+	public double getDefenderTotalPayoff() {
+		return this.sim.getDefenderTotalPayoff();
 	}
 	
 	/**
