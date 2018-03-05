@@ -109,14 +109,26 @@ class DepgraphJavaEnvBoth(gym.Env):
             return
         print(JAVA_GAME.render())
 
+    def get_defender_reward(self):
+        '''
+        Get the total discounted reward of the defender in the current game.
+        '''
+        return JAVA_GAME.getDefenderTotalPayoff()
+
     def get_attacker_reward(self):
         '''
         Get the total discounted reward of the attacker in the current game.
         '''
         return JAVA_GAME.getAttackerTotalPayoff()
 
-    def get_defender_reward(self):
+    def get_defender_action_count(self):
         '''
-        Get the total discounted reward of the defender in the current game.
+        Get the number of distinct defender actions.
         '''
-        return JAVA_GAME.getDefenderTotalPayoff()
+        return DEF_ACTION_COUNT
+
+    def get_attacker_action_count(self):
+        '''
+        Get the number of distinct attacker actions.
+        '''
+        return ATT_ACTION_COUNT
