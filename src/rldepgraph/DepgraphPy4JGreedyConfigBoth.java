@@ -250,23 +250,17 @@ public final class DepgraphPy4JGreedyConfigBoth {
 		List<Double> defObs = null;
 		List<Double> attObs = null;
 		if (this.isDefTurn) {
-			System.out.println("Defender's action input.");
 			defObs = defenderStep(actionInt);
 			attObs = getAttObsAsListDouble();
 		} else {
-			System.out.println("Attacker's action input.");
 			attObs = attackerStep(actionInt);
 			final boolean attPassed = this.isDefTurn;
 			if (attPassed && !this.sim.isGameOver()) {
 				// attacker and defender have passed. take step.
-				System.out.println(
-					"Attacker passed, but game isn't over. Will take step.");
 				return takeStep();
 			}
-			System.out.println("Either attacker didn't pass, or game is over");
 			defObs = getDefObsAsListDouble();
 		}
-		System.out.println("Not time to take a step yet.");
 		final List<Double> result = new ArrayList<Double>();
 		result.addAll(defObs);
 		result.addAll(attObs);
