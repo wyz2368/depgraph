@@ -291,8 +291,8 @@ public final class DepgraphPy4JGreedyConfigBoth {
 	 */
 	public String render() {
 		return this.sim.getDefenderObservation().toString() + "\n\n"
-			+ this.sim.getAttackerObservation(new AttackerAction()) + "\n\n"
-			+ "this.isDefTurn: " + this.isDefTurn;
+			+ this.sim.getAttackerObservation(new AttackerAction()).toString()
+			+ "\n\nthis.isDefTurn: " + this.isDefTurn;
 	}
 
 	/**

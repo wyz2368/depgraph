@@ -694,6 +694,9 @@ public final class RLGameSimulationBoth {
 	public RLAttackerRawObservation getAttackerObservation(
 		final AttackerAction attAction
 	) {
+		if (attAction == null) {
+			throw new IllegalArgumentException();
+		}
 		final List<Integer> attackedNodeIds = new ArrayList<Integer>();
 		attackedNodeIds.addAll(attAction.getAttackedAndNodeIds());
 		Collections.sort(attackedNodeIds);
@@ -750,7 +753,7 @@ public final class RLGameSimulationBoth {
 	 */
 	private List<List<Integer>> activeNodeIdsHistory() {
 		if (this.attackerObservations.isEmpty()) {
-			throw new IllegalStateException();
+			return new ArrayList<List<Integer>>();
 		}
 		return this.attackerObservations.
 			get(this.attackerObservations.size() - 1).
