@@ -194,12 +194,14 @@ public final class DepgraphPy4JGreedyConfigBoth {
 		this.isDefTurn = true;
 		
 		final List<Double> defObs = getDefObsAsListDouble();
-		final boolean isOver = false;
-		final List<Double> attObs = getAttackersTurnObservation(isOver);
+		final List<Double> attObs = getAttObsAsListDouble();
 
 		final List<Double> result = new ArrayList<Double>();
 		result.addAll(defObs);
 		result.addAll(attObs);
+		
+		final double isOverDouble = 1.0;
+		result.add(isOverDouble);
 		
 		final double isDefTurnDouble = 1.0;
 		result.add(isDefTurnDouble);
@@ -252,7 +254,7 @@ public final class DepgraphPy4JGreedyConfigBoth {
 		if (this.isDefTurn) {
 			defObs = defenderStep(actionInt);
 			isOver = defObs.get(defObs.size() - 1) >= half;
-			attObs = getAttackersTurnObservation(isOver);
+			attObs = getAttObsAsListDouble();
 		} else {
 			attObs = attackerStep(actionInt);
 			isOver = attObs.get(attObs.size() - 1) >= half;
@@ -278,6 +280,24 @@ public final class DepgraphPy4JGreedyConfigBoth {
 			isDefTurnDouble = 0.0;
 		}
 		result.add(isDefTurnDouble);
+		
+		final int expectedAttackerLength =
+			((this.actionToAndNodeIndex.keySet().size()
+				+ this.actionToEdgeToOrNodeIndex.keySet().size()) * 2)
+			+ (this.sim.getNodeCount()
+				* RLAttackerRawObservation.ATTACKER_OBS_LENGTH)
+			+ 1;
+		final int expectedDefenderLength = (2 + 2
+			* RLDefenderRawObservation.DEFENDER_OBS_LENGTH)
+			* this.sim.getNodeCount();
+		final int expectedLength = expectedAttackerLength
+			+ expectedDefenderLength + 2;
+		if (result.size() != expectedLength) {
+			throw new IllegalStateException(
+			"Length should be: " + expectedLength
+			+ ", but is: " + result.size() + ".\n" + result);
+		}
+				
 		return result;
 	}
 
@@ -364,24 +384,6 @@ public final class DepgraphPy4JGreedyConfigBoth {
 				edgeToOrNodeIds.get(action - andNodeIds.size() - 1)
 			);
 		}
-	}
-	
-	/**
-	 * @param isGameOver whether the game has ended.
-	 * @return the observation of the attacker.
-	 */
-	private List<Double> getAttackersTurnObservation(final boolean isGameOver) {
-		final List<Double> result = new ArrayList<Double>();
-		final List<Double> attObs = getAttObsAsListDouble();
-		final double reward = 0.0; // no marginal reward for adding nodes to set
-		double isOver = 0.0;
-		if (isGameOver) {
-			isOver = 1.0;
-		}
-		result.addAll(attObs);
-		result.add(reward);
-		result.add(isOver);
-		return result;
 	}
 	
 	/**
@@ -649,6 +651,16 @@ public final class DepgraphPy4JGreedyConfigBoth {
 				}
 			}
 		}
+		
+		final int expectedLength =
+			(2 + 2 * RLDefenderRawObservation.DEFENDER_OBS_LENGTH)
+			* this.sim.getNodeCount();
+		if (result.size() != expectedLength) {
+			throw new IllegalStateException(
+				"Length should be: " + expectedLength
+				+ ", but is: " + result.size() + ".\n" + result);
+		}
+		
 		return result;
 	}
 	

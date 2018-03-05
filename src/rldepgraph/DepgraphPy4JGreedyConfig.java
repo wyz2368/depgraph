@@ -434,7 +434,7 @@ public final class DepgraphPy4JGreedyConfig {
 	}
 	
 	/**
-	 * Observation list is of size (2 + OBS_LENGTH) * N,
+	 * Observation list is of size (2 + (2 * OBS_LENGTH)) * N,
 	 * where N is the number of nodes in the graph.
 	 * 
 	 * First N items are 1.0 if the node is
