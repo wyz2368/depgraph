@@ -59,8 +59,9 @@ class DepgraphJavaEnvBoth(gym.Env):
         result_values = JAVA_GAME.reset()
         global IS_DEF_TURN
         IS_DEF_TURN = True
-        # result_values is a Py4J JavaList -> should convert to Python list
-        return np.array([x for x in result_values])
+        def_obs = result_values[:DEF_OBS_SIZE]
+        def_obs = np.array([x for x in def_obs])
+        return def_obs
 
     def _step(self, action):
         # action is a numpy.int64, need to convert to Python int before using with Py4J

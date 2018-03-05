@@ -181,9 +181,7 @@ public final class DepgraphPy4JGreedyConfigBoth {
 	/**
 	 * Reset the game (clear all actions and reset time steps left).
 	 * 
-	 * @return the state of the game as a list of doubles, from
-	 * the defender's view (because defender selects first, although
-	 * both players act simultaneously).
+	 * @return the state of the game as a list of doubles.
 	 */
 	public List<Double> reset() {
 		// clear the game state.
@@ -195,7 +193,17 @@ public final class DepgraphPy4JGreedyConfigBoth {
 		this.attAction = null;
 		this.isDefTurn = true;
 		
-		return getDefObsAsListDouble();
+		final List<Double> defObs = getDefObsAsListDouble();
+		final boolean isOver = false;
+		final List<Double> attObs = getAttackersTurnObservation(isOver);
+
+		final List<Double> result = new ArrayList<Double>();
+		result.addAll(defObs);
+		result.addAll(attObs);
+		
+		final double isDefTurnDouble = 1.0;
+		result.add(isDefTurnDouble);
+		return result;
 	}
 	
 	/**
