@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 
@@ -320,9 +321,56 @@ public final class DepgraphPy4JGreedyConfigBoth {
 	 * then an indicator for whether it's the defender's turn.
 	 */
 	public String render() {
+		final RLAttackerRawObservation attObs =
+			this.sim.getAttackerObservation(new AttackerAction());
 		return this.sim.getDefenderObservation().toString() + "\n"
-			+ this.sim.getAttackerObservation(new AttackerAction()).toString()
-			+ "\nisDefTurn: " + this.isDefTurn;
+			+ attObs
+			+ "\nisDefTurn: " + this.isDefTurn + ", legalActions:\n"
+			+ legalActionsString(attObs);
+	}
+	
+	/**
+	 * @param rawAttObs the observation of the attacker agent.
+	 * @return a string indicating the indexes in the attacker's values
+	 * from {1, . . ., maxActionIndex} corresponding to legal actions.
+	 */
+	private String legalActionsString(
+		final RLAttackerRawObservation rawAttObs) {
+		final StringBuilder builder = new StringBuilder();
+		builder.append("legalAttackNodeIndexes=[");
+		final List<Integer> nodeIds = rawAttObs.getLegalToAttackNodeIds();
+		for (int i = 0; i < nodeIds.size(); i++) {
+			final int nodeId = nodeIds.get(i);
+			for (final Entry<Integer, Integer> entry
+				: this.actionToAndNodeIndex.entrySet()) {
+				if (entry.getValue() == nodeId) {
+					builder.append(entry.getKey());
+					break;
+				}
+			}
+			if (i < nodeIds.size() - 1) {
+				builder.append(',');
+			}
+		}
+		builder.append("],\n");
+		
+		builder.append("legalAttackEdgeIndexes=[");
+		final List<Integer> edgeIds = rawAttObs.getLegalToAttackEdgeIds();
+		for (int i = 0; i < edgeIds.size(); i++) {
+			final int edgeId = edgeIds.get(i);
+			for (final Entry<Integer, Integer> entry
+				: this.actionToEdgeToOrNodeIndex.entrySet()) {
+				if (entry.getValue() == edgeId) {
+					builder.append(entry.getKey());
+					break;
+				}
+			}
+			if (i < edgeIds.size() - 1) {
+				builder.append(',');
+			}
+		}
+		builder.append("]\n");
+		return builder.toString();
 	}
 
 	/**
@@ -748,10 +796,20 @@ public final class DepgraphPy4JGreedyConfigBoth {
 			throw new IllegalArgumentException();
 		}
 		if (isActionAndNode(action)) {
+			System.out.println("AND node action: " + action);
+			final int nodeId = this.actionToAndNodeIndex.get(action);
+			System.out.println(
+				"converted index: " + nodeId);
+			System.out.println(
+				"Is inactive: " + this.sim.isNodeInactive(nodeId));
+			System.out.println(
+				"Are parents active: "
+					+ this.sim.areAllParentsOfNodeActive(nodeId));
 			return this.sim.isAttackableAndNodeId(
 				this.actionToAndNodeIndex.get(action));
 		}
 		if (isActionEdgeToOrNode(action)) {
+			System.out.println("Edge to OR action: " + action);
 			return this.sim.isAttackableEdgeToOrNodeId(
 				this.actionToEdgeToOrNodeIndex.get(action));
 		}

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
 
@@ -245,13 +246,62 @@ public final class DepgraphPy4JAttGreedyConfig {
 	 */
 	public String render() {
 		if (this.attAction == null) {
-			return new RLAttackerRawObservation(
-				this.sim.getLegalToAttackNodeIds(),
-				this.sim.getAndNodeIds(),
-				this.sim.getNumTimeStep()).toString();
-		} else {
-			return this.sim.getAttackerObservation(this.attAction).toString();
+			final RLAttackerRawObservation attObs =
+				new RLAttackerRawObservation(
+					this.sim.getLegalToAttackNodeIds(),
+					this.sim.getAndNodeIds(),
+					this.sim.getNumTimeStep());
+			return attObs + ", legalActions:\n"
+			+ legalActionsString(attObs);
 		}
+		final RLAttackerRawObservation attObs =
+			this.sim.getAttackerObservation(this.attAction);
+		return attObs + ", legalActions:\n"
+			+ legalActionsString(attObs);
+	}
+	
+	/**
+	 * @param rawAttObs the observation of the attacker agent.
+	 * @return a string indicating the indexes in the attacker's values
+	 * from {1, . . ., maxActionIndex} corresponding to legal actions.
+	 */
+	private String legalActionsString(
+		final RLAttackerRawObservation rawAttObs) {
+		final StringBuilder builder = new StringBuilder();
+		builder.append("legalAttackNodeIndexes=[");
+		final List<Integer> nodeIds = rawAttObs.getLegalToAttackNodeIds();
+		for (int i = 0; i < nodeIds.size(); i++) {
+			final int nodeId = nodeIds.get(i);
+			for (final Entry<Integer, Integer> entry
+				: this.actionToAndNodeIndex.entrySet()) {
+				if (entry.getValue() == nodeId) {
+					builder.append(entry.getKey());
+					break;
+				}
+			}
+			if (i < nodeIds.size() - 1) {
+				builder.append(',');
+			}
+		}
+		builder.append("],\n");
+		
+		builder.append("legalAttackEdgeIndexes=[");
+		final List<Integer> edgeIds = rawAttObs.getLegalToAttackEdgeIds();
+		for (int i = 0; i < edgeIds.size(); i++) {
+			final int edgeId = edgeIds.get(i);
+			for (final Entry<Integer, Integer> entry
+				: this.actionToEdgeToOrNodeIndex.entrySet()) {
+				if (entry.getValue() == edgeId) {
+					builder.append(entry.getKey());
+					break;
+				}
+			}
+			if (i < edgeIds.size() - 1) {
+				builder.append(',');
+			}
+		}
+		builder.append("]\n");
+		return builder.toString();
 	}
 	
 	/**

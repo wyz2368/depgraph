@@ -570,12 +570,12 @@ public final class RLAttackerGameSimulation {
 	/**
 	 * @return get the list of nodeIds that it is legal to
 	 * attack, ascending. They must be nodeIds of AND nodes
-	 * whose parent nodes are all ACTIVE.
+	 * whose parent nodes are all ACTIVE and that are INACTIVE.
 	 */
 	public List<Integer> getLegalToAttackNodeIds() {
 		final List<Integer> result = new ArrayList<Integer>();
 		for (final int nodeId: this.andNodeIds) {
-			if (areAllParentsOfNodeActive(nodeId)) {
+			if (isAttackableAndNodeId(nodeId)) {
 				result.add(nodeId);
 			}
 		}
@@ -585,12 +585,12 @@ public final class RLAttackerGameSimulation {
 	/**
 	 * @return get the list of edgeIds that it is legal to
 	 * attack, ascending. They must be edgeIds of edges to OR nodes
-	 * whose source node is ACTIVE.
+	 * whose source node is ACTIVE and which are INACTIVE.
 	 */
 	public List<Integer> getLegalToAttackEdgeToOrNodeIds() {
 		final List<Integer> result = new ArrayList<Integer>();
 		for (final int edgeId: this.edgeToOrNodeIds) {
-			if (isParentOfEdgeActive(edgeId)) {
+			if (isAttackableEdgeToOrNodeId(edgeId)) {
 				result.add(edgeId);
 			}
 		}
