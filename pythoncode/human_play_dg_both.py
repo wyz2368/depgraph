@@ -19,8 +19,9 @@ def play_game():
     def_action_count = env.get_defender_action_count()
     att_action_count = env.get_attacker_action_count()
 
-    obs, done, is_def_turn = env.reset(), False, False
+    obs, done, is_def_turn = env.reset(), False, True
     while not done:
+        env.render()
         act_index = get_action(obs, is_def_turn, def_action_count, att_action_count)
         obs, done, _, is_def_turn = env.step(np.int32(act_index))
     def_reward = env.get_defender_reward()
@@ -40,13 +41,13 @@ def get_action(obs, is_def_turn, def_action_count, att_action_count):
         max_input = att_action_count - 1
         prompt_string = "Enter attacker action index in {0, . . ., " + str(max_input) + "}: "
     print(obs)
-    action = input(prompt_string).trim()
+    action = input(prompt_string).strip()
     if not action.isdigit():
         print("Invalid input: must be non-negative integer.")
         return get_action(obs, is_def_turn, def_action_count, att_action_count)
     action = int(float(action))
     if action < 0 or action > max_input:
-        print("Invalid input: must be in {0, . . ., " + str(max_input + "}."))
+        print("Invalid input: must be in {0, . . ., " + str(max_input) + "}.")
         return get_action(obs, is_def_turn, def_action_count, att_action_count)
     return action
 

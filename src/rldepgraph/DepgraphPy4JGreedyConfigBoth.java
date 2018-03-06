@@ -320,9 +320,9 @@ public final class DepgraphPy4JGreedyConfigBoth {
 	 * then an indicator for whether it's the defender's turn.
 	 */
 	public String render() {
-		return this.sim.getDefenderObservation().toString() + "\n\n"
+		return this.sim.getDefenderObservation().toString() + "\n"
 			+ this.sim.getAttackerObservation(new AttackerAction()).toString()
-			+ "\n\nthis.isDefTurn: " + this.isDefTurn;
+			+ "\nisDefTurn: " + this.isDefTurn;
 	}
 
 	/**

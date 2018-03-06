@@ -89,7 +89,6 @@ class DepgraphJavaEnvBoth(gym.Env):
 
         The last element represents whether it is the defender's turn, in {0.0, 1.0}.
         '''
-        print(len(a_list))
         game_size = DEF_OBS_SIZE + ATT_OBS_SIZE
 
         both_obs = a_list[:game_size]
