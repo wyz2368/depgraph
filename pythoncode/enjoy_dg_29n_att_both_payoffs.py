@@ -7,7 +7,7 @@ from baselines import deepq
 
 def get_mean_payoffs(num_episodes, model_name):
     '''
-        Load the network from file, and play games of the depdency
+        Load the network from file, and play games of the dependency
         graph game against opponent.
     '''
 

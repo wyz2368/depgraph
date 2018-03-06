@@ -139,7 +139,7 @@ public final class DepgraphPy4JGreedyConfigBoth {
 		System.out.println(
 			"Edge to OR node count: "
 			+ this.actionToEdgeToOrNodeIndex.keySet().size());
-		System.out.println("Pass action value: "
+		System.out.println("Pass action value for attacker: "
 			+ (this.actionToAndNodeIndex.keySet().size()
 			+ this.actionToEdgeToOrNodeIndex.keySet().size()
 			+ 1));
@@ -321,8 +321,15 @@ public final class DepgraphPy4JGreedyConfigBoth {
 	 * then an indicator for whether it's the defender's turn.
 	 */
 	public String render() {
-		final RLAttackerRawObservation attObs =
-			this.sim.getAttackerObservation(new AttackerAction());
+		RLAttackerRawObservation attObs = null;
+		if (this.attAction == null) {
+			attObs = new RLAttackerRawObservation(
+				this.sim.getLegalToAttackNodeIds(),
+				this.sim.getAndNodeIds(),
+				this.sim.getTimeStepsLeft());
+		} else {
+			attObs = this.sim.getAttackerObservation(this.attAction);
+		}
 		return this.sim.getDefenderObservation().toString() + "\n"
 			+ attObs
 			+ "\nisDefTurn: " + this.isDefTurn + ", legalActions:\n"
@@ -796,20 +803,10 @@ public final class DepgraphPy4JGreedyConfigBoth {
 			throw new IllegalArgumentException();
 		}
 		if (isActionAndNode(action)) {
-			System.out.println("AND node action: " + action);
-			final int nodeId = this.actionToAndNodeIndex.get(action);
-			System.out.println(
-				"converted index: " + nodeId);
-			System.out.println(
-				"Is inactive: " + this.sim.isNodeInactive(nodeId));
-			System.out.println(
-				"Are parents active: "
-					+ this.sim.areAllParentsOfNodeActive(nodeId));
 			return this.sim.isAttackableAndNodeId(
 				this.actionToAndNodeIndex.get(action));
 		}
 		if (isActionEdgeToOrNode(action)) {
-			System.out.println("Edge to OR action: " + action);
 			return this.sim.isAttackableEdgeToOrNodeId(
 				this.actionToEdgeToOrNodeIndex.get(action));
 		}
