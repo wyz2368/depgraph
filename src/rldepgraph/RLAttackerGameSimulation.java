@@ -690,6 +690,13 @@ public final class RLAttackerGameSimulation {
 	public int getNumTimeStep() {
 		return this.numTimeStep;
 	}
+	
+	/**
+	 * @return how many time steps remain in game.
+	 */
+	public int getTimeStepsLeft() {
+		return this.timeStepsLeft;
+	}
 
 	/**
 	 * Returns true if game is over (no more time steps left).

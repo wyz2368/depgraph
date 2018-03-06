@@ -742,7 +742,7 @@ public final class DepgraphPy4JAttGreedyConfig {
 			attObs = new RLAttackerRawObservation(
 				this.sim.getLegalToAttackNodeIds(),
 				this.sim.getAndNodeIds(),
-				this.sim.getNumTimeStep());
+				this.sim.getTimeStepsLeft());
 		} else {
 			attObs = this.sim.getAttackerObservation(this.attAction);
 		}

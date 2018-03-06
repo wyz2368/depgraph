@@ -707,6 +707,13 @@ public final class RLGameSimulationBoth {
 		}
 		return result;
 	}
+
+	/**
+	 * @return how many time steps remain in game.
+	 */
+	public int getTimeStepsLeft() {
+		return this.timeStepsLeft;
+	}
 	
 	/**
 	 * @param attAction the attacker's current action.
