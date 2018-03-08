@@ -9,7 +9,7 @@ import sys
 import subprocess
 import numpy as np
 import gym
-
+import time
 from baselines import deepq
 
 def get_payoffs_both(env_name_both, num_sims, def_model_name, att_model_name, graph_name):
@@ -20,14 +20,17 @@ def get_payoffs_both(env_name_both, num_sims, def_model_name, att_model_name, gr
     # see also:
     # https://stackoverflow.com/questions/4789837/
     #     how-to-terminate-a-python-subprocess-launched-with-shell-true
-    cmd = "exec java -jar ../depgraphpy4jboth/depgraphpy4jconfigboth.jar simspecs/ " \
+    cmd = "exec java -jar ../depgraphpy4jboth/depgraphpy4jconfigboth.jar simspecs/ "\
         + graph_name
     my_process = subprocess.Popen(cmd, shell=True)
+    sleep_sec = 5
+    # wait for Java server to start
+    time.sleep(sleep_sec)
 
     env = gym.make(env_name_both)
 
-    defender = deepq.load(def_model_name)
-    attacker = deepq.load(att_model_name)
+    defender, def_graph, def_sess = deepq.load_for_multiple_nets(def_model_name)
+    attacker, att_graph, att_sess = deepq.load_for_multiple_nets(att_model_name)
 
     def_rewards = []
     att_rewards = []
@@ -35,9 +38,12 @@ def get_payoffs_both(env_name_both, num_sims, def_model_name, att_model_name, gr
         obs, done, is_def_turn = env.reset(), False, True
         while not done:
             cur_agent = defender
+            cur_sess = def_sess
             if not is_def_turn:
-                cur_agent = attacker
-            obs, done, _, is_def_turn = env.step(cur_agent(obs)[0])
+                cur_agent = attacker    
+                cur_sess = att_sess
+            with cur_sess.as_default():
+                obs, done, _, is_def_turn = env.step(cur_agent(obs)[0])
         def_rewards.append(env.get_defender_reward())
         att_rewards.append(env.get_attacker_reward())
     mean_def_reward = np.mean(def_rewards)

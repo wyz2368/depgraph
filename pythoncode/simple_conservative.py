@@ -20,21 +20,40 @@ class ActWrapper(object):
         self._act_params = act_params
 
     @staticmethod
+    def load_for_multiple_nets(path):
+        with open(path, "rb") as f:
+            model_data, act_params = cloudpickle.load(f)
+        cur_graph = tf.Graph()
+        with cur_graph.as_default():
+            act = deepq.build_act(**act_params)
+            sess = tf.Session(graph=cur_graph)
+            sess.__enter__()
+            with tempfile.TemporaryDirectory() as td:
+                arc_path = os.path.join(td, "packed.zip")
+                with open(arc_path, "wb") as f:
+                    f.write(model_data)
+
+                zipfile.ZipFile(arc_path, 'r', zipfile.ZIP_DEFLATED).extractall(td)
+                U.load_state(os.path.join(td, "model"))
+            return ActWrapper(act, act_params), cur_graph, sess
+
+    @staticmethod
     def load(path):
         with open(path, "rb") as f:
             model_data, act_params = cloudpickle.load(f)
-        act = deepq.build_act(**act_params)
-        sess = tf.Session()
-        sess.__enter__()
-        with tempfile.TemporaryDirectory() as td:
-            arc_path = os.path.join(td, "packed.zip")
-            with open(arc_path, "wb") as f:
-                f.write(model_data)
+        cur_graph = tf.Graph()
+        with cur_graph.as_default():
+            act = deepq.build_act(**act_params)
+            sess = tf.Session(graph=cur_graph)
+            sess.__enter__()
+            with tempfile.TemporaryDirectory() as td:
+                arc_path = os.path.join(td, "packed.zip")
+                with open(arc_path, "wb") as f:
+                    f.write(model_data)
 
-            zipfile.ZipFile(arc_path, 'r', zipfile.ZIP_DEFLATED).extractall(td)
-            U.load_state(os.path.join(td, "model"))
-
-        return ActWrapper(act, act_params)
+                zipfile.ZipFile(arc_path, 'r', zipfile.ZIP_DEFLATED).extractall(td)
+                U.load_state(os.path.join(td, "model"))
+            return ActWrapper(act, act_params)
 
     def __call__(self, *args, **kwargs):
         return self._act(*args, **kwargs)
@@ -58,6 +77,8 @@ class ActWrapper(object):
         with open(path, "wb") as f:
             cloudpickle.dump((model_data, self._act_params), f)
 
+def load_for_multiple_nets(path):
+    return ActWrapper.load_for_multiple_nets(path)
 
 def load(path):
     """Load act function that was returned by learn function.
