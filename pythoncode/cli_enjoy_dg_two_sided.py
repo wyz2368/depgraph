@@ -20,7 +20,8 @@ def get_payoffs_both(env_name_both, num_sims, def_model_name, att_model_name, gr
     # see also:
     # https://stackoverflow.com/questions/4789837/
     #     how-to-terminate-a-python-subprocess-launched-with-shell-true
-    cmd = "exec java -jar dg4jbothcli.jar simspecs/ " + graph_name
+    cmd = "exec java -jar ../depgraphpy4jconfig/depgraphpy4jconfig.jar simspecs/ " \
+        + graph_name
     my_process = subprocess.Popen(cmd, shell=True)
 
     env = gym.make(env_name_both)
@@ -45,6 +46,8 @@ def get_payoffs_both(env_name_both, num_sims, def_model_name, att_model_name, gr
     my_process.kill()
     return (mean_def_reward, mean_att_reward)
 
+# DepgraphJavaEnvBoth-v0 100 dg_rand_30n_noAnd_B_eq_2.pkl dg_dqmlp_rand30NoAnd_B_att_fixed.pkl
+# RandomGraph30N100E6T1_B.json
 if __name__ == '__main__':
     if len(sys.argv) != 6:
         raise ValueError("Need 5 args: env_name_both, num_sims, def_model_name, " + \
