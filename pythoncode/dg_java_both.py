@@ -133,3 +133,8 @@ class DepgraphJavaEnvBoth(gym.Env):
         Get the number of distinct attacker actions.
         '''
         return ATT_ACTION_COUNT
+
+    def close_gateway(self):
+        GATEWAY.close()
+        GATEWAY.close_callback_server()
+        GATEWAY.shutdown()

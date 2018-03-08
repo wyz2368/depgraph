@@ -46,11 +46,19 @@ def get_payoffs_both(env_name_both, num_sims, def_model_name, att_model_name, gr
                 obs, done, _, is_def_turn = env.step(cur_agent(obs)[0])
         def_rewards.append(env.get_defender_reward())
         att_rewards.append(env.get_attacker_reward())
+
     mean_def_reward = np.mean(def_rewards)
     mean_att_reward = np.mean(att_rewards)
+    result = (mean_def_reward, mean_att_reward)
+    print(result)
 
+    env.close_gateway()
+
+    # wait before stopping Java server
+    time.sleep(sleep_sec)    
+    
     my_process.kill()
-    return (mean_def_reward, mean_att_reward)
+    return result
 
 # DepgraphJavaEnvBoth-v0 100 dg_rand_30n_noAnd_B_eq_2.pkl dg_dqmlp_rand30NoAnd_B_att_fixed.pkl
 # RandomGraph30N100E6T1_B.json
