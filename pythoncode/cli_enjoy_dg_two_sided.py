@@ -17,12 +17,10 @@ def get_payoffs_both(env_name_both, num_sims, def_model_name, att_model_name, gr
     Get the mean payoff for defender and attacker, when the given network strategies play
     against each other in the given environment.
     '''
-    # TODO:
-    # version of depgraphpy4jconfigboth.jar that assumes 'simspecs/' is the sim spec file.
     # see also:
     # https://stackoverflow.com/questions/4789837/
     #     how-to-terminate-a-python-subprocess-launched-with-shell-true
-    cmd = "exec java -jar dg4jbothcli.jar " + graph_name
+    cmd = "exec java -jar dg4jbothcli.jar simspecs/ " + graph_name
     my_process = subprocess.Popen(cmd, shell=True)
 
     env = gym.make(env_name_both)
