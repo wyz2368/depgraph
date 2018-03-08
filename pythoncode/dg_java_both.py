@@ -52,6 +52,7 @@ class DepgraphJavaEnvBoth(gym.Env):
         IS_DEF_TURN = True
         def_obs = result_values[:DEF_OBS_SIZE]
         def_obs = np.array([x for x in def_obs])
+        def_obs = def_obs.reshape(1, def_obs.size)
         return def_obs
 
     def _step(self, action):
@@ -72,6 +73,7 @@ class DepgraphJavaEnvBoth(gym.Env):
         if not IS_DEF_TURN:
             cur_obs = att_obs
         cur_obs = np.array([x for x in cur_obs])
+        cur_obs = cur_obs.reshape(1, cur_obs.size)
         return cur_obs, is_done, state_dict, IS_DEF_TURN
 
     @staticmethod
