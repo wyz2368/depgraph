@@ -40,8 +40,8 @@ def get_payoffs_att_net(env_name_att_net, num_sims, def_model_name, att_model_na
             with att_sess.as_default():
                 obs = obs.reshape(1, obs.size)
                 obs, _, done, _ = env.step(attacker(obs)[0])
-        def_rewards.append(env.get_defender_reward())
-        att_rewards.append(env.get_attacker_reward())
+        def_rewards.append(env.get_opponent_reward())
+        att_rewards.append(env.get_self_reward())
     mean_def_reward = np.mean(def_rewards)
     mean_att_reward = np.mean(att_rewards)
     result = (mean_def_reward, mean_att_reward)
