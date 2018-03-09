@@ -424,6 +424,14 @@ public final class DepgraphPy4JGreedyConfig {
 	public double getOpponentTotalPayoff() {
 		return this.sim.getAttackerTotalPayoff();
 	}
+
+	/**
+	 * @return the total discounted reward of the defender
+	 * in this game instance.
+	 */
+	public double getSelfTotalPayoff() {
+		return this.sim.getDefenderTotalPayoff();
+	}
 	
 	/**
 	 * Get a human-readable game state string.
