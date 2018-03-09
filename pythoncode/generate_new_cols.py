@@ -25,6 +25,11 @@ def get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
     result = {}
     result[new_defender_model] = {}
     result[new_attacker_model] = {}
+    result["env_name_def_net"] = env_name_def_net
+    result["env_name_att_net"] = env_name_att_net
+    result["env_name_both"] = env_name_both
+    result["num_sims"] = num_sims
+    result["graph_name"] = graph_name
     start_time = time.time()
 
     # run new_defender_model against all att_heuristics
