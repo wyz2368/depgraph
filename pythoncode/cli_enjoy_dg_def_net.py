@@ -18,10 +18,6 @@ def get_payoffs_def_net(env_name_def_net, num_sims, def_model_name, att_model_na
     Get the mean payoff for defender and attacker, when the given defender network strategy
     plays against the given attacker heuristic, in the given environment.
     '''
-    # TODO:
-    # version of depgraphpy4jconfig.jar that assumes 'simspecs/' is the sim spec file,
-    # and takes the name of the opponent pure strategy instead of a mixed strategy file
-    # name.
     # see also:
     # https://stackoverflow.com/questions/4789837/
     #     how-to-terminate-a-python-subprocess-launched-with-shell-true
