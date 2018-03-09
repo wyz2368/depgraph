@@ -112,7 +112,7 @@ public final class DepgraphPy4JGreedyConfigCLI {
 
 	/**
 	 * Entry method, used to set up the Py4J server.
-	 * @param args has two args: simSpecFolder and attackMixedStratFile
+	 * @param args has two args: attackerStratName and graphFileName
 	 */
 	public static void main(final String[] args) {
 		final int argsCount = 2;
