@@ -53,6 +53,7 @@ def get_payoffs_att_net(env_name_att_net, num_sims, def_model_name, att_model_na
     time.sleep(sleep_sec)
 
     my_process.kill()
+    return result
 
 if __name__ == '__main__':
     if len(sys.argv) != 6:
