@@ -55,11 +55,6 @@ def get_payoffs_def_net(env_name_def_net, num_sims, def_model_name, att_model_na
     my_process.kill()
     return result
 
-'''
-python3 cli_enjoy_dg_def_net.py DepgraphJava-v0 5 dg_rand_30n_noAnd_B_eq_2.pkl \
-    VALUE_PROPAGATION:maxNumSelectCandidate_10.0_minNumSelectCandidate_2.0_numSelectCandidateRatio_0.5_qrParam_3.0_stdev_0.0 \
-    RandomGraph30N100E6T1_B.json
-'''
 if __name__ == '__main__':
     if len(sys.argv) != 6:
         raise ValueError( \
