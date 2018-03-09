@@ -53,6 +53,11 @@ def get_payoffs_att_net(env_name_att_net, num_sims, def_model_name, att_model_na
 
     my_process.kill()
 
+'''
+python3 cli_enjoy_dg_att_net.py DepgraphJavaAtt-v0 5 dg_dqmlp_rand30NoAnd_B_att_fixed.pkl \
+    vsVALUE_PROPAGATION:maxNumRes_10.0_minNumRes_2.0_numResRatio_0.5_logisParam_3.0_maxNumAttCandidate_10.0_minNumAttCandidate_2.0_numAttCandidateRatio_0.5_qrParam_1.0_bThres_0.01_numAttCandStdev_0.0_isTopo_0.0 \
+    RandomGraph30N100E6T1_B.json
+'''
 if __name__ == '__main__':
     if len(sys.argv) != 6:
         raise ValueError( \
