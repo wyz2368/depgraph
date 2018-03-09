@@ -7,9 +7,9 @@ Requirements:
 '''
 import sys
 import subprocess
+import time
 import numpy as np
 import gym
-import time
 from baselines import deepq
 
 def get_payoffs_both(env_name_both, num_sims, def_model_name, att_model_name, graph_name):
@@ -29,8 +29,8 @@ def get_payoffs_both(env_name_both, num_sims, def_model_name, att_model_name, gr
 
     env = gym.make(env_name_both)
 
-    defender, def_graph, def_sess = deepq.load_for_multiple_nets(def_model_name)
-    attacker, att_graph, att_sess = deepq.load_for_multiple_nets(att_model_name)
+    defender, _, def_sess = deepq.load_for_multiple_nets(def_model_name)
+    attacker, _, att_sess = deepq.load_for_multiple_nets(att_model_name)
 
     def_rewards = []
     att_rewards = []
@@ -40,7 +40,7 @@ def get_payoffs_both(env_name_both, num_sims, def_model_name, att_model_name, gr
             cur_agent = defender
             cur_sess = def_sess
             if not is_def_turn:
-                cur_agent = attacker    
+                cur_agent = attacker
                 cur_sess = att_sess
             with cur_sess.as_default():
                 obs, done, _, is_def_turn = env.step(cur_agent(obs)[0])
@@ -55,8 +55,8 @@ def get_payoffs_both(env_name_both, num_sims, def_model_name, att_model_name, gr
     env.close_gateway()
 
     # wait before stopping Java server
-    time.sleep(sleep_sec)    
-    
+    time.sleep(sleep_sec)
+
     my_process.kill()
     return result
 
