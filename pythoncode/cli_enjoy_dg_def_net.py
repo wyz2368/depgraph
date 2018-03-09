@@ -21,7 +21,7 @@ def get_payoffs_def_net(env_name_def_net, num_sims, def_model_name, att_model_na
     # see also:
     # https://stackoverflow.com/questions/4789837/
     #     how-to-terminate-a-python-subprocess-launched-with-shell-true
-    cmd = "exec java -jar dg4jdefcli.jar " + att_model_name + " " + graph_name
+    cmd = "exec java -jar dg4jdefcli/dg4jdefcli.jar " + att_model_name + " " + graph_name
     my_process = subprocess.Popen(cmd, shell=True)
     sleep_sec = 5
     # wait for Java server to start
@@ -37,6 +37,7 @@ def get_payoffs_def_net(env_name_def_net, num_sims, def_model_name, att_model_na
         obs, done = env.reset(), False
         while not done:
             with def_sess.as_default():
+                obs = obs.reshape(1, obs.size)
                 obs, _, done, _ = env.step(defender(obs)[0])
         def_rewards.append(env.get_defender_reward())
         att_rewards.append(env.get_attacker_reward())
