@@ -14,7 +14,7 @@ from cli_enjoy_dg_two_sided import get_payoffs_both
 from cli_enjoy_dg_def_net import get_payoffs_def_net
 from cli_enjoy_dg_att_net import get_payoffs_att_net
 
-def get_result_json(env_name_def_net, env_name_att_net, env_name_both, \
+def get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
     num_sims, new_defender_model, new_attacker_model, def_heuristics, \
     att_heuristics, def_networks, att_networks, graph_name):
     '''
@@ -23,6 +23,8 @@ def get_result_json(env_name_def_net, env_name_att_net, env_name_both, \
     payoff for every resulting pair of strategies.
     '''
     result = {}
+    result[new_defender_model] = {}
+    result[new_attacker_model] = {}
     start_time = time.time()
 
     # run new_defender_model against all att_heuristics
@@ -30,9 +32,8 @@ def get_result_json(env_name_def_net, env_name_att_net, env_name_both, \
     for att_heuristic in att_heuristics:
         mean_rewards_tuple = get_payoffs_def_net( \
             env_name_def_net, num_sims, new_defender_model, att_heuristic, graph_name)
-        cur_input_tuple = (new_defender_model, att_heuristic)
-        result[cur_input_tuple] = mean_rewards_tuple
-        print(str(cur_input_tuple) + "\n" + str(mean_rewards_tuple))
+        print(str((new_defender_model, att_heuristic)) + "\n" + str(mean_rewards_tuple))
+        result[new_defender_model][att_heuristic] = list(mean_rewards_tuple)
     if att_heuristics:
         duration_att_heuristics = time.time() - start_time_att_heuristics
         time_per_att_heuristic = duration_att_heuristics * 1.0 / len(att_heuristics)
@@ -43,9 +44,8 @@ def get_result_json(env_name_def_net, env_name_att_net, env_name_both, \
     for att_network in att_networks:
         mean_rewards_tuple = get_payoffs_both( \
             env_name_both, num_sims, new_defender_model, att_network, graph_name)
-        cur_input_tuple = (new_defender_model, att_network)
-        result[cur_input_tuple] = mean_rewards_tuple
-        print(str(cur_input_tuple) + "\n" + str(mean_rewards_tuple))
+        print(str((new_defender_model, att_network)) + "\n" + str(mean_rewards_tuple))
+        result[new_defender_model][att_network] = list(mean_rewards_tuple)
     if att_networks:
         duration_att_nets = time.time() - start_time_att_nets
         time_per_att_net = duration_att_nets * 1.0 / len(att_networks)
@@ -56,9 +56,8 @@ def get_result_json(env_name_def_net, env_name_att_net, env_name_both, \
     for def_heuristic in def_heuristics:
         mean_rewards_tuple = get_payoffs_att_net( \
             env_name_att_net, num_sims, def_heuristic, new_attacker_model, graph_name)
-        cur_input_tuple = (def_heuristic, new_attacker_model)
-        result[cur_input_tuple] = mean_rewards_tuple
-        print(str(cur_input_tuple) + "\n" + str(mean_rewards_tuple))
+        print(str((def_heuristic, new_attacker_model)) + "\n" + str(mean_rewards_tuple))
+        result[new_attacker_model][def_heuristic] = list(mean_rewards_tuple)
     if def_heuristics:
         duration_def_heuristics = time.time() - start_time_def_heuristics
         time_per_def_heuristic = duration_def_heuristics * 1.0 / len(def_heuristics)
@@ -69,18 +68,16 @@ def get_result_json(env_name_def_net, env_name_att_net, env_name_both, \
     for def_network in def_networks:
         mean_rewards_tuple = get_payoffs_both( \
             env_name_both, num_sims, def_network, new_attacker_model, graph_name)
-        cur_input_tuple = (def_network, new_attacker_model)
-        result[cur_input_tuple] = mean_rewards_tuple
-        print(str(cur_input_tuple) + "\n" + str(mean_rewards_tuple))
+        print(str((def_network, new_attacker_model)) + "\n" + str(mean_rewards_tuple))
+        result[new_attacker_model][def_network] = list(mean_rewards_tuple)
     duration_both_nets = time.time() - start_time_both_nets
     print("Seconds playing both new networks: " + str(duration_both_nets))
 
     # run new_defender_model against new_attacker_model
     mean_rewards_tuple = get_payoffs_both( \
         env_name_both, num_sims, new_defender_model, new_attacker_model, graph_name)
-    cur_input_tuple = (new_defender_model, new_attacker_model)
-    result[cur_input_tuple] = mean_rewards_tuple
-    print(str(cur_input_tuple) + "\n" + str(mean_rewards_tuple))
+    print(str((new_defender_model, new_attacker_model)) + "\n" + str(mean_rewards_tuple))
+    result[new_defender_model][new_attacker_model] = list(mean_rewards_tuple)
     duration = time.time() - start_time
     print("Minutes taken: " + str(duration // 60))
     return result
@@ -98,10 +95,10 @@ def main(env_name_def_net, env_name_att_net, env_name_both, \
     att_heuristics = get_lines(attacker_heuristics)
     def_networks = get_lines(defender_networks)
     att_networks = get_lines(attacker_networks)
-    result_json = get_result_json(env_name_def_net, env_name_att_net, env_name_both, \
+    result_dict = get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
         num_sims, new_defender, new_attacker, \
         def_heuristics, att_heuristics, def_networks, att_networks, graph_name)
-    print_json(out_file_name, result_json)
+    print_json(out_file_name, result_dict)
 
 def print_json(file_name, json_obj):
     '''
