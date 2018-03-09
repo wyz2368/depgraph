@@ -36,7 +36,7 @@ def get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
         result[new_defender_model][att_heuristic] = list(mean_rewards_tuple)
     if att_heuristics:
         duration_att_heuristics = time.time() - start_time_att_heuristics
-        time_per_att_heuristic = duration_att_heuristics * 1.0 / len(att_heuristics)
+        time_per_att_heuristic = int(duration_att_heuristics * 1.0 / len(att_heuristics))
         print("Seconds per attacker heuristic: " + str(time_per_att_heuristic))
 
     # run new_defender_model against all att_networks
@@ -48,7 +48,7 @@ def get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
         result[new_defender_model][att_network] = list(mean_rewards_tuple)
     if att_networks:
         duration_att_nets = time.time() - start_time_att_nets
-        time_per_att_net = duration_att_nets * 1.0 / len(att_networks)
+        time_per_att_net = int(duration_att_nets * 1.0 / len(att_networks))
         print("Seconds per attacker network: " + str(time_per_att_net))
 
     # run new_attacker_model against all def_heuristics
@@ -60,7 +60,7 @@ def get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
         result[new_attacker_model][def_heuristic] = list(mean_rewards_tuple)
     if def_heuristics:
         duration_def_heuristics = time.time() - start_time_def_heuristics
-        time_per_def_heuristic = duration_def_heuristics * 1.0 / len(def_heuristics)
+        time_per_def_heuristic = int(duration_def_heuristics * 1.0 / len(def_heuristics))
         print("Seconds per defender heuristic: " + str(time_per_def_heuristic))
 
     # run new_attacker_model against all def_networks
@@ -70,7 +70,7 @@ def get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
             env_name_both, num_sims, def_network, new_attacker_model, graph_name)
         print(str((def_network, new_attacker_model)) + "\n" + str(mean_rewards_tuple))
         result[new_attacker_model][def_network] = list(mean_rewards_tuple)
-    duration_both_nets = time.time() - start_time_both_nets
+    duration_both_nets = int(time.time() - start_time_both_nets)
     print("Seconds playing both new networks: " + str(duration_both_nets))
 
     # run new_defender_model against new_attacker_model
