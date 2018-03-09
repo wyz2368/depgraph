@@ -6,6 +6,7 @@ Requirements:
 '''
 import sys
 import subprocess
+import time
 import numpy as np
 import gym
 
@@ -26,24 +27,36 @@ def get_payoffs_def_net(env_name_def_net, num_sims, def_model_name, att_model_na
     #     how-to-terminate-a-python-subprocess-launched-with-shell-true
     cmd = "exec java -jar dg4jdefcli.jar " + att_model_name + " " + graph_name
     my_process = subprocess.Popen(cmd, shell=True)
+    sleep_sec = 5
+    # wait for Java server to start
+    time.sleep(sleep_sec)
 
     env = gym.make(env_name_def_net)
 
-    defender = deepq.load(def_model_name)
+    defender, _, def_sess = deepq.load_for_multiple_nets(def_model_name)
 
     def_rewards = []
     att_rewards = []
     for _ in range(num_sims):
         obs, done = env.reset(), False
         while not done:
-            obs, _, done, _ = env.step(defender(obs)[0])
+            with def_sess.as_default():
+                obs, _, done, _ = env.step(defender(obs)[0])
         def_rewards.append(env.get_defender_reward())
         att_rewards.append(env.get_attacker_reward())
+
     mean_def_reward = np.mean(def_rewards)
     mean_att_reward = np.mean(att_rewards)
+    result = (mean_def_reward, mean_att_reward)
+    print(result)
+
+    env.close_gateway()
+
+    # wait before stopping Java server
+    time.sleep(sleep_sec)
 
     my_process.kill()
-    return (mean_def_reward, mean_att_reward)
+    return result
 
 if __name__ == '__main__':
     if len(sys.argv) != 6:
