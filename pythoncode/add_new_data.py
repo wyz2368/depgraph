@@ -186,11 +186,14 @@ def augment_game_data(game_data, new_data):
     next_symmetry_group_id = get_max_symmetry_group_id(game_data) + 1
     for result_to_add in get_results_to_add(new_data, def_strat_name, att_strat_name):
         (def_strat, att_strat, def_payoff, att_payoff) = result_to_add
+        if def_strat == "NOOP:" or att_strat == "NOOP:":
+            pass
         add_profile(game_data, def_strat, att_strat, def_payoff, att_payoff, \
                     next_profile_id, next_symmetry_group_id)
         next_profile_id += 1
         next_symmetry_group_id += 2
 
+# python add_new_data.py game_3014.json out_newPayoffData_1.json game_3014_1.json
 def main(game_file, new_payoffs_file, result_file):
     '''
     Load the pre-existing game payoff data, then load the new payoff entries and
