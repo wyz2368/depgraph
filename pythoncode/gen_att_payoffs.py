@@ -52,6 +52,24 @@ def is_network_strat(strategy_name):
     '''
     return "pkl" in strategy_name
 
+def get_total_variance(strat_counts, strat_means, strat_variances, overall_mean):
+    '''
+    Var(Y) = E(Var(Y|X)) + Var(E(Y|X)).
+    Var(Y) = sum_x Pr(x) Var(Y|X) + sum_x Pr(x) [ E(Y|X) - E(Y) ]^2.
+    '''
+    num_sims = sum(strat_counts)
+    result = 0.0
+    for i in range(len(strat_counts)):
+        pr_x = strat_counts[i] * 1.0 / num_sims
+        var_y_given_x = strat_variances[i]
+        result += pr_x * var_y_given_x
+
+        e_y_given_x = strat_means[i]
+        e_y = overall_mean
+        squared_diff = (e_y_given_x - e_y) ** 2
+        result += pr_x * squared_diff
+    return result
+
 def get_best_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
     num_sims, defender_mixed_strat, att_heuristics, att_networks, graph_name):
     '''
@@ -67,8 +85,11 @@ def get_best_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
     for att_heuristic in att_heuristics:
         def_strats_dict = sample_def_strats(defender_mixed_strat, num_sims)
         total_rewards = 0.0
-        variance_rewards = 0.0
+        strat_counts = []
+        strat_means = []
+        strat_variances = []
         for def_strat, count in def_strats_dict.items():
+            strat_counts.append(count)
             mean_rewards_tuple = None
             if is_network_strat(def_strat):
                 # run attacker heuristic vs. defender network, for count runs
@@ -80,9 +101,11 @@ def get_best_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
                     count, def_strat, att_heuristic, graph_name)
             _, att_mean, _, att_sd = mean_rewards_tuple
             total_rewards += count * att_mean
-            variance_rewards += count * (att_sd ** 2)
+            strat_means.append(att_mean)
+            strat_variances.append(att_sd ** 2)
         mean_reward = total_rewards * 1.0 / num_sims
-        variance_reward = variance_rewards * 1.0 / num_sims
+        variance_reward = get_total_variance(strat_counts, strat_means, strat_variances, \
+            mean_reward)
         std_reward = math.sqrt(variance_reward)
         se_mean = std_reward / math.sqrt(num_sims)
         temp_results[att_heuristic] = [mean_reward, std_reward, se_mean]
@@ -90,8 +113,11 @@ def get_best_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
     for att_network in att_networks:
         def_strats_dict = sample_def_strats(defender_mixed_strat, num_sims)
         total_rewards = 0.0
-        variance_rewards = 0.0
+        strat_counts = []
+        strat_means = []
+        strat_variances = []
         for def_strat, count in def_strats_dict.items():
+            strat_counts.append(count)
             mean_rewards_tuple = None
             if is_network_strat(def_strat):
                 # run defender network against attacker network, for count runs
@@ -103,9 +129,11 @@ def get_best_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
                     env_name_att_net, count, def_strat, att_network, graph_name)
             _, att_mean, _, att_sd = mean_rewards_tuple
             total_rewards += count * att_mean
-            variance_rewards += count * (att_sd ** 2)
+            strat_means.append(att_mean)
+            strat_variances.append(att_sd ** 2)
         mean_reward = total_rewards * 1.0 / num_sims
-        variance_reward = variance_rewards * 1.0 / num_sims
+        variance_reward = get_total_variance(strat_counts, strat_means, strat_variances, \
+            mean_reward)
         std_reward = math.sqrt(variance_reward)
         se_mean = std_reward / math.sqrt(num_sims)
         temp_results[att_network] = [mean_reward, std_reward, se_mean]
@@ -139,7 +167,7 @@ def get_mixed_strat(defender_mixed_strat):
     for line in lines:
         if not line:
             continue
-        line = line.trim()
+        line = line.strip()
         parts = line.split("\t")
         if len(parts) != 2:
             raise ValueError("Must have 2 items per line")
