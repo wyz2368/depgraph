@@ -144,11 +144,29 @@ def get_best_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
 
     best_strat = None
     best_reward = -1000000
+
+    best_upper_bound_strat = None
+    best_upper_bound_reward = -1000000
     for strat, cur_list in temp_results.items():
         mean_reward = cur_list[0]
         if mean_reward > best_reward:
             best_strat = strat
             best_reward = mean_reward
+
+        se_reward = temp_results[strat][2]
+        upper_bound_reward = mean_reward + se_reward
+        if upper_bound_reward > best_upper_bound_reward:
+            best_upper_bound_strat = strat
+            best_upper_bound_reward = upper_bound_reward
+
+    upper_bound_result = {}
+    upper_bound_result["def_strategy"] = best_upper_bound_strat
+    best_upper_bound_result = temp_results[best_upper_bound_strat]
+    upper_bound_result["mean_reward"] = best_upper_bound_result[0]
+    upper_bound_result["stdev_reward"] = best_upper_bound_result[1]
+    upper_bound_result["stderr_reward"] = best_upper_bound_result[2]
+    upper_bound_result["upper_bound"] = best_upper_bound_reward
+    print("upper bound result: " + str(upper_bound_result))
 
     result = {}
     result["att_strategy"] = best_strat
