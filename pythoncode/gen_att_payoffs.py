@@ -108,6 +108,8 @@ def get_best_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
             mean_reward)
         std_reward = math.sqrt(variance_reward)
         se_mean = std_reward / math.sqrt(num_sims)
+        print(att_heuristic + "\t" + str(mean_reward) + "\t" + \
+            str(std_reward) + "\t" + str(se_mean))
         temp_results[att_heuristic] = [mean_reward, std_reward, se_mean]
 
     for att_network in att_networks:
@@ -136,6 +138,8 @@ def get_best_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
             mean_reward)
         std_reward = math.sqrt(variance_reward)
         se_mean = std_reward / math.sqrt(num_sims)
+        print(att_network + "\t" + str(mean_reward) + "\t" + \
+            str(std_reward) + "\t" + str(se_mean))
         temp_results[att_network] = [mean_reward, std_reward, se_mean]
 
     best_strat = None
