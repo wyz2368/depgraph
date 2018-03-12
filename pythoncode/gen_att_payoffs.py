@@ -1,6 +1,6 @@
 '''
-Run all defender policies against an attacker mixed strategy
-and returns the mean and standard error of payoffs of the best defender policy.
+Run all attacker policies against a defender mixed strategy
+and returns the mean and standard error of payoffs of the best attacker policy.
 
 Requirements:
     Py4J        https://www.py4j.org/download.html
@@ -17,33 +17,33 @@ from cli_enjoy_dg_def_net import get_payoffs_def_net_with_sd
 from cli_enjoy_dg_att_net import get_payoffs_att_net_with_sd
 from cli_enjoy_dg_no_net import get_payoffs_no_net_with_sd
 
-def sample_att_strat(attacker_mixed_strat):
+def sample_def_strat(defender_mixed_strat):
     '''
-    Randomly sample an attacker pure strategy from the mixed strategy,
+    Randomly sample a defender pure strategy from the mixed strategy,
     according to the strategies' proportions.
     '''
     value = random.random()
     prob_total = 0.0
-    for strat, prob in attacker_mixed_strat.items():
+    for strat, prob in defender_mixed_strat.items():
         prob_total += prob
         if value <= prob_total:
             return strat
     # should not get here
-    return list(attacker_mixed_strat.keys())[0]
+    return list(defender_mixed_strat.keys())[0]
 
-def sample_att_strats(attacker_mixed_strat, total_samples):
+def sample_def_strats(defender_mixed_strat, total_samples):
     '''
-    Randomly draw a dict that holds the number of times to play each attacker
+    Randomly draw a dict that holds the number of times to play each defender
     pure strategy, where each of total_samples plays is drawn according to the
     given proportions.
     '''
     result = {}
     for _ in range(total_samples):
-        cur_att_strat = sample_att_strat(attacker_mixed_strat)
-        if cur_att_strat in result:
-            result[cur_att_strat] += 1
+        cur_def_strat = sample_def_strat(defender_mixed_strat)
+        if cur_def_strat in result:
+            result[cur_def_strat] += 1
         else:
-            result[cur_att_strat] = 1
+            result[cur_def_strat] = 1
     return result
 
 def is_network_strat(strategy_name):
@@ -53,62 +53,62 @@ def is_network_strat(strategy_name):
     return "pkl" in strategy_name
 
 def get_best_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
-    num_sims, attacker_mixed_strat, def_heuristics, def_networks, graph_name):
+    num_sims, defender_mixed_strat, att_heuristics, att_networks, graph_name):
     '''
-    Run each defender network and heuristic against attacker_mixed_strat,
+    Run each attacker network and heuristic against defender_mixed_strat,
     find the mean, standard deviation, and standard error of the payoffs,
     and return the payoff with the highest upper bound on mean payoff,
-    including the defender strategy name, number of simulations, mean payoff,
+    including the attacker strategy name, number of simulations, mean payoff,
     standard deviation of payoff, and standard error of payoff.
     '''
     start_time = time.time()
 
     temp_results = {}
-    for def_heuristic in def_heuristics:
-        att_strats_dict = sample_att_strats(attacker_mixed_strat, num_sims)
+    for att_heuristic in att_heuristics:
+        def_strats_dict = sample_def_strats(defender_mixed_strat, num_sims)
         total_rewards = 0.0
         variance_rewards = 0.0
-        for att_strat, count in att_strats_dict.items():
+        for def_strat, count in def_strats_dict.items():
             mean_rewards_tuple = None
-            if is_network_strat(att_strat):
-                # run defender heuristic vs. attacker network, for count runs
-                mean_rewards_tuple = get_payoffs_att_net_with_sd( \
-                    env_name_att_net, count, def_heuristic, att_strat, graph_name)
+            if is_network_strat(def_strat):
+                # run attacker heuristic vs. defender network, for count runs
+                mean_rewards_tuple = get_payoffs_def_net_with_sd( \
+                    env_name_def_net, count, def_strat, att_heuristic, graph_name)
             else:
                 # run defender heuristic vs. attacker heuristic, for count runs
                 mean_rewards_tuple = get_payoffs_no_net_with_sd( \
-                    count, def_heuristic, att_strat, graph_name)
-            def_mean, _, def_sd, _ = mean_rewards_tuple
-            total_rewards += count * def_mean
-            variance_rewards += count * (def_sd ** 2)
+                    count, def_strat, att_heuristic, graph_name)
+            _, att_mean, _, att_sd = mean_rewards_tuple
+            total_rewards += count * att_mean
+            variance_rewards += count * (att_sd ** 2)
         mean_reward = total_rewards * 1.0 / num_sims
         variance_reward = variance_rewards * 1.0 / num_sims
         std_reward = math.sqrt(variance_reward)
         se_mean = std_reward / math.sqrt(num_sims)
-        temp_results[def_heuristic] = [mean_reward, std_reward, se_mean]
+        temp_results[att_heuristic] = [mean_reward, std_reward, se_mean]
 
-    for def_network in def_networks:
-        att_strats_dict = sample_att_strats(attacker_mixed_strat, num_sims)
+    for att_network in att_networks:
+        def_strats_dict = sample_def_strats(defender_mixed_strat, num_sims)
         total_rewards = 0.0
         variance_rewards = 0.0
-        for att_strat, count in att_strats_dict.items():
+        for def_strat, count in def_strats_dict.items():
             mean_rewards_tuple = None
-            if is_network_strat(att_strat):
+            if is_network_strat(def_strat):
                 # run defender network against attacker network, for count runs
                 mean_rewards_tuple = get_payoffs_both_with_sd( \
-                    env_name_both, count, def_network, att_strat, graph_name)
+                    env_name_both, count, def_strat, att_network, graph_name)
             else:
-                # run defender betwork against attack heuristic for count runs
-                mean_rewards_tuple = get_payoffs_def_net_with_sd( \
-                    env_name_def_net, count, def_network, att_strat, graph_name)
-            def_mean, _, def_sd, _ = mean_rewards_tuple
-            total_rewards += count * def_mean
-            variance_rewards += count * (def_sd ** 2)
+                # run attacker network against defender heuristic for count runs
+                mean_rewards_tuple = get_payoffs_att_net_with_sd( \
+                    env_name_att_net, count, def_strat, att_network, graph_name)
+            _, att_mean, _, att_sd = mean_rewards_tuple
+            total_rewards += count * att_mean
+            variance_rewards += count * (att_sd ** 2)
         mean_reward = total_rewards * 1.0 / num_sims
         variance_reward = variance_rewards * 1.0 / num_sims
         std_reward = math.sqrt(variance_reward)
         se_mean = std_reward / math.sqrt(num_sims)
-        temp_results[def_network] = [mean_reward, std_reward, se_mean]
+        temp_results[att_network] = [mean_reward, std_reward, se_mean]
 
     best_strat = None
     best_reward = -1000000
@@ -119,7 +119,7 @@ def get_best_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
             best_reward = mean_reward
 
     result = {}
-    result["def_strategy"] = best_strat
+    result["att_strategy"] = best_strat
     best_result = temp_results[best_strat]
     result["mean_reward"] = best_result[0]
     result["stdev_reward"] = best_result[1]
@@ -129,12 +129,12 @@ def get_best_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
     print("Minutes taken: " + str(duration // 60))
     return result
 
-def get_mixed_strat(attacker_mixed_strat):
+def get_mixed_strat(defender_mixed_strat):
     '''
-    Get the attacker mixed strategy from a file, which should have one pure
+    Get the defender mixed strategy from a file, which should have one pure
     strategy per line, followed by tab, followed by the proportion playing that strategy.
     '''
-    lines = get_lines(attacker_mixed_strat)
+    lines = get_lines(defender_mixed_strat)
     result = {}
     for line in lines:
         if not line:
@@ -174,37 +174,37 @@ def get_lines(file_name):
     return result
 
 def main(env_name_def_net, env_name_att_net, env_name_both, \
-    num_sims, attacker_mixed_strat, defender_heuristics, \
-    defender_networks, graph_name, out_file_name):
+    num_sims, defender_mixed_strat, attacker_heuristics, \
+    attacker_networks, graph_name, out_file_name):
     '''
     Main method: reads in the heuristic strategy names, network file names, calls for
     the game simulations to be run.
     '''
     if num_sims < 1:
         raise ValueError("num_sims must be positive: " + str(num_sims))
-    att_mixed_strat = get_mixed_strat(attacker_mixed_strat)
-    def_heuristics = get_lines(defender_heuristics)
-    def_networks = get_lines(defender_networks)
+    def_mixed_strat = get_mixed_strat(defender_mixed_strat)
+    att_heuristics = get_lines(attacker_heuristics)
+    att_networks = get_lines(attacker_networks)
     best_payoffs = get_best_payoffs(env_name_def_net, env_name_att_net, \
-        env_name_both, num_sims, att_mixed_strat, \
-        def_heuristics, def_networks, graph_name)
+        env_name_both, num_sims, def_mixed_strat, \
+        att_heuristics, att_networks, graph_name)
     print_to_file(best_payoffs, out_file_name)
 
 if __name__ == '__main__':
     if len(sys.argv) != 11:
         raise ValueError("Need 11 args: env_name_def_net, " + \
                          "env_name_att_net, env_name_both, " + \
-                         "num_sims, attacker_mixed_strat, defender_heuristics, " + \
-                         "defender_networks, graph_name, out_file_name")
+                         "num_sims, defender_mixed_strat, attacker_heuristics, " + \
+                         "attacker_networks, graph_name, out_file_name")
     ENV_NAME_DEF_NET = sys.argv[1]
     ENV_NAME_ATT_NET = sys.argv[2]
     ENV_NAME_BOTH = sys.argv[3]
     NUM_SIMS = int(float(sys.argv[4]))
-    ATTACKER_MIXED_STRAT = sys.argv[5]
-    DEFENDER_HEURISTICS = sys.argv[6]
-    DEFENDER_NETWORKS = sys.argv[7]
+    DEFENDER_MIXED_STRAT = sys.argv[5]
+    ATTACKER_HEURISTICS = sys.argv[6]
+    ATTACKER_NETWORKS = sys.argv[7]
     GRAPH_NAME = sys.argv[8]
     OUT_FILE_NAME = sys.argv[9]
     main(ENV_NAME_DEF_NET, ENV_NAME_ATT_NET, ENV_NAME_BOTH, \
-        NUM_SIMS, ATTACKER_MIXED_STRAT, \
-        DEFENDER_HEURISTICS, DEFENDER_NETWORKS, GRAPH_NAME, OUT_FILE_NAME)
+        NUM_SIMS, DEFENDER_MIXED_STRAT, \
+        ATTACKER_HEURISTICS, ATTACKER_NETWORKS, GRAPH_NAME, OUT_FILE_NAME)
