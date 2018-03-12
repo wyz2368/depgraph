@@ -33,13 +33,13 @@ class DepgraphJavaEnvAttNoNet():
         '''
         Get the total discounted reward of the opponent (attacker) in the current game.
         '''
-        return JAVA_GAME.getOpponentTotalPayoff()
+        return JAVA_GAME.getAttackerTotalPayoff()
 
     def get_defender_reward(self):
         '''
         Get the total discounted reward of self (defender) in the current game.
         '''
-        return JAVA_GAME.getSelfTotalPayoff()
+        return JAVA_GAME.getDefenderTotalPayoff()
 
     def close_gateway(self):
         '''
@@ -48,4 +48,3 @@ class DepgraphJavaEnvAttNoNet():
         GATEWAY.close()
         GATEWAY.close_callback_server()
         GATEWAY.shutdown()
-    
