@@ -191,8 +191,8 @@ def main(env_name_def_net, env_name_att_net, env_name_both, \
     print_to_file(best_payoffs, out_file_name)
 
 if __name__ == '__main__':
-    if len(sys.argv) != 11:
-        raise ValueError("Need 11 args: env_name_def_net, " + \
+    if len(sys.argv) != 10:
+        raise ValueError("Need 9 args: env_name_def_net, " + \
                          "env_name_att_net, env_name_both, " + \
                          "num_sims, defender_mixed_strat, attacker_heuristics, " + \
                          "attacker_networks, graph_name, out_file_name")
