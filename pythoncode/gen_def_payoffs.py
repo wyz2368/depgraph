@@ -18,6 +18,10 @@ from cli_enjoy_dg_att_net import get_payoffs_att_net_with_sd
 from cli_enjoy_dg_no_net import get_payoffs_no_net_with_sd
 
 def sample_att_strat(attacker_mixed_strat):
+    '''
+    Randomly sample an attacker pure strategy from the mixed strategy,
+    according to the strategies' proportions.
+    '''
     value = random.random()
     prob_total = 0.0
     for strat, prob in attacker_mixed_strat.items():
@@ -28,6 +32,11 @@ def sample_att_strat(attacker_mixed_strat):
     return list(attacker_mixed_strat.keys())[0]
 
 def sample_att_strats(attacker_mixed_strat, total_samples):
+    '''
+    Randomly draw a dict that holds the number of times to play each attacker
+    pure strategy, where each of total_samples plays is drawn according to the
+    given proportions.
+    '''
     result = {}
     for _ in range(total_samples):
         cur_att_strat = sample_att_strat(attacker_mixed_strat)
@@ -38,6 +47,9 @@ def sample_att_strats(attacker_mixed_strat, total_samples):
     return result
 
 def is_network_strat(strategy_name):
+    '''
+    Return whether the given strategy is for a network policy, rather than a heuristic.
+    '''
     return "pkl" in strategy_name
 
 def get_best_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
