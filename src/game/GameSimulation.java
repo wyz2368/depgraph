@@ -43,7 +43,7 @@ public final class GameSimulation {
 	private GameSimulationResult simResult;
 	
 	private final List<RLDefenderEpisode> rlDefenderEpisodes;
-	
+
 	public GameSimulation(
 		final DependencyGraph aDepGraph, final Attacker aAttacker,
 		final Defender aDefender, final RandomDataGenerator aRng,
@@ -62,7 +62,7 @@ public final class GameSimulation {
 		
 		this.attacker = aAttacker;
 		this.defender = aDefender;
-		
+				
 		this.rng = aRng;
 		
 		this.simResult = new GameSimulationResult();
@@ -313,6 +313,22 @@ public final class GameSimulation {
 		}
 		this.simResult.setAttPayoff(attPayoff);
 		this.simResult.setDefPayoff(defPayoff);
+	}
+	
+	/**
+	 * Returns the discounted defender payoff of the current episode.
+	 * @return the discounted defender payoff of the episode
+	 */
+	public double getDefenderTotalPayoff() {
+		return getSimulationResult().getDefPayoff();
+	}
+	
+	/**
+	 * Returns the discounted attacker payoff of the current episode.
+	 * @return the discounted attacker payoff of the episode
+	 */
+	public double getAttackerTotalPayoff() {
+		return getSimulationResult().getAttPayoff();
 	}
 	
 	public List<RLDefenderEpisode> getRLDefenderEpisodes() {
