@@ -112,7 +112,7 @@ public final class DepgraphPy4JGreedyConfigBoth {
 	 * will be taken
 	 * @param graphFileName the name of the graph file to use
 	 */
-	private DepgraphPy4JGreedyConfigBoth(
+	DepgraphPy4JGreedyConfigBoth(
 		final double aProbGreedySelectionCutOff,
 		final String simSpecFolderName,
 		final String graphFileName
@@ -672,7 +672,7 @@ public final class DepgraphPy4JGreedyConfigBoth {
 	 * Next N items are 1.0 if the node was defended i steps ago, else 0.0.
 	 * @return get the defender observation as a list of Double
 	 */
-	private List<Double> getDefObsAsListDouble() {
+	List<Double> getDefObsAsListDouble() {
 		final List<Double> result = new ArrayList<Double>();
 		final RLDefenderRawObservation defObs = 
 			this.sim.getDefenderObservation();

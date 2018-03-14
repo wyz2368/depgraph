@@ -99,7 +99,7 @@ public final class DepgraphPy4JGreedyConfig {
 	 * strategy of the attacker will be read
 	 * @param graphFileName the name of the graph file to use
 	 */
-	private DepgraphPy4JGreedyConfig(
+	DepgraphPy4JGreedyConfig(
 		final double aProbGreedySelectionCutOff,
 		final String simSpecFolderName,
 		final String attackMixedStratFileName,
@@ -286,6 +286,14 @@ public final class DepgraphPy4JGreedyConfig {
 	}
 	
 	/**
+	 * Update the sim's attacker to the given one.
+	 * @param aAttacker the new attacker to use
+	 */
+	public void setAttacker(final Attacker aAttacker) {
+		this.sim.setAttacker(aAttacker);
+	}
+	
+	/**
 	 * Draw a random attacker from attackers, based on the probabilities
 	 * in attackerWeights.
 	 * @return a randomly drawn attacker from attackers
@@ -454,7 +462,7 @@ public final class DepgraphPy4JGreedyConfig {
 	 * Next N items are 1.0 if the node was defended i steps ago, else 0.0.
 	 * @return get the defender observation as a list of Double
 	 */
-	private List<Double> getDefObsAsListDouble() {
+	List<Double> getDefObsAsListDouble() {
 		final List<Double> result = new ArrayList<Double>();
 		final RLDefenderRawObservation defObs = 
 			this.sim.getDefenderObservation();
