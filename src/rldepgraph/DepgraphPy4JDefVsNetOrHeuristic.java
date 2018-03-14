@@ -214,6 +214,18 @@ public final class DepgraphPy4JDefVsNetOrHeuristic {
 	}
 	
 	/**
+	 * Get the defender's marginal discounted payoff.
+	 * @return the defender's marginal discounted payoff
+	 */
+	public double getSelfMarginalPayoff() {
+		if (this.isAttackerHeuristic) {
+			throw new IllegalStateException();
+		}
+		
+		return this.dgForNetwork.getDefenderMarginalPayoff();
+	}
+	
+	/**
 	 * @return the total discounted reward of the attacker
 	 * in this game instance.
 	 */

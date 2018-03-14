@@ -83,18 +83,53 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
         return def_obs
 
     def _step(self, action):
+        if IS_HEURISTIC_ATTACKER:
+            return self._step_vs_heuristic(action)
+        return self._step_vs_network(action)
+
+    def _step_vs_heuristic(self, action):
         # action is a numpy.int64, need to convert to Python int before using with Py4J
         action_scalar = np.asscalar(action)
         # {1, . . ., NODE_COUNT} are node ids, (NODE_COUNT + 1) means "pass"
         action_id = action_scalar + 1
-        return DepgraphJavaEnvVsMixedAtt.step_result_from_flat_list(JAVA_GAME.step(action_id))
+        return DepgraphJavaEnvVsMixedAtt.step_result_from_list_heuristic( \
+            JAVA_GAME.step(action_id))
+
+    def _step_vs_network(self, action):
+        global IS_DEF_TURN
+
+        if not IS_DEF_TURN:
+            raise ValueError("Must be defender's turn here.")
+
+        # action is a numpy.int64, need to convert to Python int before using with Py4J
+        action_scalar = np.asscalar(action)
+        action_id = action_scalar + 1
+
+        both_obs, is_done, state_dict, is_def_turn_local = \
+            DepgraphJavaEnvVsMixedAtt.step_result_from_list_network( \
+                JAVA_GAME.step(action_id))
+
+        IS_DEF_TURN = is_def_turn_local
+
+        def_obs = both_obs[:DEF_OBS_SIZE]
+        att_obs = both_obs[DEF_OBS_SIZE:]
+
+        cur_obs = def_obs
+        if not IS_DEF_TURN:
+            # FIXME: run attacker network until it makes its move, then return result
+            cur_obs = att_obs
+        cur_obs = np.array([x for x in cur_obs])
+        cur_obs = cur_obs.reshape(1, cur_obs.size)
+
+        def_reward = JAVA_GAME.getSelfMarginalPayoff()
+        return cur_obs, def_reward, is_done, state_dict
 
     @staticmethod
     def is_heuristic_strategy(strategy):
         return ".pkl" not in strategy
 
     @staticmethod
-    def step_result_from_flat_list(a_list):
+    def step_result_from_list_heuristic(a_list):
         '''
         Convert a flat list input, a_list, to the observation, reward,
         is_done, and state dictionary.
@@ -119,6 +154,36 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
 
         state_dict = {'state': obs[:]}
         return obs, reward, is_done, state_dict
+
+    @staticmethod
+    def step_result_from_list_network(a_list):
+        '''
+        Convert a flat list input, a_list, to the observation (for defender, then
+        attacker), reward, is_done, state dictionary, and is_def_turn_local.
+
+        The first game_size elements of a_list represent the game state, first for the
+        defender's view, then the attacker's.
+
+        The next element represents the reward, in R.
+
+        The next element represents whether the game is done, in {0.0, 1.0}.
+
+        The last element represents whether it is the defender's turn, in {0.0, 1.0}.
+        '''
+        game_size = DEF_OBS_SIZE + ATT_OBS_SIZE
+
+        both_obs = a_list[:game_size]
+        # both_obs is a Py4J JavaList -> should convert to Python list
+        both_obs = np.array([x for x in both_obs])
+
+        # edit DepgraphPy4JDefVsNetOrHeuristic to return this.
+        tolerance = 0.01
+        is_done = abs(a_list[game_size] - 1) < tolerance
+
+        state_dict = {'state': both_obs[:]}
+
+        is_def_turn_local = abs(a_list[game_size + 1] - 1) < tolerance
+        return both_obs, is_done, state_dict, is_def_turn_local
 
     def setup_att_mixed_strat(self, strat_file):
         global ATT_STRAT_TO_PROB

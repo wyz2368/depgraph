@@ -353,6 +353,7 @@ public final class RLGameSimulationBoth {
 	 */
 	public void addDefenderWorstPayoff() {
 		this.defenderTotalPayoff += this.getWorstDefenderRemainingReward();
+		this.defenderMarginalPayoff = this.getWorstDefenderRemainingReward();
 	}
 	
 	/**
@@ -360,6 +361,7 @@ public final class RLGameSimulationBoth {
 	 */
 	public void addAttackerWorstPayoff() {
 		this.attackerTotalPayoff += this.getWorstAttackerRemainingReward();
+		this.attackerMarginalPayoff = this.getWorstAttackerRemainingReward();
 	}
 	
 	/**
@@ -427,7 +429,10 @@ public final class RLGameSimulationBoth {
 		this.defenderTotalPayoff += defenderCurPayoff;
 		this.defenderMarginalPayoff = defenderCurPayoff;
 		
-		this.attackerTotalPayoff += getAttackerPayoffCurrentTimeStep(attAction);
+		final double attackerCurPayoff =
+			getAttackerPayoffCurrentTimeStep(attAction);
+		this.attackerTotalPayoff += attackerCurPayoff;
+		this.attackerMarginalPayoff = attackerCurPayoff;
 	}
 
 	/**

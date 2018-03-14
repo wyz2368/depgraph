@@ -297,6 +297,14 @@ public final class DepgraphPy4JGreedyConfigBoth {
 				
 		return result;
 	}
+	
+	/**
+	 * @return the marginal discounted reward of the defender
+	 * in this game instance.
+	 */
+	public double getDefenderMarginalPayoff() {
+		return this.sim.getDefenderMarginalPayoff();
+	}
 
 	/**
 	 * @return the total discounted reward of the defender
@@ -304,6 +312,14 @@ public final class DepgraphPy4JGreedyConfigBoth {
 	 */
 	public double getDefenderTotalPayoff() {
 		return this.sim.getDefenderTotalPayoff();
+	}
+
+	/**
+	 * @return the marginal discounted reward of the attacker
+	 * in this game instance.
+	 */
+	public double getAttackerMarginalPayoff() {
+		return this.sim.getAttackerMarginalPayoff();
 	}
 
 	/**
