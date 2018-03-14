@@ -14,14 +14,27 @@ import gym
 from gym import spaces
 
 NODE_COUNT = 30
-JAVA_GAME = None
-OBS_LENGTH = 3
-INPUT_DEPTH = 2 + OBS_LENGTH * 2
-GATEWAY = None
+AND_NODE_COUNT = 5
+EDGE_TO_OR_NODE_COUNT = 100
+
+DEF_OBS_LENGTH = 3
+ATT_OBS_LENGTH = 1
+
+DEF_ACTION_COUNT = NODE_COUNT + 1
+ATT_ACTION_COUNT = AND_NODE_COUNT + EDGE_TO_OR_NODE_COUNT + 1
+
+DEF_INPUT_DEPTH = 2 + DEF_OBS_LENGTH * 2
+
+DEF_OBS_SIZE = NODE_COUNT * DEF_INPUT_DEPTH
+ATT_OBS_SIZE = (AND_NODE_COUNT + EDGE_TO_OR_NODE_COUNT) * 2 + NODE_COUNT * ATT_OBS_LENGTH + 1
 
 ATT_MIXED_STRAT_FILE = "randNoAnd_B_epoch2_att.tsv"
 ATT_STRAT_TO_PROB = {}
 IS_HEURISTIC_ATTACKER = False
+
+JAVA_GAME = None
+GATEWAY = None
+IS_DEF_TURN = None
 
 class DepgraphJavaEnvVsMixedAtt(gym.Env):
     """
@@ -50,9 +63,24 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
             spaces.Box(np.zeros(my_shape), np.ones(my_shape))
 
     def _reset(self):
-        result_values = JAVA_GAME.reset()
+        global IS_DEF_TURN
+        global IS_HEURISTIC_ATTACKER
+
+        IS_DEF_TURN = True
+
+        cur_att_strat = self.sample_mixed_strat()
+        IS_HEURISTIC_ATTACKER = DepgraphJavaEnvVsMixedAtt.is_heuristic_strategy(cur_att_strat)
+        is_heuristic_str = "" + IS_HEURISTIC_ATTACKER
+
+        result_values = JAVA_GAME.reset([is_heuristic_str, cur_att_strat])
         # result_values is a Py4J JavaList -> should convert to Python list
-        return np.array([x for x in result_values])
+        if IS_HEURISTIC_ATTACKER:
+            return np.array([x for x in result_values])
+
+        def_obs = result_values[:DEF_OBS_SIZE]
+        def_obs = np.array([x for x in def_obs])
+        def_obs = def_obs.reshape(1, def_obs.size)
+        return def_obs
 
     def _step(self, action):
         # action is a numpy.int64, need to convert to Python int before using with Py4J
@@ -62,19 +90,23 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
         return DepgraphJavaEnvVsMixedAtt.step_result_from_flat_list(JAVA_GAME.step(action_id))
 
     @staticmethod
+    def is_heuristic_strategy(strategy):
+        return ".pkl" not in strategy
+
+    @staticmethod
     def step_result_from_flat_list(a_list):
         '''
         Convert a flat list input, a_list, to the observation, reward,
         is_done, and state dictionary.
-        a_list will be a list of floats, of length (NODE_COUNT * INPUT_DEPTH + 2).
+        a_list will be a list of floats, of length (NODE_COUNT * DEF_INPUT_DEPTH+ 2).
 
-        The first (NODE_COUNT * INPUT_DEPTH) elements of a_list represent the game state.
+        The first (NODE_COUNT * DEF_INPUT_DEPTH) elements of a_list represent the game state.
 
         The next element represents the reward, in R-.
 
         The last element represents whether the game is done, in {0.0, 1.0}.
         '''
-        game_size = NODE_COUNT * INPUT_DEPTH
+        game_size = NODE_COUNT * DEF_INPUT_DEPTH
 
         obs_values = a_list[:game_size]
         # obs_values is a Py4J JavaList -> should convert to Python list
