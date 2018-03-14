@@ -12,6 +12,7 @@ from py4j.java_gateway import JavaGateway
 import numpy as np
 import gym
 from gym import spaces
+from baselines import deepq
 
 NODE_COUNT = 30
 AND_NODE_COUNT = 5
@@ -36,6 +37,8 @@ JAVA_GAME = None
 GATEWAY = None
 IS_DEF_TURN = None
 
+ATT_NETWORK = None
+
 class DepgraphJavaEnvVsMixedAtt(gym.Env):
     """
     Depgraph game environment. Play against a fixed opponent.
@@ -43,6 +46,10 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
     metadata = {"render.modes": ["human"]}
 
     def __init__(self):
+        '''
+        Set up the Java game and read in the attacker mixed strategy over network and
+        heuristic strategies.
+        '''
         # https://www.py4j.org/getting_started.html
         global GATEWAY
         GATEWAY = JavaGateway()
@@ -63,8 +70,13 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
             spaces.Box(np.zeros(my_shape), np.ones(my_shape))
 
     def _reset(self):
+        '''
+        Reset the game, draw a new attacker strategy from the mixed strategy, and set this
+        agent in the Java game, including whether it is a network or heuristic.
+        '''
         global IS_DEF_TURN
         global IS_HEURISTIC_ATTACKER
+        global ATT_NETWORK
 
         IS_DEF_TURN = True
 
@@ -75,7 +87,10 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
         result_values = JAVA_GAME.reset([is_heuristic_str, cur_att_strat])
         # result_values is a Py4J JavaList -> should convert to Python list
         if IS_HEURISTIC_ATTACKER:
+            ATT_NETWORK = None
             return np.array([x for x in result_values])
+
+        ATT_NETWORK = deepq.load(cur_att_strat)
 
         def_obs = result_values[:DEF_OBS_SIZE]
         def_obs = np.array([x for x in def_obs])
@@ -83,11 +98,17 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
         return def_obs
 
     def _step(self, action):
+        '''
+        Take the defender's action (adding a node to defense set or passing).
+        '''
         if IS_HEURISTIC_ATTACKER:
             return self._step_vs_heuristic(action)
         return self._step_vs_network(action)
 
     def _step_vs_heuristic(self, action):
+        '''
+        Take the defender action (add a node to defense set) against a heuristic attacker.
+        '''
         # action is a numpy.int64, need to convert to Python int before using with Py4J
         action_scalar = np.asscalar(action)
         # {1, . . ., NODE_COUNT} are node ids, (NODE_COUNT + 1) means "pass"
@@ -96,6 +117,12 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
             JAVA_GAME.step(action_id))
 
     def _step_vs_network(self, action):
+        '''
+        Take the defender's action (adding a node to defend to the defense set or passing)
+        against a network attacker.
+        If the defender passes or makes an illegal move, the attacker will be allowed to
+        make its move before the method returns.
+        '''
         global IS_DEF_TURN
 
         if not IS_DEF_TURN:
@@ -111,21 +138,58 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
 
         IS_DEF_TURN = is_def_turn_local
 
-        def_obs = both_obs[:DEF_OBS_SIZE]
-        att_obs = both_obs[DEF_OBS_SIZE:]
+        if not IS_DEF_TURN and not is_done:
+            att_obs = both_obs[DEF_OBS_SIZE:]
+            return self._run_att_net_until_pass(att_obs)
 
-        cur_obs = def_obs
-        if not IS_DEF_TURN:
-            # FIXME: run attacker network until it makes its move, then return result
-            cur_obs = att_obs
-        cur_obs = np.array([x for x in cur_obs])
-        cur_obs = cur_obs.reshape(1, cur_obs.size)
+        def_obs = both_obs[:DEF_OBS_SIZE]
+        def_obs = np.array([x for x in def_obs])
+        def_obs = def_obs.reshape(1, def_obs.size)
+
+        def_reward = 0.0 # no reward for adding another item to defense set
+        return def_obs, def_reward, is_done, state_dict
+
+    def _run_att_net_until_pass(self, att_obs_arg):
+        '''
+        Run the game from the attacker network's view, until the attacker passes or
+        makes an illegal move, returning control to the defender.
+        Return the defender network's view, plus the defender discounted marginal reward.
+        '''
+        global IS_DEF_TURN
+
+        if IS_DEF_TURN:
+            raise ValueError("Must be attacker's turn here.")
+        if IS_HEURISTIC_ATTACKER:
+            raise ValueError("Must be a network attacker here.")
+
+        def_obs = None
+        att_obs = att_obs_arg
+        is_done = False
+        state_dict = None
+        while not IS_DEF_TURN and not is_done:
+            att_obs = np.array([x for x in att_obs])
+            att_obs = att_obs.reshape(1, att_obs.size)
+
+            both_obs, is_done, state_dict, is_def_turn_local = \
+                DepgraphJavaEnvVsMixedAtt.step_result_from_list_network( \
+                    JAVA_GAME.step(ATT_NETWORK(att_obs)[0]))
+
+            IS_DEF_TURN = is_def_turn_local
+            def_obs = both_obs[:DEF_OBS_SIZE]
+            att_obs = both_obs[DEF_OBS_SIZE:]
+
+        def_obs = np.array([x for x in def_obs])
+        def_obs = def_obs.reshape(1, def_obs.size)
 
         def_reward = JAVA_GAME.getSelfMarginalPayoff()
-        return cur_obs, def_reward, is_done, state_dict
+        return def_obs, def_reward, is_done, state_dict
 
     @staticmethod
     def is_heuristic_strategy(strategy):
+        '''
+        Returns True if the strategy is a network strategy, otherwise False for a heuristic.
+        The name with contain ".pkl" if it is a network strategy.
+        '''
         return ".pkl" not in strategy
 
     @staticmethod
@@ -186,6 +250,11 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
         return both_obs, is_done, state_dict, is_def_turn_local
 
     def setup_att_mixed_strat(self, strat_file):
+        '''
+        Load the attacker's mixed strategy over heuristic and network strategies, from
+        the given file.
+        Should have one strategy per line, with the name and probability, tab-separated.
+        '''
         global ATT_STRAT_TO_PROB
         ATT_STRAT_TO_PROB = {}
         with open(strat_file, 'r') as tsv_in:
@@ -204,6 +273,10 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
                 str(sum(ATT_STRAT_TO_PROB.values())))
 
     def sample_mixed_strat(self):
+        '''
+        Draw a mixed strategy at random from the attacker strategy, weighted by the
+        given probabilities.
+        '''
         rand_draw = random.random()
         total_prob = 0.0
         for strat, prob in ATT_STRAT_TO_PROB.items():
@@ -214,6 +287,9 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
         return ATT_STRAT_TO_PROB.keys()[0]
 
     def _render(self, mode='human', close=False):
+        '''
+        Show human-readable view of environment state.
+        '''
         if close:
             return
         print(JAVA_GAME.render())
