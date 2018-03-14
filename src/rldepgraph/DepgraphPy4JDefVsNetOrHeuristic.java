@@ -197,25 +197,21 @@ public final class DepgraphPy4JDefVsNetOrHeuristic {
 		this.dgForHeuristic.setAttacker(attacker);
 	}
 	
+	/**
+	 * Take a step based on the action of the defender, against either
+	 * a heuristic or network attacker.
+	 * 
+	 * @param action an int indicating the action of the defender.
+	 * @return the result format depends on whether playing against a heuristic
+	 * or network attacker.
+	 */
 	public List<Double> step(final Integer action) {
 		if (this.isAttackerHeuristic) {
-			return stepHeuristic(action);
-		} else {
-			return stepNetwork(action);
-		}
+			return this.dgForHeuristic.step(action);
+		} 
+		
+		return this.dgForNetwork.stepCurrent(action);
 	}
-	
-	private List<Double> stepHeuristic(final Integer action) {
-		// TODO
-		return null;
-	}
-	
-	private List<Double> stepNetwork(final Integer action) {
-		// TODO
-		return null;
-	}
-
-
 	
 	/**
 	 * @return the total discounted reward of the attacker
