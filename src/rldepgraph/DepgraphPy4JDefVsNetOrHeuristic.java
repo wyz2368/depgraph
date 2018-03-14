@@ -59,20 +59,16 @@ public final class DepgraphPy4JDefVsNetOrHeuristic {
 	 * the defender agent will not be allowed to add more nodes.
 	 * @param simSpecFolderName the folder from which simulation_spec.json
 	 * will be taken
-	 * @param attackMixedStratFileName the file from which the mixed
-	 * strategy of the attacker will be read
 	 * @param graphFileName the name of the graph file to use
 	 */
 	private DepgraphPy4JDefVsNetOrHeuristic(
 		final double aProbGreedySelectionCutOff,
 		final String simSpecFolderName,
-		final String attackMixedStratFileName,
 		final String graphFileName
 	) {
 		if (aProbGreedySelectionCutOff < 0.0
 			|| aProbGreedySelectionCutOff >= 1.0
-			|| simSpecFolderName == null
-			|| attackMixedStratFileName == null) {
+			|| simSpecFolderName == null) {
 			throw new IllegalArgumentException();
 		}
 
@@ -84,7 +80,7 @@ public final class DepgraphPy4JDefVsNetOrHeuristic {
 		this.dgForHeuristic = new DepgraphPy4JGreedyConfig(
 			aProbGreedySelectionCutOff,
 			simSpecFolderName,
-			attackMixedStratFileName,
+			null,
 			graphFileName
 		);
 		this.discFact = getDiscFact(simSpecFolderName);
@@ -92,27 +88,25 @@ public final class DepgraphPy4JDefVsNetOrHeuristic {
 
 	/**
 	 * Entry method, used to set up the Py4J server.
-	 * @param args has two args: simSpecFolder and attackMixedStratFile
+	 * @param args has one arg: graphFileName
 	 */
 	public static void main(final String[] args) {
-		final int argsCount = 3;
+		final int argsCount = 1;
 		if (args == null || args.length != argsCount) {
 			throw new IllegalArgumentException(
-		"Need 3 args: simSpecFolder, attackMixedStratFile, graphFileName"
+				"Need 1 arg: graphFileName"
 			);
 		}
-		final String simSpecFolderName = args[0];
-		final String attackMixedStratFileName = args[1];
+		final String simSpecFolderName = "simspecs/";
 		// RandomGraph30N100E2T1.json
 		// SepLayerGraph0.json
-		final String graphFileName = args[2];
+		final String graphFileName = args[0];
 		
 		final double probGreedySelectCutOff = 0.1;
 		// set up Py4J server
 		singleton = new DepgraphPy4JDefVsNetOrHeuristic(
 			probGreedySelectCutOff,
 			simSpecFolderName,
-			attackMixedStratFileName,
 			graphFileName
 		);
 		final GatewayServer gatewayServer = new GatewayServer(singleton);

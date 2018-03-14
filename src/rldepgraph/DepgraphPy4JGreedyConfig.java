@@ -107,8 +107,7 @@ public final class DepgraphPy4JGreedyConfig {
 	) {
 		if (aProbGreedySelectionCutOff < 0.0
 			|| aProbGreedySelectionCutOff >= 1.0
-			|| simSpecFolderName == null
-			|| attackMixedStratFileName == null) {
+			|| simSpecFolderName == null) {
 			throw new IllegalArgumentException();
 		}
 		this.probGreedySelectionCutOff = aProbGreedySelectionCutOff;
@@ -118,7 +117,10 @@ public final class DepgraphPy4JGreedyConfig {
 		
 		final double discFact = setupEnvironment(
 			simSpecFolderName, graphFileName);
-		setupAttackersAndWeights(attackMixedStratFileName, discFact);
+		
+		if (attackMixedStratFileName != null) {
+			setupAttackersAndWeights(attackMixedStratFileName, discFact);
+		}
 	}
 
 	/**
@@ -279,7 +281,9 @@ public final class DepgraphPy4JGreedyConfig {
 		// clear the game state.
 		this.sim.reset();
 		// update the attacker at random from the mixed strategy.
-		this.sim.setAttacker(drawRandomAttacker());
+		if (!this.attackers.isEmpty()) {
+			setAttacker(drawRandomAttacker());
+		}
 		// no nodesToDefend so far
 		this.nodesToDefend.clear();
 		return getDefObsAsListDouble();
