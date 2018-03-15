@@ -38,6 +38,8 @@ GATEWAY = None
 IS_DEF_TURN = None
 
 ATT_NETWORK = None
+ATT_NET_NAME = None
+ATT_SESS = None
 
 class DepgraphJavaEnvVsMixedAtt(gym.Env):
     """
@@ -77,6 +79,8 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
         global IS_DEF_TURN
         global IS_HEURISTIC_ATTACKER
         global ATT_NETWORK
+        global ATT_NET_NAME
+        global ATT_SESS
 
         IS_DEF_TURN = True
 
@@ -90,7 +94,9 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
             ATT_NETWORK = None
             return np.array([x for x in result_values])
 
-        ATT_NETWORK = deepq.load(cur_att_strat)
+        if cur_att_strat != ATT_NET_NAME:
+            ATT_NETWORK, _, ATT_SESS = deepq.load_for_multiple_nets(cur_att_strat)
+            ATT_NET_NAME = cur_att_strat
 
         def_obs = result_values[:DEF_OBS_SIZE]
         def_obs = np.array([x for x in def_obs])
@@ -170,13 +176,14 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
             att_obs = np.array([x for x in att_obs])
             att_obs = att_obs.reshape(1, att_obs.size)
 
-            both_obs, is_done, state_dict, is_def_turn_local = \
-                DepgraphJavaEnvVsMixedAtt.step_result_from_list_network( \
-                    JAVA_GAME.step(ATT_NETWORK(att_obs)[0]))
+            with ATT_SESS.as_default():
+                both_obs, is_done, state_dict, is_def_turn_local = \
+                    DepgraphJavaEnvVsMixedAtt.step_result_from_list_network( \
+                        JAVA_GAME.step(ATT_NETWORK(att_obs)[0]))
 
-            IS_DEF_TURN = is_def_turn_local
-            def_obs = both_obs[:DEF_OBS_SIZE]
-            att_obs = both_obs[DEF_OBS_SIZE:]
+                IS_DEF_TURN = is_def_turn_local
+                def_obs = both_obs[:DEF_OBS_SIZE]
+                att_obs = both_obs[DEF_OBS_SIZE:]
 
         def_obs = np.array([x for x in def_obs])
         def_obs = def_obs.reshape(1, def_obs.size)
