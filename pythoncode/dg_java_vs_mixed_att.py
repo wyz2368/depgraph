@@ -185,6 +185,8 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
             att_obs = att_obs.reshape(1, att_obs.size)
 
             with ATT_SESS.as_default():
+                net_output = ATT_NETWORK(att_obs)
+                print(net_output)
                 action = ATT_NETWORK(att_obs)[0]
                 # action is a numpy.int64, need to convert to Python int,
                 # before using with Py4J.
