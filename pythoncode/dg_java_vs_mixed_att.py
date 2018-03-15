@@ -30,8 +30,8 @@ DEF_INPUT_DEPTH = 2 + DEF_OBS_LENGTH * 2
 DEF_OBS_SIZE = NODE_COUNT * DEF_INPUT_DEPTH
 ATT_OBS_SIZE = (AND_NODE_COUNT + EDGE_TO_OR_NODE_COUNT) * 2 + NODE_COUNT * ATT_OBS_LENGTH + 1
 
-# ATT_MIXED_STRAT_FILE = "randNoAnd_B_epoch2_att.tsv"
-ATT_MIXED_STRAT_FILE = "randNoAnd_B_noNet_attStrat.tsv"
+ATT_MIXED_STRAT_FILE = "randNoAnd_B_epoch2_att.tsv"
+# ATT_MIXED_STRAT_FILE = "randNoAnd_B_noNet_attStrat.tsv"
 ATT_STRAT_TO_PROB = {}
 IS_HEURISTIC_ATTACKER = False
 
@@ -89,8 +89,12 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
         cur_att_strat = self.sample_mixed_strat()
         IS_HEURISTIC_ATTACKER = DepgraphJavaEnvVsMixedAtt.is_heuristic_strategy(cur_att_strat)
         is_heuristic_str = str(IS_HEURISTIC_ATTACKER)
+        print(cur_att_strat + "\t" + str(IS_HEURISTIC_ATTACKER))
 
         py_list = [is_heuristic_str, cur_att_strat]
+        if not IS_HEURISTIC_ATTACKER:
+            py_list = [is_heuristic_str, ""]
+        print(py_list)
         java_list = ListConverter().convert(py_list, GATEWAY._gateway_client)
         result_values = JAVA_GAME.reset(java_list)
         # result_values is a Py4J JavaList -> should convert to Python list
@@ -181,9 +185,15 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
             att_obs = att_obs.reshape(1, att_obs.size)
 
             with ATT_SESS.as_default():
+                action = ATT_NETWORK(att_obs)[0]
+                # action is a numpy.int64, need to convert to Python int,
+                # before using with Py4J.
+                action_scalar = np.asscalar(action)
+                action_id = action_scalar + 1
+
                 both_obs, is_done, state_dict, is_def_turn_local = \
                     DepgraphJavaEnvVsMixedAtt.step_result_from_list_network( \
-                        JAVA_GAME.step(ATT_NETWORK(att_obs)[0]))
+                        JAVA_GAME.step(action_id))
 
                 IS_DEF_TURN = is_def_turn_local
                 def_obs = both_obs[:DEF_OBS_SIZE]
