@@ -9,6 +9,7 @@ Requirements:
 import csv
 import random
 from py4j.java_gateway import JavaGateway
+from py4j.java_collections import ListConverter
 import numpy as np
 import gym
 from gym import spaces
@@ -89,7 +90,9 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
         IS_HEURISTIC_ATTACKER = DepgraphJavaEnvVsMixedAtt.is_heuristic_strategy(cur_att_strat)
         is_heuristic_str = str(IS_HEURISTIC_ATTACKER)
 
-        result_values = JAVA_GAME.reset([is_heuristic_str, cur_att_strat])
+        py_list = [is_heuristic_str, cur_att_strat]
+        java_list = ListConverter().convert(py_list, GATEWAY._gateway_client)
+        result_values = JAVA_GAME.reset(java_list)
         # result_values is a Py4J JavaList -> should convert to Python list
         if IS_HEURISTIC_ATTACKER:
             ATT_NETWORK = None
