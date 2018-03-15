@@ -9,3 +9,4 @@ from gym.envs.board_game.depgraph_java_att import DepgraphJavaEnvAtt
 from gym.envs.board_game.depgraph_java_att_29N import DepgraphJavaEnvAtt29N
 from gym.envs.board_game.dg_java_both import DepgraphJavaEnvBoth
 from gym.envs.board_game.dg_java_both_29N import DepgraphJavaEnvBoth29N
+from gym.envs.board_game.dg_java_vs_mixed_att import DepgraphJavaEnvVsMixedAtt

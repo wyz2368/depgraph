@@ -487,6 +487,11 @@ register(
 )
 
 register(
+    id='DepgraphJavaEnvVsMixedAtt-v0',
+    entry_point='gym.envs.board_game:DepgraphJavaEnvVsMixedAtt',
+)
+
+register(
     id='Connect4Conv-v0',
     entry_point='gym.envs.board_game:C4Env',
     kwargs={
