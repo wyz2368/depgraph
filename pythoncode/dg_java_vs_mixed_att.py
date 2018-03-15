@@ -29,7 +29,8 @@ DEF_INPUT_DEPTH = 2 + DEF_OBS_LENGTH * 2
 DEF_OBS_SIZE = NODE_COUNT * DEF_INPUT_DEPTH
 ATT_OBS_SIZE = (AND_NODE_COUNT + EDGE_TO_OR_NODE_COUNT) * 2 + NODE_COUNT * ATT_OBS_LENGTH + 1
 
-ATT_MIXED_STRAT_FILE = "randNoAnd_B_epoch2_att.tsv"
+# ATT_MIXED_STRAT_FILE = "randNoAnd_B_epoch2_att.tsv"
+ATT_MIXED_STRAT_FILE = "randNoAnd_B_noNet_attStrat.tsv"
 ATT_STRAT_TO_PROB = {}
 IS_HEURISTIC_ATTACKER = False
 
@@ -86,7 +87,7 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
 
         cur_att_strat = self.sample_mixed_strat()
         IS_HEURISTIC_ATTACKER = DepgraphJavaEnvVsMixedAtt.is_heuristic_strategy(cur_att_strat)
-        is_heuristic_str = "" + IS_HEURISTIC_ATTACKER
+        is_heuristic_str = str(IS_HEURISTIC_ATTACKER)
 
         result_values = JAVA_GAME.reset([is_heuristic_str, cur_att_strat])
         # result_values is a Py4J JavaList -> should convert to Python list
@@ -265,15 +266,16 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
         global ATT_STRAT_TO_PROB
         ATT_STRAT_TO_PROB = {}
         with open(strat_file, 'r') as tsv_in:
-            row = csv.reader(tsv_in, delimiter='\t')
-            if row:
-                strat = row[0]
-                prob = float(row[1])
-                if prob < 0.0 or prob > 1.0:
-                    raise ValueError("Invalid prob: " + str(prob))
-                if strat in ATT_STRAT_TO_PROB:
-                    raise ValueError("Duplicate strat: " + strat)
-                ATT_STRAT_TO_PROB[strat] = prob
+            rows = list(list(rec) for rec in csv.reader(tsv_in, delimiter='\t'))
+            for row in rows:
+                if row:
+                    strat = row[0]
+                    prob = float(row[1])
+                    if prob < 0.0 or prob > 1.0:
+                        raise ValueError("Invalid prob: " + str(prob))
+                    if strat in ATT_STRAT_TO_PROB:
+                        raise ValueError("Duplicate strat: " + strat)
+                    ATT_STRAT_TO_PROB[strat] = prob
         tol = 0.001
         if abs(sum(ATT_STRAT_TO_PROB.values()) - 1.0) > tol:
             raise ValueError("Wrong sum of probabilities: " + \
