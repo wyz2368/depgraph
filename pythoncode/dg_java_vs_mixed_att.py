@@ -89,12 +89,10 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
         cur_att_strat = self.sample_mixed_strat()
         IS_HEURISTIC_ATTACKER = DepgraphJavaEnvVsMixedAtt.is_heuristic_strategy(cur_att_strat)
         is_heuristic_str = str(IS_HEURISTIC_ATTACKER)
-        print(cur_att_strat + "\t" + str(IS_HEURISTIC_ATTACKER))
 
         py_list = [is_heuristic_str, cur_att_strat]
         if not IS_HEURISTIC_ATTACKER:
             py_list = [is_heuristic_str, ""]
-        print(py_list)
         java_list = ListConverter().convert(py_list, GATEWAY._gateway_client)
         result_values = JAVA_GAME.reset(java_list)
         # result_values is a Py4J JavaList -> should convert to Python list
@@ -185,8 +183,6 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
             att_obs = att_obs.reshape(1, att_obs.size)
 
             with ATT_SESS.as_default():
-                net_output = ATT_NETWORK(att_obs)
-                print(net_output)
                 action = ATT_NETWORK(att_obs)[0]
                 # action is a numpy.int64, need to convert to Python int,
                 # before using with Py4J.
