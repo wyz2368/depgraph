@@ -18,7 +18,7 @@ def main():
     start = time.time()
     env = gym.make(env_name)
     model = deepq.models.mlp([256, 256])
-    act = deepq.learn(
+    act = deepq.learn_multiple_nets(
         env,
         q_func=model,
         lr=1e-5,

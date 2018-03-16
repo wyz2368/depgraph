@@ -98,7 +98,9 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
         # result_values is a Py4J JavaList -> should convert to Python list
         if IS_HEURISTIC_ATTACKER:
             ATT_NETWORK = None
-            return np.array([x for x in result_values])
+            def_obs = np.array([x for x in result_values])
+            # def_obs = def_obs.reshape(1, def_obs.size)
+            return def_obs
 
         if cur_att_strat != ATT_NET_NAME:
             ATT_NETWORK, _, ATT_SESS = deepq.load_for_multiple_nets(cur_att_strat)
@@ -106,7 +108,7 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
 
         def_obs = result_values[:DEF_OBS_SIZE]
         def_obs = np.array([x for x in def_obs])
-        def_obs = def_obs.reshape(1, def_obs.size)
+        # def_obs = def_obs.reshape(1, def_obs.size)
         return def_obs
 
     def _step(self, action):
@@ -156,7 +158,7 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
 
         def_obs = both_obs[:DEF_OBS_SIZE]
         def_obs = np.array([x for x in def_obs])
-        def_obs = def_obs.reshape(1, def_obs.size)
+        # def_obs = def_obs.reshape(1, def_obs.size)
 
         def_reward = 0.0 # no reward for adding another item to defense set
         return def_obs, def_reward, is_done, state_dict
@@ -183,7 +185,8 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
             att_obs = att_obs.reshape(1, att_obs.size)
 
             with ATT_SESS.as_default():
-                action = ATT_NETWORK(att_obs)[0]
+                raw_action = ATT_NETWORK(att_obs)
+                action = raw_action[0]
                 # action is a numpy.int64, need to convert to Python int,
                 # before using with Py4J.
                 action_scalar = np.asscalar(action)
@@ -198,7 +201,7 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
                 att_obs = both_obs[DEF_OBS_SIZE:]
 
         def_obs = np.array([x for x in def_obs])
-        def_obs = def_obs.reshape(1, def_obs.size)
+        # def_obs = def_obs.reshape(1, def_obs.size)
 
         def_reward = JAVA_GAME.getSelfMarginalPayoff()
         return def_obs, def_reward, is_done, state_dict
@@ -229,6 +232,7 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
         obs_values = a_list[:game_size]
         # obs_values is a Py4J JavaList -> should convert to Python list
         obs = np.array([x for x in obs_values])
+        # obs = obs.reshape(1, obs.size)
 
         reward = a_list[game_size]
 
