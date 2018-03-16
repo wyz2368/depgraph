@@ -97,7 +97,6 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
         result_values = JAVA_GAME.reset(java_list)
         # result_values is a Py4J JavaList -> should convert to Python list
         if IS_HEURISTIC_ATTACKER:
-            ATT_NETWORK = None
             def_obs = np.array([x for x in result_values])
             # def_obs = def_obs.reshape(1, def_obs.size)
             return def_obs
