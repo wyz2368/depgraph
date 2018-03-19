@@ -19,14 +19,14 @@ def main():
 
     model_name = "depgraph_dq_mlp_rand_epoch2_b.pkl"
 
-    num_episodes = 1000
+    num_episodes = 10
 
     start_time = time.time()
 
     env = gym.make(env_name)
     print("Environment: " + env_name)
 
-    act = deepq.load(model_name)
+    act = deepq.load_with_scope(model_name, "deepq_train")
     print("Model: " + model_name)
 
     rewards = []
@@ -36,8 +36,7 @@ def main():
         obs = np.array(obs).reshape(1, obs_len)
         episode_rew = 0
         while not done:
-            with act_sess.as_default():
-                obs, rew, done, _ = env.step(act(obs)[0])
+            obs, rew, done, _ = env.step(act(obs)[0])
             obs = np.array(obs).reshape(1, obs_len)
             episode_rew += rew
         rewards.append(episode_rew)
