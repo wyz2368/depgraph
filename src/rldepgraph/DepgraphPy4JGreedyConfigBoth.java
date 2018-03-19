@@ -855,7 +855,7 @@ public final class DepgraphPy4JGreedyConfigBoth {
 	 * 
 	 * @return get the attacker observation as a list of Double
 	 */
-	private List<Double> getAttObsAsListDouble() {
+	List<Double> getAttObsAsListDouble() {
 		final List<Double> result = new ArrayList<Double>();
 		for (final int nodeId: this.sim.getAndNodeIds()) {
 			if (this.nodesToAttack.contains(nodeId)) {

@@ -139,7 +139,7 @@ public final class DepgraphPy4JAttGreedyConfig {
 	 * strategy of the defender will be read
 	 * @param graphFileName the name of the graph file to use
 	 */
-	private DepgraphPy4JAttGreedyConfig(
+	DepgraphPy4JAttGreedyConfig(
 		final double aProbGreedySelectionCutOff,
 		final String simSpecFolderName,
 		final String defMixedStratFileName,
@@ -148,7 +148,6 @@ public final class DepgraphPy4JAttGreedyConfig {
 		if (aProbGreedySelectionCutOff < 0.0
 			|| aProbGreedySelectionCutOff >= 1.0
 			|| simSpecFolderName == null
-			|| defMixedStratFileName == null
 			|| graphFileName == null) {
 			throw new IllegalArgumentException();
 		}
@@ -162,7 +161,11 @@ public final class DepgraphPy4JAttGreedyConfig {
 		
 		final double discFact = setupEnvironment(
 			simSpecFolderName, graphFileName);
-		setupDefendersAndWeights(defMixedStratFileName, discFact);
+
+		if (defMixedStratFileName != null) {
+			setupDefendersAndWeights(defMixedStratFileName, discFact);
+		}
+		
 		setupActionMaps();
 
 		System.out.println("Node count: " + this.sim.getNodeCount());
@@ -226,7 +229,9 @@ public final class DepgraphPy4JAttGreedyConfig {
 		this.sim.reset();
 		
 		// update the defender at random from the mixed strategy.
-		this.sim.setDefender(drawRandomDefender());
+		if (!this.defenders.isEmpty()) {
+			setDefender(drawRandomDefender());
+		}
 		// reset and initialize the defender's belief state
 		this.curDefBelief = new DefenderBelief();
 		this.curDefBelief.addState(this.sim.getGameState(), 1.0);
@@ -567,6 +572,16 @@ public final class DepgraphPy4JAttGreedyConfig {
 	}
 	
 	/**
+	 * Update the sim's defender to the given one.
+	 * @param aDefender the new defender to use
+	 */
+	public void setDefender(final Defender aDefender) {
+		this.sim.setDefender(aDefender);
+		this.curDefBelief = new DefenderBelief();
+		this.curDefBelief.addState(this.sim.getGameState(), 1.0);
+	}
+	
+	/**
 	 * @param action an integer action indicator, which should be in 
 	 * {1, . . ., count(AND nodes) + count(edges to OR nodes) + 1}.
 	 * @return true if the action refers to an edge to OR node to
@@ -725,7 +740,15 @@ public final class DepgraphPy4JAttGreedyConfig {
 	public double getOpponentTotalPayoff() {
 		return this.sim.getDefenderTotalPayoff();
 	}
-	
+
+	/**
+	 * @return the total discounted reward of the attacker
+	 * in this game instance.
+	 */
+	public double getSelfTotalPayoff() {
+		return this.sim.getAttackerTotalPayoff();
+	}
+
 	/**
 	 * Observation list is of size [count(AND nodes) + count(edges to OR)] * 2 +
 	 *     count(nodes) * ATTACKER_OBS_LENGTH +
@@ -751,7 +774,7 @@ public final class DepgraphPy4JAttGreedyConfig {
 	 * 
 	 * @return get the attacker observation as a list of Double
 	 */
-	private List<Double> getAttObsAsListDouble() {
+	List<Double> getAttObsAsListDouble() {
 		final List<Double> result = new ArrayList<Double>();
 		for (final int nodeId: this.sim.getAndNodeIds()) {
 			if (this.nodesToAttack.contains(nodeId)) {
