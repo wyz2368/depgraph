@@ -15,14 +15,8 @@ def main():
         model_name = "depgraph_java_deepq_model2.pkl"
     '''
 
-    # env_name = "DepgraphJava-v0"
     env_name = "DepgraphJavaEnvVsMixedAtt-v0"
 
-    # model_name = "depgraph_java_deepq_model2.pkl"
-    # model_name = "depgraph_java_deepq_mlp_long.pkl"
-    # model_name = "depgraph_deepq_mlp_rand_eq.pkl"
-    # model_name = "dg_rand_30n_noAnd_B_eq.pkl"
-    # model_name = "dg_rand_30n_noAnd_B_eq_2.pkl"
     model_name = "depgraph_dq_mlp_rand_epoch2_b.pkl"
 
     num_episodes = 1000
@@ -32,7 +26,7 @@ def main():
     env = gym.make(env_name)
     print("Environment: " + env_name)
 
-    act, _, act_sess = deepq.load_for_multiple_nets(model_name)
+    act = deepq.load(model_name)
     print("Model: " + model_name)
 
     rewards = []
@@ -40,7 +34,6 @@ def main():
         obs, done = env.reset(), False
         obs_len = len(obs)
         obs = np.array(obs).reshape(1, obs_len)
-        print(obs)
         episode_rew = 0
         while not done:
             with act_sess.as_default():
