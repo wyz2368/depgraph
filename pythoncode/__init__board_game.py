@@ -11,3 +11,4 @@ from gym.envs.board_game.dg_java_both import DepgraphJavaEnvBoth
 from gym.envs.board_game.dg_java_both_29N import DepgraphJavaEnvBoth29N
 from gym.envs.board_game.dg_java_vs_mixed_att import DepgraphJavaEnvVsMixedAtt
 from gym.envs.board_game.dg_vs_net_att_test import VsNetworkTest
+from gym.envs.board_game.dg_java_vs_mixed_def import DepgraphJavaEnvVsMixedDef
