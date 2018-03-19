@@ -231,10 +231,7 @@ class DepgraphJavaEnvVsMixedDef(gym.Env):
 
         The last element represents whether the game is done, in {0.0, 1.0}.
         '''
-        game_size = DEF_OBS_SIZE
-        print(len(a_list))
-        print(game_size)
-        print(a_list)
+        game_size = ATT_OBS_SIZE
         obs_values = a_list[:game_size]
         # obs_values is a Py4J JavaList -> should convert to Python list
         obs = np.array([x for x in obs_values])
