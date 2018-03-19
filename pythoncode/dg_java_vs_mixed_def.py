@@ -16,8 +16,8 @@ from gym import spaces
 from baselines import deepq
 
 NODE_COUNT = 30
-AND_NODE_COUNT = 5
-EDGE_TO_OR_NODE_COUNT = 100
+AND_NODE_COUNT = 11
+EDGE_TO_OR_NODE_COUNT = 75
 
 DEF_OBS_LENGTH = 3
 ATT_OBS_LENGTH = 1
@@ -231,7 +231,10 @@ class DepgraphJavaEnvVsMixedDef(gym.Env):
 
         The last element represents whether the game is done, in {0.0, 1.0}.
         '''
-        game_size = DEF_OBS_SIZE + ATT_OBS_SIZE
+        game_size = DEF_OBS_SIZE
+        print(len(a_list))
+        print(game_size)
+        print(a_list)
         obs_values = a_list[:game_size]
         # obs_values is a Py4J JavaList -> should convert to Python list
         obs = np.array([x for x in obs_values])
@@ -261,16 +264,15 @@ class DepgraphJavaEnvVsMixedDef(gym.Env):
         game_size = DEF_OBS_SIZE + ATT_OBS_SIZE
         obs_values = a_list[:game_size]
         # obs_values is a Py4J JavaList -> should convert to Python list
-        obs = np.array([x for x in obs_values])
-        # obs = obs.reshape(1, obs.size)
+        both_obs = np.array([x for x in obs_values])
 
         tolerance = 0.01
         is_done = abs(a_list[game_size] - 1) < tolerance
 
-        state_dict = {'state': obs[:]}
+        state_dict = {'state': both_obs[:]}
 
         is_def_turn_local = abs(a_list[game_size + 1] - 1) < tolerance
-        return obs, is_done, state_dict, is_def_turn_local
+        return both_obs, is_done, state_dict, is_def_turn_local
 
     def setup_def_mixed_strat(self, strat_file):
         '''
