@@ -39,7 +39,7 @@ def main():
 
     sleep_sec = 1
     time.sleep(sleep_sec)
-    act_loaded = deepq.load(model_name)
+    act_loaded = deepq.load_with_scope(model_name, "deepq_train")
     print("Loaded model")
 
 if __name__ == '__main__':
