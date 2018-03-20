@@ -106,7 +106,7 @@ class DepgraphJavaEnvVsMixedDef(gym.Env):
             DEF_NETWORK, _, DEF_SESS = deepq.load_for_multiple_nets(cur_def_strat)
             DEF_NET_NAME = cur_def_strat
 
-        att_obs = result_values[DEF_OBS_SIZE:]
+        att_obs = result_values
         att_obs = np.array([x for x in att_obs])
         # att_obs = att_obs.reshape(1, att_obs.size)
         return att_obs
