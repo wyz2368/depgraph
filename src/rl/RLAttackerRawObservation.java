@@ -153,7 +153,7 @@ public final class RLAttackerRawObservation {
 		}
 		if (aTimeStepsLeft <= 0) {
 			throw new IllegalArgumentException(
-				"Time steps left should be nonnegative: " + aTimeStepsLeft);
+				"Time steps left should be positive: " + aTimeStepsLeft);
 		}
 		for (int t = 0; t < ATTACKER_OBS_LENGTH; t++) {
 			final List<Integer> curActiveNodeIds = new ArrayList<Integer>();

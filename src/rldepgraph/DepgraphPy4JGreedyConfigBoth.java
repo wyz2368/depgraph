@@ -465,8 +465,11 @@ public final class DepgraphPy4JGreedyConfigBoth {
 		if (this.sim.isGameOver()) {
 			throw new IllegalStateException("Can't take step when game over.");
 		}
+		// Note:
+		// this.sim.timeStepsLeft >= 1 here, because !this.sim.isGameOver().
 		this.sim.step(
 			this.nodesToDefend, this.nodesToAttack, this.edgesToAttack);
+		// this.sim.timeStepsLeft >= 0 here.
 		this.nodesToDefend.clear();
 		this.nodesToAttack.clear();
 		this.edgesToAttack.clear();
@@ -648,7 +651,14 @@ public final class DepgraphPy4JGreedyConfigBoth {
 				this.sim.setGameOver();
 				return getAttObsAsListDouble();
 			}
-			
+
+			if (this.attAction == null) {
+				// if attacker passed without attacking at all,
+				// its action might not be set yet.
+				this.attAction = this.sim.generateAttackerAction(
+					this.nodesToAttack, this.edgesToAttack);
+			}
+
 			// move is valid.
 			// take a step.
 			this.isDefTurn = true;
