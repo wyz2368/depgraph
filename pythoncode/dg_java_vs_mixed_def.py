@@ -21,6 +21,7 @@ EDGE_TO_OR_NODE_COUNT = 75
 
 DEF_OBS_LENGTH = 3
 ATT_OBS_LENGTH = 1
+TIME_STEPS = 10
 
 DEF_ACTION_COUNT = NODE_COUNT + 1
 ATT_ACTION_COUNT = AND_NODE_COUNT + EDGE_TO_OR_NODE_COUNT + 1
@@ -106,9 +107,9 @@ class DepgraphJavaEnvVsMixedDef(gym.Env):
             DEF_NETWORK, _, DEF_SESS = deepq.load_for_multiple_nets(cur_def_strat)
             DEF_NET_NAME = cur_def_strat
 
-        att_obs = result_values
-        att_obs = np.array([x for x in att_obs])
-        # att_obs = att_obs.reshape(1, att_obs.size)
+        IS_DEF_TURN = True
+        def_obs = DepgraphJavaEnvVsMixedDef.first_def_obs()
+        att_obs, _, _, _ = self._run_def_net_until_pass(def_obs)
         return att_obs
 
     def _step(self, action):
@@ -205,7 +206,7 @@ class DepgraphJavaEnvVsMixedDef(gym.Env):
                 att_obs = both_obs[DEF_OBS_SIZE:]
 
         att_obs = np.array([x for x in att_obs])
-        # def_obs = def_obs.reshape(1, def_obs.size)
+        # att_obs = att_obs.reshape(1, att_obs.size)
 
         att_reward = JAVA_GAME.getSelfMarginalPayoff()
         return att_obs, att_reward, is_done, state_dict
@@ -328,3 +329,14 @@ class DepgraphJavaEnvVsMixedDef(gym.Env):
         Get the total discounted reward of self (attacker) in the current game.
         '''
         return JAVA_GAME.getSelfTotalPayoff()
+
+    @staticmethod
+    def first_def_obs():
+        '''
+        Get the initial observation of the defender.
+        '''
+        result = []
+        result.extend([0.0] * NODE_COUNT)
+        result.extend([TIME_STEPS * 1.0] * NODE_COUNT)
+        result.extend([0.0] * (NODE_COUNT * DEF_OBS_LENGTH * 2))
+        return result
