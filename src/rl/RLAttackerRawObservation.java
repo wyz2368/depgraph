@@ -143,13 +143,17 @@ public final class RLAttackerRawObservation {
 		final int aTimeStepsLeft
 	) {
 		if (aLegalToAttackNodeIds == null || andNodeIds == null) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(
+				"Null value passed: " + aLegalToAttackNodeIds
+				+ "\t" + andNodeIds);
 		}
 		if (!validateIdsList(aLegalToAttackNodeIds, andNodeIds)) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(
+				"Invalid attack node IDs: " + aLegalToAttackNodeIds);
 		}
 		if (aTimeStepsLeft <= 0) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(
+				"Time steps left should be nonnegative: " + aTimeStepsLeft);
 		}
 		for (int t = 0; t < ATTACKER_OBS_LENGTH; t++) {
 			final List<Integer> curActiveNodeIds = new ArrayList<Integer>();

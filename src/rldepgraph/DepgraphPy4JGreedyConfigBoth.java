@@ -462,6 +462,9 @@ public final class DepgraphPy4JGreedyConfigBoth {
 	 * then 1.0 to indicate it is now the defender's turn.
 	 */
 	private List<Double> takeStep() {
+		if (this.sim.isGameOver()) {
+			throw new IllegalStateException("Can't take step when game over.");
+		}
 		this.sim.step(
 			this.nodesToDefend, this.nodesToAttack, this.edgesToAttack);
 		this.nodesToDefend.clear();
@@ -535,6 +538,8 @@ public final class DepgraphPy4JGreedyConfigBoth {
 			// or the action is already in nodesToDefend AND
 			// !LOSE_IF_REPEAT, so repeated selection counts as "pass".
 			if (!this.sim.isValidMove(this.nodesToDefend)) {
+				System.out.println(
+					"Invalid defender move: " + this.nodesToDefend);
 				// illegal move. game is lost.
 				this.sim.addDefenderWorstPayoff();
 				this.sim.setGameOver();
@@ -549,6 +554,8 @@ public final class DepgraphPy4JGreedyConfigBoth {
 		// selection is allowed; will try to add to nodesToDefend.
 		
 		if (!this.sim.isValidId(action)) {
+			System.out.println(
+				"Invalid defender action: " + action);
 			// illegal move. game is lost.
 			this.sim.addDefenderWorstPayoff();
 			this.sim.setGameOver();

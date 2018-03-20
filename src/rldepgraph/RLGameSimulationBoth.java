@@ -402,6 +402,10 @@ public final class RLGameSimulationBoth {
 		final Set<Integer> nodeIdsToAttack,
 		final Set<Integer> edgeIdsToAttack
 	) {
+		if (this.timeStepsLeft <= 0) {
+			throw new IllegalStateException(
+				"Game should be over: " + this.timeStepsLeft);
+		}
 		if (!isValidMove(idsToDefend)) {
 			throw new IllegalArgumentException("illegal move: " + idsToDefend);
 		}
@@ -474,6 +478,10 @@ public final class RLGameSimulationBoth {
 	 * @return true if game is over
 	 */
 	public boolean isGameOver() {
+		if (this.timeStepsLeft < 0) {
+			throw new IllegalStateException(
+				"Shouldn't have negative time left: " + this.timeStepsLeft);
+		}
 		return this.timeStepsLeft == 0;
 	}
 	
