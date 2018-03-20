@@ -186,7 +186,7 @@ class DepgraphJavaEnvVsMixedDef(gym.Env):
         state_dict = None
         while IS_DEF_TURN and not is_done:
             def_obs = np.array([x for x in def_obs])
-            def_obs = att_obs.reshape(1, def_obs.size)
+            def_obs = def_obs.reshape(1, def_obs.size)
 
             with DEF_SESS.as_default():
                 raw_action = DEF_NETWORK(def_obs)
