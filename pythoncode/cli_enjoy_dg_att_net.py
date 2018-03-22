@@ -14,7 +14,7 @@ import gym
 from baselines import deepq
 
 def get_payoffs_att_net_with_sd(env_name_att_net, num_sims, def_model_name, att_model_name, \
-    graph_name):
+    graph_name, att_scope):
     '''
     Get the mean payoff for defender and attacker, when the given attacker network strategy
     plays against the given defender heuristic, in the given environment.
@@ -30,7 +30,11 @@ def get_payoffs_att_net_with_sd(env_name_att_net, num_sims, def_model_name, att_
 
     env = gym.make(env_name_att_net)
 
-    attacker, _, att_sess = deepq.load_for_multiple_nets(att_model_name)
+    if att_scope is None:
+        attacker, _, att_sess = deepq.load_for_multiple_nets(att_model_name)
+    else:
+        attacker, _, att_sess = deepq.load_for_multiple_nets_with_scope( \
+            att_model_name, att_scope)
 
     def_rewards = []
     att_rewards = []
@@ -58,7 +62,7 @@ def get_payoffs_att_net_with_sd(env_name_att_net, num_sims, def_model_name, att_
     return result
 
 def get_payoffs_att_net(env_name_att_net, num_sims, def_model_name, att_model_name, \
-    graph_name):
+    graph_name, att_scope):
     '''
     Get the mean payoff for defender and attacker, when the given attacker network strategy
     plays against the given defender heuristic, in the given environment.
@@ -74,7 +78,11 @@ def get_payoffs_att_net(env_name_att_net, num_sims, def_model_name, att_model_na
 
     env = gym.make(env_name_att_net)
 
-    attacker, _, att_sess = deepq.load_for_multiple_nets(att_model_name)
+    if att_scope is None:
+        attacker, _, att_sess = deepq.load_for_multiple_nets(att_model_name)
+    else:
+        attacker, _, att_sess = deepq.load_for_multiple_nets_with_scope( \
+            att_model_name, att_scope)
 
     def_rewards = []
     att_rewards = []
@@ -109,5 +117,8 @@ if __name__ == '__main__':
     DEF_MODEL_NAME = sys.argv[3]
     ATT_MODEL_NAME = sys.argv[4]
     GRAPH_NAME = sys.argv[5]
+    ATT_SCOPE = sys.argv[6]
+    if ATT_SCOPE == "None":
+        ATT_SCOPE = None
     get_payoffs_att_net(ENV_NAME_ATT_NET, NUM_SIMS, DEF_MODEL_NAME, \
-        ATT_MODEL_NAME, GRAPH_NAME)
+        ATT_MODEL_NAME, GRAPH_NAME, ATT_SCOPE)

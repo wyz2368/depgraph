@@ -141,5 +141,9 @@ if __name__ == '__main__':
     GRAPH_NAME = sys.argv[5]
     DEF_SCOPE = sys.argv[6]
     ATT_SCOPE = sys.argv[7]
+    if DEF_SCOPE == "None":
+        DEF_SCOPE = None
+    if ATT_SCOPE == "None":
+        ATT_SCOPE = None
     get_payoffs_both(ENV_NAME_BOTH, NUM_SIMS, DEF_MODEL_NAME, ATT_MODEL_NAME, GRAPH_NAME, \
         DEF_SCOPE, ATT_SCOPE)

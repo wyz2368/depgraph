@@ -70,7 +70,8 @@ def get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
     start_time_def_heuristics = time.time()
     for def_heuristic in def_heuristics:
         mean_rewards_tuple = get_payoffs_att_net( \
-            env_name_att_net, num_sims, def_heuristic, new_attacker_model, graph_name)
+            env_name_att_net, num_sims, def_heuristic, new_attacker_model, graph_name, \
+            get_net_scope(new_attacker_model))
         print(str((def_heuristic, new_attacker_model)) + "\n" + str(mean_rewards_tuple))
         result[new_attacker_model][def_heuristic] = list(mean_rewards_tuple)
     if def_heuristics:
