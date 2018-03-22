@@ -14,6 +14,14 @@ from cli_enjoy_dg_two_sided import get_payoffs_both
 from cli_enjoy_dg_def_net import get_payoffs_def_net
 from cli_enjoy_dg_att_net import get_payoffs_att_net
 
+def get_net_scope(net_name):
+    '''
+    Return the scope in which to load a defender network, based on its name.
+    '''
+    if "epoch2" in net_name:
+        return "deepq_train"
+    return None
+
 def get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
     num_sims, new_defender_model, new_attacker_model, def_heuristics, \
     att_heuristics, def_networks, att_networks, graph_name):
@@ -36,7 +44,8 @@ def get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
     start_time_att_heuristics = time.time()
     for att_heuristic in att_heuristics:
         mean_rewards_tuple = get_payoffs_def_net( \
-            env_name_def_net, num_sims, new_defender_model, att_heuristic, graph_name)
+            env_name_def_net, num_sims, new_defender_model, att_heuristic, graph_name, \
+            get_net_scope(new_defender_model))
         print(str((new_defender_model, att_heuristic)) + "\n" + str(mean_rewards_tuple))
         result[new_defender_model][att_heuristic] = list(mean_rewards_tuple)
     if att_heuristics:
