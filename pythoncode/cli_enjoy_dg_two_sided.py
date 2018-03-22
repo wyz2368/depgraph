@@ -13,7 +13,7 @@ import gym
 from baselines import deepq
 
 def get_payoffs_both_with_sd(env_name_both, num_sims, def_model_name, att_model_name, \
-    graph_name):
+    graph_name, def_scope, att_scope):
     '''
     Get the mean payoff for defender and attacker, when the given network strategies play
     against each other in the given environment.
@@ -30,8 +30,16 @@ def get_payoffs_both_with_sd(env_name_both, num_sims, def_model_name, att_model_
 
     env = gym.make(env_name_both)
 
-    defender, _, def_sess = deepq.load_for_multiple_nets(def_model_name)
-    attacker, _, att_sess = deepq.load_for_multiple_nets(att_model_name)
+    if def_scope is None:
+        defender, _, def_sess = deepq.load_for_multiple_nets(def_model_name)
+    else:
+        defender, _, def_sess = deepq.load_for_multiple_nets_with_scope( \
+            def_model_name, def_scope)
+    if att_scope is None:
+        attacker, _, att_sess = deepq.load_for_multiple_nets(att_model_name)
+    else:
+        attacker, _, att_sess = deepq.load_for_multiple_nets_with_scope( \
+            att_model_name, att_scope)
 
     def_rewards = []
     att_rewards = []
@@ -63,7 +71,8 @@ def get_payoffs_both_with_sd(env_name_both, num_sims, def_model_name, att_model_
     my_process.kill()
     return result
 
-def get_payoffs_both(env_name_both, num_sims, def_model_name, att_model_name, graph_name):
+def get_payoffs_both(env_name_both, num_sims, def_model_name, att_model_name, graph_name, \
+    def_scope, att_scope):
     '''
     Get the mean payoff for defender and attacker, when the given network strategies play
     against each other in the given environment.
@@ -80,8 +89,16 @@ def get_payoffs_both(env_name_both, num_sims, def_model_name, att_model_name, gr
 
     env = gym.make(env_name_both)
 
-    defender, _, def_sess = deepq.load_for_multiple_nets(def_model_name)
-    attacker, _, att_sess = deepq.load_for_multiple_nets(att_model_name)
+    if def_scope is None:
+        defender, _, def_sess = deepq.load_for_multiple_nets(def_model_name)
+    else:
+        defender, _, def_sess = deepq.load_for_multiple_nets_with_scope( \
+            def_model_name, def_scope)
+    if att_scope is None:
+        attacker, _, att_sess = deepq.load_for_multiple_nets(att_model_name)
+    else:
+        attacker, _, att_sess = deepq.load_for_multiple_nets_with_scope( \
+            att_model_name, att_scope)
 
     def_rewards = []
     att_rewards = []
@@ -114,12 +131,15 @@ def get_payoffs_both(env_name_both, num_sims, def_model_name, att_model_name, gr
 # DepgraphJavaEnvBoth-v0 100 dg_rand_30n_noAnd_B_eq_2.pkl dg_dqmlp_rand30NoAnd_B_att_fixed.pkl
 # RandomGraph30N100E6T1_B.json
 if __name__ == '__main__':
-    if len(sys.argv) != 6:
-        raise ValueError("Need 5 args: env_name_both, num_sims, def_model_name, " + \
-            "att_model_name, graph_name")
+    if len(sys.argv) != 8:
+        raise ValueError("Need 7 args: env_name_both, num_sims, def_model_name, " + \
+            "att_model_name, graph_name, def_scope, att_scope")
     ENV_NAME_BOTH = sys.argv[1]
     NUM_SIMS = int(float(sys.argv[2]))
     DEF_MODEL_NAME = sys.argv[3]
     ATT_MODEL_NAME = sys.argv[4]
     GRAPH_NAME = sys.argv[5]
-    get_payoffs_both(ENV_NAME_BOTH, NUM_SIMS, DEF_MODEL_NAME, ATT_MODEL_NAME, GRAPH_NAME)
+    DEF_SCOPE = sys.argv[6]
+    ATT_SCOPE = sys.argv[7]
+    get_payoffs_both(ENV_NAME_BOTH, NUM_SIMS, DEF_MODEL_NAME, ATT_MODEL_NAME, GRAPH_NAME, \
+        DEF_SCOPE, ATT_SCOPE)

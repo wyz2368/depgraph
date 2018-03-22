@@ -57,7 +57,8 @@ def get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
     start_time_att_nets = time.time()
     for att_network in att_networks:
         mean_rewards_tuple = get_payoffs_both( \
-            env_name_both, num_sims, new_defender_model, att_network, graph_name)
+            env_name_both, num_sims, new_defender_model, att_network, graph_name, \
+            get_net_scope(new_defender_model), get_net_scope(att_network))
         print(str((new_defender_model, att_network)) + "\n" + str(mean_rewards_tuple))
         result[new_defender_model][att_network] = list(mean_rewards_tuple)
     if att_networks:
@@ -81,7 +82,8 @@ def get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
     start_time_both_nets = time.time()
     for def_network in def_networks:
         mean_rewards_tuple = get_payoffs_both( \
-            env_name_both, num_sims, def_network, new_attacker_model, graph_name)
+            env_name_both, num_sims, def_network, new_attacker_model, graph_name, \
+            get_net_scope(def_network), get_net_scope(new_attacker_model))
         print(str((def_network, new_attacker_model)) + "\n" + str(mean_rewards_tuple))
         result[new_attacker_model][def_network] = list(mean_rewards_tuple)
     duration_both_nets = int(time.time() - start_time_both_nets)
@@ -89,7 +91,8 @@ def get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
 
     # run new_defender_model against new_attacker_model
     mean_rewards_tuple = get_payoffs_both( \
-        env_name_both, num_sims, new_defender_model, new_attacker_model, graph_name)
+        env_name_both, num_sims, new_defender_model, new_attacker_model, graph_name, \
+        get_net_scope(new_defender_model), get_net_scope(new_attacker_model))
     print(str((new_defender_model, new_attacker_model)) + "\n" + str(mean_rewards_tuple))
     result[new_defender_model][new_attacker_model] = list(mean_rewards_tuple)
     duration = time.time() - start_time
