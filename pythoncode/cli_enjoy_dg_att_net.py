@@ -108,10 +108,10 @@ def get_payoffs_att_net(env_name_att_net, num_sims, def_model_name, att_model_na
     return result
 
 if __name__ == '__main__':
-    if len(sys.argv) != 6:
+    if len(sys.argv) != 7:
         raise ValueError( \
-            "Need 5 args: env_name_att_net, num_sims, def_model_name," + \
-            " att_model_name, graph_name")
+            "Need 6 args: env_name_att_net, num_sims, def_model_name," + \
+            " att_model_name, graph_name, att_scope")
     ENV_NAME_ATT_NET = sys.argv[1]
     NUM_SIMS = int(float(sys.argv[2]))
     DEF_MODEL_NAME = sys.argv[3]
