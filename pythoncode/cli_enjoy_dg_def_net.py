@@ -13,7 +13,7 @@ import gym
 from baselines import deepq
 
 def get_payoffs_def_net_with_sd(env_name_def_net, num_sims, def_model_name, att_model_name, \
-    graph_name):
+    graph_name, def_scope):
     '''
     Get the mean payoff for defender and attacker, when the given defender network strategy
     plays against the given attacker heuristic, in the given environment.
@@ -29,7 +29,11 @@ def get_payoffs_def_net_with_sd(env_name_def_net, num_sims, def_model_name, att_
 
     env = gym.make(env_name_def_net)
 
-    defender, _, def_sess = deepq.load_for_multiple_nets(def_model_name)
+    if def_scope is None:
+        defender, _, def_sess = deepq.load_for_multiple_nets(def_model_name)
+    else:
+        defender, _, def_sess = deepq.load_for_multiple_nets_with_scope( \
+            def_model_name, def_scope)
 
     def_rewards = []
     att_rewards = []
@@ -58,7 +62,7 @@ def get_payoffs_def_net_with_sd(env_name_def_net, num_sims, def_model_name, att_
     return result
 
 def get_payoffs_def_net(env_name_def_net, num_sims, def_model_name, att_model_name, \
-    graph_name):
+    graph_name, def_scope):
     '''
     Get the mean payoff for defender and attacker, when the given defender network strategy
     plays against the given attacker heuristic, in the given environment.
@@ -74,7 +78,11 @@ def get_payoffs_def_net(env_name_def_net, num_sims, def_model_name, att_model_na
 
     env = gym.make(env_name_def_net)
 
-    defender, _, def_sess = deepq.load_for_multiple_nets(def_model_name)
+    if def_scope is None:
+        defender, _, def_sess = deepq.load_for_multiple_nets(def_model_name)
+    else:
+        defender, _, def_sess = deepq.load_for_multiple_nets_with_scope( \
+            def_model_name, def_scope)
 
     def_rewards = []
     att_rewards = []
@@ -101,14 +109,17 @@ def get_payoffs_def_net(env_name_def_net, num_sims, def_model_name, att_model_na
     return result
 
 if __name__ == '__main__':
-    if len(sys.argv) != 6:
+    if len(sys.argv) != 7:
         raise ValueError( \
-            "Need 5 args: env_name_def_net, num_sims, def_model_name," + \
-            " att_model_name, graph_name")
+            "Need 6 args: env_name_def_net, num_sims, def_model_name," + \
+            " att_model_name, graph_name, def_scope")
     ENV_NAME_DEF_NET = sys.argv[1]
     NUM_SIMS = int(float(sys.argv[2]))
     DEF_MODEL_NAME = sys.argv[3]
     ATT_MODEL_NAME = sys.argv[4]
     GRAPH_NAME = sys.argv[5]
+    DEF_SCOPE = sys.argv[6]
+    if DEF_SCOPE == "None":
+        DEF_SCOPE = None
     get_payoffs_def_net(ENV_NAME_DEF_NET, NUM_SIMS, DEF_MODEL_NAME, \
-        ATT_MODEL_NAME, GRAPH_NAME)
+        ATT_MODEL_NAME, GRAPH_NAME, DEF_SCOPE)
