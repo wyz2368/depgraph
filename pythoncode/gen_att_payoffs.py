@@ -17,6 +17,14 @@ from cli_enjoy_dg_def_net import get_payoffs_def_net_with_sd
 from cli_enjoy_dg_att_net import get_payoffs_att_net_with_sd
 from cli_enjoy_dg_no_net import get_payoffs_no_net_with_sd
 
+def get_net_scope(net_name):
+    '''
+    Return the scope in which to load a defender network, based on its name.
+    '''
+    if "epoch2" in net_name:
+        return "deepq_train"
+    return None
+
 def sample_def_strat(defender_mixed_strat):
     '''
     Randomly sample a defender pure strategy from the mixed strategy,
@@ -94,7 +102,8 @@ def get_best_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
             if is_network_strat(def_strat):
                 # run attacker heuristic vs. defender network, for count runs
                 mean_rewards_tuple = get_payoffs_def_net_with_sd( \
-                    env_name_def_net, count, def_strat, att_heuristic, graph_name)
+                    env_name_def_net, count, def_strat, att_heuristic, graph_name, \
+                    get_net_scope(def_strat))
             else:
                 # run defender heuristic vs. attacker heuristic, for count runs
                 mean_rewards_tuple = get_payoffs_no_net_with_sd( \
@@ -124,11 +133,13 @@ def get_best_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
             if is_network_strat(def_strat):
                 # run defender network against attacker network, for count runs
                 mean_rewards_tuple = get_payoffs_both_with_sd( \
-                    env_name_both, count, def_strat, att_network, graph_name)
+                    env_name_both, count, def_strat, att_network, graph_name, \
+                    get_net_scope(def_strat), get_net_scope(att_network))
             else:
                 # run attacker network against defender heuristic for count runs
                 mean_rewards_tuple = get_payoffs_att_net_with_sd( \
-                    env_name_att_net, count, def_strat, att_network, graph_name)
+                    env_name_att_net, count, def_strat, att_network, graph_name, \
+                    get_net_scope(att_network))
             _, att_mean, _, att_sd = mean_rewards_tuple
             total_rewards += count * att_mean
             strat_means.append(att_mean)

@@ -144,8 +144,6 @@ def get_results_to_add(new_data, def_strat_name, att_strat_name):
     result = []
 
     def_results = new_data[def_strat_name]
-    if not isinstance(def_results, dict):
-        print(def_results)
     for att_strat, payoffs in def_results.iteritems():
         cur_def = def_strat_name
         cur_att = att_strat
