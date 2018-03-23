@@ -25,7 +25,7 @@ def get_defender_strategy(new_data):
     defender strategy.
     '''
     for key in new_data.keys():
-        if "_att_" not in key:
+        if ".pkl" in key and "_att" not in key:
             return key
     raise ValueError("Defender strategy not found")
 
@@ -45,7 +45,7 @@ def get_attacker_strategy(new_data):
     attacker strategy.
     '''
     for key in new_data.keys():
-        if "_att_" in key:
+        if ".pkl" in key and "_att" in key:
             return key
     raise ValueError("Attacker strategy not found")
 
@@ -144,6 +144,8 @@ def get_results_to_add(new_data, def_strat_name, att_strat_name):
     result = []
 
     def_results = new_data[def_strat_name]
+    if not isinstance(def_results, dict):
+        print(def_results)
     for att_strat, payoffs in def_results.iteritems():
         cur_def = def_strat_name
         cur_att = att_strat
@@ -177,9 +179,11 @@ def augment_game_data(game_data, new_data):
                 -- "payoff": whatever the attacker or defender payoff was in that pairing
     '''
     def_strat_name = get_defender_strategy(new_data)
+    print("Def strat name: " + def_strat_name)
     add_defender_strategy(game_data, def_strat_name)
 
     att_strat_name = get_attacker_strategy(new_data)
+    print("Att strat name: " + att_strat_name)
     add_attacker_strategy(game_data, att_strat_name)
 
     next_profile_id = get_max_profile_id(game_data) + 1
