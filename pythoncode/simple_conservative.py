@@ -162,7 +162,8 @@ def learn(env,
           prioritized_replay_eps=1e-6,
           param_noise=False,
           callback=None,
-          ep_mean_length=100):
+          ep_mean_length=100,
+          scope="deepq_train"):
     """Train a deepq model.
 
     Parameters
