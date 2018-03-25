@@ -18,7 +18,7 @@ def main():
     start = time.time()
     env = gym.make(env_name)
     model = deepq.models.mlp([256, 256])
-    act = deepq.learn_multiple_nets(
+    act = deepq.learn(
         env,
         q_func=model,
         lr=5e-5,
@@ -30,9 +30,10 @@ def main():
         print_freq=250,
         param_noise=False,
         gamma=0.99,
-        ep_mean_length=250
+        ep_mean_length=250,
+	scope="deepq_train_e3"
     )
-    model_name = "dg_dqmlp_rand30NoAnd_B_epoch2_att.pkl"
+    model_name = "dg_dqmlp_rand30NoAnd_B_epoch3_att.pkl"
     print("Saving model to: " + model_name)
     act.save(model_name)
     end = time.time()

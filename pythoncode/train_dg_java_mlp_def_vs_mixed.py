@@ -18,21 +18,22 @@ def main():
     start = time.time()
     env = gym.make(env_name)
     model = deepq.models.mlp([256, 256])
-    act = deepq.learn_multiple_nets(
+    act = deepq.learn(
         env,
         q_func=model,
-        lr=1e-5,
+        lr=5e-5,
         max_timesteps=2000000,
         buffer_size=50000,
         exploration_fraction=0.5,
         exploration_final_eps=0.03,
         checkpoint_freq=50000,
-        print_freq=1000,
+        print_freq=500,
         param_noise=False,
         gamma=0.99,
-        ep_mean_length=1000
+        ep_mean_length=500,
+	scope="deepq_train_e3"
     )
-    model_name = "depgraph_dq_mlp_rand_epoch2.pkl"
+    model_name = "depgraph_dq_mlp_rand_epoch3.pkl"
     print("Saving model to: " + model_name)
     act.save(model_name)
     end = time.time()
