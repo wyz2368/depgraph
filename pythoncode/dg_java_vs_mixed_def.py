@@ -330,8 +330,10 @@ class DepgraphJavaEnvVsMixedDef(gym.Env):
         '''
         Return the scope in which to load a defender network, based on its name.
         '''
-        if "epoch" in net_name:
+        if "epoch2" in net_name:
             return "deepq_train"
+        if "epoch3" in net_name:
+            return "deepq_train_e3"
         return None
 
     def get_opponent_reward(self):

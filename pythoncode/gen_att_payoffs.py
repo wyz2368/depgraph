@@ -23,6 +23,8 @@ def get_net_scope(net_name):
     '''
     if "epoch2" in net_name:
         return "deepq_train"
+    if "epoch3" in net_name:
+        return "deepq_train_e3"
     return None
 
 def sample_def_strat(defender_mixed_strat):
