@@ -31,7 +31,8 @@ DEF_INPUT_DEPTH = 2 + DEF_OBS_LENGTH * 2
 DEF_OBS_SIZE = NODE_COUNT * DEF_INPUT_DEPTH
 ATT_OBS_SIZE = (AND_NODE_COUNT + EDGE_TO_OR_NODE_COUNT) * 2 + NODE_COUNT * ATT_OBS_LENGTH + 1
 
-DEF_MIXED_STRAT_FILE = "randNoAnd_B_epoch3_def.tsv"
+DEF_MIXED_STRAT_FILE = "randNoAnd_B_epoch4_def.tsv"
+# DEF_MIXED_STRAT_FILE = "randNoAnd_B_epoch3_def.tsv"
 # DEF_MIXED_STRAT_FILE = "randNoAnd_B_epoch2_def.tsv"
 # DEF_MIXED_STRAT_FILE = "randNoAnd_B_noNet_defStrat.tsv"
 DEF_STRAT_TO_PROB = {}
