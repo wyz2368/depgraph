@@ -328,14 +328,16 @@ def learn(env,
                 else:
                     obses_t, actions, rewards, obses_tp1, dones = replay_buffer.sample(batch_size)
                     weights, batch_idxes = np.ones_like(rewards), None
-                td_errors = train(obses_t, actions, rewards, obses_tp1, dones, weights)
+                with sess.as_default():
+                    td_errors = train(obses_t, actions, rewards, obses_tp1, dones, weights)
                 if prioritized_replay:
                     new_priorities = np.abs(td_errors) + prioritized_replay_eps
                     replay_buffer.update_priorities(batch_idxes, new_priorities)
 
             if t > learning_starts and t % target_network_update_freq == 0:
                 # Update target network periodically.
-                update_target()
+                with sess.as_default():
+                    update_target()
 
             mean_ep_reward = round(np.mean(episode_rewards[(-ep_mean_length - 1):-1]), 1)
             num_episodes = len(episode_rewards)
