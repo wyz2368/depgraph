@@ -18,7 +18,8 @@ def main():
     start = time.time()
     env = gym.make(env_name)
     model = deepq.models.mlp([256, 256])
-    act = deepq.learn(
+    model_name = "dg_dqmlp_rand30NoAnd_B_epoch4_att.pkl"
+    deepq.learn_and_save(
         env,
         q_func=model,
         lr=5e-5,
@@ -31,11 +32,10 @@ def main():
         param_noise=False,
         gamma=0.99,
         ep_mean_length=250,
-	scope="deepq_train_e3"
+        scope="deepq_train_e4",
+        path_for_save=model_name
     )
-    model_name = "dg_dqmlp_rand30NoAnd_B_epoch3_att.pkl"
     print("Saving model to: " + model_name)
-    act.save(model_name)
     end = time.time()
     elapsed = end - start
     minutes = elapsed // 60
