@@ -17,16 +17,18 @@ def main():
 
     env_name = "DepgraphJavaEnvVsMixedAtt-v0"
 
-    model_name = "depgraph_dq_mlp_rand_epoch2_b.pkl"
-
-    num_episodes = 10
+    # model_name = "depgraph_dq_mlp_rand_epoch2_b.pkl"
+    # model_name = "depgraph_dq_mlp_rand_epoch3.pkl"
+    model_name = "depgraph_dq_mlp_rand_epoch4_temp.pkl"
+    
+    num_episodes = 1000
 
     start_time = time.time()
 
     env = gym.make(env_name)
     print("Environment: " + env_name)
 
-    act = deepq.load_with_scope(model_name, "deepq_train")
+    act = deepq.load_with_scope(model_name, "deepq_train_e4")
     print("Model: " + model_name)
 
     rewards = []
