@@ -59,21 +59,33 @@ Setup notes for OpenAI:
         cd ~/baselines/baselines/baselines/deepq/experiments
         python3 train_c4_minimax_conv.py
 -- scripts to use for train and test:
-        enjoy_depgraph_data.py
-        enjoy_depgraphAtt_data.py
-        enjoy_depgraph_data_vs_mixed.py
-        enjoy_dg_data_vs_mixed_def.py
-        enjoy_dg_two_sided.py
-        train_depgraph_java_mlp.py
-        train_depgraph_java_mlp_att.py
-        train_dg_java_mlp_def_vs_mixed.py
-        train_dg_java_mlp_att_vs_mixed.py
+        pythoncode/enjoy_depgraph_data.py
+        pythoncode/enjoy_depgraphAtt_data.py
+        pythoncode/enjoy_depgraph_data_vs_mixed.py
+        pythoncode/enjoy_dg_data_vs_mixed_def.py
+        pythoncode/enjoy_dg_two_sided.py
+        pythoncode/train_depgraph_java_mlp.py
+        pythoncode/train_depgraph_java_mlp_att.py
+        pythoncode/train_dg_java_mlp_def_vs_mixed.py
+        pythoncode/train_dg_java_mlp_att_vs_mixed.py
 -- scripts to use for generating new columns:
-        gen_att_payoffs.py
-        gen_def_payoffs.py
-        generate_new_cols.py
-        cli_enjoy_dg_no_net.py
-        cli_enjoy_dg_def_net.py
-        cli_enjoy_dg_att_net.py
-        cli_enjoy_dg_two_sided.py
+        pythoncode/gen_att_payoffs.py
+        pythoncode/gen_def_payoffs.py
+        pythoncode/generate_new_cols.py
+        pythoncode/cli_enjoy_dg_no_net.py
+        pythoncode/cli_enjoy_dg_def_net.py
+        pythoncode/cli_enjoy_dg_att_net.py
+        pythoncode/cli_enjoy_dg_two_sided.py
         add_new_data.py
+-- Java JAR files to have:
+        depgraphpy4jdefvseither/depgraphpy4jdefvsnetorheuristic.jar
+        depgraphpy4jattvseither/depgraphpy4jattvsnetorheuristic.jar
+        depgraphpy4jboth/depgraphpy4jconfigboth.jar
+        pythoncode/dg4jdefcli/dg4jdefcli.jar
+        pythoncode/dg4jattcli/dg4jattcli.jar
+        pythoncode/dg4jnonetcli/dg4jnonetcli.jar
+-- each JAR file's folder needs to have:
+        graphs/RandomGraph30N100E6T1_B.json
+-- other library to have:
+        ga
+        # from GameAnalysis library developed by Erik and Bryce
