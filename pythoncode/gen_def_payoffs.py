@@ -25,6 +25,8 @@ def get_net_scope(net_name):
         return "deepq_train"
     if "epoch3" in net_name:
         return "deepq_train_e3"
+    if "epoch4" in net_name:
+        return "deepq_train_e4"
     return None
 
 def sample_att_strat(attacker_mixed_strat):
