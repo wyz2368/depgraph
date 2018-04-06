@@ -1,4 +1,20 @@
 Setup notes for OpenAI:
+-- notes:
+        has worked on srg.eecs.umich.edu:
+            TensorFlow version 1.4.1
+                python3 -c 'import tensorflow as tf; print(tf.__version__)'
+            Python3 version 3.5.2
+                python3 -V
+            Java version 1.8.0_162, build 1.8.0_162-8u162-b12-0ubuntu0.16.04.2-b12
+                java -version
+            Ubuntu 16.04.4 LTS, xenial
+                lsb_release -a
+            Intel(R) Xeon(R) CPU E5-1620 v2 @ 3.70GHz
+                cat /proc/cpuinfo | head -20
+            CPUs: 8
+                nproc --all
+            RAM: 32 GB
+                cat /proc/meminfo | head -5
 
 -- need to install for Python3:
         -- OpenAI Gym
