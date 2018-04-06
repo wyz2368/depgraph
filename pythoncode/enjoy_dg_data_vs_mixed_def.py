@@ -18,7 +18,8 @@ def main():
 
     # model_name = "dg_dqmlp_rand30NoAnd_B_epoch2_att.pkl"
     # model_name = "dg_dqmlp_rand30NoAnd_B_epoch3_att.pkl"
-    model_name = "dg_dqmlp_rand30NoAnd_B_epoch4_att.pkl"
+    # model_name = "dg_dqmlp_rand30NoAnd_B_epoch4_att.pkl"
+    model_name = "dg_dqmlp_rand30NoAnd_B_epoch5_att.pkl"
 
     num_episodes = 1000
 
@@ -27,7 +28,7 @@ def main():
     env = gym.make(env_name)
     print("Environment: " + env_name)
 
-    act = deepq.load_with_scope(model_name, "deepq_train_e4")
+    act = deepq.load_with_scope(model_name, "deepq_train_e5")
     print("Model: " + model_name)
 
     rewards = []

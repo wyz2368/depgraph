@@ -12,11 +12,11 @@ def main():
         graph game against opponent.
 
         env_name = "DepgraphJavaAtt-v0"
-        model_name = "depgraph_java_deepq_model2.pkl"
     '''
 
     env_name = "DepgraphJavaAtt-v0"
-    model_name = "dg_dqmlp_rand30NoAnd_B_att.pkl"
+    # model_name = "dg_dqmlp_rand30NoAnd_B_att.pkl"
+    model_name = "dg_dqmlp_rand30NoAnd_B_att_fixed.pkl"
     num_episodes = 1000
 
     start_time = time.time()

@@ -18,12 +18,12 @@ def main():
     start = time.time()
     env = gym.make(env_name)
     model = deepq.models.mlp([256, 256])
-    model_name = "dg_dqmlp_rand30NoAnd_B_epoch4_att.pkl"
+    model_name = "dg_dqmlp_rand30NoAnd_B_epoch5_att_b.pkl"
     deepq.learn_and_save(
         env,
         q_func=model,
         lr=5e-5,
-        max_timesteps=1000000,
+        max_timesteps=700000,
         buffer_size=30000,
         exploration_fraction=0.5,
         exploration_final_eps=0.03,
@@ -32,7 +32,7 @@ def main():
         param_noise=False,
         gamma=0.99,
         ep_mean_length=250,
-        scope="deepq_train_e4",
+        scope="deepq_train_e5",
         path_for_save=model_name
     )
     print("Saving model to: " + model_name)
