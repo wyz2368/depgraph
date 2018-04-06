@@ -30,7 +30,8 @@ DEF_INPUT_DEPTH = 2 + DEF_OBS_LENGTH * 2
 DEF_OBS_SIZE = NODE_COUNT * DEF_INPUT_DEPTH
 ATT_OBS_SIZE = (AND_NODE_COUNT + EDGE_TO_OR_NODE_COUNT) * 2 + NODE_COUNT * ATT_OBS_LENGTH + 1
 
-ATT_MIXED_STRAT_FILE = "randNoAnd_B_epoch4_att.tsv"
+ATT_MIXED_STRAT_FILE = "randNoAnd_B_epoch5_att.tsv"
+# ATT_MIXED_STRAT_FILE = "randNoAnd_B_epoch4_att.tsv"
 # ATT_MIXED_STRAT_FILE = "randNoAnd_B_epoch3_att.tsv"
 # ATT_MIXED_STRAT_FILE = "randNoAnd_B_epoch2_att.tsv"
 # ATT_MIXED_STRAT_FILE = "randNoAnd_B_noNet_attStrat.tsv"
@@ -334,6 +335,8 @@ class DepgraphJavaEnvVsMixedAtt(gym.Env):
             return "deepq_train"
         if "epoch3" in net_name:
             return "deepq_train_e3"
+        if "epoch4" in net_name:
+            return "deepq_train_e4"
         return None
 
     def get_opponent_reward(self):

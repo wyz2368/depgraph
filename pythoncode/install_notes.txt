@@ -38,13 +38,15 @@ Setup notes for OpenAI:
                 -- note: this will fail if there is no display on the server.
 -- need to modify certain scripts:
         gym/gym/envs/__init__.py
-        -- register your environments
-        gym/gym/envs/board_games/__init__.py
-        -- register your environment
-        gym/gym/envs/board_games/c4.py
-        baselines/baselines/deepq/experiments/train_c4_conv.py
-        baselines/baselines/deepq/experiments/train_c4_minimax_conv.py
-        baselines/baselines/deepq/experiments/train_c4_minimax_conv_deep.py
+        gym/gym/envs/board_game/__init__.py
+        gym/gym/envs/board_game/depgraph_java.py
+        gym/gym/envs/board_game/depgraph_java_att.py
+        gym/gym/envs/board_game/dg_java_both.py
+        gym/gym/envs/board_game/dg_java_vs_mixed_att.py
+        gym/gym/envs/board_game/dg_java_vs_mixed_def.py
+        baselines/baselines/deepq/__init__.py
+        baselines/baselines/deepq/build_graph.py
+        baselines/baselines/deepq/simple_conservative.py
 -- call your gym code to test:
         python3
         import gym
@@ -56,3 +58,24 @@ Setup notes for OpenAI:
 -- call your baselines code to test:
         cd ~/baselines/baselines/baselines/deepq/experiments
         python3 train_c4_minimax_conv.py
+-- scripts to use for train and test:
+        enjoy_depgraph_data.py
+        enjoy_depgraphAtt_data.py
+        enjoy_depgraph_data_vs_mixed.py
+        enjoy_dg_data_vs_mixed_def.py
+        enjoy_dg_two_sided.py
+        dg_java_vs_mixed_att.py
+        dg_java_vs_mixed_def.py
+        train_depgraph_java_mlp.py
+        train_depgraph_java_mlp_att.py
+        train_dg_java_mlp_def_vs_mixed.py
+        train_dg_java_mlp_att_vs_mixed.py
+-- scripts to use for generating new columns:
+        gen_att_payoffs.py
+        gen_def_payoffs.py
+        generate_new_cols.py
+        cli_enjoy_dg_no_net.py
+        cli_enjoy_dg_def_net.py
+        cli_enjoy_dg_att_net.py
+        cli_enjoy_dg_two_sided.py
+        add_new_data.py
