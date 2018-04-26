@@ -22,7 +22,8 @@ Setup notes for OpenAI:
                 https://gym.openai.com/docs/
                 mkdir gym
                 cd gym
-                git clone https://github.com/openai/gym
+                # git clone https://github.com/openai/gym
+                git clone https://github.com/masonwright14/gym.git
                 cd gym
                 pip3 install -e .[all]
                 -- note: this may fail if swig is not installed yet.
@@ -33,15 +34,17 @@ Setup notes for OpenAI:
                 https://github.com/openai/baselines
                 mkdir baselines
                 cd baselines
-                git clone https://github.com/openai/baselines.git
+                # git clone https://github.com/openai/baselines.git
+                git clone https://github.com/masonwright14/baselines.git
                 cd baselines
                 pip3 install -e .
+        -- Py4J
+                pip3 install py4j
 -- check installations:
         -- OpenAI Gym check:
                 python3
                 import gym
                 env = gym.make('Hex9x9-v0')
-                # or: env = gym.make('Blackjack-v0')
                 env.reset()
                 env.render()
         -- OpenAI baselines check:
@@ -108,4 +111,3 @@ Setup notes for OpenAI:
 -- other library to have:
         ga
         # from GameAnalysis library developed by Erik and Bryce
-
