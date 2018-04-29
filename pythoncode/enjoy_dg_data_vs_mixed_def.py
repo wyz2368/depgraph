@@ -19,7 +19,8 @@ def main():
     # model_name = "dg_dqmlp_rand30NoAnd_B_epoch2_att.pkl"
     # model_name = "dg_dqmlp_rand30NoAnd_B_epoch3_att.pkl"
     # model_name = "dg_dqmlp_rand30NoAnd_B_epoch4_att.pkl"
-    model_name = "dg_dqmlp_rand30NoAnd_B_epoch5_att.pkl"
+    # model_name = "dg_dqmlp_rand30NoAnd_B_epoch5_att_b.pkl"
+    model_name = "dg_dqmlp_rand30NoAnd_B_epoch5_att_c.pkl"
 
     num_episodes = 1000
 
