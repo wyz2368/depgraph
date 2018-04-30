@@ -24,6 +24,8 @@ def get_net_scope(net_name):
         return "deepq_train_e3"
     if "epoch4" in net_name:
         return "deepq_train_e4"
+    if "epoch5" in net_name:
+        return "deepq_train_e5"
     return None
 
 def get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
