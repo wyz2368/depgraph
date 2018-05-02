@@ -149,7 +149,8 @@ def augment_game_data(game_data, new_data):
             (new_def_payoff, new_att_payoff) = new_data[defender][attacker]
             old_profile = get_profile_entry(game_data, defender, attacker)
             old_observations = old_profile["observations_count"]
-            print(attacker + " " + defender + " " + str(new_def_payoff) + " " + str(old_observations))
+            # print(attacker + " " + defender + " " + \
+            #     str(new_def_payoff) + " " + str(old_observations))
             old_def_payoff = get_def_payoff(old_profile)
             old_att_payoff = get_att_payoff(old_profile)
             total_def_payoff = old_def_payoff * old_observations + \
@@ -164,7 +165,7 @@ def augment_game_data(game_data, new_data):
             set_def_payoff(game_data, defender, attacker, mean_def_payoff)
             set_att_payoff(game_data, defender, attacker, mean_att_payoff)
 
-# python augment_game_data.py game_3014_6_fixed.json out_morePayoffData_epoch6.json game_3014_6_fixed_more3.json
+# python augment_game_data.py game_3014_5_fixed.json out_morePayoffData_epoch6.json game_3014_5_fixed_aug.json
 def main(game_file, new_payoffs_file, result_file):
     '''
     Load the pre-existing game payoff data, then load the new payoff entries.
