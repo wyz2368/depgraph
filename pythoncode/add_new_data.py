@@ -207,6 +207,9 @@ def augment_game_data(game_data, new_data):
     next_symmetry_group_id = get_max_symmetry_group_id(game_data) + 1
     for result_to_add in get_results_to_add(new_data, def_strat_name, att_strat_name):
         (def_strat, att_strat, def_payoff, att_payoff) = result_to_add
+        if def_strat in game_data and att_strat in game_data[def_strat]:
+            print("Danger: duplicate profile: " + def_strat + " " + att_strat)
+            sys.exit()
         add_profile(game_data, def_strat, att_strat, def_payoff, att_payoff, \
                     next_profile_id, next_symmetry_group_id, \
                     original_num_sims, new_num_sims)
