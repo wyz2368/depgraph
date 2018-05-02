@@ -76,16 +76,21 @@ def add_attacker_strategy(game_data, new_strategy):
     att_strategies.append(new_strategy)
 
 def add_profile(game_data, def_strat, att_strat, def_payoff, att_payoff, \
-    next_profile_id, next_symmetry_group_id):
+    next_profile_id, next_symmetry_group_id, original_num_sims, new_num_sims):
     '''
     Add the profile given by (def_strat, att_strat, def_payoff, att_payoff) to the list
     of profiles in game_data.
     Assume the new profile has 10 observations and standard deviation of payoffs of 1.0,
     with the count of agents being 1 per symmetry group.
     '''
+    if original_num_sims < 1 or new_num_sims < 1:
+        raise ValueError("num_sims must be positive: " + str(original_num_sims) + ", " + \
+            str(new_num_sims))
+    original_observations_equiv = new_num_sims * 1.0 / original_num_sims
+
     profile = {}
     profile["id"] = next_profile_id
-    profile["observations_count"] = 10
+    profile["observations_count"] = original_observations_equiv
 
     symmetry_groups = []
 
@@ -160,6 +165,17 @@ def get_results_to_add(new_data, def_strat_name, att_strat_name):
         result.append((cur_def, cur_att, def_payoff, att_payoff))
     return result
 
+def get_original_num_sims(game_data):
+    '''
+    Return the num_sims that were used per observation originally in the game, on
+    EGTA Online.
+    '''
+    config = game_data["configuration"]
+    for pair in config:
+        if pair[0] == "numSim":
+            return int(pair[1])
+    raise ValueError("numSim not given in game file configuration")
+
 def augment_game_data(game_data, new_data):
     '''
     -- add the new defender strategy to "roles" -> "defender" -> "strategies"
@@ -184,12 +200,16 @@ def augment_game_data(game_data, new_data):
     print("Att strat name: " + att_strat_name)
     add_attacker_strategy(game_data, att_strat_name)
 
+    original_num_sims = get_original_num_sims(game_data)
+    new_num_sims = new_data["num_sims"]
+
     next_profile_id = get_max_profile_id(game_data) + 1
     next_symmetry_group_id = get_max_symmetry_group_id(game_data) + 1
     for result_to_add in get_results_to_add(new_data, def_strat_name, att_strat_name):
         (def_strat, att_strat, def_payoff, att_payoff) = result_to_add
         add_profile(game_data, def_strat, att_strat, def_payoff, att_payoff, \
-                    next_profile_id, next_symmetry_group_id)
+                    next_profile_id, next_symmetry_group_id, \
+                    original_num_sims, new_num_sims)
         next_profile_id += 1
         next_symmetry_group_id += 2
 
