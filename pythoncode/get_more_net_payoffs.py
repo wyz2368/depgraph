@@ -91,6 +91,9 @@ def main(env_name_def_net, env_name_att_net, env_name_both, \
     att_heuristics = get_lines(attacker_heuristics)
     def_networks = get_lines(defender_networks)
     att_networks = get_lines(attacker_networks)
+    entry_count = len(def_networks) * (len(att_networks) + len(att_heuristics)) + \
+        len(att_networks) * len(def_heuristics)
+    print("Entries to generate: " + str(entry_count))
     result_dict = get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
         num_sims, \
         def_heuristics, att_heuristics, def_networks, att_networks, graph_name)
