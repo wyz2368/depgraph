@@ -36,9 +36,14 @@ def get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
     opponent, num_sims times each, and return a Json object that stores the sample mean
     payoff for every resulting pair of strategies.
     '''
+    if new_defender_model is None and new_attacker_model is None:
+        raise ValueError("Both new models cannot be None.")
+
     result = {}
-    result[new_defender_model] = {}
-    result[new_attacker_model] = {}
+    if new_defender_model is not None:
+        result[new_defender_model] = {}
+    if new_attacker_model is not None:
+        result[new_attacker_model] = {}
     result["env_name_def_net"] = env_name_def_net
     result["env_name_att_net"] = env_name_att_net
     result["env_name_both"] = env_name_both
@@ -46,62 +51,65 @@ def get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
     result["graph_name"] = graph_name
     start_time = time.time()
 
-    # run new_defender_model against all att_heuristics
-    start_time_att_heuristics = time.time()
-    for att_heuristic in att_heuristics:
-        mean_rewards_tuple = get_payoffs_def_net( \
-            env_name_def_net, num_sims, new_defender_model, att_heuristic, graph_name, \
-            get_net_scope(new_defender_model))
-        print(str((new_defender_model, att_heuristic)) + "\n" + str(mean_rewards_tuple))
-        result[new_defender_model][att_heuristic] = list(mean_rewards_tuple)
-    if att_heuristics:
-        duration_att_heuristics = time.time() - start_time_att_heuristics
-        time_per_att_heuristic = int(duration_att_heuristics * 1.0 / len(att_heuristics))
-        print("Seconds per attacker heuristic: " + str(time_per_att_heuristic))
+    if new_defender_model is not None:
+        # run new_defender_model against all att_heuristics
+        start_time_att_heuristics = time.time()
+        for att_heuristic in att_heuristics:
+            mean_rewards_tuple = get_payoffs_def_net( \
+                env_name_def_net, num_sims, new_defender_model, att_heuristic, graph_name, \
+                get_net_scope(new_defender_model))
+            print(str((new_defender_model, att_heuristic)) + "\n" + str(mean_rewards_tuple))
+            result[new_defender_model][att_heuristic] = list(mean_rewards_tuple)
+        if att_heuristics:
+            duration_att_heuristics = time.time() - start_time_att_heuristics
+            time_per_att_heuristic = int(duration_att_heuristics * 1.0 / len(att_heuristics))
+            print("Seconds per attacker heuristic: " + str(time_per_att_heuristic))
 
-    # run new_defender_model against all att_networks
-    start_time_att_nets = time.time()
-    for att_network in att_networks:
+        # run new_defender_model against all att_networks
+        start_time_att_nets = time.time()
+        for att_network in att_networks:
+            mean_rewards_tuple = get_payoffs_both( \
+                env_name_both, num_sims, new_defender_model, att_network, graph_name, \
+                get_net_scope(new_defender_model), get_net_scope(att_network))
+            print(str((new_defender_model, att_network)) + "\n" + str(mean_rewards_tuple))
+            result[new_defender_model][att_network] = list(mean_rewards_tuple)
+        if att_networks:
+            duration_att_nets = time.time() - start_time_att_nets
+            time_per_att_net = int(duration_att_nets * 1.0 / len(att_networks))
+            print("Seconds per attacker network: " + str(time_per_att_net))
+
+    if new_attacker_model is not None:
+        # run new_attacker_model against all def_heuristics
+        start_time_def_heuristics = time.time()
+        for def_heuristic in def_heuristics:
+            mean_rewards_tuple = get_payoffs_att_net( \
+                env_name_att_net, num_sims, def_heuristic, new_attacker_model, graph_name, \
+                get_net_scope(new_attacker_model))
+            print(str((def_heuristic, new_attacker_model)) + "\n" + str(mean_rewards_tuple))
+            result[new_attacker_model][def_heuristic] = list(mean_rewards_tuple)
+        if def_heuristics:
+            duration_def_heuristics = time.time() - start_time_def_heuristics
+            time_per_def_heuristic = int(duration_def_heuristics * 1.0 / len(def_heuristics))
+            print("Seconds per defender heuristic: " + str(time_per_def_heuristic))
+
+        # run new_attacker_model against all def_networks
+        start_time_both_nets = time.time()
+        for def_network in def_networks:
+            mean_rewards_tuple = get_payoffs_both( \
+                env_name_both, num_sims, def_network, new_attacker_model, graph_name, \
+                get_net_scope(def_network), get_net_scope(new_attacker_model))
+            print(str((def_network, new_attacker_model)) + "\n" + str(mean_rewards_tuple))
+            result[new_attacker_model][def_network] = list(mean_rewards_tuple)
+        duration_both_nets = int(time.time() - start_time_both_nets)
+        print("Seconds playing both new networks: " + str(duration_both_nets))
+
+    if new_defender_model is not None and new_attacker_model is not None:
+        # run new_defender_model against new_attacker_model
         mean_rewards_tuple = get_payoffs_both( \
-            env_name_both, num_sims, new_defender_model, att_network, graph_name, \
-            get_net_scope(new_defender_model), get_net_scope(att_network))
-        print(str((new_defender_model, att_network)) + "\n" + str(mean_rewards_tuple))
-        result[new_defender_model][att_network] = list(mean_rewards_tuple)
-    if att_networks:
-        duration_att_nets = time.time() - start_time_att_nets
-        time_per_att_net = int(duration_att_nets * 1.0 / len(att_networks))
-        print("Seconds per attacker network: " + str(time_per_att_net))
-
-    # run new_attacker_model against all def_heuristics
-    start_time_def_heuristics = time.time()
-    for def_heuristic in def_heuristics:
-        mean_rewards_tuple = get_payoffs_att_net( \
-            env_name_att_net, num_sims, def_heuristic, new_attacker_model, graph_name, \
-            get_net_scope(new_attacker_model))
-        print(str((def_heuristic, new_attacker_model)) + "\n" + str(mean_rewards_tuple))
-        result[new_attacker_model][def_heuristic] = list(mean_rewards_tuple)
-    if def_heuristics:
-        duration_def_heuristics = time.time() - start_time_def_heuristics
-        time_per_def_heuristic = int(duration_def_heuristics * 1.0 / len(def_heuristics))
-        print("Seconds per defender heuristic: " + str(time_per_def_heuristic))
-
-    # run new_attacker_model against all def_networks
-    start_time_both_nets = time.time()
-    for def_network in def_networks:
-        mean_rewards_tuple = get_payoffs_both( \
-            env_name_both, num_sims, def_network, new_attacker_model, graph_name, \
-            get_net_scope(def_network), get_net_scope(new_attacker_model))
-        print(str((def_network, new_attacker_model)) + "\n" + str(mean_rewards_tuple))
-        result[new_attacker_model][def_network] = list(mean_rewards_tuple)
-    duration_both_nets = int(time.time() - start_time_both_nets)
-    print("Seconds playing both new networks: " + str(duration_both_nets))
-
-    # run new_defender_model against new_attacker_model
-    mean_rewards_tuple = get_payoffs_both( \
-        env_name_both, num_sims, new_defender_model, new_attacker_model, graph_name, \
-        get_net_scope(new_defender_model), get_net_scope(new_attacker_model))
-    print(str((new_defender_model, new_attacker_model)) + "\n" + str(mean_rewards_tuple))
-    result[new_defender_model][new_attacker_model] = list(mean_rewards_tuple)
+            env_name_both, num_sims, new_defender_model, new_attacker_model, graph_name, \
+            get_net_scope(new_defender_model), get_net_scope(new_attacker_model))
+        print(str((new_defender_model, new_attacker_model)) + "\n" + str(mean_rewards_tuple))
+        result[new_defender_model][new_attacker_model] = list(mean_rewards_tuple)
     duration = time.time() - start_time
     print("Minutes taken: " + str(duration // 60))
     return result
@@ -154,7 +162,11 @@ if __name__ == '__main__':
     ENV_NAME_BOTH = sys.argv[3]
     NUM_SIMS = int(float(sys.argv[4]))
     NEW_DEFENDER = sys.argv[5]
+    if NEW_DEFENDER == "None":
+        NEW_DEFENDER = None
     NEW_ATTACKER = sys.argv[6]
+    if NEW_ATTACKER == "None":
+        NEW_ATTACKER = None
     DEFENDER_HEURISTICS = sys.argv[7]
     ATTACKER_HEURISTICS = sys.argv[8]
     DEFENDER_NETWORKS = sys.argv[9]
