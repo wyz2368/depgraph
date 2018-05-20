@@ -195,12 +195,12 @@ def augment_game_data(game_data, new_data):
                 -- "payoff": whatever the attacker or defender payoff was in that pairing
     '''
     def_strat_name = get_defender_strategy(new_data)
-    print("Def strat name: " + def_strat_name)
+    print("Def strat name: " + str(def_strat_name))
     if def_strat_name is not None:
         add_defender_strategy(game_data, def_strat_name)
 
     att_strat_name = get_attacker_strategy(new_data)
-    print("Att strat name: " + att_strat_name)
+    print("Att strat name: " + str(att_strat_name))
     if att_strat_name is not None:
         add_attacker_strategy(game_data, att_strat_name)
 
