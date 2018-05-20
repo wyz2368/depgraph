@@ -27,7 +27,7 @@ def get_defender_strategy(new_data):
     for key in new_data.keys():
         if ".pkl" in key and "_att" not in key:
             return key
-    raise ValueError("Defender strategy not found")
+    return None
 
 def get_defender_role(game_data):
     '''
@@ -47,7 +47,7 @@ def get_attacker_strategy(new_data):
     for key in new_data.keys():
         if ".pkl" in key and "_att" in key:
             return key
-    raise ValueError("Attacker strategy not found")
+    return None
 
 def get_attacker_role(game_data):
     '''
@@ -148,21 +148,23 @@ def get_results_to_add(new_data, def_strat_name, att_strat_name):
     '''
     result = []
 
-    def_results = new_data[def_strat_name]
-    for att_strat, payoffs in def_results.iteritems():
-        cur_def = def_strat_name
-        cur_att = att_strat
-        def_payoff = payoffs[0]
-        att_payoff = payoffs[1]
-        result.append((cur_def, cur_att, def_payoff, att_payoff))
+    if def_strat_name is not None:
+        def_results = new_data[def_strat_name]
+        for att_strat, payoffs in def_results.iteritems():
+            cur_def = def_strat_name
+            cur_att = att_strat
+            def_payoff = payoffs[0]
+            att_payoff = payoffs[1]
+            result.append((cur_def, cur_att, def_payoff, att_payoff))
 
-    att_results = new_data[att_strat_name]
-    for def_strat, payoffs in att_results.iteritems():
-        cur_def = def_strat
-        cur_att = att_strat_name
-        def_payoff = payoffs[0]
-        att_payoff = payoffs[1]
-        result.append((cur_def, cur_att, def_payoff, att_payoff))
+    if att_strat_name is not None:
+        att_results = new_data[att_strat_name]
+        for def_strat, payoffs in att_results.iteritems():
+            cur_def = def_strat
+            cur_att = att_strat_name
+            def_payoff = payoffs[0]
+            att_payoff = payoffs[1]
+            result.append((cur_def, cur_att, def_payoff, att_payoff))
     return result
 
 def get_original_num_sims(game_data):
@@ -194,11 +196,16 @@ def augment_game_data(game_data, new_data):
     '''
     def_strat_name = get_defender_strategy(new_data)
     print("Def strat name: " + def_strat_name)
-    add_defender_strategy(game_data, def_strat_name)
+    if def_strat_name is not None:
+        add_defender_strategy(game_data, def_strat_name)
 
     att_strat_name = get_attacker_strategy(new_data)
     print("Att strat name: " + att_strat_name)
-    add_attacker_strategy(game_data, att_strat_name)
+    if att_strat_name is not None:
+        add_attacker_strategy(game_data, att_strat_name)
+
+    if def_strat_name is None and att_strat_name is None:
+        raise ValueError("Both strategy names cannot be None.")
 
     original_num_sims = get_original_num_sims(game_data)
     new_num_sims = new_data["num_sims"]
