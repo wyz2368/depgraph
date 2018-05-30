@@ -12,7 +12,8 @@ def get_mixture_weights(gambit_solution_string):
     '''
     Return the mixed strategy weights from the "LCP" solution method of Gambit.
     '''
-    values = gambit_solution_string.strip().split(",")
+    values = gambit_solution_string.splitlines()[0]
+    values = values.strip().split(",")
     values.pop(0)
     values = [float(x) for x in values]
     return values
