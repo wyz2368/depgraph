@@ -1,4 +1,5 @@
 ''' Play back the dependency graph network that was learned. '''
+import sys
 import time
 import math
 import numpy as np
@@ -6,7 +7,7 @@ import gym
 
 from baselines import deepq
 
-def main():
+def main(env_name):
     '''
         Load the network from file, and play games of the depdency
         graph game against opponent.
@@ -15,12 +16,7 @@ def main():
         model_name = "depgraph_java_deepq_model2.pkl"
     '''
 
-    env_name = "DepgraphJavaEnvVsMixedAtt-v0"
-
-    # model_name = "depgraph_dq_mlp_rand_epoch2_b.pkl"
-    # model_name = "depgraph_dq_mlp_rand_epoch3.pkl"
-    # model_name = "depgraph_dq_mlp_rand_epoch4.pkl"
-    model_name = "depgraph_dq_mlp_rand_epoch5.pkl"
+    model_name = "dg_sl29_dq_mlp_rand_epoch14.pkl"
     num_episodes = 1000
 
     start_time = time.time()
@@ -28,7 +24,7 @@ def main():
     env = gym.make(env_name)
     print("Environment: " + env_name)
 
-    act = deepq.load_with_scope(model_name, "deepq_train_e5")
+    act = deepq.load_with_scope(model_name, "deepq_train_e14")
     print("Model: " + model_name)
 
     rewards = []
@@ -53,5 +49,10 @@ def main():
     print("Stderr reward: " + fmt.format(stderr_reward))
     print("Minutes taken: " + str(duration // 60))
 
+# example: python3 enjoy_depgraph_data_vs_mixed.py DepgraphJavaEnvVsMixedAtt29N-v0
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) != 2:
+        raise ValueError("Need 1 arg: env_name_att_net")
+    ENV_NAME = sys.argv[1]
+    main(ENV_NAME)
+

@@ -2,23 +2,23 @@
 Trains a multilayer perceptron to play the depgraph game against
 an attacker that can mix over heuristic and network strategies.
 '''
+import sys
 import time
 import gym
 
 from baselines import deepq
 
-def main():
+def main(env_name):
     '''
     Makes the depgraph environment, builds a multilayer perceptron model,
     trains the model, and saves the result.
     '''
-    env_name = "DepgraphJavaEnvVsMixedAtt-v0"
     print("Environment: " + env_name)
 
     start = time.time()
     env = gym.make(env_name)
     model = deepq.models.mlp([256, 256])
-    model_name = "depgraph_dq_mlp_rand_epoch5.pkl"
+    model_name = "dg_sl29_dq_mlp_rand_epoch14.pkl"
     act = deepq.learn_and_save(
         env,
         q_func=model,
@@ -32,7 +32,7 @@ def main():
         param_noise=False,
         gamma=0.99,
         ep_mean_length=250,
-	scope="deepq_train_e5",
+	scope="deepq_train_e14",
         path_for_save=model_name,
     )
     print("Saving model to: " + model_name)
@@ -42,5 +42,10 @@ def main():
     print("Minutes taken: " + str(minutes))
     print("Opponent was: " + env_name)
 
+# example: python3 train_dg_java_mlp_def_vs_mixed.py DepgraphJavaEnvVsMixedAtt29N-v0
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) != 2:
+        raise ValueError("Need 1 arg: env_name_att_net")
+    ENV_NAME = sys.argv[1]
+    main(ENV_NAME)
+
