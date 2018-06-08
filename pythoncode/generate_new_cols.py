@@ -9,12 +9,13 @@ Requirements:
 import sys
 import json
 import time
+import os.path
 
 from cli_enjoy_dg_two_sided import get_payoffs_both
 from cli_enjoy_dg_def_net import get_payoffs_def_net
 from cli_enjoy_dg_att_net import get_payoffs_att_net
 
-def get_net_scope(self, net_name):
+def get_net_scope(net_name):
     # defender name is like:
     # *_epochNUM.pkl, where NUM is an integer >= 1.
     #
@@ -133,6 +134,9 @@ def main(env_name_def_net, env_name_att_net, env_name_both, \
     '''
     if num_sims < 1:
         raise ValueError("num_sims must be positive: " + str(num_sims))
+    if os.path.isfile(out_file_name):
+        print("Skipping: " + out_file_name + " already exists.")
+        return
     def_heuristics = get_lines(defender_heuristics)
     att_heuristics = get_lines(attacker_heuristics)
     def_networks = get_lines(defender_networks)
