@@ -3,6 +3,7 @@ Add the new strategies and their payoffs to the given game data Json file.
 '''
 import sys
 import json
+import os.path
 
 def get_json_data(json_file):
     '''
@@ -150,7 +151,7 @@ def get_results_to_add(new_data, def_strat_name, att_strat_name):
 
     if def_strat_name is not None:
         def_results = new_data[def_strat_name]
-        for att_strat, payoffs in def_results.iteritems():
+        for att_strat, payoffs in def_results.items():
             cur_def = def_strat_name
             cur_att = att_strat
             def_payoff = payoffs[0]
@@ -159,7 +160,7 @@ def get_results_to_add(new_data, def_strat_name, att_strat_name):
 
     if att_strat_name is not None:
         att_results = new_data[att_strat_name]
-        for def_strat, payoffs in att_results.iteritems():
+        for def_strat, payoffs in att_results.items():
             cur_def = def_strat
             cur_att = att_strat_name
             def_payoff = payoffs[0]
@@ -223,24 +224,45 @@ def augment_game_data(game_data, new_data):
         next_profile_id += 1
         next_symmetry_group_id += 2
 
-# python add_new_data.py game_3014.json out_newPayoffData_1.json game_3014_1.json
-def main(game_file, new_payoffs_file, result_file):
+def get_game_file_name(game_number, new_epoch):
+    if new_epoch == 1:
+        # special case: epoch not listed in epoch 0 game file name.
+        return "game_" + str(game_number) + ".json"
+    # return the game file name from the previous epoch.
+    return "game_" + str(game_number) + "_" + str(new_epoch - 1) + ".json"
+
+# example: python3 add_new_data.py 3013 sl29 1
+def main(game_number, game_short_name, new_epoch):
     '''
     Load the pre-existing game payoff data, then load the new payoff entries and
     strategy names.
     Augment the old game data object with the new strategies and payoffs.
     Print the extended object to file as Json.
     '''
-    game_data = get_json_data(game_file)
-    new_data = get_json_data(new_payoffs_file)
+    game_file_name = get_game_file_name(game_number, new_epoch)
+    print(game_file_name)
+    if not os.path.isfile(game_file_name):
+        raise ValueError(game_file_name + " missing.")
+    game_data = get_json_data(game_file_name)
+
+    new_payoffs_file_name = "pythoncode/out_newPayoffs_" + game_short_name + \
+        "_epoch" + str(new_epoch) + ".json"
+    if not os.path.isfile(new_payoffs_file_name):
+        raise ValueError(new_payoffs_file_name + " missing.")
+    new_data = get_json_data(new_payoffs_file_name)
     augment_game_data(game_data, new_data)
-    print_json(result_file, game_data)
+
+    result_file_name = "game_" + str(game_number) + "_" + str(new_epoch) + ".json"
+    if os.path.isfile(result_file_name):
+        print("Skipping: " + result_file_name + " already exists.")
+        return
+    print_json(result_file_name, game_data)
 
 if __name__ == '__main__':
     if len(sys.argv) != 4:
         raise ValueError( \
-            "Need 3 args: game_file, new_payoffs_file, result_file")
-    GAME_FILE = sys.argv[1]
-    NEW_PAYOFFS_FILE = sys.argv[2]
-    RESULT_FILE = sys.argv[3]
-    main(GAME_FILE, NEW_PAYOFFS_FILE, RESULT_FILE)
+            "Need 3 args: game_number, game_short_name, new_epoch")
+    GAME_NUMBER = int(sys.argv[1])
+    GAME_SHORT_NAME = sys.argv[2]
+    NEW_EPOCH = int(sys.argv[3])
+    main(GAME_NUMBER, GAME_SHORT_NAME, NEW_EPOCH)
