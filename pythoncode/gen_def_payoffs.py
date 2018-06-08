@@ -11,13 +11,14 @@ import time
 import math
 import random
 import json
+import os.path
 
 from cli_enjoy_dg_two_sided import get_payoffs_both_with_sd
 from cli_enjoy_dg_def_net import get_payoffs_def_net_with_sd
 from cli_enjoy_dg_att_net import get_payoffs_att_net_with_sd
 from cli_enjoy_dg_no_net import get_payoffs_no_net_with_sd
 
-def get_net_scope(self, net_name):
+def get_net_scope(net_name):
     # defender name is like:
     # *_epochNUM.pkl, where NUM is an integer >= 1.
     #
@@ -259,6 +260,9 @@ def main(env_name_def_net, env_name_att_net, env_name_both, \
     '''
     if num_sims < 1:
         raise ValueError("num_sims must be positive: " + str(num_sims))
+    if os.path.isfile(out_file_name):
+        print("Skipping: " + out_file_name + " already exists.")
+        return
     att_mixed_strat = get_mixed_strat(attacker_mixed_strat)
     def_heuristics = get_lines(defender_heuristics)
     def_networks = get_lines(defender_networks)
