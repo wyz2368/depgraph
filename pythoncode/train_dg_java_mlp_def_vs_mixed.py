@@ -4,6 +4,7 @@ an attacker that can mix over heuristic and network strategies.
 '''
 import sys
 import time
+import os.path
 import gym
 
 from baselines import deepq
@@ -13,13 +14,16 @@ def main(env_name):
     Makes the depgraph environment, builds a multilayer perceptron model,
     trains the model, and saves the result.
     '''
+    model_name = "dg_sl29_dq_mlp_rand_epoch14.pkl"
+    if os.path.isfile(model_name):
+        raise ValueError("Skipping: " + model_name + " already exists.")
+
     print("Environment: " + env_name)
 
     start = time.time()
     env = gym.make(env_name)
     model = deepq.models.mlp([256, 256])
-    model_name = "dg_sl29_dq_mlp_rand_epoch14.pkl"
-    act = deepq.learn_and_save(
+    deepq.learn_and_save(
         env,
         q_func=model,
         lr=5e-5,
@@ -32,7 +36,7 @@ def main(env_name):
         param_noise=False,
         gamma=0.99,
         ep_mean_length=250,
-	scope="deepq_train_e14",
+        scope="deepq_train_e14",
         path_for_save=model_name,
     )
     print("Saving model to: " + model_name)
@@ -48,4 +52,3 @@ if __name__ == '__main__':
         raise ValueError("Need 1 arg: env_name_att_net")
     ENV_NAME = sys.argv[1]
     main(ENV_NAME)
-
