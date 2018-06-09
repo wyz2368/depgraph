@@ -125,27 +125,6 @@ def get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
     print("Minutes taken: " + str(duration // 60))
     return result
 
-def main(env_name_def_net, env_name_att_net, env_name_both, \
-    num_sims, new_defender, new_attacker, defender_heuristics, \
-    attacker_heuristics, defender_networks, attacker_networks, graph_name, out_file_name):
-    '''
-    Main method: reads in the heuristic strategy names, network file names, calls for
-    the game simulations to be run, and prints the resulting Json result to file.
-    '''
-    if num_sims < 1:
-        raise ValueError("num_sims must be positive: " + str(num_sims))
-    if os.path.isfile(out_file_name):
-        print("Skipping: " + out_file_name + " already exists.")
-        return
-    def_heuristics = get_lines(defender_heuristics)
-    att_heuristics = get_lines(attacker_heuristics)
-    def_networks = get_lines(defender_networks)
-    att_networks = get_lines(attacker_networks)
-    result_dict = get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
-        num_sims, new_defender, new_attacker, \
-        def_heuristics, att_heuristics, def_networks, att_networks, graph_name)
-    print_json(out_file_name, result_dict)
-
 def print_json(file_name, json_obj):
     '''
     Prints the given Json object to the given file name.
@@ -165,28 +144,77 @@ def get_lines(file_name):
     result = [x for x in result if x]
     return result
 
+def get_truth_value(str_input):
+    if str_input == "True":
+        return True
+    if str_input == "False":
+        return False
+    raise ValueError("Must be True or False: " + str_input)
+
+def main(env_name_def_net, env_name_att_net, env_name_both, \
+    num_sims, new_epoch, env_short_name, is_def_beneficial, \
+    is_att_beneficial, graph_name):
+    '''
+    Main method: reads in the heuristic strategy names, network file names, calls for
+    the game simulations to be run, and prints the resulting Json result to file.
+    '''
+    if num_sims < 1:
+        raise ValueError("num_sims must be positive: " + str(num_sims))
+
+    out_file_name = "out_newPayoffs_" + env_short_name + "_epoch" + str(new_epoch) + \
+        ".json"
+    if os.path.isfile(out_file_name):
+        print("Skipping: " + out_file_name + " already exists.")
+        return
+
+    if not is_def_beneficial and not is_att_beneficial:
+        print("Skipping: neither deviation is beneficial.")
+        return
+
+    defender_heuristics = "defStratStrings_" + env_short_name + ".txt"
+    def_heuristics = get_lines(defender_heuristics)
+
+    attacker_heuristics = "attStratStrings_" + env_short_name + ".txt"
+    att_heuristics = get_lines(attacker_heuristics)
+
+    defender_networks = "oldDefNetNames_" + env_short_name + ".txt"
+    def_networks = get_lines(defender_networks)
+
+    attacker_networks = "oldAttNetNames_" + env_short_name + ".txt"
+    att_networks = get_lines(attacker_networks)
+
+    new_defender = "dg_" + env_short_name + "_dq_mlp_rand_epoch" + str(new_epoch) + ".pkl"
+    if not is_def_beneficial:
+        new_defender = None
+
+    new_attacker = "dg_" + env_short_name + "_dq_mlp_rand_epoch" + str(new_epoch) + \
+        "_att.pkl"
+    if not is_att_beneficial:
+        new_attacker = None
+
+    result_dict = get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
+        num_sims, new_defender, new_attacker, \
+        def_heuristics, att_heuristics, def_networks, att_networks, graph_name)
+    print_json(out_file_name, result_dict)
+
+'''
+example: python3 generate_new_cols.py DepgraphJava29N-v0 DepgraphJavaEnvAtt29N-v0 \
+    DepgraphJavaEnvBoth29N-v0 400 1 sl29 True False SepLayerGraph0_noAnd_B.json
+'''
 if __name__ == '__main__':
-    if len(sys.argv) != 13:
-        raise ValueError("Need 12 args: env_name_def_net, env_name_att_net, env_name_both, " +
-                         "num_sims, new_defender, new_attacker, " + \
-                         "defender_heuristics, attacker_heuristics, defender_networks, " + \
-                         "attacker_networks, graph_name, out_file_name")
+    if len(sys.argv) != 10:
+        raise ValueError("Need 9 args: env_name_def_net, env_name_att_net, env_name_both, " +
+                         "num_sims, new_epoch, env_short_name, is_def_beneficial, " + \
+                         "is_att_beneficial, graph_name")
     ENV_NAME_DEF_NET = sys.argv[1]
     ENV_NAME_ATT_NET = sys.argv[2]
     ENV_NAME_BOTH = sys.argv[3]
     NUM_SIMS = int(float(sys.argv[4]))
-    NEW_DEFENDER = sys.argv[5]
-    if NEW_DEFENDER == "None":
-        NEW_DEFENDER = None
-    NEW_ATTACKER = sys.argv[6]
-    if NEW_ATTACKER == "None":
-        NEW_ATTACKER = None
-    DEFENDER_HEURISTICS = sys.argv[7]
-    ATTACKER_HEURISTICS = sys.argv[8]
-    DEFENDER_NETWORKS = sys.argv[9]
-    ATTACKER_NETWORKS = sys.argv[10]
-    GRAPH_NAME = sys.argv[11]
-    OUT_FILE_NAME = sys.argv[12]
+    NEW_EPOCH = int(float(sys.argv[5]))
+    ENV_SHORT_NAME = sys.argv[6]
+    IS_DEF_BENEFICIAL = get_truth_value(sys.argv[7])
+    IS_ATT_BENEFICIAL = get_truth_value(sys.argv[8])
+    GRAPH_NAME = sys.argv[9]
     main(ENV_NAME_DEF_NET, ENV_NAME_ATT_NET, ENV_NAME_BOTH, \
-        NUM_SIMS, NEW_DEFENDER, NEW_ATTACKER, DEFENDER_HEURISTICS, \
-        ATTACKER_HEURISTICS, DEFENDER_NETWORKS, ATTACKER_NETWORKS, GRAPH_NAME, OUT_FILE_NAME)
+        NUM_SIMS, NEW_EPOCH, ENV_SHORT_NAME, IS_DEF_BENEFICIAL, \
+        IS_ATT_BENEFICIAL, GRAPH_NAME)
