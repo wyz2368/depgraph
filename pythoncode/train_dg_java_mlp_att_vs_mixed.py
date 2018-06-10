@@ -55,7 +55,7 @@ def main(env_name, env_short_name, new_epoch):
 example: python3 train_dg_java_mlp_att_vs_mixed.py DepgraphJavaEnvVsMixedDef29N-v0 sl29 15
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 4:
         raise ValueError("Need 3 args: env_name_def_net, env_short_name, new_epoch")
     ENV_NAME = sys.argv[1]
     ENV_SHORT_NAME = sys.argv[2]

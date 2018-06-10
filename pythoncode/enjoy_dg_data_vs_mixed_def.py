@@ -7,16 +7,14 @@ import gym
 
 from baselines import deepq
 
-def main(env_name):
+def main(env_name, env_short_name, new_epoch):
     '''
         Load the network from file, and play games of the depdency
         graph game against opponent.
 
         model_name = "depgraph_java_deepq_model2.pkl"
     '''
-
-    model_name = "dg_sl29_dq_mlp_rand_epoch14_att.pkl"
-
+    model_name = "dg_" + env_short_name + "_dq_mlp_rand_epoch" + str(new_epoch) + "_att.pkl"
     num_episodes = 1000
 
     start_time = time.time()
@@ -24,7 +22,11 @@ def main(env_name):
     env = gym.make(env_name)
     print("Environment: " + env_name)
 
-    act = deepq.load_with_scope(model_name, "deepq_train_e14")
+    my_scope = "deepq_train"
+    if new_epoch > 1:
+        my_scope = "deepq_train_e" + str(new_epoch)
+
+    act = deepq.load_with_scope(model_name, my_scope)
     print("Model: " + model_name)
 
     rewards = []
@@ -49,10 +51,13 @@ def main(env_name):
     print("Stderr reward: " + fmt.format(stderr_reward))
     print("Minutes taken: " + str(duration // 60))
 
-# example: python3 DepgraphJavaEnvVsMixedDef29N-v0
+'''
+python3 enjoy_dg_data_vs_mixed_def.py DepgraphJavaEnvVsMixedDef29N-v0 sl29 15
+'''
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        raise ValueError("Need 1 arg: env_name_def_net")
+    if len(sys.argv) != 4:
+        raise ValueError("Need 1 arg: env_name_def_net, env_short_name, new_epoch")
     ENV_NAME = sys.argv[1]
-    main(ENV_NAME)
-
+    ENV_SHORT_NAME = sys.argv[2]
+    NEW_EPOCH = int(sys.argv[3])
+    main(ENV_NAME, ENV_SHORT_NAME, NEW_EPOCH)
