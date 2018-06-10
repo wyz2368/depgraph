@@ -9,12 +9,12 @@ import gym
 
 from baselines import deepq
 
-def main(env_name):
+def main(env_name, env_short_name, new_epoch):
     '''
     Makes the depgraph environment, builds a multilayer perceptron model,
     trains the model, and saves the result.
     '''
-    model_name = "dg_sl29_dq_mlp_rand_epoch14.pkl"
+    model_name = "dg_" + env_short_name + "_dq_mlp_rand_epoch" + str(new_epoch) + ".pkl"
     if os.path.isfile(model_name):
         raise ValueError("Skipping: " + model_name + " already exists.")
 
@@ -23,6 +23,11 @@ def main(env_name):
     start = time.time()
     env = gym.make(env_name)
     model = deepq.models.mlp([256, 256])
+
+    my_scope = "deepq_train"
+    if new_epoch > 1:
+        my_scope = "deepq_train_e" + str(new_epoch)
+
     deepq.learn_and_save(
         env,
         q_func=model,
@@ -36,7 +41,7 @@ def main(env_name):
         param_noise=False,
         gamma=0.99,
         ep_mean_length=250,
-        scope="deepq_train_e14",
+        scope=my_scope,
         path_for_save=model_name,
     )
     print("Saving model to: " + model_name)
@@ -46,9 +51,13 @@ def main(env_name):
     print("Minutes taken: " + str(minutes))
     print("Opponent was: " + env_name)
 
-# example: python3 train_dg_java_mlp_def_vs_mixed.py DepgraphJavaEnvVsMixedAtt29N-v0
+'''
+example: python3 train_dg_java_mlp_def_vs_mixed.py DepgraphJavaEnvVsMixedAtt29N-v0 sl29 15
+'''
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        raise ValueError("Need 1 arg: env_name_att_net")
+        raise ValueError("Need 3 args: env_name_att_net, env_short_name, new_epoch")
     ENV_NAME = sys.argv[1]
-    main(ENV_NAME)
+    ENV_SHORT_NAME = sys.argv[2]
+    NEW_EPOCH = int(sys.argv[3])
+    main(ENV_NAME, ENV_SHORT_NAME, NEW_EPOCH)
