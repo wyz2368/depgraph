@@ -252,19 +252,25 @@ def get_lines(file_name):
     return result
 
 def main(env_name_def_net, env_name_att_net, env_name_both, \
-    num_sims, attacker_mixed_strat, defender_heuristics, \
-    defender_networks, graph_name, out_file_name):
+    num_sims, env_short_name, graph_name, new_epoch):
     '''
     Main method: reads in the heuristic strategy names, network file names, calls for
     the game simulations to be run.
     '''
     if num_sims < 1:
         raise ValueError("num_sims must be positive: " + str(num_sims))
+
+    out_file_name = "out_defPayoffs_" + env_short_name + "_epoch" + str(new_epoch) + ".txt"
     if os.path.isfile(out_file_name):
         print("Skipping: " + out_file_name + " already exists.")
         return
+
+    attacker_mixed_strat = env_short_name + "_epoch" + str(new_epoch) + "_att.tsv"
     att_mixed_strat = get_mixed_strat(attacker_mixed_strat)
+
+    defender_heuristics = "defStratStrings_" + env_short_name + ".txt"
     def_heuristics = get_lines(defender_heuristics)
+    defender_networks = "defNetStrings_" + env_short_name + ".txt"
     def_networks = get_lines(defender_networks)
     best_payoffs = get_best_payoffs(env_name_def_net, env_name_att_net, \
         env_name_both, num_sims, att_mixed_strat, \
@@ -272,20 +278,16 @@ def main(env_name_def_net, env_name_att_net, env_name_both, \
     print_to_file(best_payoffs, out_file_name)
 
 if __name__ == '__main__':
-    if len(sys.argv) != 10:
-        raise ValueError("Need 9 args: env_name_def_net, " + \
+    if len(sys.argv) != 8:
+        raise ValueError("Need 7 args: env_name_def_net, " + \
                          "env_name_att_net, env_name_both, " + \
-                         "num_sims, attacker_mixed_strat, defender_heuristics, " + \
-                         "defender_networks, graph_name, out_file_name")
+                         "num_sims, env_short_name, graph_name, new_epoch")
     ENV_NAME_DEF_NET = sys.argv[1]
     ENV_NAME_ATT_NET = sys.argv[2]
     ENV_NAME_BOTH = sys.argv[3]
     NUM_SIMS = int(float(sys.argv[4]))
-    ATTACKER_MIXED_STRAT = sys.argv[5]
-    DEFENDER_HEURISTICS = sys.argv[6]
-    DEFENDER_NETWORKS = sys.argv[7]
-    GRAPH_NAME = sys.argv[8]
-    OUT_FILE_NAME = sys.argv[9]
+    ENV_SHORT_NAME = sys.argv[5]
+    GRAPH_NAME = sys.argv[6]
+    NEW_EPOCH = int(sys.argv[7])
     main(ENV_NAME_DEF_NET, ENV_NAME_ATT_NET, ENV_NAME_BOTH, \
-        NUM_SIMS, ATTACKER_MIXED_STRAT, \
-        DEFENDER_HEURISTICS, DEFENDER_NETWORKS, GRAPH_NAME, OUT_FILE_NAME)
+        NUM_SIMS, ENV_SHORT_NAME, GRAPH_NAME, NEW_EPOCH)
