@@ -276,6 +276,10 @@ def main(env_name_def_net, env_name_att_net, env_name_both, \
         att_heuristics, att_networks, graph_name)
     print_to_file(best_payoffs, out_file_name)
 
+'''
+example: python3 gen_att_payoffs.py DepgraphJava29N-v0 DepgraphJavaEnvAtt29N-v0 \
+    DepgraphJavaEnvBoth29N-v0 400 sl29 SepLayerGraph0_noAnd_B.json 14
+'''
 if __name__ == '__main__':
     if len(sys.argv) != 8:
         raise ValueError("Need 7 args: env_name_def_net, " + \
