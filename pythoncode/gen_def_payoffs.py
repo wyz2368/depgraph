@@ -260,21 +260,23 @@ def main(env_name_def_net, env_name_att_net, env_name_both, \
     if num_sims < 1:
         raise ValueError("num_sims must be positive: " + str(num_sims))
 
-    out_file_name = "out_defPayoffs_" + env_short_name + "_epoch" + str(new_epoch) + ".txt"
+    out_file_name = "out_defPayoffs_" + str(env_short_name) + "_epoch" + str(new_epoch) + ".txt"
     if env_short_name is None:
         out_file_name = "out_defPayoffs_epoch" + str(new_epoch) + ".txt"
     if os.path.isfile(out_file_name):
         print("Skipping: " + out_file_name + " already exists.")
         return
 
-    attacker_mixed_strat = env_short_name + "_epoch" + str(new_epoch) + "_att.tsv"
+    attacker_mixed_strat = str(env_short_name) + "_epoch" + str(new_epoch) + "_att.tsv"
+    if env_short_name is None:
+        attacker_mixed_strat = "randNoAnd_B_epoch" + str(new_epoch) + "_att.tsv"
     att_mixed_strat = get_mixed_strat(attacker_mixed_strat)
 
-    defender_heuristics = "defStratStrings_" + env_short_name + ".txt"
+    defender_heuristics = "defStratStrings_" + str(env_short_name) + ".txt"
     if env_short_name is None:
         defender_heuristics = "defStratStrings.txt"
     def_heuristics = get_lines(defender_heuristics)
-    defender_networks = "defNetStrings_" + env_short_name + ".txt"
+    defender_networks = "defNetStrings_" + str(env_short_name) + ".txt"
     if env_short_name is None:
         defender_networks = "defNetStrings.txt"
     def_networks = get_lines(defender_networks)
