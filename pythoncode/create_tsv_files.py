@@ -34,16 +34,17 @@ def get_rounded_strategy_lines(input_lines):
         values.append(value)
     if sum(values) < 0.9 or sum(values) > 1.1:
         raise ValueError("Wrong initial values: " + str(values))
-    while sum(values) > 1.0:
+    tolerance = 10 ** (-1 * decimal_places - 1)
+    while sum(values) > 1.0 + tolerance:
         index = random.randint(0, len(values))
         values[index] -= 10 ** (-1 * decimal_places)
         values[index] = round(values[index], decimal_places)
-    while sum(values) < 1.0:
+    while sum(values) < 1.0 - tolerance:
         index = random.randint(0, len(values) - 1)
         values[index] += 10 ** (-1 * decimal_places)
         values[index] = round(values[index], decimal_places)
-    if sum(values) != 1.0 or min(values) < 0.0 or max(values) > 1.0:
-        raise ValueError("Wrong normalized values: " + str(values))
+    if abs(sum(values) - 1.0) > tolerance or min(values) < 0.0 or max(values) > 1.0:
+        raise ValueError("Wrong normalized values: " + str(values) + "\t" + str(sum(values)))
     return [strats[i] + "\t" + str(values[i]) for i in range(len(strats))]
 
 def get_attacker_lines(file_name):
@@ -61,7 +62,8 @@ def main(game_number, cur_epoch, env_short_name):
 
     defender_lines = get_defender_lines(input_file)
     defender_lines = get_rounded_strategy_lines(defender_lines)
-    def_output_file = "pythoncode/" + env_short_name + "_epoch" + str(cur_epoch) + "_def.tsv"
+    def_output_file = "pythoncode/" + env_short_name + "_epoch" + str(cur_epoch + 1) + \
+        "_def.tsv"
     if os.path.isfile(def_output_file):
         print("Skipping: " + def_output_file + " already exists.")
     else:
@@ -69,7 +71,8 @@ def main(game_number, cur_epoch, env_short_name):
 
     attacker_lines = get_attacker_lines(input_file)
     attacker_lines = get_rounded_strategy_lines(attacker_lines)
-    att_output_file = "pythoncode/" + env_short_name + "_epoch" + str(cur_epoch) + "_att.tsv"
+    att_output_file = "pythoncode/" + env_short_name + "_epoch" + str(cur_epoch + 1) + \
+        "_att.tsv"
     if os.path.isfile(att_output_file):
         print("Skipping: " + att_output_file + " already exists.")
     else:
