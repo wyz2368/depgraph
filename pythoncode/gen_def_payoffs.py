@@ -261,6 +261,8 @@ def main(env_name_def_net, env_name_att_net, env_name_both, \
         raise ValueError("num_sims must be positive: " + str(num_sims))
 
     out_file_name = "out_defPayoffs_" + env_short_name + "_epoch" + str(new_epoch) + ".txt"
+    if env_short_name is None:
+        out_file_name = "out_defPayoffs_epoch" + str(new_epoch) + ".txt"
     if os.path.isfile(out_file_name):
         print("Skipping: " + out_file_name + " already exists.")
         return
@@ -269,8 +271,12 @@ def main(env_name_def_net, env_name_att_net, env_name_both, \
     att_mixed_strat = get_mixed_strat(attacker_mixed_strat)
 
     defender_heuristics = "defStratStrings_" + env_short_name + ".txt"
+    if env_short_name is None:
+        defender_heuristics = "defStratStrings.txt"
     def_heuristics = get_lines(defender_heuristics)
     defender_networks = "defNetStrings_" + env_short_name + ".txt"
+    if env_short_name is None:
+        defender_networks = "defNetStrings.txt"
     def_networks = get_lines(defender_networks)
     best_payoffs = get_best_payoffs(env_name_def_net, env_name_att_net, \
         env_name_both, num_sims, att_mixed_strat, \
@@ -291,6 +297,8 @@ if __name__ == '__main__':
     ENV_NAME_BOTH = sys.argv[3]
     NUM_SIMS = int(float(sys.argv[4]))
     ENV_SHORT_NAME = sys.argv[5]
+    if ENV_SHORT_NAME == "None":
+        ENV_SHORT_NAME = None
     GRAPH_NAME = sys.argv[6]
     NEW_EPOCH = int(sys.argv[7])
     main(ENV_NAME_DEF_NET, ENV_NAME_ATT_NET, ENV_NAME_BOTH, \
