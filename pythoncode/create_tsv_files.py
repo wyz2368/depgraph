@@ -57,7 +57,7 @@ def main(game_number, cur_epoch, env_short_name):
     if cur_epoch == 0:
         input_file = "gambit_result_" + str(game_number) + "_lcp_decode.txt"
     else:
-        input_file = "gambit_result_" + str(game_number) + "_epoch" + str(cur_epoch) + \
+        input_file = "gambit_result_" + str(game_number) + "_" + str(cur_epoch) + \
             "_lcp_decode.txt"
 
     defender_lines = get_defender_lines(input_file)
