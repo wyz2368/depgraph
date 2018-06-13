@@ -27,7 +27,7 @@ def run_evaluation(env_short_name, new_epoch, env_name_def_net):
     cmd_list = ["python3", "enjoy_dg_data_vs_mixed_def.py", env_name_def_net, \
         env_short_name, str(new_epoch)]
     att_out_name_enj = "att_" + env_short_name + "_randNoAndB_epoch" + str(new_epoch) + \
-        ".txt"
+        "_enj.txt"
     with open(att_out_name_enj, "w") as file:
         subprocess.call(cmd_list, stdout=file)
 
