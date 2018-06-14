@@ -259,7 +259,8 @@ def main(env_name_def_net, env_name_att_net, env_name_both, \
     '''
     if num_sims < 1:
         raise ValueError("num_sims must be positive: " + str(num_sims))
-    out_file_name = "out_attPayoffs_" + env_short_name + "_epoch" + str(new_epoch - 1) + ".txt"
+    out_file_name = "out_attPayoffs_" + env_short_name + "_randNoAndB_epoch" + \
+        str(new_epoch - 1) + ".txt"
     if os.path.isfile(out_file_name):
         print("Skipping: " + out_file_name + " already exists.")
         return
