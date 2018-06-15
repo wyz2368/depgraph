@@ -56,7 +56,7 @@ example: python3 train_dg_java_mlp_def_vs_mixed.py DepgraphJavaEnvVsMixedAtt29N-
 '''
 if __name__ == '__main__':
     if len(sys.argv) != 4:
-        raise ValueError("Need 3 args: env_name_att_net, env_short_name, new_epoch")
+        raise ValueError("Need 3 args: env_name_mixed_att, env_short_name, new_epoch")
     ENV_NAME = sys.argv[1]
     ENV_SHORT_NAME = sys.argv[2]
     NEW_EPOCH = int(sys.argv[3])
