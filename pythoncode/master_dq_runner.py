@@ -2,7 +2,9 @@ import sys
 import datetime
 import subprocess
 from os import chdir
+import os.path
 import pythoncode.check_if_beneficial as check
+from add_new_data import get_add_data_result_file_name
 
 def run_gambit(game_number, cur_epoch):
     cmd_list = ["python3", "gambit_analyze.py", str(game_number), str(cur_epoch)]
@@ -71,6 +73,12 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
     env_name_att_net, env_name_both, def_payoff_count, att_payoff_count, graph_name, \
     env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, def_pkl_prefix, \
     att_pkl_prefix):
+    new_epoch = cur_epoch + 1
+    result_file_name = get_add_data_result_file_name(game_number, new_epoch)
+    if os.path.isfile(result_file_name):
+        raise ValueError("Cannot run epoch " + str(cur_epoch) + ": " + \
+            result_file_name + " already exists.")
+
     print("\tWill run gambit, epoch: " + str(cur_epoch)+ ", time: " + \
         str(datetime.datetime.now()))
     # get Nash equilibrium of current strategies
@@ -78,7 +86,6 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
     # create TSV file for current attacker and defender equilibrium strategies
     run_create_tsv(game_number, cur_epoch, env_short_name_tsv)
 
-    new_epoch = cur_epoch + 1
     chdir("pythoncode")
     # set the mixed-strategy opponents to use current TSV file strategies
     run_update_strats(env_short_name_payoffs, new_epoch)

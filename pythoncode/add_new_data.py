@@ -231,6 +231,9 @@ def get_game_file_name(game_number, new_epoch):
     # return the game file name from the previous epoch.
     return "game_" + str(game_number) + "_" + str(new_epoch - 1) + ".json"
 
+def get_add_data_result_file_name(game_number, new_epoch):
+    return "game_" + str(game_number) + "_" + str(new_epoch) + ".json"
+
 # example: python3 add_new_data.py 3013 sl29 1
 def main(game_number, game_short_name, new_epoch):
     '''
@@ -252,7 +255,7 @@ def main(game_number, game_short_name, new_epoch):
     new_data = get_json_data(new_payoffs_file_name)
     augment_game_data(game_data, new_data)
 
-    result_file_name = "game_" + str(game_number) + "_" + str(new_epoch) + ".json"
+    result_file_name = get_add_data_result_file_name(game_number, new_epoch)
     if os.path.isfile(result_file_name):
         print("Skipping: " + result_file_name + " already exists.")
         return
