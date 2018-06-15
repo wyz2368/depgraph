@@ -157,6 +157,12 @@ def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
     print("Converged at epoch: " + str(my_epoch) + ", time: " + \
         str(datetime.datetime.now()))
 
+'''
+example: python3 master_dq_runner.py 3013 17 sl29_randNoAndB sl29 DepgraphJava29N-v0 \
+    DepgraphJavaEnvAtt29N-v0 DepgraphJavaEnvBoth29N-v0 100 400 \
+    SepLayerGraph0_noAnd_B.json DepgraphJavaEnvVsMixedDef29N-v0 \
+    DepgraphJavaEnvVsMixedAtt29N-v0 400 dg_sl29_dq_mlp_rand_epoch dg_sl29_dq_mlp_rand_epoch
+'''
 if __name__ == '__main__':
     if len(sys.argv) != 16:
         raise ValueError("Need 15 args: game_number, cur_epoch, env_short_name_tsv, " + \
