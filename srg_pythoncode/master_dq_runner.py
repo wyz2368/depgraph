@@ -15,8 +15,8 @@ def run_create_tsv(game_number, cur_epoch, env_short_name_tsv):
         env_short_name_tsv]
     subprocess.call(cmd_list)
 
-def run_update_strats(env_short_name_tsv, env_short_name_payoffs, new_epoch):
-    cmd_list = ["python3", "update_opponent_strats.py", env_short_name_payoffs, \
+def run_update_strats(env_short_name_tsv, new_epoch):
+    cmd_list = ["python3", "update_opponent_strats.py", env_short_name_tsv, \
         env_short_name_tsv, str(new_epoch)]
     subprocess.call(cmd_list)
 
@@ -34,15 +34,15 @@ def run_gen_att_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
         str(new_epoch)]
     subprocess.call(cmd_list)
 
-def run_train_test_def(graph_name, env_short_name_payoffs, new_epoch, \
+def run_train_test_def(graph_name, env_short_name_tsv, new_epoch, \
     env_name_vs_mixed_att):
-    cmd_list = ["python3", "train_test_def.py", graph_name, env_short_name_payoffs, \
+    cmd_list = ["python3", "train_test_def.py", graph_name, env_short_name_tsv, \
         str(new_epoch), env_name_vs_mixed_att]
     subprocess.call(cmd_list)
 
-def run_train_test_att(graph_name, env_short_name_payoffs, new_epoch, \
+def run_train_test_att(graph_name, env_short_name_tsv, new_epoch, \
     env_name_vs_mixed_def):
-    cmd_list = ["python3", "train_test_def.py", graph_name, env_short_name_payoffs, \
+    cmd_list = ["python3", "train_test_def.py", graph_name, env_short_name_tsv, \
         str(new_epoch), env_name_vs_mixed_def]
     subprocess.call(cmd_list)
 
@@ -50,9 +50,9 @@ def get_check_if_beneficial(env_name_check_beneficial, new_epoch, is_def):
     return check.check_for_cli(env_name_check_beneficial, new_epoch, is_def)
 
 def run_gen_new_cols(env_name_def_net, env_name_att_net, env_name_both, new_col_count, \
-    new_epoch, env_short_name_payoffs, is_def_beneficial, is_att_beneficial, graph_name):
+    new_epoch, env_short_name_tsv, is_def_beneficial, is_att_beneficial, graph_name):
     cmd_list = ["python3", "generate_new_cols.py", env_name_def_net, env_name_att_net, \
-        env_name_both, str(new_col_count), str(new_epoch), env_short_name_payoffs, \
+        env_name_both, str(new_col_count), str(new_epoch), env_short_name_tsv, \
         str(is_def_beneficial), str(is_att_beneficial), graph_name]
     subprocess.call(cmd_list)
 
@@ -63,8 +63,8 @@ def run_append_net_names(env_short_name_payoffs, new_epoch, def_pkl_prefix, \
         str(is_att_beneficial)]
     subprocess.call(cmd_list)
 
-def run_add_new_data(game_number, env_short_name_payoffs, new_epoch):
-    cmd_list = ["python3", "add_new_data.py", str(game_number), env_short_name_payoffs, \
+def run_add_new_data(game_number, env_short_name_tsv, new_epoch):
+    cmd_list = ["python3", "add_new_data.py", str(game_number), env_short_name_tsv, \
         str(new_epoch)]
     subprocess.call(cmd_list)
 
@@ -88,7 +88,8 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
 
     chdir("pythoncode")
     # set the mixed-strategy opponents to use current TSV file strategies
-    run_update_strats(env_short_name_tsv, env_short_name_payoffs, new_epoch)
+    # FIXME
+    run_update_strats(env_short_name_tsv, new_epoch)
     print("\tWill get def payoffs, epoch: " + str(new_epoch)+ ", time: " + \
         str(datetime.datetime.now()))
     # sample and estimate mean payoff of each defender strategy vs. new attacker equilibrium
@@ -102,11 +103,11 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
     print("\tWill train and test defender, epoch: " + str(new_epoch)+ ", time: " + \
         str(datetime.datetime.now()))
     # train defender network against current attacker equilibrium, and sample its payoff
-    run_train_test_def(graph_name, env_short_name_payoffs, new_epoch, env_name_vs_mixed_att)
+    run_train_test_def(graph_name, env_short_name_tsv, new_epoch, env_name_vs_mixed_att)
     print("\tWill train and test attacker, epoch: " + str(new_epoch)+ ", time: " + \
         str(datetime.datetime.now()))
     # train attacker network against current defender equilibrium, and sample its payoff
-    run_train_test_att(graph_name, env_short_name_payoffs, new_epoch, env_name_vs_mixed_def)
+    run_train_test_att(graph_name, env_short_name_tsv, new_epoch, env_name_vs_mixed_def)
 
     # check if new defender network is beneficial deviation from old equilibrium
     is_def_beneficial = get_check_if_beneficial(env_name_check_beneficial, new_epoch, True)
@@ -123,7 +124,7 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
     # sample payoff of each new network (if it beneficially deviates) against all opponent
     # strategies
     run_gen_new_cols(env_name_def_net, env_name_att_net, env_name_both, new_col_count, \
-        new_epoch, env_short_name_payoffs, is_def_beneficial, is_att_beneficial, graph_name)
+        new_epoch, env_short_name_tsv, is_def_beneficial, is_att_beneficial, graph_name)
     # append name of each new network (if it beneficially deviates) to list of networks to
     # use in equilibrium search
     run_append_net_names(env_short_name_payoffs, new_epoch, def_pkl_prefix, att_pkl_prefix, \
@@ -131,7 +132,7 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
 
     chdir("..")
     # add new payoff data to game object (from new beneficially deviating network(s))
-    run_add_new_data(game_number, env_short_name_payoffs, new_epoch)
+    run_add_new_data(game_number, env_short_name_tsv, new_epoch)
 
     print("Should continue after round: " + str(new_epoch))
     return True
