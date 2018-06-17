@@ -57,5 +57,5 @@ if __name__ == '__main__':
     if len(sys.argv) != 3:
         raise ValueError("Need 2 args: env_name_mixed_def, new_epoch")
     ENV_NAME = sys.argv[1]
-    NEW_EPOCH = int(sys.argv[3])
+    NEW_EPOCH = int(sys.argv[2])
     main(ENV_NAME, NEW_EPOCH)
