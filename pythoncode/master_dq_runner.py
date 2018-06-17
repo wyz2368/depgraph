@@ -42,7 +42,7 @@ def run_train_test_def(graph_name, env_short_name_payoffs, new_epoch, \
 
 def run_train_test_att(graph_name, env_short_name_payoffs, new_epoch, \
     env_name_vs_mixed_def):
-    cmd_list = ["python3", "train_test_def.py", graph_name, env_short_name_payoffs, \
+    cmd_list = ["python3", "train_test_att.py", graph_name, env_short_name_payoffs, \
         str(new_epoch), env_name_vs_mixed_def]
     subprocess.call(cmd_list)
 
