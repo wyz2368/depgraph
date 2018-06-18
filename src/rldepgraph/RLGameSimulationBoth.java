@@ -772,7 +772,7 @@ public final class RLGameSimulationBoth {
 	/**
 	 * @return the nodeIds of currently active nodes, ascending.
 	 */
-	private List<Integer> getActiveNodeIds() {
+	public List<Integer> getActiveNodeIds() {
 		final List<Integer> result = new ArrayList<Integer>();
 		for (final Node node: this.gameState.getEnabledNodeSet()) {
 			result.add(node.getId());

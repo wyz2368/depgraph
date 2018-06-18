@@ -571,6 +571,14 @@ public final class DepgraphPy4JGreedyConfigBothJson {
 		// this.sim.timeStepsLeft >= 1 here, because !this.sim.isGameOver().
 		this.sim.step(
 			this.nodesToDefend, this.nodesToAttack, this.edgesToAttack);
+		
+		final Set<Integer> curNodesDefended = new HashSet<Integer>();
+		curNodesDefended.addAll(this.nodesToDefend);
+		final Set<Integer> curNodesAttacked = new HashSet<Integer>();
+		curNodesAttacked.addAll(this.nodesToAttack);
+		final Set<Integer> curEdgesAttacked = new HashSet<Integer>();
+		curEdgesAttacked.addAll(this.edgesToAttack);
+		
 		// this.sim.timeStepsLeft >= 0 here.
 		this.nodesToDefend.clear();
 		this.nodesToAttack.clear();
@@ -579,6 +587,18 @@ public final class DepgraphPy4JGreedyConfigBothJson {
 		final List<Double> result = new ArrayList<Double>();
 		result.addAll(getDefObsAsListDouble());
 		result.addAll(getAttObsAsListDouble());
+		
+		final Set<Integer> curAttackerNodesAfter = new HashSet<Integer>();
+		curAttackerNodesAfter.addAll(this.sim.getActiveNodeIds());
+		final int timeStepAfter = this.sim.getNumTimeStep()
+			- this.sim.getTimeStepsLeft();
+		final double attackerScore = this.sim.getAttackerMarginalPayoff();
+		final double defenderScore = this.sim.getDefenderMarginalPayoff();
+		final boolean isOverBoolean = this.sim.isGameOver();
+		
+		stepJson(timeStepAfter, curNodesAttacked, 
+			curEdgesAttacked, curNodesDefended, curAttackerNodesAfter, 
+			attackerScore, defenderScore, isOverBoolean);
 		
 		double isOver = 0.0;
 		if (this.sim.isGameOver()) {
