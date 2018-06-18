@@ -80,7 +80,7 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
             result_file_name + " already exists.")
 
     print("\tWill run gambit, epoch: " + str(cur_epoch)+ ", time: " + \
-        str(datetime.datetime.now()))
+        str(datetime.datetime.now()), flush=True)
     # get Nash equilibrium of current strategies
     run_gambit(game_number, cur_epoch)
     # create TSV file for current attacker and defender equilibrium strategies
@@ -91,21 +91,21 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
     # FIXME
     run_update_strats(env_short_name_tsv, new_epoch)
     print("\tWill get def payoffs, epoch: " + str(new_epoch)+ ", time: " + \
-        str(datetime.datetime.now()))
+        str(datetime.datetime.now()), flush=True)
     # sample and estimate mean payoff of each defender strategy vs. new attacker equilibrium
     run_gen_def_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
         def_payoff_count, env_short_name_payoffs, graph_name, new_epoch)
     print("\tWill get att payoffs, epoch: " + str(new_epoch)+ ", time: " + \
-        str(datetime.datetime.now()))
+        str(datetime.datetime.now()), flush=True)
     # sample and estimate mean payoff of each attacker strategy vs. new defender equilibrium
     run_gen_att_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
         att_payoff_count, env_short_name_payoffs, graph_name, new_epoch)
     print("\tWill train and test defender, epoch: " + str(new_epoch)+ ", time: " + \
-        str(datetime.datetime.now()))
+        str(datetime.datetime.now()), flush=True)
     # train defender network against current attacker equilibrium, and sample its payoff
     run_train_test_def(graph_name, env_short_name_tsv, new_epoch, env_name_vs_mixed_att)
     print("\tWill train and test attacker, epoch: " + str(new_epoch)+ ", time: " + \
-        str(datetime.datetime.now()))
+        str(datetime.datetime.now()), flush=True)
     # train attacker network against current defender equilibrium, and sample its payoff
     run_train_test_att(graph_name, env_short_name_tsv, new_epoch, env_name_vs_mixed_def)
 
@@ -116,11 +116,11 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
 
     if not is_def_beneficial and not is_att_beneficial:
         # neither network beneficially deviates, so stop
-        print("Converged after round: " + str(new_epoch))
+        print("Converged after round: " + str(new_epoch), flush=True)
         return False
 
     print("\tWill generate new columns, epoch: " + str(new_epoch)+ ", time: " + \
-        str(datetime.datetime.now()))
+        str(datetime.datetime.now()), flush=True)
     # sample payoff of each new network (if it beneficially deviates) against all opponent
     # strategies
     run_gen_new_cols(env_name_def_net, env_name_att_net, env_name_both, new_col_count, \
@@ -134,7 +134,7 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
     # add new payoff data to game object (from new beneficially deviating network(s))
     run_add_new_data(game_number, env_short_name_tsv, new_epoch)
 
-    print("Should continue after round: " + str(new_epoch))
+    print("Should continue after round: " + str(new_epoch), flush=True)
     return True
 
 def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
@@ -144,10 +144,10 @@ def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
         new_col_count, def_pkl_prefix, att_pkl_prefix):
     should_continue = True
     my_epoch = cur_epoch
-    print("Starting from epoch: " + str(my_epoch))
+    print("Starting from epoch: " + str(my_epoch), flush=True)
     while should_continue:
         print("Will run epoch: " + str(my_epoch) + ", time: " + \
-            str(datetime.datetime.now()))
+            str(datetime.datetime.now()), flush=True)
         should_continue = run_epoch(game_number, my_epoch, env_short_name_tsv, \
             env_short_name_payoffs, env_name_def_net, env_name_att_net, env_name_both, \
             def_payoff_count, \
@@ -156,7 +156,7 @@ def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
         if should_continue:
             my_epoch += 1
     print("Converged at epoch: " + str(my_epoch) + ", time: " + \
-        str(datetime.datetime.now()))
+        str(datetime.datetime.now()), flush=True)
 
 '''
 example: python3 master_dq_runner.py 3014 14 d30 None DepgraphJava-v0 \
