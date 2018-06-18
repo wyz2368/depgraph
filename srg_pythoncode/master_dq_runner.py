@@ -116,7 +116,7 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
 
     if not is_def_beneficial and not is_att_beneficial:
         # neither network beneficially deviates, so stop
-        print("Converged after round: " + str(new_epoch), flush=True)
+        print("\tConverged after round: " + str(new_epoch), flush=True)
         return False
 
     print("\tWill generate new columns, epoch: " + str(new_epoch)+ ", time: " + \
@@ -134,7 +134,7 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
     # add new payoff data to game object (from new beneficially deviating network(s))
     run_add_new_data(game_number, env_short_name_tsv, new_epoch)
 
-    print("Should continue after round: " + str(new_epoch), flush=True)
+    print("\tShould continue after round: " + str(new_epoch), flush=True)
     return True
 
 def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
@@ -144,9 +144,9 @@ def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
         new_col_count, def_pkl_prefix, att_pkl_prefix):
     should_continue = True
     my_epoch = cur_epoch
-    print("Starting from epoch: " + str(my_epoch), flush=True)
+    print("\tStarting from epoch: " + str(my_epoch), flush=True)
     while should_continue:
-        print("Will run epoch: " + str(my_epoch) + ", time: " + \
+        print("\tWill run epoch: " + str(my_epoch) + ", time: " + \
             str(datetime.datetime.now()), flush=True)
         should_continue = run_epoch(game_number, my_epoch, env_short_name_tsv, \
             env_short_name_payoffs, env_name_def_net, env_name_att_net, env_name_both, \
@@ -155,7 +155,7 @@ def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
             env_name_check_beneficial, new_col_count, def_pkl_prefix, att_pkl_prefix)
         if should_continue:
             my_epoch += 1
-    print("Converged at epoch: " + str(my_epoch) + ", time: " + \
+    print("\tConverged at epoch: " + str(my_epoch) + ", time: " + \
         str(datetime.datetime.now()), flush=True)
 
 '''
