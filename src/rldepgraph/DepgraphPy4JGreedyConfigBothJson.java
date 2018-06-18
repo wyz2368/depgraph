@@ -1,8 +1,10 @@
 package rldepgraph;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -39,6 +41,10 @@ import com.github.cliftonlabs.json_simple.JsonObject;
  * Requirements: Py4J,
  * https://www.py4j.org/install.html
  * https://www.py4j.org/download.html
+ * 
+ * json-simple,
+ * https://cliftonlabs.github.io/json-simple/
+ * https://cliftonlabs.github.io/json-simple/target/apidocs/index.html
  */
 public final class DepgraphPy4JGreedyConfigBothJson {
 	
@@ -105,35 +111,81 @@ public final class DepgraphPy4JGreedyConfigBothJson {
 	 * else attacker's.
 	 */
 	private boolean isDefTurn;
-	
+
+	/**
+	 * Name of the graph file for recording to Json.
+	 */
 	private final String myGraphFileName;
 	
+	/**
+	 * Json data from list of previous games for storage.
+	 */
 	private JsonObject games = new JsonObject();
 	
+	/**
+	 * Json data from the current game.
+	 */
 	private JsonObject curGame;
 	
+	/**
+	 * File name for storing Json.
+	 */
+	private final String outputJsonFileName;
+	
+	/**
+	 * Json key for the index of each game.
+	 */
 	public static final String GAME_INDEX = "game_index";
 	
+	/**
+	 * Json key for the graph name used in all games.
+	 */
 	public static final String GRAPH_NAME = "graph_name";
 	
+	/**
+	 * Json key for the list of games' data.
+	 */
 	public static final String GAMES = "games";
 	
+	/**
+	 * Json key for the data from the time step series.
+	 */
 	public static final String TIME_STEPS = "time_steps";
 	
+	/**
+	 * Json key for the current time step in a game's data.
+	 */
 	public static final String TIME = "time";
 	
+	/**
+	 * Json key for the list of attacked node IDs.
+	 */
 	public static final String NODES_ATTACKED = "nodes_attacked";
 	
+	/**
+	 * Json key for the list of attacked edge IDs.
+	 */
 	public static final String EDGES_ATTACKED = "edges_attacked";
 	
+	/**
+	 * Json key for the list of defended node IDs.
+	 */
 	public static final String NODES_DEFENDED = "nodes_defended";
 	
+	/**
+	 * Json key for list of node IDs controlled by attacker after update.
+	 */
 	public static final String ATTACKER_NODES_AFTER = "attacker_nodes_after";
 	
+	/**
+	 * Json key for marginal score of attacker.
+	 */
 	public static final String ATTACKER_SCORE = "attacker_score";
 	
+	/**
+	 * Json key for marginal score of defender.
+	 */
 	public static final String DEFENDER_SCORE = "defender_score";
-
 	
 	/**
 	 * Public constructor.
@@ -144,11 +196,13 @@ public final class DepgraphPy4JGreedyConfigBothJson {
 	 * @param simSpecFolderName the folder from which simulation_spec.json
 	 * will be taken
 	 * @param graphFileName the name of the graph file to use
+	 * @param aOutputJsonFileName the name of the Json file to store in
 	 */
 	DepgraphPy4JGreedyConfigBothJson(
 		final double aProbGreedySelectionCutOff,
 		final String simSpecFolderName,
-		final String graphFileName
+		final String graphFileName,
+		final String aOutputJsonFileName
 	) {
 		if (aProbGreedySelectionCutOff < 0.0
 			|| aProbGreedySelectionCutOff >= 1.0
@@ -178,6 +232,7 @@ public final class DepgraphPy4JGreedyConfigBothJson {
 			+ 1));
 		
 		this.myGraphFileName = graphFileName;
+		this.outputJsonFileName = aOutputJsonFileName;
 	}
 
 	/**
@@ -185,21 +240,24 @@ public final class DepgraphPy4JGreedyConfigBothJson {
 	 * @param args has two args: simSpecFolder and graphFileName
 	 */
 	public static void main(final String[] args) {
-		final int argsCount = 2;
+		final int argsCount = 3;
 		if (args == null || args.length != argsCount) {
 			throw new IllegalArgumentException(
-		"Need 2 args: simSpecFolder, graphFileName"
+		"Need 3 args: simSpecFolder, graphFileName, outputFileName"
 			);
 		}
 		final String simSpecFolderName = args[0];
 		final String graphFileName = args[1];
+		final int two = 2;
+		final String outputFileName = args[two];
 		
 		final double probGreedySelectCutOff = 0.1;
 		// set up Py4J server
 		singleton = new DepgraphPy4JGreedyConfigBothJson(
 			probGreedySelectCutOff,
 			simSpecFolderName,
-			graphFileName
+			graphFileName,
+			outputFileName
 		);
 		final GatewayServer gatewayServer = new GatewayServer(singleton);
 		gatewayServer.start();
@@ -212,6 +270,20 @@ public final class DepgraphPy4JGreedyConfigBothJson {
 	 */
 	public static DepgraphPy4JGreedyConfigBothJson getGame() {
 		return singleton;
+	}
+	
+	/**
+	 * Record this.games to a Json output file. 
+	 */
+	public void printJsonToFile() {
+		assert !this.games.isEmpty();
+		try (final FileWriter file = new FileWriter(this.outputJsonFileName)) {
+			this.games.toJson(file);
+            file.flush();
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+		System.out.println(this.games.toJson());
 	}
 	
 	/**
@@ -245,6 +317,9 @@ public final class DepgraphPy4JGreedyConfigBothJson {
 		return result;
 	}
 	
+	/**
+	 * Reset the Json data in curGame, for a new game.
+	 */
 	private void resetJson() {
 		if (this.games.isEmpty()) {
 			setupGamesJson();
@@ -269,19 +344,42 @@ public final class DepgraphPy4JGreedyConfigBothJson {
 		timeSteps.add(curStep);
 	}
 	
+	/**
+	 * Reset the data for the Json games object.
+	 */
 	private void setupGamesJson() {
 		this.games.put(GRAPH_NAME, this.myGraphFileName);
 		this.games.put(GAMES, new JsonArray());
 	}
 	
+	/**
+	 * @return the JsonArray of data from each time step
+	 * of the current game
+	 */
 	private JsonArray getCurGameTimeSteps() {
 		return (JsonArray) this.curGame.get(TIME_STEPS);
 	}
 	
+	/**
+	 * @return the JsonArray of game data objects
+	 */
 	private JsonArray getGamesArray() {
 		return (JsonArray) this.games.get(GAMES);
 	}
 
+	/**
+	 * Update the Json data after for time step.
+	 * 
+	 * @param timeStepAfter the time after this step occurs
+	 * @param curNodesAttacked the set of node IDs attacked
+	 * @param curEdgesAttacked the set of edge IDs attacked
+	 * @param curNodesDefended the set of node IDs defended
+	 * @param curAttackerNodesAfter the set of node IDs controlled by attacker
+	 * after this time step
+	 * @param attackerScore the marginal score of the attacker
+	 * @param defenderScore the marginal score of the defender
+	 * @param isOver true if the game is over after this step
+	 */
 	private void stepJson(
 		final int timeStepAfter,
 		final Set<Integer> curNodesAttacked,
@@ -296,10 +394,10 @@ public final class DepgraphPy4JGreedyConfigBothJson {
 
 		curStep.put(TIME, timeStepAfter);
 
-		curStep.put(NODES_ATTACKED, Arrays.asList(curNodesAttacked));
-		curStep.put(EDGES_ATTACKED, Arrays.asList(curEdgesAttacked));
-		curStep.put(NODES_DEFENDED, Arrays.asList(curNodesDefended));
-		curStep.put(ATTACKER_NODES_AFTER, Arrays.asList(curAttackerNodesAfter));
+		curStep.put(NODES_ATTACKED, sortedFromSet(curNodesAttacked));
+		curStep.put(EDGES_ATTACKED, sortedFromSet(curEdgesAttacked));
+		curStep.put(NODES_DEFENDED, sortedFromSet(curNodesDefended));
+		curStep.put(ATTACKER_NODES_AFTER, sortedFromSet(curAttackerNodesAfter));
 		
 		curStep.put(ATTACKER_SCORE, attackerScore);
 		curStep.put(DEFENDER_SCORE, defenderScore);
@@ -309,6 +407,16 @@ public final class DepgraphPy4JGreedyConfigBothJson {
 		if (isOver) {
 			getGamesArray().add(this.curGame);
 		}
+	}
+	
+	/**
+	 * @param input a set of integers
+	 * @return a sorted (ascending) list with the same integers
+	 */
+	private static List<Integer> sortedFromSet(final Set<Integer> input) {
+		final List<Integer> result = new ArrayList<Integer>(input);
+		Collections.sort(result);
+		return result;
 	}
 	
 	/**
