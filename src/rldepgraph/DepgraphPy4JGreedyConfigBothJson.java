@@ -368,7 +368,7 @@ public final class DepgraphPy4JGreedyConfigBothJson {
 	}
 
 	/**
-	 * Update the Json data after for time step.
+	 * Update the Json data for time step.
 	 * 
 	 * @param timeStepAfter the time after this step occurs
 	 * @param curNodesAttacked the set of node IDs attacked
