@@ -41,13 +41,13 @@ def check_for_cli(env_short_name, new_epoch, is_defender):
     eq_payoff_file = None
     net_payoff_file = None
     if is_defender:
-        eq_payoff_file = "out_defPayoffs_" + env_short_name + "_epoch" + \
-            str(new_epoch - 1) + ".txt"
-        net_payoff_file = "tdj_mlp_def_" + env_short_name + "_epoch" + str(new_epoch) + "_enj.txt"
+        eq_payoff_file = "out_defPayoffs_randNoAnd_B_epoch" + str(new_epoch - 1) + ".txt"
+        # net_payoff_file = "tdj_mlp_def_" + env_short_name + "_epoch" + str(new_epoch) + "_enj.txt"
+        net_payoff_file = "def_" + env_short_name + "_epoch" + str(new_epoch) + ".txt"
     else:
-        eq_payoff_file = "out_attPayoffs_" + env_short_name + "_epoch" + \
-            str(new_epoch - 1) + ".txt"
-        net_payoff_file = "tdj_mlp_att_" + env_short_name + "_epoch" + str(new_epoch) + "_enj.txt"
+        eq_payoff_file = "out_attPayoffs_randNoAnd_B_epoch" + str(new_epoch - 1) + ".txt"
+        # net_payoff_file = "tdj_mlp_att_" + env_short_name + "_epoch" + str(new_epoch) + "_enj.txt"
+        net_payoff_file = "att_" + env_short_name + "_epoch" + str(new_epoch) + ".txt"
 
     eq_payoff = get_eq_payoff(eq_payoff_file)
     net_payoff = get_net_payoff(net_payoff_file)
