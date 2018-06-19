@@ -8,6 +8,7 @@ Requirements:
 import sys
 import subprocess
 import time
+import os.path
 import numpy as np
 import gym
 from baselines import deepq
@@ -21,6 +22,10 @@ def get_payoffs_both(env_name_both, num_sims, def_model_name, att_model_name, gr
     # see also:
     # https://stackoverflow.com/questions/4789837/
     #     how-to-terminate-a-python-subprocess-launched-with-shell-true
+
+    if os.path.isfile(output_file_name):
+        raise ValueError("Error: " + output_file_name + " already exists.")
+
     cmd = "exec java -jar ../depgraphpy4jbothjson/depgraphpy4jbothjson.jar simspecs/ "\
         + graph_name + " " + output_file_name
     my_process = subprocess.Popen(cmd, shell=True)
@@ -71,8 +76,12 @@ def get_payoffs_both(env_name_both, num_sims, def_model_name, att_model_name, gr
     my_process.kill()
     return result
 
-# DepgraphJavaEnvBoth-v0 100 dg_rand_30n_noAnd_B_eq_2.pkl dg_dqmlp_rand30NoAnd_B_att_fixed.pkl
-# RandomGraph30N100E6T1_B.json out_events_def0_att0_d30.json
+'''
+example: python3 cli_enjoy_dg_two_sided_json.py DepgraphJavaEnvBothJson29N-v0 10 \
+    dg_sl29_dq_mlp_rand_epoch17.pkl dg_sl29_dq_mlp_rand_epoch17_att.pkl \
+    SepLayerGraph0_noAnd_B.json deepq_train_e17 deepq_train_e17 \
+    out_events_def17_att17_s29.json
+'''
 if __name__ == '__main__':
     if len(sys.argv) != 9:
         raise ValueError("Need 8 args: env_name_both, num_sims, def_model_name, " + \
