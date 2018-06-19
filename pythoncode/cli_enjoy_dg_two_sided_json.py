@@ -66,7 +66,7 @@ def get_payoffs_both(env_name_both, num_sims, def_model_name, att_model_name, gr
     mean_def_reward = np.mean(def_rewards)
     mean_att_reward = np.mean(att_rewards)
     result = (mean_def_reward, mean_att_reward)
-    print(result)
+    print(result,  flush=True)
 
     env.close_gateway()
 

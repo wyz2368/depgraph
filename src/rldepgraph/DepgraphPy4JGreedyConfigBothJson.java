@@ -327,7 +327,7 @@ public final class DepgraphPy4JGreedyConfigBothJson {
 
 		this.curGame = new JsonObject();
 
-		final int gameId = this.games.size();
+		final int gameId = getGamesArray().size();
 		this.curGame.put(GAME_INDEX, gameId);
 		
 		final JsonArray timeSteps = new JsonArray();
