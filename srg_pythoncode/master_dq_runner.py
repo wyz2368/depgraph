@@ -50,9 +50,9 @@ def get_check_if_beneficial(env_name_check_beneficial, new_epoch, is_def):
     return check.check_for_cli(env_name_check_beneficial, new_epoch, is_def)
 
 def run_gen_new_cols(env_name_def_net, env_name_att_net, env_name_both, new_col_count, \
-    new_epoch, env_short_name_tsv, is_def_beneficial, is_att_beneficial, graph_name):
+    new_epoch, env_short_name_payoffs, is_def_beneficial, is_att_beneficial, graph_name):
     cmd_list = ["python3", "generate_new_cols.py", env_name_def_net, env_name_att_net, \
-        env_name_both, str(new_col_count), str(new_epoch), env_short_name_tsv, \
+        env_name_both, str(new_col_count), str(new_epoch), env_short_name_payoffs, \
         str(is_def_beneficial), str(is_att_beneficial), graph_name]
     subprocess.call(cmd_list)
 
@@ -63,8 +63,8 @@ def run_append_net_names(env_short_name_payoffs, new_epoch, def_pkl_prefix, \
         str(is_att_beneficial)]
     subprocess.call(cmd_list)
 
-def run_add_new_data(game_number, env_short_name_tsv, new_epoch):
-    cmd_list = ["python3", "add_new_data.py", str(game_number), env_short_name_tsv, \
+def run_add_new_data(game_number, env_short_name_payoffs, new_epoch):
+    cmd_list = ["python3", "add_new_data.py", str(game_number), env_short_name_payoffs, \
         str(new_epoch)]
     subprocess.call(cmd_list)
 
@@ -124,7 +124,7 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
     # sample payoff of each new network (if it beneficially deviates) against all opponent
     # strategies
     run_gen_new_cols(env_name_def_net, env_name_att_net, env_name_both, new_col_count, \
-        new_epoch, env_short_name_tsv, is_def_beneficial, is_att_beneficial, graph_name)
+        new_epoch, env_short_name_payoffs, is_def_beneficial, is_att_beneficial, graph_name)
     # append name of each new network (if it beneficially deviates) to list of networks to
     # use in equilibrium search
     run_append_net_names(env_short_name_payoffs, new_epoch, def_pkl_prefix, att_pkl_prefix, \
@@ -132,7 +132,7 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
 
     chdir("..")
     # add new payoff data to game object (from new beneficially deviating network(s))
-    run_add_new_data(game_number, env_short_name_tsv, new_epoch)
+    run_add_new_data(game_number, env_short_name_payoffs, new_epoch)
 
     print("\tShould continue after round: " + str(new_epoch), flush=True)
     return True
@@ -162,7 +162,7 @@ def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
 example: python3 master_dq_runner.py 3014 14 d30 None DepgraphJava-v0 \
     DepgraphJavaAtt-v0 DepgraphJavaEnvBoth-v0 100 400 \
     RandomGraph30N100E6T1_B.json DepgraphJavaEnvVsMixedDef-v0 \
-    DepgraphJavaEnvVsMixedAtt-v0 randNoAnd_B 400 depgraph_dq_mlp_rand_epoch \
+    DepgraphJavaEnvVsMixedAtt-v0 d30_randNoAndB 400 depgraph_dq_mlp_rand_epoch \
     dg_dqmlp_rand30NoAnd_B_epoch
 '''
 if __name__ == '__main__':
