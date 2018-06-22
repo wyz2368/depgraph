@@ -248,10 +248,8 @@ def main(game_number, game_short_name, new_epoch):
         raise ValueError(game_file_name + " missing.")
     game_data = get_json_data(game_file_name)
 
-    new_payoffs_file_name = "pythoncode/out_newData_" + str(game_short_name) + \
+    new_payoffs_file_name = "pythoncode/out_newPayoffs_" + game_short_name + \
         "_epoch" + str(new_epoch) + ".json"
-    if game_short_name is None:
-        new_payoffs_file_name = "pythoncode/out_newData_epoch" + str(new_epoch) + ".json"
     if not os.path.isfile(new_payoffs_file_name):
         raise ValueError(new_payoffs_file_name + " missing.")
     new_data = get_json_data(new_payoffs_file_name)
@@ -269,7 +267,5 @@ if __name__ == '__main__':
             "Need 3 args: game_number, game_short_name, new_epoch")
     GAME_NUMBER = int(sys.argv[1])
     GAME_SHORT_NAME = sys.argv[2]
-    if GAME_SHORT_NAME == "None":
-        GAME_SHORT_NAME = None
     NEW_EPOCH = int(sys.argv[3])
     main(GAME_NUMBER, GAME_SHORT_NAME, NEW_EPOCH)
