@@ -15,7 +15,7 @@ def main(env_name, env_short_name, new_epoch):
     trains the model, and saves the result.
     '''
     to_load_model_name = "dg_" + env_short_name + "_dq_mlp_rand_epoch" + str(new_epoch) + \
-        "_forRetrain.pkl"
+        ".pkl"
     to_save_model_name = "dg_" + env_short_name + "_dq_mlp_rand_epoch" + str(new_epoch) + \
         "_afterRetrain.pkl"
     if os.path.isfile(to_save_model_name):
@@ -27,9 +27,13 @@ def main(env_name, env_short_name, new_epoch):
     env = gym.make(env_name)
     model = deepq.models.mlp([256, 256])
 
-    my_scope = "deepq_train"
+    my_scope_old = "deepq_train"
     if new_epoch > 1:
-        my_scope = "deepq_train_e" + str(new_epoch)
+        my_scope_old = "deepq_train_e" + str(new_epoch)
+
+    my_scope_new = my_scope_old + "_retrained"
+
+    act_old = deepq.load_with_scope(to_load_model_name, my_scope_old)
 
     deepq.retrain_and_save(
         env,
@@ -44,9 +48,10 @@ def main(env_name, env_short_name, new_epoch):
         param_noise=False,
         gamma=0.99,
         ep_mean_length=250,
-        scope=my_scope,
+        scope_old=my_scope_old,
+        scope_new=my_scope_new,
+        act_old=act_old,
         path_for_save=to_save_model_name,
-        path_for_retrain=to_load_model_name
     )
     print("Saving model to: " + to_save_model_name)
     end = time.time()
