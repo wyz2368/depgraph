@@ -14,10 +14,12 @@ def main(env_name, env_short_name, new_epoch):
     Makes the depgraph environment, builds a multilayer perceptron model,
     trains the model, and saves the result.
     '''
-    model_name = "dg_" + env_short_name + "_dq_mlp_rand_epoch" + str(new_epoch) + \
+    to_load_model_name = "dg_" + env_short_name + "_dq_mlp_rand_epoch" + str(new_epoch) + \
+        "_forRetrain.pkl"
+    to_save_model_name = "dg_" + env_short_name + "_dq_mlp_rand_epoch" + str(new_epoch) + \
         "_afterRetrain.pkl"
-    if os.path.isfile(model_name):
-        raise ValueError("Skipping: " + model_name + " already exists.")
+    if os.path.isfile(to_save_model_name):
+        raise ValueError("Skipping: " + to_save_model_name + " already exists.")
 
     print("Environment: " + env_name)
 
@@ -43,9 +45,10 @@ def main(env_name, env_short_name, new_epoch):
         gamma=0.99,
         ep_mean_length=250,
         scope=my_scope,
-        path_for_save=model_name,
+        path_for_save=to_save_model_name,
+        path_for_retrain=to_load_model_name
     )
-    print("Saving model to: " + model_name)
+    print("Saving model to: " + to_save_model_name)
     end = time.time()
     elapsed = end - start
     minutes = elapsed // 60
