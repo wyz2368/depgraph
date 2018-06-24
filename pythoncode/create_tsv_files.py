@@ -9,7 +9,7 @@ def print_to_file(lines, file_name):
 
 def get_file_lines(file_name):
     '''
-    Return the file's text as one string.
+    Return the file's text as a list of strings.
     '''
     lines = []
     with open(file_name) as file:

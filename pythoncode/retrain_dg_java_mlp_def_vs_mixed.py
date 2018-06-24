@@ -32,6 +32,7 @@ def main(env_name, env_short_name, new_epoch):
         my_scope_old = "deepq_train_e" + str(new_epoch)
 
     my_scope_new = my_scope_old + "_retrained"
+    my_save_count = 4
 
     # must be loaded by TensorFlow so accessible from global variables
     deepq.load_with_scope(to_load_model_name, my_scope_old)
@@ -40,9 +41,10 @@ def main(env_name, env_short_name, new_epoch):
         env,
         q_func=model,
         lr=5e-5,
-        max_timesteps=3000,
+        max_timesteps=200000,
         buffer_size=30000,
         exploration_fraction=0.5,
+        exploration_initial_eps=0.3,
         exploration_final_eps=0.03,
         checkpoint_freq=30000,
         print_freq=250,
@@ -52,6 +54,7 @@ def main(env_name, env_short_name, new_epoch):
         scope_old=my_scope_old,
         scope_new=my_scope_new,
         path_for_save=to_save_model_name,
+        save_count=my_save_count
     )
     print("Saving model to: " + to_save_model_name)
     end = time.time()
