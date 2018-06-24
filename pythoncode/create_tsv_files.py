@@ -36,7 +36,7 @@ def get_rounded_strategy_lines(input_lines):
         raise ValueError("Wrong initial values: " + str(values))
     tolerance = 10 ** (-1 * decimal_places - 1)
     while sum(values) > 1.0 + tolerance:
-        index = random.randint(0, len(values))
+        index = random.randint(0, len(values) - 1)
         values[index] -= 10 ** (-1 * decimal_places)
         values[index] = round(values[index], decimal_places)
     while sum(values) < 1.0 - tolerance:
