@@ -17,6 +17,9 @@ def get_file_lines(file_name):
         lines = file.readlines()
     lines = [x.strip() for x in lines] # strip leading and trailing whitespace per line.
     lines = [x for x in lines if x] # drop empty lines
+    for line in lines:
+        if lines.count(line) != 1:
+            raise ValueError("Duplicate line: " + str(line))
     return lines
 
 def get_strat_from_file(strat_file):
@@ -145,7 +148,9 @@ def main(old_strat_disc_fact, strat_min_weight, is_defender, tsv_names_file, \
     strategy_lines = get_strategy_lines(truncated_strategy)
     print_to_file(strategy_lines, output_file_name)
 
-# example: python3 create_weighted_mixed_strat.py 0.5 0.001 True def_mixed_strats.tsv s29
+'''
+example: python3 create_weighted_mixed_strat.py 0.5 0.001 True def_strat_files_s29.txt s29
+'''
 if __name__ == "__main__":
     if len(sys.argv) != 6:
         raise ValueError("Needs 5 arguments: old_strat_disc_fact, strat_min_weight, " + \
