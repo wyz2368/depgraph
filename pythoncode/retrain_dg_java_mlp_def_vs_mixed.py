@@ -16,8 +16,10 @@ def main(env_name, env_short_name, new_epoch):
     '''
     to_load_model_name = "dg_" + env_short_name + "_dq_mlp_rand_epoch" + str(new_epoch) + \
         ".pkl"
-    to_save_model_name = "dg_" + env_short_name + "_dq_mlp_rand_epoch" + str(new_epoch) + \
+    prefix_for_save = "dg_" + env_short_name + "_dq_mlp_rand_epoch" + str(new_epoch) + \
         "_afterRetrain.pkl"
+    my_save_count = 4
+    to_save_model_name = prefix_for_save + "_r" + str(my_save_count) + ".pkl"
     if os.path.isfile(to_save_model_name):
         raise ValueError("Skipping: " + to_save_model_name + " already exists.")
 
@@ -32,7 +34,6 @@ def main(env_name, env_short_name, new_epoch):
         my_scope_old = "deepq_train_e" + str(new_epoch)
 
     my_scope_new = my_scope_old + "_retrained"
-    my_save_count = 4
 
     # must be loaded by TensorFlow so accessible from global variables
     deepq.load_with_scope(to_load_model_name, my_scope_old)
@@ -53,7 +54,7 @@ def main(env_name, env_short_name, new_epoch):
         ep_mean_length=250,
         scope_old=my_scope_old,
         scope_new=my_scope_new,
-        path_for_save=to_save_model_name,
+        prefix_for_save=prefix_for_save,
         save_count=my_save_count
     )
     print("Saving model to: " + to_save_model_name)
