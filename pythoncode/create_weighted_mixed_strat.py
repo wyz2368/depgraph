@@ -136,7 +136,7 @@ def main(old_strat_disc_fact, strat_min_weight, is_defender, tsv_names_file, \
         type_string = "_att.tsv"
     fmt = "{0:.2f}"
     output_file_name = env_short_name_tsv + "_epoch" + str(cur_epoch) + "_mixed" + \
-        fmt.format(old_strat_disc_fact) + type_string
+        fmt.format(old_strat_disc_fact).replace('.', '_') + type_string
     if os.path.isfile(output_file_name):
         print("Skipping: " + output_file_name + " already exists.")
         return
