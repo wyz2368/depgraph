@@ -8,6 +8,7 @@ def get_file_lines(file_name):
     with open(file_name) as file:
         lines = file.readlines()
     lines = [x.strip() for x in lines]
+    lines = [x for x in lines if x]
     return lines
 
 def append_line(file_name, line):
