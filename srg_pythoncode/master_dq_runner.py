@@ -59,7 +59,7 @@ def run_gen_new_cols(env_name_def_net, env_name_att_net, env_name_both, new_col_
 def run_append_net_names(env_short_name_payoffs, new_epoch, def_pkl_prefix, \
     att_pkl_prefix, is_def_beneficial, is_att_beneficial):
     cmd_list = ["python3", "append_net_names.py", env_short_name_payoffs, str(new_epoch), \
-        def_pkl_prefix, att_pkl_prefix, str(new_epoch), str(is_def_beneficial), \
+        def_pkl_prefix, att_pkl_prefix, str(is_def_beneficial), \
         str(is_att_beneficial)]
     subprocess.call(cmd_list)
 
@@ -90,7 +90,6 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
 
     chdir("pythoncode")
     # set the mixed-strategy opponents to use current TSV file strategies
-    # FIXME
     run_update_strats(env_short_name_tsv, new_epoch)
     print("\tWill get def payoffs, epoch: " + str(new_epoch)+ ", time: " + \
         str(datetime.datetime.now()), flush=True)
