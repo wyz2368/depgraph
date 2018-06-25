@@ -69,8 +69,8 @@ def get_normalized_weights(old_strat_disc_fact, cur_epoch):
     return [x * 1.0 / normalizer for x in raw_weights]
 
 def get_weighted_strategy(round_to_mixed_strat, weights):
-    if len(round_to_mixed_strat.keys()) != len(weights):
-        raise ValueError("Lengths must match: " + str(len(round_to_mixed_strat.keys())) + \
+    if len(round_to_mixed_strat) != len(weights):
+        raise ValueError("Lengths must match: " + str(len(round_to_mixed_strat)) + \
             ", " + str(len(weights)))
 
     result = {}
@@ -114,7 +114,8 @@ def get_truncated_strategy(weighted_strategy, strat_min_weight):
 def get_strategy_lines(truncated_strategy):
     keys_sorted = sorted(list(truncated_strategy.keys()))
     weights_sorted = [truncated_strategy[x] for x in keys_sorted]
-    lines = [keys_sorted[i] + "\t" + weights_sorted[i] for i in range(len(keys_sorted))]
+    lines = [keys_sorted[i] + "\t" + str(weights_sorted[i]) for i in \
+        range(len(keys_sorted))]
     return lines
 
 def main(old_strat_disc_fact, strat_min_weight, is_defender, tsv_names_file, \
