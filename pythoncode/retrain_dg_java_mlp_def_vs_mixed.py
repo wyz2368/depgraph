@@ -65,7 +65,7 @@ def main(env_name, env_short_name, new_epoch):
     print("Opponent was: " + env_name)
 
 '''
-example: python3 retrain_dg_java_mlp_def_vs_mixed.py DepgraphJavaEnvVsMixedAtt29N-v0 sl29 18
+example: python3 retrain_dg_java_mlp_def_vs_mixed.py DepgraphJavaEnvVsMixedAtt29N-v0 s29 18
 '''
 if __name__ == '__main__':
     if len(sys.argv) != 4:

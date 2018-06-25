@@ -84,6 +84,8 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
     # get Nash equilibrium of current strategies
     run_gambit(game_number, cur_epoch)
     # create TSV file for current attacker and defender equilibrium strategies
+    print("\tWill create TSV, epoch: " + str(cur_epoch)+ ", time: " + \
+        str(datetime.datetime.now()), flush=True)
     run_create_tsv(game_number, cur_epoch, env_short_name_tsv)
 
     chdir("pythoncode")
