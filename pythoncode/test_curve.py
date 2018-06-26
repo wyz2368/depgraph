@@ -4,83 +4,6 @@ import subprocess
 import time
 import os.path
 
-def print_json(file_name, json_obj):
-    '''
-    Prints the given Json object to the given file name.
-    '''
-    with open(file_name, 'w') as my_file:
-        json.dump(json_obj, my_file)
-
-def get_mean_stdev(file_name):
-    # print("Mean reward: " + fmt.format(mean_reward))
-    # print("Stdev reward: " + fmt.format(stdev_reward))
-    lines = get_file_lines(file_name)
-    mean_line = lines[0]
-    stdev_line = lines[1]
-    mean_line = mean_line[mean_line.find(":") + 1 : ].strip()
-    stdev_line = stdev_line[stdev_line.find(":") + 1 : ].strip()
-    mean = float(mean_line)
-    stdev = float(stdev_line)
-    return (mean, stdev)
-
-def run_evaluation_att_net(env_name_vs_mixed_def, model_name, scope, save_name):
-    cmd_list = ["python3", "enjoy_dg_data_vs_mixed_def_mod_net.py", env_name_vs_mixed_def, \
-        model_name, scope]
-    if os.path.isfile(save_name):
-        print("Skipping: " + save_name + " already exists.")
-        return
-    with open(save_name, "w") as file:
-        subprocess.call(cmd_list, stdout=file)
-
-def run_evaluation_def_net(env_name_vs_mixed_att, model_name, scope, save_name):
-    cmd_list = ["python3", "enjoy_depgraph_data_vs_mixed_mod_net.py", \
-        env_name_vs_mixed_att, model_name, scope]
-    if os.path.isfile(save_name):
-        print("Skipping: " + save_name + " already exists.")
-        return
-    with open(save_name, "w") as file:
-        subprocess.call(cmd_list, stdout=file)
-
-def start_and_return_env_process(graph_name, is_defender_net):
-    cmd = "exec java -jar ../depgraphpy4jattvseither/" \
-        + "depgraphpy4jattvsnetorheuristic.jar " \
-        + graph_name
-
-    if is_defender_net:
-        cmd = "exec java -jar ../depgraphpy4jdefvseither/" \
-            + "depgraphpy4jdefvsnetorheuristic.jar " \
-            + graph_name
-    env_process = subprocess.Popen(cmd, shell=True)
-    sleep_sec = 5
-    # wait for Java server to start
-    time.sleep(sleep_sec)
-    return env_process
-
-def close_env_process(env_process):
-    sleep_sec = 5
-    time.sleep(sleep_sec)
-    env_process.kill()
-
-def write_line(file_name, line):
-    with open(file_name, "w") as file:
-        file.write(line)
-
-def get_file_lines(file_name):
-    '''
-    Return the file's text as a list of strings.
-    '''
-    lines = []
-    with open(file_name) as file:
-        lines = file.readlines()
-    lines = [x.strip() for x in lines]
-    lines = [x for x in lines if x] # remove empty lines
-    return lines
-
-def get_string_from_line(line):
-    first_double_quote = line.index("\"")
-    second_double_quote = line.index("\"", first_double_quote + 1)
-    return line[first_double_quote + 1 : second_double_quote]
-
 def get_truth_value(str_input):
     if str_input == "True":
         return True
@@ -122,6 +45,26 @@ def set_config_name(env_short_name_payoffs, modified_tsv_name, is_defender_net):
         write_line(config_file_name_def, "DEF_MIXED_STRAT_FILE = \"" + \
             modified_tsv_name + "\"")
 
+def start_and_return_env_process(graph_name, is_defender_net):
+    cmd = "exec java -jar ../depgraphpy4jattvseither/" \
+        + "depgraphpy4jattvsnetorheuristic.jar " \
+        + graph_name
+
+    if is_defender_net:
+        cmd = "exec java -jar ../depgraphpy4jdefvseither/" \
+            + "depgraphpy4jdefvsnetorheuristic.jar " \
+            + graph_name
+    env_process = subprocess.Popen(cmd, shell=True)
+    sleep_sec = 5
+    # wait for Java server to start
+    time.sleep(sleep_sec)
+    return env_process
+
+def close_env_process(env_process):
+    sleep_sec = 5
+    time.sleep(sleep_sec)
+    env_process.kill()
+
 def get_pickle_names(env_short_name_payoffs, cur_epoch, is_defender_net, save_count):
     result = []
     for i in range(save_count + 1):
@@ -144,6 +87,63 @@ def get_net_scopes(is_defender_net, cur_epoch, save_count):
             cur += "_retrained"
         result.append(cur)
     return result
+
+def run_evaluation_def_net(env_name_vs_mixed_att, model_name, scope, save_name):
+    cmd_list = ["python3", "enjoy_depgraph_data_vs_mixed_mod_net.py", \
+        env_name_vs_mixed_att, model_name, scope]
+    if os.path.isfile(save_name):
+        print("Skipping: " + save_name + " already exists.")
+        return
+    with open(save_name, "w") as file:
+        subprocess.call(cmd_list, stdout=file)
+
+def run_evaluation_att_net(env_name_vs_mixed_def, model_name, scope, save_name):
+    cmd_list = ["python3", "enjoy_dg_data_vs_mixed_def_mod_net.py", \
+        env_name_vs_mixed_def, model_name, scope]
+    if os.path.isfile(save_name):
+        print("Skipping: " + save_name + " already exists.")
+        return
+    with open(save_name, "w") as file:
+        subprocess.call(cmd_list, stdout=file)
+
+def get_mean_stdev(file_name):
+    # print("Mean reward: " + fmt.format(mean_reward))
+    # print("Stdev reward: " + fmt.format(stdev_reward))
+    lines = get_file_lines(file_name)
+    mean_line = lines[0]
+    stdev_line = lines[1]
+    mean_line = mean_line[mean_line.find(":") + 1 : ].strip()
+    stdev_line = stdev_line[stdev_line.find(":") + 1 : ].strip()
+    mean = float(mean_line)
+    stdev = float(stdev_line)
+    return (mean, stdev)
+
+def write_line(file_name, line):
+    with open(file_name, "w") as file:
+        file.write(line)
+
+def print_json(file_name, json_obj):
+    '''
+    Prints the given Json object to the given file name.
+    '''
+    with open(file_name, 'w') as my_file:
+        json.dump(json_obj, my_file)
+
+def get_file_lines(file_name):
+    '''
+    Return the file's text as a list of strings.
+    '''
+    lines = []
+    with open(file_name) as file:
+        lines = file.readlines()
+    lines = [x.strip() for x in lines]
+    lines = [x for x in lines if x] # remove empty lines
+    return lines
+
+def get_string_from_line(line):
+    first_double_quote = line.index("\"")
+    second_double_quote = line.index("\"", first_double_quote + 1)
+    return line[first_double_quote + 1 : second_double_quote]
 
 def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_fact, \
          save_count, graph_name, is_defender_net, runs_per_pair,
@@ -226,6 +226,7 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
             result["outcomes"][model_name]["vs_original_stdev"] = stdev
 
     close_env_process(env_process)
+    print(result)
     print_json(result_file_name, result)
 
 '''
