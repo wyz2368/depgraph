@@ -1,5 +1,15 @@
 import sys
+import json
+import subprocess
+import time
 import os.path
+
+def print_json(file_name, json_obj):
+    '''
+    Prints the given Json object to the given file name.
+    '''
+    with open(file_name, 'w') as my_file:
+        json.dump(json_obj, my_file)
 
 def get_mean_stdev(file_name):
     # print("Mean reward: " + fmt.format(mean_reward))
@@ -71,7 +81,7 @@ def get_string_from_line(line):
     second_double_quote = line.index("\"", first_double_quote + 1)
     return line[first_double_quote + 1 : second_double_quote]
 
- def get_truth_value(str_input):
+def get_truth_value(str_input):
     if str_input == "True":
         return True
     if str_input == "False":
@@ -84,19 +94,20 @@ def get_cur_tsv_name(env_short_name_payoffs, is_defender_net):
         config_name += "_att" # network defender is self, opponent is att
     else:
         config_name += "_def"
-    config_name += _config.py
+    config_name += "_config.py"
 
     lines = get_file_lines(config_name)
     if len(lines) != 1:
         raise ValueError("Invalid lines in config: " + str(lines))
     return get_string_from_line(lines[0])
 
-def get_modified_tsv_name(env_short_name_tsv, cur_epoch, is_defender_net):
+def get_modified_tsv_name(env_short_name_tsv, cur_epoch, is_defender_net, \
+    old_strat_disc_fact):
     type_string = "_def.tsv"
     if not is_defender_net:
         type_string = "_att.tsv"
     fmt = "{0:.2f}"
-    output_file_name = env_short_name_tsv + "_epoch" + str(cur_epoch) + "_mixed" + \
+    return env_short_name_tsv + "_epoch" + str(cur_epoch) + "_mixed" + \
         fmt.format(old_strat_disc_fact).replace('.', '_') + type_string
 
 def set_config_name(env_short_name_payoffs, modified_tsv_name, is_defender_net):
@@ -111,14 +122,14 @@ def set_config_name(env_short_name_payoffs, modified_tsv_name, is_defender_net):
         write_line(config_file_name_def, "DEF_MIXED_STRAT_FILE = \"" + \
             modified_tsv_name + "\"")
 
-def get_pickle_names(env_short_name_payoffs, cur_epoch, is_defender_net, save_count)
+def get_pickle_names(env_short_name_payoffs, cur_epoch, is_defender_net, save_count):
     result = []
     for i in range(save_count + 1):
-        cur = "dg_" + env_short_name_payoffs + "_dq_mlp_rand_epoch" + str(new_epoch) 
+        cur = "dg_" + env_short_name_payoffs + "_dq_mlp_rand_epoch" + str(cur_epoch)
         if not is_defender_net:
             cur += "_att"
         if i > 0:
-            cur += "_afterRetrain_r" + str(i) 
+            cur += "_afterRetrain_r" + str(i)
         cur += ".pkl"
         result.append(cur)
     return result
@@ -135,8 +146,8 @@ def get_net_scopes(is_defender_net, cur_epoch, save_count):
     return result
 
 def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_fact, \
-    save_count, graph_name, is_defender_net, runs_per_pair,
-    env_name_vs_mixed_def, env_name_vs_mixed_att):
+         save_count, graph_name, is_defender_net, runs_per_pair,
+         env_name_vs_mixed_def, env_name_vs_mixed_att):
     if cur_epoch < 1:
         raise ValueError("cur_epoch must be >= 1: " + str(cur_epoch))
     if old_strat_disc_fact <= 0.0 or old_strat_disc_fact > 1.0:
@@ -158,7 +169,7 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
     old_tsv_name = get_cur_tsv_name(env_short_name_payoffs, is_defender_net)
     print("old_tsv_name: " + old_tsv_name)
     modified_tsv_name = get_modified_tsv_name(env_short_name_tsv, cur_epoch, \
-        is_defender_net)
+        is_defender_net, old_strat_disc_fact)
 
     set_config_name(env_short_name_payoffs, modified_tsv_name, is_defender_net)
 
@@ -178,15 +189,15 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
 
         result["outcomes"][model_name] = {}
         if is_defender_net:
-            save_name = "def_" + env_short_name_payoffs + "_epoch" + str(new_epoch) + \
-                "_r" + str(i) + "_enj.txt"
+            save_name = "def_" + env_short_name_payoffs + "_epoch" + str(cur_epoch) + \
+                "_r" + str(i) + "_mod_enj.txt"
             run_evaluation_def_net(env_name_vs_mixed_att, model_name, scope, save_name)
             (mean, stdev) = get_mean_stdev(save_name)
             result["outcomes"][model_name]["vs_modified_mean"] = mean
             result["outcomes"][model_name]["vs_modified_stdev"] = stdev
         else:
-            save_name = "att_" + env_short_name_payoffs + "_epoch" + str(new_epoch) + \
-                "_r" + str(i) + "_enj.txt"
+            save_name = "att_" + env_short_name_payoffs + "_epoch" + str(cur_epoch) + \
+                "_r" + str(i) + "_mod_enj.txt"
             run_evaluation_att_net(env_name_vs_mixed_def, model_name, scope, save_name)
             (mean, stdev) = get_mean_stdev(save_name)
             result["outcomes"][model_name]["vs_modified_mean"] = mean
@@ -194,6 +205,28 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
 
     close_env_process(env_process)
     set_config_name(env_short_name_payoffs, old_tsv_name, is_defender_net)
+    env_process = start_and_return_env_process(graph_name, is_defender_net)
+
+    for i in range(len(model_names)):
+        model_name = model_names[i]
+        scope = scopes[i]
+        if is_defender_net:
+            save_name = "def_" + env_short_name_payoffs + "_epoch" + str(cur_epoch) + \
+                "_r" + str(i) + "_enj.txt"
+            run_evaluation_def_net(env_name_vs_mixed_att, model_name, scope, save_name)
+            (mean, stdev) = get_mean_stdev(save_name)
+            result["outcomes"][model_name]["vs_original_mean"] = mean
+            result["outcomes"][model_name]["vs_original_stdev"] = stdev
+        else:
+            save_name = "att_" + env_short_name_payoffs + "_epoch" + str(cur_epoch) + \
+                "_r" + str(i) + "_enj.txt"
+            run_evaluation_att_net(env_name_vs_mixed_def, model_name, scope, save_name)
+            (mean, stdev) = get_mean_stdev(save_name)
+            result["outcomes"][model_name]["vs_original_mean"] = mean
+            result["outcomes"][model_name]["vs_original_stdev"] = stdev
+
+    close_env_process(env_process)
+    print_json(result_file_name, result)
 
 '''
 example: sl29_randNoAndB sl29 7 0.5 4 SepLayerGraph0_noAnd_B.json True 400 \
@@ -202,9 +235,9 @@ example: sl29_randNoAndB sl29 7 0.5 4 SepLayerGraph0_noAnd_B.json True 400 \
 if __name__ == '__main__':
     if len(sys.argv) != 11:
         raise ValueError("Need 10 args: env_short_name_tsv, env_short_name_payoffs, " + \
-            "cur_epoch, old_strat_disc_fact, save_count, graph_name, " + \
-            "is_defender_net, runs_per_pair, env_name_vs_mixed_def, env_name_vs_mixed_att"
-            )
+                         "cur_epoch, old_strat_disc_fact, save_count, graph_name, " + \
+                         "is_defender_net, runs_per_pair, env_name_vs_mixed_def, " + \
+                         "env_name_vs_mixed_att")
     ENV_SHORT_NAME_TSV = sys.argv[1]
     ENV_SHORT_NAME_PAYOFFS = sys.argv[2]
     CUR_EPOCH = int(sys.argv[3])
