@@ -264,7 +264,7 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
 
 '''
 example: python3 test_curve.py sl29_randNoAndB sl29 7 0.5 4 SepLayerGraph0_noAnd_B.json \
-    True 400 DepgraphJavaEnvVsMixedDef29N-v0 DepgraphJavaEnvVsMixedAtt29N-v0
+    True 1000 DepgraphJavaEnvVsMixedDef29N-v0 DepgraphJavaEnvVsMixedAtt29N-v0
 '''
 if __name__ == '__main__':
     if len(sys.argv) != 11:
