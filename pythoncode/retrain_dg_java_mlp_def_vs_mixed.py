@@ -17,7 +17,7 @@ def main(env_name, env_short_name, new_epoch):
     to_load_model_name = "dg_" + env_short_name + "_dq_mlp_rand_epoch" + str(new_epoch) + \
         ".pkl"
     prefix_for_save = "dg_" + env_short_name + "_dq_mlp_rand_epoch" + str(new_epoch) + \
-        "_afterRetrain.pkl"
+        "_afterRetrain"
     my_save_count = 4
     to_save_model_name = prefix_for_save + "_r" + str(my_save_count) + ".pkl"
     if os.path.isfile(to_save_model_name):
