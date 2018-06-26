@@ -2,6 +2,7 @@ import sys
 import json
 import subprocess
 import time
+from os import chdir
 import os.path
 
 def get_truth_value(str_input):
@@ -12,7 +13,8 @@ def get_truth_value(str_input):
     raise ValueError("Must be True or False: " + str_input)
 
 def get_cur_tsv_name(env_short_name_payoffs, is_defender_net):
-    config_name = "~/gym/gym/envs/board_game/" + env_short_name_payoffs
+    gym_folder = "gym/gym/gym/envs/board_game/"
+    config_name = gym_folder + env_short_name_payoffs
     if is_defender_net:
         config_name += "_att" # network defender is self, opponent is att
     else:
@@ -34,7 +36,7 @@ def get_modified_tsv_name(env_short_name_tsv, cur_epoch, is_defender_net, \
         fmt.format(old_strat_disc_fact).replace('.', '_') + type_string
 
 def set_config_name(env_short_name_payoffs, modified_tsv_name, is_defender_net):
-    gym_folder = "../gym/gym/gym/envs/board_game/"
+    gym_folder = "gym/gym/gym/envs/board_game/"
     if is_defender_net:
         # network defender is self, opponent is att
         config_file_name_att = gym_folder + env_short_name_payoffs + "_att_config.py"
@@ -158,6 +160,7 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
     if runs_per_pair < 2:
         raise ValueError("runs_per_pair must be >= 2: " + str(runs_per_pair))
 
+    # pwd is ~/
     result_file_name = "curve_" + env_short_name_payoffs + "_e" + str(cur_epoch)
     if is_defender_net:
         result_file_name += "_def.json"
@@ -173,7 +176,6 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
 
     set_config_name(env_short_name_payoffs, modified_tsv_name, is_defender_net)
 
-    env_process = start_and_return_env_process(graph_name, is_defender_net)
     model_names = get_pickle_names(env_short_name_payoffs, cur_epoch, is_defender_net, \
         save_count)
     scopes = get_net_scopes(is_defender_net, cur_epoch, save_count)
@@ -183,6 +185,11 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
     result["modified_opponent_strat"] = modified_tsv_name
     result["runs_per_pair"] = runs_per_pair
     result["outcomes"] = {}
+
+    chdir("pythoncode")
+    # pwd is ~/pythoncode
+    env_process = start_and_return_env_process(graph_name, is_defender_net)
+
     for i in range(len(model_names)):
         model_name = model_names[i]
         scope = scopes[i]
@@ -227,11 +234,14 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
 
     close_env_process(env_process)
     print(result)
+
+    chdir("..")
+    # pwd is ~/
     print_json(result_file_name, result)
 
 '''
-example: sl29_randNoAndB sl29 7 0.5 4 SepLayerGraph0_noAnd_B.json True 400 \
-    DepgraphJavaEnvVsMixedDef29N-v0 DepgraphJavaEnvVsMixedAtt29N-v0
+example: python3 test_curve.py sl29_randNoAndB sl29 7 0.5 4 SepLayerGraph0_noAnd_B.json \
+    True 400 DepgraphJavaEnvVsMixedDef29N-v0 DepgraphJavaEnvVsMixedAtt29N-v0
 '''
 if __name__ == '__main__':
     if len(sys.argv) != 11:
