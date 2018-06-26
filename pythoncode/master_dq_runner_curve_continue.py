@@ -8,7 +8,6 @@ from add_new_data import get_add_data_result_file_name
 
 def run_gen_new_cols(env_name_def_net, env_name_att_net, env_name_both, new_col_count, \
     new_epoch, env_short_name_payoffs, def_model_to_add, att_model_to_add, graph_name):
-    # TODO make generate_new_cols_curve.py
     cmd_list = ["python3", "generate_new_cols_curve.py", env_name_def_net, \
         env_name_att_net, env_name_both, str(new_col_count), str(new_epoch), \
         env_short_name_payoffs, str(def_model_to_add), str(att_model_to_add), graph_name]
