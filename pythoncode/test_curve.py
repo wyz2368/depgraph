@@ -209,6 +209,8 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
             run_evaluation_def_net(env_name_vs_mixed_att, model_name, scope, save_name, \
                 runs_per_pair)
             (mean, stdev) = get_mean_stdev(save_name)
+            print(model_name + " vs. " + modified_tsv_name)
+            print(str(mean) + "\t" + str(stdev))
             result["outcomes"][model_name]["vs_modified_mean"] = mean
             result["outcomes"][model_name]["vs_modified_stdev"] = stdev
         else:
@@ -217,6 +219,8 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
             run_evaluation_att_net(env_name_vs_mixed_def, model_name, scope, save_name, \
                 runs_per_pair)
             (mean, stdev) = get_mean_stdev(save_name)
+            print(model_name + " vs. " + modified_tsv_name)
+            print(str(mean) + "\t" + str(stdev))
             result["outcomes"][model_name]["vs_modified_mean"] = mean
             result["outcomes"][model_name]["vs_modified_stdev"] = stdev
 
@@ -236,6 +240,8 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
             run_evaluation_def_net(env_name_vs_mixed_att, model_name, scope, save_name, \
                 runs_per_pair)
             (mean, stdev) = get_mean_stdev(save_name)
+            print(model_name + " vs. " + old_tsv_name)
+            print(str(mean) + "\t" + str(stdev))
             result["outcomes"][model_name]["vs_original_mean"] = mean
             result["outcomes"][model_name]["vs_original_stdev"] = stdev
         else:
@@ -244,6 +250,8 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
             run_evaluation_att_net(env_name_vs_mixed_def, model_name, scope, save_name, \
                 runs_per_pair)
             (mean, stdev) = get_mean_stdev(save_name)
+            print(model_name + " vs. " + old_tsv_name)
+            print(str(mean) + "\t" + str(stdev))
             result["outcomes"][model_name]["vs_original_mean"] = mean
             result["outcomes"][model_name]["vs_original_stdev"] = stdev
 
