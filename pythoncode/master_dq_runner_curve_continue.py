@@ -203,8 +203,8 @@ example: python3 master_dq_runner_curve_continue.py 3013 17 sl29_randNoAndB sl29
     None 0.5 4 1000
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 21:
-        raise ValueError("Need 20 args: game_number, cur_epoch, env_short_name_tsv, " + \
+    if len(sys.argv) != 19:
+        raise ValueError("Need 18 args: game_number, cur_epoch, env_short_name_tsv, " + \
             "env_short_name_payoffs, " + \
             "env_name_def_net, env_name_att_net, env_name_both, def_payoff_count, " + \
             "att_payoff_count, graph_name, env_name_vs_mixed_def, "  + \
