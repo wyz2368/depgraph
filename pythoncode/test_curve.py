@@ -90,18 +90,20 @@ def get_net_scopes(is_defender_net, cur_epoch, save_count):
         result.append(cur)
     return result
 
-def run_evaluation_def_net(env_name_vs_mixed_att, model_name, scope, save_name):
+def run_evaluation_def_net(env_name_vs_mixed_att, model_name, scope, save_name, \
+    runs_per_pair):
     cmd_list = ["python3", "enjoy_depgraph_data_vs_mixed_mod_net.py", \
-        env_name_vs_mixed_att, model_name, scope]
+        env_name_vs_mixed_att, model_name, scope, runs_per_pair]
     if os.path.isfile(save_name):
         print("Skipping: " + save_name + " already exists.")
         return
     with open(save_name, "w") as file:
         subprocess.call(cmd_list, stdout=file)
 
-def run_evaluation_att_net(env_name_vs_mixed_def, model_name, scope, save_name):
+def run_evaluation_att_net(env_name_vs_mixed_def, model_name, scope, save_name, \
+    runs_per_pair):
     cmd_list = ["python3", "enjoy_dg_data_vs_mixed_def_mod_net.py", \
-        env_name_vs_mixed_def, model_name, scope]
+        env_name_vs_mixed_def, model_name, scope, runs_per_pair]
     if os.path.isfile(save_name):
         print("Skipping: " + save_name + " already exists.")
         return
@@ -170,15 +172,21 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
         raise ValueError("Skipping: " + result_file_name + " already exists.")
 
     old_tsv_name = get_cur_tsv_name(env_short_name_payoffs, is_defender_net)
-    print("old_tsv_name: " + old_tsv_name)
     modified_tsv_name = get_modified_tsv_name(env_short_name_tsv, cur_epoch, \
         is_defender_net, old_strat_disc_fact)
-
-    set_config_name(env_short_name_payoffs, modified_tsv_name, is_defender_net)
+    if not os.path.isfile("pythoncode/" + old_tsv_name):
+        raise ValueError("Skipping: " + old_tsv_name + " does not exist.")
+    if not os.path.isfile("pythoncode/" + modified_tsv_name):
+        raise ValueError("Skipping: " + modified_tsv_name + " does not exist.")
 
     model_names = get_pickle_names(env_short_name_payoffs, cur_epoch, is_defender_net, \
         save_count)
     scopes = get_net_scopes(is_defender_net, cur_epoch, save_count)
+
+    print("old_tsv_name: " + old_tsv_name)
+    set_config_name(env_short_name_payoffs, modified_tsv_name, is_defender_net)
+    if get_cur_tsv_name(env_short_name_payoffs, is_defender_net) != modified_tsv_name:
+        raise ValueError("Failed to set config name: " + str(modified_tsv_name))
 
     result = {}
     result["original_opponent_strat"] = old_tsv_name
@@ -198,20 +206,25 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
         if is_defender_net:
             save_name = "def_" + env_short_name_payoffs + "_epoch" + str(cur_epoch) + \
                 "_r" + str(i) + "_mod_enj.txt"
-            run_evaluation_def_net(env_name_vs_mixed_att, model_name, scope, save_name)
+            run_evaluation_def_net(env_name_vs_mixed_att, model_name, scope, save_name, \
+                runs_per_pair)
             (mean, stdev) = get_mean_stdev(save_name)
             result["outcomes"][model_name]["vs_modified_mean"] = mean
             result["outcomes"][model_name]["vs_modified_stdev"] = stdev
         else:
             save_name = "att_" + env_short_name_payoffs + "_epoch" + str(cur_epoch) + \
                 "_r" + str(i) + "_mod_enj.txt"
-            run_evaluation_att_net(env_name_vs_mixed_def, model_name, scope, save_name)
+            run_evaluation_att_net(env_name_vs_mixed_def, model_name, scope, save_name, \
+                runs_per_pair)
             (mean, stdev) = get_mean_stdev(save_name)
             result["outcomes"][model_name]["vs_modified_mean"] = mean
             result["outcomes"][model_name]["vs_modified_stdev"] = stdev
 
     close_env_process(env_process)
     set_config_name(env_short_name_payoffs, old_tsv_name, is_defender_net)
+    if get_cur_tsv_name(env_short_name_payoffs, is_defender_net) != old_tsv_name:
+        raise ValueError("Failed to reset config name: " + str(old_tsv_name))
+
     env_process = start_and_return_env_process(graph_name, is_defender_net)
 
     for i in range(len(model_names)):
@@ -220,14 +233,16 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
         if is_defender_net:
             save_name = "def_" + env_short_name_payoffs + "_epoch" + str(cur_epoch) + \
                 "_r" + str(i) + "_enj.txt"
-            run_evaluation_def_net(env_name_vs_mixed_att, model_name, scope, save_name)
+            run_evaluation_def_net(env_name_vs_mixed_att, model_name, scope, save_name, \
+                runs_per_pair)
             (mean, stdev) = get_mean_stdev(save_name)
             result["outcomes"][model_name]["vs_original_mean"] = mean
             result["outcomes"][model_name]["vs_original_stdev"] = stdev
         else:
             save_name = "att_" + env_short_name_payoffs + "_epoch" + str(cur_epoch) + \
                 "_r" + str(i) + "_enj.txt"
-            run_evaluation_att_net(env_name_vs_mixed_def, model_name, scope, save_name)
+            run_evaluation_att_net(env_name_vs_mixed_def, model_name, scope, save_name, \
+                runs_per_pair)
             (mean, stdev) = get_mean_stdev(save_name)
             result["outcomes"][model_name]["vs_original_mean"] = mean
             result["outcomes"][model_name]["vs_original_stdev"] = stdev

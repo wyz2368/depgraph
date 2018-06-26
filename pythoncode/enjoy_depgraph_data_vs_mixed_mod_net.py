@@ -7,7 +7,7 @@ import gym
 
 from baselines import deepq
 
-def main(env_name, model_name, my_scope):
+def main(env_name, model_name, my_scope, num_episodes):
     '''
         Load the network from file, and play games of the depdency
         graph game against opponent.
@@ -15,8 +15,6 @@ def main(env_name, model_name, my_scope):
         env_name = "DepgraphJava-v0"
         model_name = "depgraph_java_deepq_model2.pkl"
     '''
-    num_episodes = 1000
-
     start_time = time.time()
 
     env = gym.make(env_name)
@@ -48,13 +46,14 @@ def main(env_name, model_name, my_scope):
     print("Minutes taken: " + str(duration // 60))
 
 '''
-python3 enjoy_depgraph_data_vs_mixed_mod_net.py DepgraphJavaEnvVsMixedAtt29N-v0 \
-    dg_s29_dq_mlp_rand_epoch7_afterRetrain_r1.pkl deepq_train_e7_retrained
+example: python3 enjoy_depgraph_data_vs_mixed_mod_net.py DepgraphJavaEnvVsMixedAtt29N-v0 \
+    dg_s29_dq_mlp_rand_epoch7_afterRetrain_r1.pkl deepq_train_e7_retrained 400
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 4:
-        raise ValueError("Need 3 args: env_name_att_net, model_name, scope")
+    if len(sys.argv) != 5:
+        raise ValueError("Need 4 args: env_name_att_net, model_name, scope, num_episodes")
     ENV_NAME_ATT_NET = sys.argv[1]
     MODEL_NAME = sys.argv[2]
     SCOPE = sys.argv[3]
-    main(ENV_NAME_ATT_NET, MODEL_NAME, SCOPE)
+    NUM_EPISODES = int(sys.argv[4])
+    main(ENV_NAME_ATT_NET, MODEL_NAME, SCOPE, NUM_EPISODES)

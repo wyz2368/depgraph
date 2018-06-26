@@ -7,15 +7,13 @@ import gym
 
 from baselines import deepq
 
-def main(env_name, model_name, my_scope):
+def main(env_name, model_name, my_scope, num_episodes):
     '''
         Load the network from file, and play games of the depdency
         graph game against opponent.
 
         model_name = "depgraph_java_deepq_model2.pkl"
     '''
-    num_episodes = 1000
-
     start_time = time.time()
 
     env = gym.make(env_name)
@@ -47,12 +45,14 @@ def main(env_name, model_name, my_scope):
     print("Minutes taken: " + str(duration // 60))
 
 '''
-python3 enjoy_dg_data_vs_mixed_def.py DepgraphJavaEnvVsMixedDef29N-v0 sl29 15
+example: python3 enjoy_dg_data_vs_mixed_def_mod_net.py DepgraphJavaEnvVsMixedDef29N-v0 \
+    dg_s29_dq_mlp_rand_epoch7_afterRetrain_att_r1.pkl deepq_train_e7_retrained 400
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 4:
-        raise ValueError("Need 1 arg: env_name_def_net, env_short_name, new_epoch")
-    ENV_NAME_ATT_NET = sys.argv[1]
+    if len(sys.argv) != 5:
+        raise ValueError("Need 4 args: env_name_def_net, model_name, scope, num_episodes")
+    ENV_NAME_DEF_NET = sys.argv[1]
     MODEL_NAME = sys.argv[2]
     SCOPE = sys.argv[3]
-    main(ENV_NAME, ENV_SHORT_NAME, NEW_EPOCH)
+    NUM_EPISODES = int(sys.argv[4])
+    main(ENV_NAME_DEF_NET, MODEL_NAME, SCOPE, NUM_EPISODES)
