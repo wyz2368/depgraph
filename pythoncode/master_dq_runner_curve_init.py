@@ -215,6 +215,9 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
         env_name_both, def_payoff_count, att_payoff_count, graph_name, \
         env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, def_pkl_prefix, \
         att_pkl_prefix, old_strat_disc_fact, save_count, runs_per_pair):
+    '''
+    Call method to run first epoch (epoch 0), and beginning of second epoch (epoch 1).
+    '''
     if old_strat_disc_fact <= 0.0 or old_strat_disc_fact > 1.0:
         raise ValueError("old_strat_disc_fact must be in (0, 1]: " + \
             str(old_strat_disc_fact))
@@ -223,11 +226,11 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
     if runs_per_pair < 2:
         raise ValueError("runs_per_pair must be >= 2: " + str(runs_per_pair))
 
-    should_continue = True
+    # first epoch is always 0
     my_epoch = 0
-    print("\tStarting from epoch 0", flush=True)
     print("\tWill run epoch: " + str(my_epoch) + ", time: " + \
         str(datetime.datetime.now()), flush=True)
+    # indicates whether a beneficial deviation was found
     should_continue = run_init_epoch(game_number, env_short_name_tsv, \
         env_short_name_payoffs, env_name_def_net, env_name_att_net, env_name_both, \
         def_payoff_count, \
@@ -235,10 +238,12 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
         new_col_count, def_pkl_prefix, att_pkl_prefix, old_strat_disc_fact, save_count, \
         runs_per_pair)
     if should_continue:
-        print("\tShould continue from epoch: " + str(my_epoch + 1) + ", time: " + \
+        # proceed from epoch 1
+        print("\tShould continue from epoch: 1, time: " + \
             str(datetime.datetime.now()), flush=True)
     else:
-        print("\tConverged, time: " + str(datetime.datetime.now()), flush=True)
+        # did not find beneficial deviation from initial equilibrium
+        print("\tConverged in epoch 0, time: " + str(datetime.datetime.now()), flush=True)
 
 '''
 example: python3 master_dq_runner_curve_init.py 3013 sl29_randNoAndB sl29 \
@@ -262,8 +267,8 @@ if __name__ == '__main__':
     ENV_NAME_DEF_NET = sys.argv[4]
     ENV_NAME_ATT_NET = sys.argv[5]
     ENV_NAME_BOTH = sys.argv[6]
-    DEF_PAYOFF_COUNT = sys.argv[7]
-    ATT_PAYOFF_COUNT = sys.argv[8]
+    DEF_PAYOFF_COUNT = int(sys.argv[7])
+    ATT_PAYOFF_COUNT = int(sys.argv[8])
     GRAPH_NAME = sys.argv[9]
     ENV_NAME_VS_MIXED_DEF = sys.argv[10]
     ENV_NAME_VS_MIXED_ATT = sys.argv[11]

@@ -172,11 +172,21 @@ def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
         env_name_both, def_payoff_count, att_payoff_count, graph_name, \
         env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, def_model_to_add, \
         att_model_to_add, old_strat_disc_fact, save_count, runs_per_pair):
-    should_continue = True
+    '''
+    Call method to run cur_epoch, and begin next epoch if not converged.
+    '''
+    if old_strat_disc_fact <= 0.0 or old_strat_disc_fact > 1.0:
+        raise ValueError("old_strat_disc_fact must be in (0, 1]: " + \
+            str(old_strat_disc_fact))
+    if save_count < 1:
+        raise ValueError("save_count must be >= 1: " + str(save_count))
+    if runs_per_pair < 2:
+        raise ValueError("runs_per_pair must be >= 2: " + str(runs_per_pair))
     if cur_epoch < 1:
         raise ValueError("cur_epoch must be at least 1: " + str(cur_epoch))
     if def_model_to_add is None and att_model_to_add is None:
         raise ValueError("Both models to add cannot be None.")
+
     my_epoch = cur_epoch
     print("\tStarting from epoch: " + str(my_epoch), flush=True)
     print("\tWill run epoch: " + str(my_epoch) + ", time: " + \
@@ -217,8 +227,8 @@ if __name__ == '__main__':
     ENV_NAME_DEF_NET = sys.argv[5]
     ENV_NAME_ATT_NET = sys.argv[6]
     ENV_NAME_BOTH = sys.argv[7]
-    DEF_PAYOFF_COUNT = sys.argv[8]
-    ATT_PAYOFF_COUNT = sys.argv[9]
+    DEF_PAYOFF_COUNT = int(sys.argv[8])
+    ATT_PAYOFF_COUNT = int(sys.argv[9])
     GRAPH_NAME = sys.argv[10]
     ENV_NAME_VS_MIXED_DEF = sys.argv[11]
     ENV_NAME_VS_MIXED_ATT = sys.argv[12]
