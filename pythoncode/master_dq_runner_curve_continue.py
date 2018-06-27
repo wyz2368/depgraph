@@ -8,37 +8,64 @@ from add_new_data import get_add_data_result_file_name
 
 def run_gen_new_cols(env_name_def_net, env_name_att_net, env_name_both, new_col_count, \
     new_epoch, env_short_name_payoffs, def_model_to_add, att_model_to_add, graph_name):
+    '''
+    Evaluate the mean payoff for self and opponent of the new defender and attacker nets
+    (whichever were beneficial deviations) against each opponent strategy, for augmenting
+    the game's payoff matrix.
+    '''
     cmd_list = ["python3", "generate_new_cols_curve.py", env_name_def_net, \
         env_name_att_net, env_name_both, str(new_col_count), str(new_epoch), \
         env_short_name_payoffs, str(def_model_to_add), str(att_model_to_add), graph_name]
     subprocess.call(cmd_list)
 
 def run_append_net_names(env_short_name_payoffs, def_model_to_add, att_model_to_add):
+    '''
+    Add the names of the new attacker and defender nets (whichever were beneficial
+    deviations) to the lists of network strategies in the game.
+    '''
     cmd_list = ["python3", "append_net_names_curve.py", env_short_name_payoffs, \
         str(def_model_to_add), str(att_model_to_add)]
     subprocess.call(cmd_list)
 
 def run_add_new_data(game_number, env_short_name_payoffs, new_epoch):
+    '''
+    Add the data on payoffs with the new beneficially deviating
+    strategy/strategies to the game's Json file.
+    '''
     cmd_list = ["python3", "add_new_data.py", str(game_number), env_short_name_payoffs, \
         str(new_epoch)]
     subprocess.call(cmd_list)
 
 def run_gambit(game_number, cur_epoch):
+    '''
+    Call a script to find a Nash equilibrium of the current game.
+    '''
     cmd_list = ["python3", "gambit_analyze.py", str(game_number), str(cur_epoch)]
     subprocess.call(cmd_list)
 
 def run_create_tsv(game_number, cur_epoch, env_short_name_tsv):
+    '''
+    Run a script to extract the current equilibrium strategies to TSV files.
+    '''
     cmd_list = ["python3", "create_tsv_files.py", str(game_number), str(cur_epoch), \
         env_short_name_tsv]
     subprocess.call(cmd_list)
 
 def run_update_strats(env_short_name_tsv, env_short_name_payoffs, new_epoch):
+    '''
+    Run a script to update the config files for the Gym environments to reference the new
+    equilibrium strategies' TSV files.
+    '''
     cmd_list = ["python3", "update_opponent_strats.py", env_short_name_payoffs, \
         env_short_name_tsv, str(new_epoch)]
     subprocess.call(cmd_list)
 
 def run_gen_def_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
         def_payoff_count, env_short_name_payoffs, graph_name, new_epoch):
+    '''
+    Run a script to evaluate each defender strategy against the current equilibrium
+    opponent, and record the mean payoff of the best one.
+    '''
     cmd_list = ["python3", "gen_def_payoffs.py", env_name_def_net, env_name_att_net, \
         env_name_both, str(def_payoff_count), env_short_name_payoffs, graph_name, \
         str(new_epoch)]
@@ -46,6 +73,10 @@ def run_gen_def_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
 
 def run_gen_att_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
         att_payoff_count, env_short_name_payoffs, graph_name, new_epoch):
+    '''
+    Run a script to evaluate each attacker strategy against the current equilibrium
+    opponent, and record the mean payoff of the best one.
+    '''
     cmd_list = ["python3", "gen_att_payoffs.py", env_name_def_net, env_name_att_net, \
         env_name_both, str(att_payoff_count), env_short_name_payoffs, graph_name, \
         str(new_epoch)]
@@ -53,22 +84,40 @@ def run_gen_att_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
 
 def run_train_test_def(graph_name, env_short_name_payoffs, new_epoch, \
     env_name_vs_mixed_att):
+    '''
+    Train a defender net against the current equilibrium opponent, and evaluate the mean
+    payoff of the learned net.
+    '''
     cmd_list = ["python3", "train_test_def.py", graph_name, env_short_name_payoffs, \
         str(new_epoch), env_name_vs_mixed_att]
     subprocess.call(cmd_list)
 
 def run_train_test_att(graph_name, env_short_name_payoffs, new_epoch, \
     env_name_vs_mixed_def):
+    '''
+    Train a attacker net against the current equilibrium opponent, and evaluate the mean
+    payoff of the learned net.
+    '''
     cmd_list = ["python3", "train_test_att.py", graph_name, env_short_name_payoffs, \
         str(new_epoch), env_name_vs_mixed_def]
     subprocess.call(cmd_list)
 
 def get_check_if_beneficial(env_short_name_payoffs, new_epoch, is_def):
+    '''
+    Check if the newly-trained strategy net (defender or attacker) yielded a higher mean
+    payoff against the current equilibrium opponent than the best previous strategy of the
+    same role.
+    '''
     return check.check_for_cli(env_short_name_payoffs, new_epoch, is_def)
 
 def run_test_curve(env_short_name_tsv, env_short_name_payoffs, cur_epoch, \
     old_strat_disc_fact, save_count, graph_name, is_defender_net, runs_per_pair, \
     env_name_vs_mixed_def, env_name_vs_mixed_att):
+    '''
+    Fine-tune the recently-trained network against a weighted mean of previous opponent
+    equilibrium strategies, and evaluate the result of the current and fine-tuned network
+    versions.
+    '''
     cmd_list = ["python3", "test_curve.py", env_short_name_tsv, env_short_name_payoffs, \
         str(cur_epoch), str(old_strat_disc_fact), str(save_count), graph_name, \
         str(is_defender_net), str(runs_per_pair), env_name_vs_mixed_def, \
@@ -80,6 +129,15 @@ def run_epoch_continue(game_number, cur_epoch, env_short_name_tsv, \
     env_name_att_net, env_name_both, def_payoff_count, att_payoff_count, graph_name, \
     env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, def_model_to_add, \
     att_model_to_add, old_strat_disc_fact, save_count, runs_per_pair):
+    '''
+    Finish running cur_epoch of training, adding the selected strategy or strategies
+    def_model_to_add and att_model_to_add if not None.
+    Begin the next round, new_epoch (cur_epoch + 1), and stop after the attacker and
+    defender nets have been trained, fine-tuned against the previous equilibrium, and the
+    trained and fine-tuned nets have been evaluated against the current and previous
+    equilibria. (The human can then choose which attacker and defender nets to add to the
+    game.) If in new_epoch neither attacker nor defender net is beneficial, stop early.
+    '''
     new_epoch = cur_epoch + 1
     result_file_name = get_add_data_result_file_name(game_number, new_epoch)
     if os.path.isfile(result_file_name):
