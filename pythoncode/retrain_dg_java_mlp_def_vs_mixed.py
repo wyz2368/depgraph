@@ -1,5 +1,5 @@
 '''
-Trains a multilayer perceptron to play the depgraph game against
+Loads a pre-trained multilayer perceptron and retrains it to play the depgraph game against
 an attacker that can mix over heuristic and network strategies.
 '''
 import sys
@@ -11,8 +11,8 @@ from baselines import deepq
 
 def main(env_name, env_short_name, new_epoch):
     '''
-    Makes the depgraph environment, builds a multilayer perceptron model,
-    trains the model, and saves the result.
+    Makes the depgraph environment, loads a pre-trained multilayer perceptron model from
+    file, and retrains it, saving several intermediates.
     '''
     to_load_model_name = "dg_" + env_short_name + "_dq_mlp_rand_epoch" + str(new_epoch) + \
         ".pkl"
@@ -35,9 +35,11 @@ def main(env_name, env_short_name, new_epoch):
 
     my_scope_new = my_scope_old + "_retrained"
 
-    # must be loaded by TensorFlow so accessible from global variables
+    # must be loaded by TensorFlow so accessible from global variables.
+    # loads the pre-trained model in to_load_model_name.
     deepq.load_with_scope(to_load_model_name, my_scope_old)
 
+    # retrains to_load_model_name, saving my_save_count versions after retraining.
     deepq.retrain_and_save(
         env,
         q_func=model,

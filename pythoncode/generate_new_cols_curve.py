@@ -149,6 +149,9 @@ def get_lines(file_name):
     return result
 
 def get_truth_value(str_input):
+    '''
+    Return True or False after string conversion, else throw error.
+    '''
     if str_input == "True":
         return True
     if str_input == "False":

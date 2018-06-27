@@ -9,10 +9,8 @@ from baselines import deepq
 
 def main(env_name, model_name, my_scope, num_episodes):
     '''
-        Load the network from file, and play games of the depdency
-        graph game against opponent.
-
-        model_name = "depgraph_java_deepq_model2.pkl"
+    Load the network from file, and play games of the depdency
+    graph game against opponent.
     '''
     start_time = time.time()
 

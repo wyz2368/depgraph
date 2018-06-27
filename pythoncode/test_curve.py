@@ -237,7 +237,9 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
     if os.path.isfile(result_file_name):
         raise ValueError("Skipping: " + result_file_name + " already exists.")
 
+    # get name of current TSV file pointed to by environment, for resetting after run.
     old_tsv_name = get_cur_tsv_name(env_short_name_payoffs, is_defender_net)
+    # derive the name of the new modified (weighted mean) opponent strategy.
     modified_tsv_name = get_modified_tsv_name(env_short_name_tsv, cur_epoch, \
         is_defender_net, old_strat_disc_fact)
     if not os.path.isfile("pythoncode/" + old_tsv_name):
@@ -245,15 +247,21 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
     if not os.path.isfile("pythoncode/" + modified_tsv_name):
         raise ValueError("Skipping: " + modified_tsv_name + " does not exist.")
 
+    # derive names and corresponding scopes of trained, retrained models to evaluate.
     model_names = get_pickle_names(env_short_name_payoffs, cur_epoch, is_defender_net, \
         save_count)
     scopes = get_net_scopes(is_defender_net, cur_epoch, save_count)
+    for model_name in model_names:
+        if not os.path.isfile("pythoncode/" + model_name):
+            raise ValueError("Skipping: " + model_name + " does not exist.")
 
     print("old_tsv_name: " + old_tsv_name)
+    # update config file to point to modified (weighted mean) opponent strategy
     set_config_name(env_short_name_payoffs, modified_tsv_name, is_defender_net)
     if get_cur_tsv_name(env_short_name_payoffs, is_defender_net) != modified_tsv_name:
         raise ValueError("Failed to set config name: " + str(modified_tsv_name))
 
+    # construct result object for saving as Json
     result = {}
     result["original_opponent_strat"] = old_tsv_name
     result["modified_opponent_strat"] = modified_tsv_name
@@ -262,16 +270,17 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
 
     chdir("pythoncode")
     # pwd is ~/pythoncode
+    # start server to run opponent with modified strategy
     env_process = start_and_return_env_process(graph_name, is_defender_net)
 
     for i in range(len(model_names)):
         model_name = model_names[i]
         scope = scopes[i]
-
         result["outcomes"][model_name] = {}
         if is_defender_net:
             save_name = "def_" + env_short_name_payoffs + "_epoch" + str(cur_epoch) + \
                 "_r" + str(i) + "_mod_enj.txt"
+            # run model_name against modified opponent attacker
             run_evaluation_def_net(env_name_vs_mixed_att, model_name, scope, save_name, \
                 runs_per_pair)
             (mean, stdev) = get_mean_stdev(save_name)
@@ -282,6 +291,7 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
         else:
             save_name = "att_" + env_short_name_payoffs + "_epoch" + str(cur_epoch) + \
                 "_r" + str(i) + "_mod_enj.txt"
+            # run model_name against modified opponent defender
             run_evaluation_att_net(env_name_vs_mixed_def, model_name, scope, save_name, \
                 runs_per_pair)
             (mean, stdev) = get_mean_stdev(save_name)
@@ -290,11 +300,13 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
             result["outcomes"][model_name]["vs_modified_mean"] = mean
             result["outcomes"][model_name]["vs_modified_stdev"] = stdev
 
+    # shut down opponent server that used modified opponent strategy
     close_env_process(env_process)
+    # reset config to use original opponent strategy
     set_config_name(env_short_name_payoffs, old_tsv_name, is_defender_net)
     if get_cur_tsv_name(env_short_name_payoffs, is_defender_net) != old_tsv_name:
         raise ValueError("Failed to reset config name: " + str(old_tsv_name))
-
+    # start opponent server using original opponent strategy
     env_process = start_and_return_env_process(graph_name, is_defender_net)
 
     for i in range(len(model_names)):
@@ -303,6 +315,7 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
         if is_defender_net:
             save_name = "def_" + env_short_name_payoffs + "_epoch" + str(cur_epoch) + \
                 "_r" + str(i) + "_enj.txt"
+            # run model_name against original opponent attacker
             run_evaluation_def_net(env_name_vs_mixed_att, model_name, scope, save_name, \
                 runs_per_pair)
             (mean, stdev) = get_mean_stdev(save_name)
@@ -313,6 +326,7 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
         else:
             save_name = "att_" + env_short_name_payoffs + "_epoch" + str(cur_epoch) + \
                 "_r" + str(i) + "_enj.txt"
+            # run model_name against original opponent defender
             run_evaluation_att_net(env_name_vs_mixed_def, model_name, scope, save_name, \
                 runs_per_pair)
             (mean, stdev) = get_mean_stdev(save_name)
@@ -321,6 +335,7 @@ def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_f
             result["outcomes"][model_name]["vs_original_mean"] = mean
             result["outcomes"][model_name]["vs_original_stdev"] = stdev
 
+    # shut down opponent server
     close_env_process(env_process)
     print(result)
 
