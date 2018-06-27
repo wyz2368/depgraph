@@ -1,3 +1,9 @@
+'''
+Run a trained network and save_count retrained versions, for
+attacker or defender, playing each such network for runs_per_pair runs against each of
+the current equilibrium strategy and against the modified (weighted mean) mixed
+strategy. Record the results to a Json file.
+'''
 import sys
 import json
 import subprocess
@@ -6,6 +12,9 @@ from os import chdir
 import os.path
 
 def get_truth_value(str_input):
+    '''
+    Return True or False after string conversion, else throw error.
+    '''
     if str_input == "True":
         return True
     if str_input == "False":
@@ -13,6 +22,11 @@ def get_truth_value(str_input):
     raise ValueError("Must be True or False: " + str_input)
 
 def get_cur_tsv_name(env_short_name_payoffs, is_defender_net):
+    '''
+    Look in the config file for defender or attacker, which should have one line, with
+    a double-quoted string in it. Get that inner string, and return it. This is the TSV
+    file the config file pointed to.
+    '''
     gym_folder = "gym/gym/gym/envs/board_game/"
     config_name = gym_folder + env_short_name_payoffs
     if is_defender_net:
@@ -28,6 +42,10 @@ def get_cur_tsv_name(env_short_name_payoffs, is_defender_net):
 
 def get_modified_tsv_name(env_short_name_tsv, cur_epoch, is_defender_net, \
     old_strat_disc_fact):
+    '''
+    Generate the name of the TSV file that would be created for the given environment,
+    epoch, attacker/defender option, as discount factor when mixing old strategies.
+    '''
     type_string = "_def.tsv"
     if not is_defender_net:
         type_string = "_att.tsv"
@@ -36,6 +54,10 @@ def get_modified_tsv_name(env_short_name_tsv, cur_epoch, is_defender_net, \
         fmt.format(old_strat_disc_fact).replace('.', '_') + type_string
 
 def set_config_name(env_short_name_payoffs, modified_tsv_name, is_defender_net):
+    '''
+    Update the TSV file pointed to by the config file for attacker or defender, to point
+    to modified_tsv_name.
+    '''
     gym_folder = "gym/gym/gym/envs/board_game/"
     if is_defender_net:
         # network defender is self, opponent is att
@@ -48,6 +70,10 @@ def set_config_name(env_short_name_payoffs, modified_tsv_name, is_defender_net):
             modified_tsv_name + "\"")
 
 def start_and_return_env_process(graph_name, is_defender_net):
+    '''
+    Start a process running the Java server for the attacker or defender environment, with
+    the given graph.
+    '''
     cmd = "exec java -jar ../depgraphpy4jattvseither/" \
         + "depgraphpy4jattvsnetorheuristic.jar " \
         + graph_name
@@ -63,11 +89,20 @@ def start_and_return_env_process(graph_name, is_defender_net):
     return env_process
 
 def close_env_process(env_process):
+    '''
+    Wait as a precaution, then kill the given process.
+    '''
     sleep_sec = 5
     time.sleep(sleep_sec)
     env_process.kill()
 
 def get_pickle_names(env_short_name_payoffs, cur_epoch, is_defender_net, save_count):
+    '''
+    Return a list of the names of the pickle network files, for the given environment,
+    epoch, attacker/defender choice, and number of saves generated during retraining.
+    Will include the original network and save_count retrained versions, in the order they
+    would be generated.
+    '''
     result = []
     for i in range(save_count + 1):
         cur = "dg_" + env_short_name_payoffs + "_dq_mlp_rand_epoch" + str(cur_epoch)
@@ -80,6 +115,11 @@ def get_pickle_names(env_short_name_payoffs, cur_epoch, is_defender_net, save_co
     return result
 
 def get_net_scopes(is_defender_net, cur_epoch, save_count):
+    '''
+    Return a list of the scope of each pickle network file, for the given attacker/defender
+    choice, epoch, and save_count of retrained files. Will be in the same order as the
+    result of get_pickle_names().
+    '''
     result = []
     for i in range(save_count + 1):
         cur = "deepq_train_e" + str(cur_epoch)
@@ -92,6 +132,10 @@ def get_net_scopes(is_defender_net, cur_epoch, save_count):
 
 def run_evaluation_def_net(env_name_vs_mixed_att, model_name, scope, save_name, \
     runs_per_pair):
+    '''
+    Plays back (enjoys) model_name defender network against the given environment, saving
+    the output as save_name, with runs_per_pair games played.
+    '''
     cmd_list = ["python3", "enjoy_depgraph_data_vs_mixed_mod_net.py", \
         env_name_vs_mixed_att, model_name, scope, runs_per_pair]
     if os.path.isfile(save_name):
@@ -102,6 +146,10 @@ def run_evaluation_def_net(env_name_vs_mixed_att, model_name, scope, save_name, 
 
 def run_evaluation_att_net(env_name_vs_mixed_def, model_name, scope, save_name, \
     runs_per_pair):
+    '''
+    Plays back (enjoys) model_name attacker network against the given environment, saving
+    the output as save_name, with runs_per_pair games played.
+    '''
     cmd_list = ["python3", "enjoy_dg_data_vs_mixed_def_mod_net.py", \
         env_name_vs_mixed_def, model_name, scope, runs_per_pair]
     if os.path.isfile(save_name):
@@ -111,18 +159,25 @@ def run_evaluation_att_net(env_name_vs_mixed_def, model_name, scope, save_name, 
         subprocess.call(cmd_list, stdout=file)
 
 def get_mean_stdev(file_name):
-    # print("Mean reward: " + fmt.format(mean_reward))
-    # print("Stdev reward: " + fmt.format(stdev_reward))
+    '''
+    Read the lines from the given file.
+    The first line will be like "Mean reward: ?",
+    the second line like "Stdev reward: ?", where "?" is some real value.
+    Return a tuple (mean, stdev).
+    '''
     lines = get_file_lines(file_name)
     mean_line = lines[0]
     stdev_line = lines[1]
-    mean_line = mean_line[mean_line.find(":") + 1 : ].strip()
+    mean_line = mean_line[mean_line.find(":") + 1 : ].strip() # get value after colon
     stdev_line = stdev_line[stdev_line.find(":") + 1 : ].strip()
     mean = float(mean_line)
     stdev = float(stdev_line)
     return (mean, stdev)
 
 def write_line(file_name, line):
+    '''
+    Overwrite the given file with the given line.
+    '''
     with open(file_name, "w") as file:
         file.write(line)
 
@@ -145,6 +200,10 @@ def get_file_lines(file_name):
     return lines
 
 def get_string_from_line(line):
+    '''
+    Take a string of text called "line", which should have a double-quoted string in it,
+    and return the contents of that double-quoted part.
+    '''
     first_double_quote = line.index("\"")
     second_double_quote = line.index("\"", first_double_quote + 1)
     return line[first_double_quote + 1 : second_double_quote]
@@ -152,7 +211,14 @@ def get_string_from_line(line):
 def main(env_short_name_tsv, env_short_name_payoffs, cur_epoch, old_strat_disc_fact, \
          save_count, graph_name, is_defender_net, runs_per_pair,
          env_name_vs_mixed_def, env_name_vs_mixed_att):
+    '''
+    Iterate over the original trained network and save_count retrained versions, for
+    attacker or defender, playing each such network for runs_per_pair runs against each of
+    the current equilibrium strategy and against the modified (weighted mean) mixed
+    strategy. Record the results to a Json file.
+    '''
     if cur_epoch < 1:
+        # can't call this in epoch 0, because no weighted mean strategy exists yet.
         raise ValueError("cur_epoch must be >= 1: " + str(cur_epoch))
     if old_strat_disc_fact <= 0.0 or old_strat_disc_fact > 1.0:
         raise ValueError("old_strat_disc_fact must be in (0, 1]: " + \

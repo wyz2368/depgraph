@@ -130,8 +130,8 @@ def run_retrain_def(env_name_vs_mixed_att, env_short_name_payoffs, new_epoch):
 
 def run_retrain_att(env_name_vs_mixed_def, env_short_name_payoffs, new_epoch):
     '''
-    Fine-tune an attacker net against a mixture of previous opponents, and save the resulting
-    net.
+    Fine-tune an attacker net against a mixture of previous opponents,
+    and save the resulting net.
     '''
     cmd_list = ["python3", "retrain_dg_java_mlp_att_vs_mixed.py", env_name_vs_mixed_def, \
         env_short_name_payoffs, str(new_epoch)]
