@@ -284,11 +284,15 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
         # should fine-tune net defender network against previous equilibria.
         print("\tWill fine-tune def, epoch: " + str(new_epoch)+ ", time: " + \
             str(datetime.datetime.now()), flush=True)
+        chdir("pythoncode")
+        # pwd is ~/pythoncode
         run_retrain_def(env_name_vs_mixed_att, env_short_name_payoffs, new_epoch)
 
         print("\tWill get def curve, epoch: " + str(new_epoch)+ ", time: " + \
             str(datetime.datetime.now()), flush=True)
         is_defender_net = True
+        chdir("..")
+        # pwd is ~/
         run_test_curve(env_short_name_tsv, env_short_name_payoffs, cur_epoch, \
             old_strat_disc_fact, save_count, graph_name, is_defender_net, runs_per_pair, \
             env_name_vs_mixed_def, env_name_vs_mixed_att)
@@ -296,15 +300,18 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
         # should fine-tune net attacker network against previous equilibria.
         print("\tWill fine-tune att, epoch: " + str(new_epoch)+ ", time: " + \
             str(datetime.datetime.now()), flush=True)
+        chdir("pythoncode")
+        # pwd is ~/pythoncode
         run_retrain_att(env_name_vs_mixed_def, env_short_name_payoffs, new_epoch)
 
         print("\tWill get att curve, epoch: " + str(new_epoch)+ ", time: " + \
             str(datetime.datetime.now()), flush=True)
         is_defender_net = False
+        chdir("..")
+        # pwd is ~/
         run_test_curve(env_short_name_tsv, env_short_name_payoffs, cur_epoch, \
             old_strat_disc_fact, save_count, graph_name, is_defender_net, runs_per_pair, \
             env_name_vs_mixed_def, env_name_vs_mixed_att)
-
     return True
 
 def main(game_number, env_short_name_tsv, env_short_name_payoffs, \

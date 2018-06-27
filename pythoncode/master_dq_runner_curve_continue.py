@@ -130,8 +130,8 @@ def run_retrain_def(env_name_vs_mixed_att, env_short_name_payoffs, new_epoch):
 
 def run_retrain_att(env_name_vs_mixed_def, env_short_name_payoffs, new_epoch):
     '''
-    Fine-tune an attacker net against a mixture of previous opponents, and save the resulting
-    net.
+    Fine-tune an attacker net against a mixture of previous opponents,
+    and save the resulting net.
     '''
     cmd_list = ["python3", "retrain_dg_java_mlp_att_vs_mixed.py", env_name_vs_mixed_def, \
         env_short_name_payoffs, str(new_epoch)]
@@ -165,6 +165,7 @@ def run_epoch_continue(game_number, cur_epoch, env_short_name_tsv, \
     equilibria. (The human can then choose which attacker and defender nets to add to the
     game.) If in new_epoch neither attacker nor defender net is beneficial, stop early.
     '''
+    # pwd is ~/
     new_epoch = cur_epoch + 1
     result_file_name = get_add_data_result_file_name(game_number, new_epoch)
     if os.path.isfile(result_file_name):
@@ -173,9 +174,11 @@ def run_epoch_continue(game_number, cur_epoch, env_short_name_tsv, \
 
     print("\tWill generate new columns, epoch: " + str(new_epoch)+ ", time: " + \
         str(datetime.datetime.now()), flush=True)
+
     # sample payoff of each new network (if it beneficially deviates) against all opponent
     # strategies
     chdir("pythoncode")
+    # pwd is ~/pythoncode
     run_gen_new_cols(env_name_def_net, env_name_att_net, env_name_both, new_col_count, \
         new_epoch, env_short_name_payoffs, def_model_to_add, att_model_to_add, graph_name)
     # append name of each new network (if it beneficially deviates) to list of networks to
@@ -183,6 +186,7 @@ def run_epoch_continue(game_number, cur_epoch, env_short_name_tsv, \
     run_append_net_names(env_short_name_payoffs, def_model_to_add, att_model_to_add)
 
     chdir("..")
+    # pwd is ~/
     # add new payoff data to game object (from new beneficially deviating network(s))
     run_add_new_data(game_number, env_short_name_payoffs, new_epoch)
 
@@ -204,6 +208,7 @@ def run_epoch_continue(game_number, cur_epoch, env_short_name_tsv, \
     run_create_tsv(game_number, cur_epoch, env_short_name_tsv)
 
     chdir("pythoncode")
+    # pwd is ~/pythoncode
     # set the mixed-strategy opponents to use current TSV file strategies
     run_update_strats(env_short_name_tsv, env_short_name_payoffs, new_epoch)
     print("\tWill get def payoffs, epoch: " + str(new_epoch)+ ", time: " + \
@@ -236,25 +241,34 @@ def run_epoch_continue(game_number, cur_epoch, env_short_name_tsv, \
         return False
 
     chdir("..")
+    # pwd is ~/
     if is_def_beneficial:
         print("\tWill fine-tune def, epoch: " + str(new_epoch)+ ", time: " + \
             str(datetime.datetime.now()), flush=True)
+        chdir("pythoncode")
+        # pwd is ~/pythoncode
         run_retrain_def(env_name_vs_mixed_att, env_short_name_payoffs, new_epoch)
 
         print("\tWill get def curve, epoch: " + str(new_epoch)+ ", time: " + \
             str(datetime.datetime.now()), flush=True)
         is_defender_net = True
+        chdir("..")
+        # pwd is ~/
         run_test_curve(env_short_name_tsv, env_short_name_payoffs, cur_epoch, \
             old_strat_disc_fact, save_count, graph_name, is_defender_net, runs_per_pair, \
             env_name_vs_mixed_def, env_name_vs_mixed_att)
     if is_att_beneficial:
         print("\tWill fine-tune att, epoch: " + str(new_epoch)+ ", time: " + \
             str(datetime.datetime.now()), flush=True)
+        chdir("pythoncode")
+        # pwd is ~/pythoncode
         run_retrain_att(env_name_vs_mixed_def, env_short_name_payoffs, new_epoch)
 
         print("\tWill get att curve, epoch: " + str(new_epoch)+ ", time: " + \
             str(datetime.datetime.now()), flush=True)
         is_defender_net = False
+        chdir("..")
+        # pwd is ~/
         run_test_curve(env_short_name_tsv, env_short_name_payoffs, cur_epoch, \
             old_strat_disc_fact, save_count, graph_name, is_defender_net, runs_per_pair, \
             env_name_vs_mixed_def, env_name_vs_mixed_att)
