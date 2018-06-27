@@ -54,11 +54,8 @@ def get_attacker_lines(file_name):
 
 def main(game_number, cur_epoch, env_short_name):
     input_file = None
-    if cur_epoch == 0:
-        input_file = "gambit_result_" + str(game_number) + "_lcp_decode.txt"
-    else:
-        input_file = "gambit_result_" + str(game_number) + "_" + str(cur_epoch) + \
-            "_lcp_decode.txt"
+    input_file = "gambit_result_" + str(game_number) + "_" + str(cur_epoch) + \
+        "_lcp_decode.txt"
 
     defender_lines = get_defender_lines(input_file)
     defender_lines = get_rounded_strategy_lines(defender_lines)
