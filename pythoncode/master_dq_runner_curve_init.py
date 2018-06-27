@@ -1,3 +1,10 @@
+'''
+Run the first epoch and part of second epoch of training for robustified double-oracle
+method, where each successful training session is followed by fine-tuning against a mixture
+of previous opponent equilibria for robustness.
+Runs the second epoch until after fine-tuning, when a human must assist by deciding which
+network (the trained one or a fine-tuned version) to proceed with for attacker and defender.
+'''
 import sys
 import datetime
 import subprocess
