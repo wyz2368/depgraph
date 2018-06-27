@@ -219,16 +219,24 @@ def run_epoch_continue(game_number, cur_epoch, env_short_name_tsv, \
 
     chdir("..")
     if is_def_beneficial:
-        is_defender_net = True
+        print("\tWill fine-tune def, epoch: " + str(new_epoch)+ ", time: " + \
+            str(datetime.datetime.now()), flush=True)
+        # TODO run retrain for def
+
         print("\tWill get def curve, epoch: " + str(new_epoch)+ ", time: " + \
             str(datetime.datetime.now()), flush=True)
+        is_defender_net = True
         run_test_curve(env_short_name_tsv, env_short_name_payoffs, cur_epoch, \
             old_strat_disc_fact, save_count, graph_name, is_defender_net, runs_per_pair, \
             env_name_vs_mixed_def, env_name_vs_mixed_att)
     if is_att_beneficial:
-        is_defender_net = False
+        print("\tWill fine-tune att, epoch: " + str(new_epoch)+ ", time: " + \
+            str(datetime.datetime.now()), flush=True)
+        # TODO run retrain for att
+
         print("\tWill get att curve, epoch: " + str(new_epoch)+ ", time: " + \
             str(datetime.datetime.now()), flush=True)
+        is_defender_net = False
         run_test_curve(env_short_name_tsv, env_short_name_payoffs, cur_epoch, \
             old_strat_disc_fact, save_count, graph_name, is_defender_net, runs_per_pair, \
             env_name_vs_mixed_def, env_name_vs_mixed_att)
