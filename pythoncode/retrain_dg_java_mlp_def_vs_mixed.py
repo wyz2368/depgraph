@@ -44,7 +44,7 @@ def main(env_name, env_short_name, new_epoch):
         env,
         q_func=model,
         lr=5e-5,
-        max_timesteps=200000,
+        max_timesteps=300000,
         buffer_size=30000,
         exploration_fraction=0.5,
         exploration_initial_eps=0.3,
