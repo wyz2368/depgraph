@@ -33,7 +33,7 @@ def run_append_net_names(env_short_name_payoffs, def_model_to_add, att_model_to_
     deviations) to the lists of network strategies in the game.
     '''
     cmd_list = ["python3", "append_net_names_curve.py", env_short_name_payoffs, \
-        str(def_model_to_add), str(att_model_to_add)]
+        def_model_to_add, att_model_to_add]
     subprocess.call(cmd_list)
 
 def run_add_new_data(game_number, env_short_name_payoffs, new_epoch):
