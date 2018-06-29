@@ -88,26 +88,24 @@ def get_check_if_beneficial(env_short_name_payoffs, new_epoch, is_def):
     return check.check_for_cli(env_short_name_payoffs, new_epoch, is_def)
 
 def run_gen_new_cols(env_name_def_net, env_name_att_net, env_name_both, new_col_count, \
-    new_epoch, env_short_name_payoffs, is_def_beneficial, is_att_beneficial, graph_name):
+    new_epoch, env_short_name_payoffs, def_model_to_add, att_model_to_add, graph_name):
     '''
     Evaluate the mean payoff for self and opponent of the new defender and attacker nets
     (whichever were beneficial deviations) against each opponent strategy, for augmenting
     the game's payoff matrix.
     '''
-    cmd_list = ["python3", "generate_new_cols.py", env_name_def_net, env_name_att_net, \
-        env_name_both, str(new_col_count), str(new_epoch), env_short_name_payoffs, \
-        str(is_def_beneficial), str(is_att_beneficial), graph_name]
+    cmd_list = ["python3", "generate_new_cols_curve.py", env_name_def_net, \
+        env_name_att_net, env_name_both, str(new_col_count), str(new_epoch), \
+        env_short_name_payoffs, str(def_model_to_add), str(att_model_to_add), graph_name]
     subprocess.call(cmd_list)
 
-def run_append_net_names(env_short_name_payoffs, new_epoch, def_pkl_prefix, \
-    att_pkl_prefix, is_def_beneficial, is_att_beneficial):
+def run_append_net_names(env_short_name_payoffs, def_model_to_add, att_model_to_add):
     '''
     Add the names of the new attacker and defender nets (whichever were beneficial
     deviations) to the lists of network strategies in the game.
     '''
-    cmd_list = ["python3", "append_net_names.py", env_short_name_payoffs, str(new_epoch), \
-        def_pkl_prefix, att_pkl_prefix, str(is_def_beneficial), \
-        str(is_att_beneficial)]
+    cmd_list = ["python3", "append_net_names_curve.py", env_short_name_payoffs, \
+        def_model_to_add, att_model_to_add]
     subprocess.call(cmd_list)
 
 def run_add_new_data(game_number, env_short_name_payoffs, new_epoch):
@@ -151,11 +149,20 @@ def run_test_curve(env_short_name_tsv, env_short_name_payoffs, cur_epoch, \
         env_name_vs_mixed_att]
     subprocess.call(cmd_list)
 
+def get_def_model_name(env_short_name_payoffs, new_epoch):
+    ''' Get name of the defender network to generate. '''
+    return "dg_" + env_short_name_payoffs + "_dq_mlp_rand_epoch" + str(new_epoch) + ".pkl"
+
+def get_att_model_name(env_short_name_payoffs, new_epoch):
+    ''' Get name of the attacker network to generate. '''
+    return "dg_" + env_short_name_payoffs + "_dq_mlp_rand_epoch" + str(new_epoch) + \
+        "_att.pkl"
+
 def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     env_name_def_net, \
     env_name_att_net, env_name_both, def_payoff_count, att_payoff_count, graph_name, \
-    env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, def_pkl_prefix, \
-    att_pkl_prefix, old_strat_disc_fact, save_count, runs_per_pair):
+    env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, old_strat_disc_fact, \
+    save_count, runs_per_pair):
     '''
     Run the first epoch (epoch 0) of training. If no beneficial deviation is found, stop.
     Otherwise, begin the next epoch (epoch 1) of training, and stop after the attacker and
@@ -216,12 +223,17 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
         str(datetime.datetime.now()), flush=True)
     # sample payoff of each new network (if it beneficially deviates) against all opponent
     # strategies
+    def_model_to_add = None
+    if is_def_beneficial:
+        def_model_to_add = get_def_model_name(env_short_name_payoffs, new_epoch)
+    att_model_to_add = None
+    if is_att_beneficial:
+        att_model_to_add = get_att_model_name(env_short_name_payoffs, new_epoch)
     run_gen_new_cols(env_name_def_net, env_name_att_net, env_name_both, new_col_count, \
-        new_epoch, env_short_name_payoffs, is_def_beneficial, is_att_beneficial, graph_name)
+        new_epoch, env_short_name_payoffs, def_model_to_add, att_model_to_add, graph_name)
     # append name of each new network (if it beneficially deviates) to list of networks to
     # use in equilibrium search
-    run_append_net_names(env_short_name_payoffs, new_epoch, def_pkl_prefix, \
-        att_pkl_prefix, is_def_beneficial, is_att_beneficial)
+    run_append_net_names(env_short_name_payoffs, def_model_to_add, att_model_to_add)
 
     chdir("..")
     # pwd is ~/
@@ -317,8 +329,8 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
 def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
         env_name_def_net, env_name_att_net, \
         env_name_both, def_payoff_count, att_payoff_count, graph_name, \
-        env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, def_pkl_prefix, \
-        att_pkl_prefix, old_strat_disc_fact, save_count, runs_per_pair):
+        env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, old_strat_disc_fact, \
+        save_count, runs_per_pair):
     '''
     Call method to run first epoch (epoch 0), and beginning of second epoch (epoch 1).
     '''
@@ -339,8 +351,7 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
         env_short_name_payoffs, env_name_def_net, env_name_att_net, env_name_both, \
         def_payoff_count, \
         att_payoff_count, graph_name, env_name_vs_mixed_def, env_name_vs_mixed_att, \
-        new_col_count, def_pkl_prefix, att_pkl_prefix, old_strat_disc_fact, save_count, \
-        runs_per_pair)
+        new_col_count, old_strat_disc_fact, save_count, runs_per_pair)
     if should_continue:
         # proceed from epoch 1
         print("\tShould continue from epoch: 1, time: " + \
@@ -353,17 +364,16 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
 example: python3 master_dq_runner_curve_init.py 3013 sl29_randNoAndB sl29 \
     DepgraphJava29N-v0 DepgraphJavaEnvAtt29N-v0 DepgraphJavaEnvBoth29N-v0 100 400 \
     SepLayerGraph0_noAnd_B.json DepgraphJavaEnvVsMixedDef29N-v0 \
-    DepgraphJavaEnvVsMixedAtt29N-v0 400 dg_sl29_dq_mlp_rand_epoch \
-    dg_sl29_dq_mlp_rand_epoch 0.5 4 1000
+    DepgraphJavaEnvVsMixedAtt29N-v0 400 0.5 4 1000
 
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 18:
-        raise ValueError("Need 17 args: game_number, env_short_name_tsv, " + \
+    if len(sys.argv) != 16:
+        raise ValueError("Need 15 args: game_number, env_short_name_tsv, " + \
             "env_short_name_payoffs, " + \
             "env_name_def_net, env_name_att_net, env_name_both, def_payoff_count, " + \
             "att_payoff_count, graph_name, env_name_vs_mixed_def, "  + \
-            "env_name_vs_mixed_att, new_col_count, def_pkl_prefix, att_pkl_prefix, " + \
+            "env_name_vs_mixed_att, new_col_count, " + \
             "old_strat_disc_fact, save_count, runs_per_pair")
     GAME_NUMBER = int(sys.argv[1])
     ENV_SHORT_NAME_TSV = sys.argv[2]
@@ -377,13 +387,11 @@ if __name__ == '__main__':
     ENV_NAME_VS_MIXED_DEF = sys.argv[10]
     ENV_NAME_VS_MIXED_ATT = sys.argv[11]
     NEW_COL_COUNT = int(sys.argv[12])
-    DEF_PKL_PREFIX = sys.argv[13]
-    ATT_PKL_PREFIX = sys.argv[14]
-    OLD_STRAT_DISC_FACT = float(sys.argv[15])
-    SAVE_COUNT = int(sys.argv[16])
-    RUNS_PER_PAIR = int(sys.argv[17])
+    OLD_STRAT_DISC_FACT = float(sys.argv[13])
+    SAVE_COUNT = int(sys.argv[14])
+    RUNS_PER_PAIR = int(sys.argv[15])
     main(GAME_NUMBER, ENV_SHORT_NAME_TSV, ENV_SHORT_NAME_PAYOFFS, \
         ENV_NAME_DEF_NET, ENV_NAME_ATT_NET, \
         ENV_NAME_BOTH, DEF_PAYOFF_COUNT, ATT_PAYOFF_COUNT, GRAPH_NAME, \
         ENV_NAME_VS_MIXED_DEF, ENV_NAME_VS_MIXED_ATT, NEW_COL_COUNT, \
-        DEF_PKL_PREFIX, ATT_PKL_PREFIX, OLD_STRAT_DISC_FACT, SAVE_COUNT, RUNS_PER_PAIR)
+        OLD_STRAT_DISC_FACT, SAVE_COUNT, RUNS_PER_PAIR)
