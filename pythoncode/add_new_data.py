@@ -225,9 +225,6 @@ def augment_game_data(game_data, new_data):
         next_symmetry_group_id += 2
 
 def get_game_file_name(game_number, new_epoch):
-    if new_epoch == 1:
-        # special case: epoch not listed in epoch 0 game file name.
-        return "game_" + str(game_number) + ".json"
     # return the game file name from the previous epoch.
     return "game_" + str(game_number) + "_" + str(new_epoch - 1) + ".json"
 
