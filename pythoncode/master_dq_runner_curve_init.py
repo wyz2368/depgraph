@@ -174,10 +174,9 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     cur_epoch = 0
     new_epoch = 1
     # pwd is ~/
-    result_file_name = get_add_data_result_file_name(game_number, new_epoch)
+    result_file_name = get_add_data_result_file_name(game_number, new_epoch + 1)
     if os.path.isfile(result_file_name):
-        raise ValueError("Cannot run epoch " + str(cur_epoch) + ": " + \
-            result_file_name + " already exists.")
+        raise ValueError("Cannot run init: " + result_file_name + " already exists.")
 
     print("\tWill run gambit, epoch: " + str(cur_epoch)+ ", time: " + \
         str(datetime.datetime.now()), flush=True)
@@ -244,11 +243,6 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
 
     cur_epoch += 1
     new_epoch += 1
-
-    result_file_name = get_add_data_result_file_name(game_number, new_epoch)
-    if os.path.isfile(result_file_name):
-        raise ValueError("Cannot run epoch " + str(cur_epoch) + ": " + \
-            result_file_name + " already exists.")
 
     print("\tWill run gambit, epoch: " + str(cur_epoch)+ ", time: " + \
         str(datetime.datetime.now()), flush=True)
