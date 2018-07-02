@@ -117,22 +117,22 @@ def run_add_new_data(game_number, env_short_name_payoffs, new_epoch):
         str(new_epoch)]
     subprocess.call(cmd_list)
 
-def run_retrain_def(env_name_vs_mixed_att, env_short_name_payoffs, new_epoch):
+def run_retrain_def(graph_name, env_short_name_payoffs, new_epoch, env_name_vs_mixed_att):
     '''
     Fine-tune a defender net against a mixture of previous opponents, and save the resulting
     net.
     '''
-    cmd_list = ["python3", "retrain_dg_java_mlp_def_vs_mixed.py", env_name_vs_mixed_att, \
-        env_short_name_payoffs, str(new_epoch)]
+    cmd_list = ["python3", "retrain_def.py", graph_name, \
+        env_short_name_payoffs, str(new_epoch), env_name_vs_mixed_att]
     subprocess.call(cmd_list)
 
-def run_retrain_att(env_name_vs_mixed_def, env_short_name_payoffs, new_epoch):
+def run_retrain_att(graph_name, env_short_name_payoffs, new_epoch, env_name_vs_mixed_def):
     '''
     Fine-tune an attacker net against a mixture of previous opponents,
     and save the resulting net.
     '''
-    cmd_list = ["python3", "retrain_dg_java_mlp_att_vs_mixed.py", env_name_vs_mixed_def, \
-        env_short_name_payoffs, str(new_epoch)]
+    cmd_list = ["python3", "retrain_att.py", graph_name,\
+        env_short_name_payoffs, str(new_epoch), env_name_vs_mixed_def]
     subprocess.call(cmd_list)
 
 def run_test_curve(env_short_name_tsv, env_short_name_payoffs, cur_epoch, \
@@ -292,7 +292,8 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
             str(datetime.datetime.now()), flush=True)
         chdir("pythoncode")
         # pwd is ~/pythoncode
-        run_retrain_def(env_name_vs_mixed_att, env_short_name_payoffs, new_epoch)
+        run_retrain_def(graph_name, env_short_name_payoffs, new_epoch, \
+            env_name_vs_mixed_att)
 
         print("\tWill get def curve, epoch: " + str(new_epoch)+ ", time: " + \
             str(datetime.datetime.now()), flush=True)
@@ -308,7 +309,8 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
             str(datetime.datetime.now()), flush=True)
         chdir("pythoncode")
         # pwd is ~/pythoncode
-        run_retrain_att(env_name_vs_mixed_def, env_short_name_payoffs, new_epoch)
+        run_retrain_att(graph_name, env_short_name_payoffs, new_epoch, \
+            env_name_vs_mixed_def)
 
         print("\tWill get att curve, epoch: " + str(new_epoch)+ ", time: " + \
             str(datetime.datetime.now()), flush=True)
