@@ -1,7 +1,6 @@
 import sys
 import subprocess
 import time
-import os.path
 
 def start_and_return_env_process(graph_name):
     cmd = "exec java -jar ../depgraphpy4jdefvseither/depgraphpy4jdefvsnetorheuristic.jar " \
@@ -20,12 +19,7 @@ def close_env_process(env_process):
 def run_retraining(env_short_name, new_epoch, env_name_vs_mixed_att):
     cmd_list = ["python3", "retrain_dg_java_mlp_def_vs_mixed.py", env_name_vs_mixed_att, \
         env_short_name, str(new_epoch)]
-    def_out_name = "defVMixed_" + env_short_name + "_epoch" + str(new_epoch) + ".txt"
-    if os.path.isfile(def_out_name):
-        print("Skipping: " + def_out_name + " already exists.")
-        return
-    with open(def_out_name, "w") as file:
-        subprocess.call(cmd_list, stdout=file)
+    subprocess.call(cmd_list)
 
 def main(graph_name, env_short_name, new_epoch, env_name_vs_mixed_att):
     env_process = start_and_return_env_process(graph_name)
