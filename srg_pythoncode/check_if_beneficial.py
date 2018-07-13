@@ -41,11 +41,11 @@ def check_for_cli(env_short_name, new_epoch, is_defender):
     eq_payoff_file = None
     net_payoff_file = None
     if is_defender:
-        eq_payoff_file = "out_defPayoffs_epoch" + str(new_epoch - 1) + ".txt"
+        eq_payoff_file = "out_defPayoffs_epoch" + str(new_epoch) + ".txt"
         # net_payoff_file = "tdj_mlp_def_" + env_short_name + "_epoch" + str(new_epoch) + "_enj.txt"
         net_payoff_file = "def_" + env_short_name + "_epoch" + str(new_epoch) + ".txt"
     else:
-        eq_payoff_file = "out_attPayoffs_epoch" + str(new_epoch - 1) + ".txt"
+        eq_payoff_file = "out_attPayoffs_epoch" + str(new_epoch) + ".txt"
         # net_payoff_file = "tdj_mlp_att_" + env_short_name + "_epoch" + str(new_epoch) + "_enj.txt"
         net_payoff_file = "att_" + env_short_name + "_epoch" + str(new_epoch) + ".txt"
 
