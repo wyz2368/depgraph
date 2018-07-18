@@ -67,7 +67,7 @@ def main(env_name, env_short_name, new_epoch, num_episodes):
     return selected_observations
 
 '''
-python3 enjoy_depgraph_data_for_obs_store.py DepgraphJavaEnvVsMixedAtt29N-v0 sl29 15 400
+python3 enjoy_depgraph_data_for_obs_store.py DepgraphJavaEnvVsMixedAtt29N-v0 sl29 23 400
 '''
 if __name__ == '__main__':
     if len(sys.argv) != 5:
