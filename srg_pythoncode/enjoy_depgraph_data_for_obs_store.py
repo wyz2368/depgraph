@@ -33,7 +33,7 @@ def get_net_scope(net_name):
         return "deepq_train"
     return "deepq_train_e" + str(net_num)
 
-def generate_obs(env_name_att_net, def_strat, num_episodes):
+def generate_obs(env_name_att_net, def_strat, num_episodes, eps_per_game):
     '''
         Load the network from file, and play games of the depdency
         graph game against opponent.
@@ -67,8 +67,9 @@ def generate_obs(env_name_att_net, def_strat, num_episodes):
             obs = np.array(obs).reshape(1, obs_len)
             episode_rew += rew
         rewards.append(episode_rew)
-        choice_index = random.randint(0, len(cur_episode_observations) - 1)
-        selected_observations.append(cur_episode_observations[choice_index])
+        for _ in range(eps_per_game):
+            choice_index = random.randint(0, len(cur_episode_observations) - 1)
+            selected_observations.append(cur_episode_observations[choice_index])
     mean_reward = np.mean(rewards)
     stdev_reward = np.std(rewards)
     stderr_reward = stdev_reward * 1.0 / math.sqrt(num_episodes)
@@ -83,12 +84,14 @@ def generate_obs(env_name_att_net, def_strat, num_episodes):
 
 '''
 python3 enjoy_depgraph_data_for_obs_store.py DepgraphJavaEnvVsMixedAtt-v0 \
-    depgraph_dq_mlp_rand_epoch14.pkl 400
+    depgraph_dq_mlp_rand_epoch14.pkl 400 5
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 4:
-        raise ValueError("Need 3 args: env_name_att_net, def_strat, num_episodes")
+    if len(sys.argv) != 5:
+        raise ValueError("Need 4 args: env_name_att_net, def_strat, num_episodes, " + \
+            "eps_per_game")
     ENV_NAME_ATT_NET = sys.argv[1]
     DEF_STRAT = sys.argv[2]
     NUM_EPISODES = int(sys.argv[3])
-    generate_obs(ENV_NAME_ATT_NET, DEF_STRAT, NUM_EPISODES)
+    EPS_PER_GAME = int(sys.argv[4])
+    generate_obs(ENV_NAME_ATT_NET, DEF_STRAT, NUM_EPISODES, EPS_PER_GAME)
