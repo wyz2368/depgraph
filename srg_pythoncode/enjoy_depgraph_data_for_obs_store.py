@@ -8,7 +8,32 @@ import gym
 
 from baselines import deepq
 
-def main(env_name, env_short_name, new_epoch, num_episodes):
+def get_net_scope(net_name):
+    # name is like:
+    # *epochNUM_* or *epochNUM[a-z]* or *epochNUM.pkl, where NUM is an integer > 1,
+    # unless "epoch" is absent, in which case return None.
+    #
+    # if "epoch" is absent: return None.
+    # else if NUM is 2: return "deepq_train".
+    # else: return "deepq_train_eNUM", inserting the integer for NUM
+    if net_name == "dg_rand_30n_noAnd_B_eq_2.pkl" or \
+        net_name == "dg_dqmlp_rand30NoAnd_B_att_fixed.pkl":
+        return None
+
+    epoch_index = net_name.find('epoch')
+    num_start_index = epoch_index + len("epoch")
+
+    underbar_index = net_name.find('_', num_start_index + 1)
+    dot_index = net_name.find('.', num_start_index + 1)
+    e_index = net_name.find('e', num_start_index + 1)
+    candidates = [x for x in [underbar_index, dot_index, e_index] if x > -1]
+    num_end_index = min(candidates)
+    net_num = net_name[num_start_index : num_end_index]
+    if net_num == "2":
+        return "deepq_train"
+    return "deepq_train_e" + str(net_num)
+
+def generate_obs(env_name_att_net, def_strat, num_episodes):
     '''
         Load the network from file, and play games of the depdency
         graph game against opponent.
@@ -16,26 +41,16 @@ def main(env_name, env_short_name, new_epoch, num_episodes):
         env_name = "DepgraphJava-v0"
         model_name = "depgraph_java_deepq_model2.pkl"
     '''
-
-    # model_name = "dg_" + env_short_name + "_dq_mlp_rand_epoch" + str(new_epoch) + ".pkl"
-    model_name = "depgraph_dq_mlp_rand_epoch" + str(new_epoch) + ".pkl"
-
     start_time = time.time()
 
-    env = gym.make(env_name)
-    print("Environment: " + env_name)
+    env = gym.make(env_name_att_net)
+    print("Environment: " + env_name_att_net)
     print("num_episodes: " + str(num_episodes))
 
-    my_scope = "deepq_train"
-    if new_epoch > 2:
-        my_scope = "deepq_train_e" + str(new_epoch)
-    elif new_epoch == 2:
-        my_scope = "deepq_train"
-    else:
-        my_scope = None
+    my_scope = get_net_scope(def_strat)
 
-    act = deepq.load_with_scope(model_name, my_scope)
-    print("Model: " + model_name)
+    act = deepq.load_with_scope(def_strat, my_scope)
+    print("Model: " + def_strat)
 
     rewards = []
     selected_observations = []
@@ -67,14 +82,13 @@ def main(env_name, env_short_name, new_epoch, num_episodes):
     return selected_observations
 
 '''
-python3 enjoy_depgraph_data_for_obs_store.py DepgraphJavaEnvVsMixedAtt29N-v0 sl29 23 400
+python3 enjoy_depgraph_data_for_obs_store.py DepgraphJavaEnvVsMixedAtt-v0 \
+    depgraph_dq_mlp_rand_epoch14.pkl 400
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 5:
-        raise ValueError("Need 4 args: env_name_att_net, env_short_name, new_epoch, " + \
-            "num_episodes")
-    ENV_NAME = sys.argv[1]
-    ENV_SHORT_NAME = sys.argv[2]
-    NEW_EPOCH = int(sys.argv[3])
-    NUM_EPISODES = int(sys.argv[4])
-    main(ENV_NAME, ENV_SHORT_NAME, NEW_EPOCH, NUM_EPISODES)
+    if len(sys.argv) != 4:
+        raise ValueError("Need 3 args: env_name_att_net, def_strat, num_episodes")
+    ENV_NAME_ATT_NET = sys.argv[1]
+    DEF_STRAT = sys.argv[2]
+    NUM_EPISODES = int(sys.argv[3])
+    generate_obs(ENV_NAME_ATT_NET, DEF_STRAT, NUM_EPISODES)
