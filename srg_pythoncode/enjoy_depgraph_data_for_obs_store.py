@@ -16,9 +16,8 @@ def get_net_scope(net_name):
     # if "epoch" is absent: return None.
     # else if NUM is 2: return "deepq_train".
     # else: return "deepq_train_eNUM", inserting the integer for NUM
-    if net_name == "dg_rand_30n_noAnd_B_eq_2.pkl" or \
-        net_name == "dg_dqmlp_rand30NoAnd_B_att_fixed.pkl":
-        return None
+    if net_name == "dg_rand_30n_noAnd_B_eq_2.pkl":
+        return "deepq"
 
     epoch_index = net_name.find('epoch')
     num_start_index = epoch_index + len("epoch")
@@ -48,6 +47,7 @@ def generate_obs(env_name_att_net, def_strat, num_episodes, obs_per_episode):
     print("num_episodes: " + str(num_episodes))
 
     my_scope = get_net_scope(def_strat)
+    print("scope: " + str(my_scope))
 
     act = deepq.load_with_scope(def_strat, my_scope)
     print("Model: " + def_strat)
@@ -69,7 +69,9 @@ def generate_obs(env_name_att_net, def_strat, num_episodes, obs_per_episode):
         rewards.append(episode_rew)
         for _ in range(obs_per_episode):
             choice_index = random.randint(0, len(cur_episode_observations) - 1)
-            selected_observations.append(cur_episode_observations[choice_index])
+            cur_obs = cur_episode_observations[choice_index]
+            cur_obs = [int(x) for x in cur_obs]
+            selected_observations.append(cur_obs)
     mean_reward = np.mean(rewards)
     stdev_reward = np.std(rewards)
     stderr_reward = stdev_reward * 1.0 / math.sqrt(num_episodes)
