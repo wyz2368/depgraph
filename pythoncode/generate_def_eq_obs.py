@@ -65,14 +65,15 @@ def main(env_name_att_net, tsv_file, num_episodes, out_file_name):
     write_observations_to_file(observations, out_file_name)
 
 '''
-python3 generate_def_eq_obs.py DepgraphJavaEnvVsMixedAtt29N-v0 d30_epoch14_def.tsv \
-    5000 d30_14_obs.csv
+python3 generate_def_eq_obs.py DepgraphJavaEnvVsMixedAtt-v0 d30_epoch14_def.tsv \
+    5000 obs_def_e14_vs_att.csv
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 4:
-        raise ValueError("Need 3 args: env_name_att_net, tsv_file, num_episodes")
-    ENV_NAME = sys.argv[1]
+    if len(sys.argv) != 5:
+        raise ValueError("Need 4 args: env_name_att_net, tsv_file, num_episodes, " + \
+            "out_file_name")
+    ENV_NAME_ATT_NET = sys.argv[1]
     TSV_FILE = sys.argv[2]
     NUM_EPISODES = int(sys.argv[3])
-    OUT_FILE_NAME = sys.argv[2]
-    main(ENV_NAME, TSV_FILE, NUM_EPISODES, OUT_FILE_NAME)
+    OUT_FILE_NAME = sys.argv[4]
+    main(ENV_NAME_ATT_NET, TSV_FILE, NUM_EPISODES, OUT_FILE_NAME)
