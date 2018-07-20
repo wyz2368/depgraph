@@ -25,17 +25,16 @@ def run_gen_both_payoffs(game_number, env_short_name_payoffs, new_epoch):
         env_short_name_payoffs, str(new_epoch)]
     subprocess.call(cmd_list)
 
-def run_train_test_def(graph_name, env_short_name_payoffs, new_epoch, \
-    env_name_vs_mixed_att):
-    cmd_list = ["python3", "train_test_def.py", graph_name, env_short_name_payoffs, \
-        str(new_epoch), env_name_vs_mixed_att]
-    subprocess.call(cmd_list)
-
-def run_train_test_att(graph_name, env_short_name_payoffs, new_epoch, \
-    env_name_vs_mixed_def):
-    cmd_list = ["python3", "train_test_att.py", graph_name, env_short_name_payoffs, \
-        str(new_epoch), env_name_vs_mixed_def]
-    subprocess.call(cmd_list)
+def run_train_test_all(graph_name, env_short_name_payoffs, new_epoch, \
+    env_name_vs_mixed_att, env_name_vs_mixed_def):
+    cmd_list_train_def = ["python3", "train_test_def.py", graph_name, \
+        env_short_name_payoffs, str(new_epoch), env_name_vs_mixed_att]
+    cmd_list_train_att = ["python3", "train_test_att.py", graph_name, \
+        env_short_name_payoffs, str(new_epoch), env_name_vs_mixed_def]
+    process_train_def = subprocess.Popen(cmd_list_train_def)
+    process_train_att = subprocess.Popen(cmd_list_train_att)
+    process_train_def.wait()
+    process_train_att.wait()
 
 def get_check_if_beneficial(env_short_name_payoffs, new_epoch, is_def):
     return check.check_for_cli(env_short_name_payoffs, new_epoch, is_def)
@@ -84,14 +83,12 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
     # sample and estimate mean payoff of each defender strategy vs. new equilibrium
     # sample and estimate mean payoff of each attacker strategy vs. new equilibrium
     run_gen_both_payoffs(game_number, env_short_name_payoffs, new_epoch)
-    print("\tWill train and test defender, epoch: " + str(new_epoch)+ ", time: " + \
+    print("\tWill train and test both, epoch: " + str(new_epoch)+ ", time: " + \
         str(datetime.datetime.now()), flush=True)
     # train defender network against current attacker equilibrium, and sample its payoff
-    run_train_test_def(graph_name, env_short_name_payoffs, new_epoch, env_name_vs_mixed_att)
-    print("\tWill train and test attacker, epoch: " + str(new_epoch)+ ", time: " + \
-        str(datetime.datetime.now()), flush=True)
     # train attacker network against current defender equilibrium, and sample its payoff
-    run_train_test_att(graph_name, env_short_name_payoffs, new_epoch, env_name_vs_mixed_def)
+    run_train_test_all(graph_name, env_short_name_payoffs, new_epoch, \
+        env_name_vs_mixed_att, env_name_vs_mixed_def)
 
     # check if new defender network is beneficial deviation from old equilibrium
     is_def_beneficial = get_check_if_beneficial(env_short_name_payoffs, new_epoch, True)
