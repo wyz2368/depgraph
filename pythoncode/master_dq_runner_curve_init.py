@@ -37,26 +37,9 @@ def run_update_strats(env_short_name_tsv, env_short_name_payoffs, new_epoch):
         env_short_name_tsv, str(new_epoch)]
     subprocess.call(cmd_list)
 
-def run_gen_def_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
-        def_payoff_count, env_short_name_payoffs, graph_name, new_epoch):
-    '''
-    Run a script to evaluate each defender strategy against the current equilibrium
-    opponent, and record the mean payoff of the best one.
-    '''
-    cmd_list = ["python3", "gen_def_payoffs.py", env_name_def_net, env_name_att_net, \
-        env_name_both, str(def_payoff_count), env_short_name_payoffs, graph_name, \
-        str(new_epoch)]
-    subprocess.call(cmd_list)
-
-def run_gen_att_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
-        att_payoff_count, env_short_name_payoffs, graph_name, new_epoch):
-    '''
-    Run a script to evaluate each attacker strategy against the current equilibrium
-    opponent, and record the mean payoff of the best one.
-    '''
-    cmd_list = ["python3", "gen_att_payoffs.py", env_name_def_net, env_name_att_net, \
-        env_name_both, str(att_payoff_count), env_short_name_payoffs, graph_name, \
-        str(new_epoch)]
+def run_gen_both_payoffs(game_number, env_short_name_payoffs, new_epoch):
+    cmd_list = ["python3", "gen_both_payoffs_from_game.py", str(game_number), \
+        env_short_name_payoffs, str(new_epoch)]
     subprocess.call(cmd_list)
 
 def run_train_test_def(graph_name, env_short_name_payoffs, new_epoch, \
@@ -160,7 +143,7 @@ def get_att_model_name(env_short_name_payoffs, new_epoch):
 
 def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     env_name_def_net, \
-    env_name_att_net, env_name_both, def_payoff_count, att_payoff_count, graph_name, \
+    env_name_att_net, env_name_both, graph_name, \
     env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, old_strat_disc_fact, \
     save_count, runs_per_pair):
     '''
@@ -191,14 +174,11 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     run_update_strats(env_short_name_tsv, env_short_name_payoffs, new_epoch)
     print("\tWill get def payoffs, epoch: " + str(new_epoch)+ ", time: " + \
         str(datetime.datetime.now()), flush=True)
-    # sample and estimate mean payoff of each defender strategy vs. new attacker equilibrium
-    run_gen_def_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
-        def_payoff_count, env_short_name_payoffs, graph_name, new_epoch)
     print("\tWill get att payoffs, epoch: " + str(new_epoch)+ ", time: " + \
         str(datetime.datetime.now()), flush=True)
+    # sample and estimate mean payoff of each defender strategy vs. new attacker equilibrium
     # sample and estimate mean payoff of each attacker strategy vs. new defender equilibrium
-    run_gen_att_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
-        att_payoff_count, env_short_name_payoffs, graph_name, new_epoch)
+    run_gen_both_payoffs(game_number, env_short_name_payoffs, new_epoch)
     print("\tWill train and test defender, epoch: " + str(new_epoch)+ ", time: " + \
         str(datetime.datetime.now()), flush=True)
     # train defender network against current attacker equilibrium, and sample its payoff
@@ -257,14 +237,12 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     run_update_strats(env_short_name_tsv, env_short_name_payoffs, new_epoch)
     print("\tWill get def payoffs, epoch: " + str(new_epoch)+ ", time: " + \
         str(datetime.datetime.now()), flush=True)
-    # sample and estimate mean payoff of each defender strategy vs. new attacker equilibrium
-    run_gen_def_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
-        def_payoff_count, env_short_name_payoffs, graph_name, new_epoch)
     print("\tWill get att payoffs, epoch: " + str(new_epoch)+ ", time: " + \
         str(datetime.datetime.now()), flush=True)
+    # sample and estimate mean payoff of each defender strategy vs. new attacker equilibrium
     # sample and estimate mean payoff of each attacker strategy vs. new defender equilibrium
-    run_gen_att_payoffs(env_name_def_net, env_name_att_net, env_name_both, \
-        att_payoff_count, env_short_name_payoffs, graph_name, new_epoch)
+    run_gen_both_payoffs(game_number, env_short_name_payoffs, new_epoch)
+
     print("\tWill train and test defender, epoch: " + str(new_epoch)+ ", time: " + \
         str(datetime.datetime.now()), flush=True)
     # train defender network against current attacker equilibrium, and sample its payoff
@@ -324,7 +302,7 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
 
 def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
         env_name_def_net, env_name_att_net, \
-        env_name_both, def_payoff_count, att_payoff_count, graph_name, \
+        env_name_both, graph_name, \
         env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, old_strat_disc_fact, \
         save_count, runs_per_pair):
     '''
@@ -345,8 +323,7 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
     # indicates whether a beneficial deviation was found
     should_continue = run_init_epoch(game_number, env_short_name_tsv, \
         env_short_name_payoffs, env_name_def_net, env_name_att_net, env_name_both, \
-        def_payoff_count, \
-        att_payoff_count, graph_name, env_name_vs_mixed_def, env_name_vs_mixed_att, \
+        graph_name, env_name_vs_mixed_def, env_name_vs_mixed_att, \
         new_col_count, old_strat_disc_fact, save_count, runs_per_pair)
     if should_continue:
         # proceed from epoch 1
@@ -358,17 +335,16 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
 
 '''
 example: python3 master_dq_runner_curve_init.py 3013 sl29_randNoAndB sl29 \
-    DepgraphJava29N-v0 DepgraphJavaEnvAtt29N-v0 DepgraphJavaEnvBoth29N-v0 100 400 \
+    DepgraphJava29N-v0 DepgraphJavaEnvAtt29N-v0 DepgraphJavaEnvBoth29N-v0 \
     SepLayerGraph0_noAnd_B.json DepgraphJavaEnvVsMixedDef29N-v0 \
     DepgraphJavaEnvVsMixedAtt29N-v0 400 0.5 4 1000
 
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 16:
-        raise ValueError("Need 15 args: game_number, env_short_name_tsv, " + \
-            "env_short_name_payoffs, " + \
-            "env_name_def_net, env_name_att_net, env_name_both, def_payoff_count, " + \
-            "att_payoff_count, graph_name, env_name_vs_mixed_def, "  + \
+    if len(sys.argv) != 14:
+        raise ValueError("Need 13 args: game_number, env_short_name_tsv, " + \
+            "env_short_name_payoffs, env_name_def_net, env_name_att_net, " + \
+            "env_name_both, graph_name, env_name_vs_mixed_def, "  + \
             "env_name_vs_mixed_att, new_col_count, " + \
             "old_strat_disc_fact, save_count, runs_per_pair")
     GAME_NUMBER = int(sys.argv[1])
@@ -377,17 +353,14 @@ if __name__ == '__main__':
     ENV_NAME_DEF_NET = sys.argv[4]
     ENV_NAME_ATT_NET = sys.argv[5]
     ENV_NAME_BOTH = sys.argv[6]
-    DEF_PAYOFF_COUNT = int(sys.argv[7])
-    ATT_PAYOFF_COUNT = int(sys.argv[8])
-    GRAPH_NAME = sys.argv[9]
-    ENV_NAME_VS_MIXED_DEF = sys.argv[10]
-    ENV_NAME_VS_MIXED_ATT = sys.argv[11]
-    NEW_COL_COUNT = int(sys.argv[12])
-    OLD_STRAT_DISC_FACT = float(sys.argv[13])
-    SAVE_COUNT = int(sys.argv[14])
-    RUNS_PER_PAIR = int(sys.argv[15])
+    GRAPH_NAME = sys.argv[7]
+    ENV_NAME_VS_MIXED_DEF = sys.argv[8]
+    ENV_NAME_VS_MIXED_ATT = sys.argv[9]
+    NEW_COL_COUNT = int(sys.argv[10])
+    OLD_STRAT_DISC_FACT = float(sys.argv[11])
+    SAVE_COUNT = int(sys.argv[12])
+    RUNS_PER_PAIR = int(sys.argv[13])
     main(GAME_NUMBER, ENV_SHORT_NAME_TSV, ENV_SHORT_NAME_PAYOFFS, \
-        ENV_NAME_DEF_NET, ENV_NAME_ATT_NET, \
-        ENV_NAME_BOTH, DEF_PAYOFF_COUNT, ATT_PAYOFF_COUNT, GRAPH_NAME, \
+        ENV_NAME_DEF_NET, ENV_NAME_ATT_NET, ENV_NAME_BOTH, GRAPH_NAME, \
         ENV_NAME_VS_MIXED_DEF, ENV_NAME_VS_MIXED_ATT, NEW_COL_COUNT, \
         OLD_STRAT_DISC_FACT, SAVE_COUNT, RUNS_PER_PAIR)

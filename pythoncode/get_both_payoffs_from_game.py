@@ -60,7 +60,7 @@ def get_att_and_def_eq_payoffs(game_data, attacker_eq, defender_eq):
 
 def get_game_file_name(game_number, new_epoch):
     # return the game file name from the previous epoch.
-    return "game_" + str(game_number) + "_" + str(new_epoch - 1) + ".json"
+    return "../game_" + str(game_number) + "_" + str(new_epoch - 1) + ".json"
 
 def print_to_file(best_payoffs, out_file):
     '''
