@@ -91,16 +91,21 @@ public final class DepgraphPy4JDefVsNetOrHeuristic {
 	 * @param args has one arg: graphFileName
 	 */
 	public static void main(final String[] args) {
-		final int argsCount = 1;
+		final int argsCount = 2;
 		if (args == null || args.length != argsCount) {
 			throw new IllegalArgumentException(
-				"Need 1 arg: graphFileName"
+				"Need 2 args: graphFileName defPort"
 			);
 		}
 		final String simSpecFolderName = "simspecs/";
 		// RandomGraph30N100E2T1.json
 		// SepLayerGraph0.json
 		final String graphFileName = args[0];
+		final int defPort = Integer.parseInt(args[1]);
+		final int minPort = 25333;
+		if (defPort < minPort || defPort % 2 == 0) {
+			throw new IllegalArgumentException("Invalid defPort: " + defPort);
+		}
 		
 		final double probGreedySelectCutOff = 0.1;
 		// set up Py4J server
@@ -109,7 +114,8 @@ public final class DepgraphPy4JDefVsNetOrHeuristic {
 			simSpecFolderName,
 			graphFileName
 		);
-		final GatewayServer gatewayServer = new GatewayServer(singleton);
+		final GatewayServer gatewayServer =
+			new GatewayServer(singleton, defPort, defPort + 1, 0, 0, null);
 		gatewayServer.start();
 		System.out.println("Gateway Server Started");
 	}
