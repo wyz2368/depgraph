@@ -7,7 +7,12 @@ import gym
 
 from baselines import deepq
 
-def main(env_name, env_short_name, new_epoch):
+def unlock_eval_att(env_short_name):
+    lock_name = env_short_name + "_eval_att_lock.txt"
+    with open(lock_name, 'w') as file:
+        file.write("0\n")
+
+def main(env_name, env_short_name, new_epoch, att_port):
     '''
         Load the network from file, and play games of the depdency
         graph game against opponent.
@@ -20,6 +25,9 @@ def main(env_name, env_short_name, new_epoch):
     start_time = time.time()
 
     env = gym.make(env_name)
+    if env.get_port() != att_port:
+        raise ValueError("Wrong port: " + str(env.get_port()) + " vs. " + str(att_port))
+    unlock_eval_att(env_short_name)
     print("Environment: " + env_name)
 
     my_scope = "deepq_train"
@@ -52,12 +60,14 @@ def main(env_name, env_short_name, new_epoch):
     print("Minutes taken: " + str(duration // 60))
 
 '''
-python3 enjoy_dg_data_vs_mixed_def.py DepgraphJavaEnvVsMixedDef29N-v0 sl29 15
+python3 enjoy_dg_data_vs_mixed_def.py DepgraphJavaEnvVsMixedDef29N-v0 sl29 15 25335
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 4:
-        raise ValueError("Need 1 arg: env_name_def_net, env_short_name, new_epoch")
+    if len(sys.argv) != 5:
+        raise ValueError("Need 4 arg: env_name_def_net, env_short_name, new_epoch, " + \
+            "att_port")
     ENV_NAME = sys.argv[1]
     ENV_SHORT_NAME = sys.argv[2]
     NEW_EPOCH = int(sys.argv[3])
-    main(ENV_NAME, ENV_SHORT_NAME, NEW_EPOCH)
+    ATT_PORT = int(sys.argv[4])
+    main(ENV_NAME, ENV_SHORT_NAME, NEW_EPOCH, ATT_PORT)
