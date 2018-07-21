@@ -31,6 +31,9 @@ def main(env_name, env_short_name, new_epoch, att_port):
         raise ValueError("Wrong port: " + str(env.get_port()) + " vs. " + str(att_port))
     unlock_train_att(env_short_name)
 
+    strat_file = env_short_name + "_epoch" + str(new_epoch) + "_def.tsv"
+    env.setup_att_mixed_strat(strat_file)
+
     model = deepq.models.mlp([256, 256])
 
     my_scope = "deepq_train"
