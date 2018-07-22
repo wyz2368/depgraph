@@ -5,6 +5,8 @@ from os import chdir
 import os.path
 import pythoncode.check_if_beneficial as check
 from add_new_data import get_add_data_result_file_name
+from pythoncode.train_test_def import wait_for_def_lock, lock_def, read_def_port, \
+    PORTS_PER_ROUND, MAX_PORT, MIN_PORT
 
 def run_gambit(game_number, cur_epoch, env_short_name_payoffs):
     cmd_list = ["python3", "gambit_analyze.py", str(game_number), str(cur_epoch), \
@@ -28,12 +30,23 @@ def run_gen_both_payoffs(game_number, env_short_name_payoffs, new_epoch):
 
 def run_train_test_all(graph_name, env_short_name_payoffs, new_epoch, \
     env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name):
+    is_train = True
+    wait_for_def_lock(port_lock_name, is_train)
+    lock_def(port_lock_name, is_train)
+    def_port = read_def_port(port_lock_name, is_train)
+    def_port += PORTS_PER_ROUND
+    if def_port >= MAX_PORT:
+        def_port = MIN_PORT
+
     cmd_list_train_def = ["python3", "train_test_def.py", graph_name, \
-        env_short_name_payoffs, str(new_epoch), env_name_vs_mixed_att, port_lock_name]
+        env_short_name_payoffs, str(new_epoch), env_name_vs_mixed_att, port_lock_name, \
+        str(def_port)]
     cmd_list_train_att = ["python3", "train_test_att.py", graph_name, \
-        env_short_name_payoffs, str(new_epoch), env_name_vs_mixed_def, port_lock_name]
+        env_short_name_payoffs, str(new_epoch), env_name_vs_mixed_def, str(def_port), \
+        port_lock_name]
     process_train_def = subprocess.Popen(cmd_list_train_def)
     process_train_att = subprocess.Popen(cmd_list_train_att)
+
     process_train_def.wait()
     process_train_att.wait()
 

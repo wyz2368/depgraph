@@ -89,17 +89,9 @@ def run_evaluation(env_short_name, new_epoch, env_name_att_net, def_port, port_l
     with open(def_out_name_enj, "w") as file:
         subprocess.call(cmd_list, stdout=file)
 
-def main(graph_name, env_short_name, new_epoch, env_name_att_net, port_lock_name):
-    is_train = True
-    wait_for_def_lock(port_lock_name, is_train)
-    lock_def(port_lock_name, is_train)
-
-    def_port = read_def_port(port_lock_name, is_train)
-    def_port += PORTS_PER_ROUND
-    if def_port >= MAX_PORT:
-        def_port = MIN_PORT
+def main(graph_name, env_short_name, new_epoch, env_name_att_net, port_lock_name, def_port):
     env_process = start_and_return_env_process(graph_name, def_port)
-
+    is_train = True
     write_def_port(port_lock_name, is_train, def_port)
     run_training(env_short_name, new_epoch, env_name_att_net, def_port, port_lock_name)
 
@@ -112,7 +104,7 @@ def main(graph_name, env_short_name, new_epoch, env_name_att_net, port_lock_name
 
 '''
 example: python3 train_test_def.py SepLayerGraph0_noAnd_B.json sl29 16 \
-    DepgraphJavaEnvVsMixedAtt29N-v0 s29
+    DepgraphJavaEnvVsMixedAtt29N-v0 s29 25333
 requires local files:
 <port_lock_name>_train_def_lock.txt
 <port_lock_name>_eval_def_lock.txt
@@ -120,12 +112,13 @@ requires local files:
 <port_lock_name>_eval_def_port.txt
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 6:
-        raise ValueError("Need 5 args: graph_name, env_short_name, new_epoch, " + \
-            "env_name_att_net, port_lock_name")
+    if len(sys.argv) != 7:
+        raise ValueError("Need 6 args: graph_name, env_short_name, new_epoch, " + \
+            "env_name_att_net, port_lock_name, def_port")
     GRAPH_NAME = sys.argv[1]
     ENV_SHORT_NAME = sys.argv[2]
     NEW_EPOCH = int(sys.argv[3])
     ENV_NAME_ATT_NET = sys.argv[4]
     PORT_LOCK_NAME = sys.argv[5]
-    main(GRAPH_NAME, ENV_SHORT_NAME, NEW_EPOCH, ENV_NAME_ATT_NET, PORT_LOCK_NAME)
+    DEF_PORT = int(sys.argv[6])
+    main(GRAPH_NAME, ENV_SHORT_NAME, NEW_EPOCH, ENV_NAME_ATT_NET, PORT_LOCK_NAME, DEF_PORT)
