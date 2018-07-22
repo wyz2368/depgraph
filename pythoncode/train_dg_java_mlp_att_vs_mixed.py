@@ -9,8 +9,10 @@ import gym
 
 from baselines import deepq
 
+PORT_DIR = "~/gym/gym/gym/envs/board_game/"
+
 def unlock_train_att(port_lock_name):
-    lock_name = port_lock_name + "_train_att_lock.txt"
+    lock_name = PORT_DIR + port_lock_name + "_train_att_lock.txt"
     with open(lock_name, 'w') as file:
         file.write("0\n")
 

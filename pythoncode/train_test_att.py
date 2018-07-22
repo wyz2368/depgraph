@@ -3,6 +3,8 @@ import subprocess
 import time
 import os.path
 
+PORT_DIR = "~/gym/gym/gym/envs/board_game/"
+
 def get_lines(file_name):
     lines = None
     with open(file_name) as f:
@@ -12,25 +14,25 @@ def get_lines(file_name):
     return lines
 
 def write_att_port(port_lock_name, is_train, att_port):
-    port_name = port_lock_name + "_train_att_port.txt"
+    port_name = PORT_DIR + port_lock_name + "_train_att_port.txt"
     if not is_train:
-        port_name = port_lock_name + "_eval_att_port.txt"
+        port_name = PORT_DIR + port_lock_name + "_eval_att_port.txt"
     with open(port_name, 'w') as file:
         file.write(str(att_port) + "\n")
 
 def is_att_unlocked(port_lock_name, is_train):
-    lock_name = port_lock_name + "_train_att_lock.txt"
+    lock_name = PORT_DIR + port_lock_name + "_train_att_lock.txt"
     if not is_train:
-        lock_name = port_lock_name + "_eval_att_lock.txt"
+        lock_name = PORT_DIR + port_lock_name + "_eval_att_lock.txt"
     lines = get_lines(lock_name)
     return int(lines[0]) == 0
 
 def lock_att(port_lock_name, is_train):
     if not is_att_unlocked(port_lock_name, is_train):
         raise ValueError("Invalid state")
-    lock_name = port_lock_name + "_train_att_lock.txt"
+    lock_name = PORT_DIR + port_lock_name + "_train_att_lock.txt"
     if not is_train:
-        lock_name = port_lock_name + "_eval_att_lock.txt"
+        lock_name = PORT_DIR + port_lock_name + "_eval_att_lock.txt"
     with open(lock_name, 'w') as file:
         file.write("1\n")
 

@@ -6,6 +6,7 @@ import os.path
 MIN_PORT = 25333
 MAX_PORT = 26333
 PORTS_PER_ROUND = 4
+PORT_DIR = "~/gym/gym/gym/envs/board_game/"
 
 def get_lines(file_name):
     lines = None
@@ -16,9 +17,9 @@ def get_lines(file_name):
     return lines
 
 def read_def_port(port_lock_name, is_train):
-    port_name = port_lock_name + "_train_def_port.txt"
+    port_name = PORT_DIR + port_lock_name + "_train_def_port.txt"
     if not is_train:
-        port_name = port_lock_name + "_eval_def_port.txt"
+        port_name = PORT_DIR + port_lock_name + "_eval_def_port.txt"
     lines = get_lines(port_name)
     port = int(lines[0])
     if port < MIN_PORT or port % 2 != 1:
@@ -26,25 +27,25 @@ def read_def_port(port_lock_name, is_train):
     return port
 
 def write_def_port(port_lock_name, is_train, def_port):
-    port_name = port_lock_name + "_train_def_port.txt"
+    port_name = PORT_DIR + port_lock_name + "_train_def_port.txt"
     if not is_train:
-        port_name = port_lock_name + "_eval_def_port.txt"
+        port_name = PORT_DIR + port_lock_name + "_eval_def_port.txt"
     with open(port_name, 'w') as file:
         file.write(str(def_port) + "\n")
 
 def is_def_unlocked(port_lock_name, is_train):
-    lock_name = port_lock_name + "_train_def_lock.txt"
+    lock_name = PORT_DIR + port_lock_name + "_train_def_lock.txt"
     if not is_train:
-        lock_name = port_lock_name + "_eval_def_lock.txt"
+        lock_name = PORT_DIR + port_lock_name + "_eval_def_lock.txt"
     lines = get_lines(lock_name)
     return int(lines[0]) == 0
 
 def lock_def(port_lock_name, is_train):
     if not is_def_unlocked(port_lock_name, is_train):
         raise ValueError("Invalid state")
-    lock_name = port_lock_name + "_train_def_lock.txt"
+    lock_name = PORT_DIR + port_lock_name + "_train_def_lock.txt"
     if not is_train:
-        lock_name = port_lock_name + "_eval_def_lock.txt"
+        lock_name = PORT_DIR + port_lock_name + "_eval_def_lock.txt"
     with open(lock_name, 'w') as file:
         file.write("1\n")
 
