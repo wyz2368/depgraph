@@ -6,8 +6,9 @@ import os.path
 import pythoncode.check_if_beneficial as check
 from add_new_data import get_add_data_result_file_name
 
-def run_gambit(game_number, cur_epoch):
-    cmd_list = ["python3", "gambit_analyze.py", str(game_number), str(cur_epoch)]
+def run_gambit(game_number, cur_epoch, env_short_name_payoffs):
+    cmd_list = ["python3", "gambit_analyze.py", str(game_number), str(cur_epoch), \
+        env_short_name_payoffs]
     subprocess.call(cmd_list)
 
 def run_create_tsv(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs):
