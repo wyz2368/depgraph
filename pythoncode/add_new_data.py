@@ -145,7 +145,8 @@ def get_results_to_add(new_data, def_strat_name, att_strat_name):
     For each entry in that key's list, get the key, which is the opponent's strategy.
     The value will be a list of two items, the first being the mean defender payoff,
     the second the mean attacker payoff.
-    Add the item to the result list, as a tuple (def_name, att_name, def_payoff, att_payoff).
+    Add the item to the result list, as a tuple
+    (def_name, att_name, def_payoff, att_payoff).
     '''
     result = []
 
@@ -224,12 +225,16 @@ def augment_game_data(game_data, new_data):
         next_profile_id += 1
         next_symmetry_group_id += 2
 
-def get_game_file_name(game_number, new_epoch):
+def get_game_file_name(game_number, new_epoch, env_short_name):
     # return the game file name from the previous epoch.
-    return "game_" + str(game_number) + "_" + str(new_epoch - 1) + ".json"
+    if new_epoch is None or new_epoch == 1:
+        return "game_" + str(game_number) + ".json"
+    return "game_" + str(game_number) + "_" + str(new_epoch - 1) + "_" + \
+        env_short_name + ".json"
 
-def get_add_data_result_file_name(game_number, new_epoch):
-    return "game_" + str(game_number) + "_" + str(new_epoch) + ".json"
+def get_add_data_result_file_name(game_number, new_epoch, env_short_name):
+    return "game_" + str(game_number) + "_" + str(new_epoch) + "_" + \
+        env_short_name + ".json"
 
 # example: python3 add_new_data.py 3013 sl29 1
 def main(game_number, game_short_name, new_epoch):
@@ -239,7 +244,7 @@ def main(game_number, game_short_name, new_epoch):
     Augment the old game data object with the new strategies and payoffs.
     Print the extended object to file as Json.
     '''
-    game_file_name = get_game_file_name(game_number, new_epoch)
+    game_file_name = get_game_file_name(game_number, new_epoch, game_short_name)
     print(game_file_name)
     if not os.path.isfile(game_file_name):
         raise ValueError(game_file_name + " missing.")
@@ -252,7 +257,8 @@ def main(game_number, game_short_name, new_epoch):
     new_data = get_json_data(new_payoffs_file_name)
     augment_game_data(game_data, new_data)
 
-    result_file_name = get_add_data_result_file_name(game_number, new_epoch)
+    result_file_name = get_add_data_result_file_name(game_number, new_epoch, \
+        game_short_name)
     if os.path.isfile(result_file_name):
         print("Skipping: " + result_file_name + " already exists.")
         return

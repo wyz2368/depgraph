@@ -58,9 +58,12 @@ def get_att_and_def_eq_payoffs(game_data, attacker_eq, defender_eq):
             def_result += def_weight * att_weight * def_payoff
     return att_result, def_result
 
-def get_game_file_name(game_number, new_epoch):
+def get_game_file_name(game_number, new_epoch, env_short_name):
     # return the game file name from the previous epoch.
-    return "../game_" + str(game_number) + "_" + str(new_epoch - 1) + ".json"
+    if new_epoch is None or new_epoch == 1:
+        return "../game_" + str(game_number) + ".json"
+    return "../game_" + str(game_number) + "_" + str(new_epoch - 1) + "_" + \
+        env_short_name + ".json"
 
 def print_to_file(best_payoffs, out_file):
     '''
@@ -88,7 +91,7 @@ def main(game_number, env_short_name, new_epoch):
         "_def.tsv"
     def_mixed_strat = get_eq_from_file(def_mixed_strat_name)
 
-    game_file_name = get_game_file_name(game_number, new_epoch)
+    game_file_name = get_game_file_name(game_number, new_epoch, env_short_name)
     if not os.path.isfile(game_file_name):
         raise ValueError(game_file_name + " missing.")
     game_data = get_json_data(game_file_name)

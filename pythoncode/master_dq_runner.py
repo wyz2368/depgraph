@@ -10,9 +10,9 @@ def run_gambit(game_number, cur_epoch):
     cmd_list = ["python3", "gambit_analyze.py", str(game_number), str(cur_epoch)]
     subprocess.call(cmd_list)
 
-def run_create_tsv(game_number, cur_epoch, env_short_name_tsv):
+def run_create_tsv(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs):
     cmd_list = ["python3", "create_tsv_files.py", str(game_number), str(cur_epoch), \
-        env_short_name_tsv]
+        env_short_name_tsv, env_short_name_payoffs]
     subprocess.call(cmd_list)
 
 def run_update_strats(env_short_name_tsv, env_short_name_payoffs, new_epoch):
@@ -63,7 +63,8 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
     env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, def_pkl_prefix, \
     att_pkl_prefix, port_lock_name):
     new_epoch = cur_epoch + 1
-    result_file_name = get_add_data_result_file_name(game_number, new_epoch)
+    result_file_name = get_add_data_result_file_name(game_number, new_epoch, \
+        env_short_name_payoffs)
     if os.path.isfile(result_file_name):
         raise ValueError("Cannot run epoch " + str(cur_epoch) + ": " + \
             result_file_name + " already exists.")
@@ -73,7 +74,7 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
     # get Nash equilibrium of current strategies
     run_gambit(game_number, cur_epoch)
     # create TSV file for current attacker and defender equilibrium strategies
-    run_create_tsv(game_number, cur_epoch, env_short_name_tsv)
+    run_create_tsv(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs)
 
     chdir("pythoncode")
     # set the mixed-strategy opponents to use current TSV file strategies

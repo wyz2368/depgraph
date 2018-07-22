@@ -52,14 +52,18 @@ def get_attacker_lines(file_name):
     after_last_attacker_line = lines.index("")
     return lines[1:after_last_attacker_line]
 
-def main(game_number, cur_epoch, env_short_name):
-    input_file = None
-    input_file = "gambit_result_" + str(game_number) + "_" + str(cur_epoch) + \
-        "_lcp_decode.txt"
+def get_gambit_result_name(game_number, tsv_epoch, env_short_name_payoffs):
+    if tsv_epoch is None:
+        return "gambit_result_" + str(game_number) + "_lcp.txt"
+    return "gambit_result_" + str(game_number) + "_" + str(tsv_epoch) + "_" + \
+        env_short_name_payoffs + "_lcp.txt"
+
+def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs):
+    input_file = get_gambit_result_name(game_number, cur_epoch, env_short_name_payoffs)
 
     defender_lines = get_defender_lines(input_file)
     defender_lines = get_rounded_strategy_lines(defender_lines)
-    def_output_file = "pythoncode/" + env_short_name + "_epoch" + str(cur_epoch + 1) + \
+    def_output_file = "pythoncode/" + env_short_name_tsv + "_epoch" + str(cur_epoch + 1) + \
         "_def.tsv"
     if os.path.isfile(def_output_file):
         print("Skipping: " + def_output_file + " already exists.")
@@ -68,18 +72,20 @@ def main(game_number, cur_epoch, env_short_name):
 
     attacker_lines = get_attacker_lines(input_file)
     attacker_lines = get_rounded_strategy_lines(attacker_lines)
-    att_output_file = "pythoncode/" + env_short_name + "_epoch" + str(cur_epoch + 1) + \
+    att_output_file = "pythoncode/" + env_short_name_tsv + "_epoch" + str(cur_epoch + 1) + \
         "_att.tsv"
     if os.path.isfile(att_output_file):
         print("Skipping: " + att_output_file + " already exists.")
     else:
         print_to_file(attacker_lines, att_output_file)
 
-# example: python3 create_tsv_files.py 3013 0 sl29_randNoAndB
+# example: python3 create_tsv_files.py 3013 0 sl29_randNoAndB sl29
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
-        raise ValueError("Needs 3 arguments: game_number, cur_epoch, env_short_name")
+    if len(sys.argv) != 5:
+        raise ValueError("Needs 4 arguments: game_number, cur_epoch, " + \
+            "env_short_name_tsv, env_short_name_payoffs")
     GAME_NUMBER = int(sys.argv[1])
     CUR_EPOCH = int(sys.argv[2])
-    ENV_SHORT_NAME = sys.argv[3]
-    main(GAME_NUMBER, CUR_EPOCH, ENV_SHORT_NAME)
+    ENV_SHORT_NAME_TSV = sys.argv[3]
+    ENV_SHORT_NAME_PAYOFFS = sys.argv[4]
+    main(GAME_NUMBER, CUR_EPOCH, ENV_SHORT_NAME_TSV, ENV_SHORT_NAME_PAYOFFS)
