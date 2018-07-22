@@ -22,7 +22,7 @@ def run_update_strats(env_short_name_tsv, env_short_name_payoffs, new_epoch):
     subprocess.call(cmd_list)
 
 def run_gen_both_payoffs(game_number, env_short_name_payoffs, new_epoch):
-    cmd_list = ["python3", "gen_both_payoffs_from_game.py", str(game_number), \
+    cmd_list = ["python3", "get_both_payoffs_from_game.py", str(game_number), \
         env_short_name_payoffs, str(new_epoch)]
     subprocess.call(cmd_list)
 
