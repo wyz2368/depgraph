@@ -19,7 +19,8 @@ def get_json_data(json_file):
         return result
 
 def get_eq_from_file(file_name):
-    lines = get_lines("eqs/" + file_name)
+    eqs_dir = ""
+    lines = get_lines(eqs_dir + file_name)
     result = {}
     for line in lines:
         line = line.strip()

@@ -19,7 +19,7 @@ def get_file_lines(file_name):
 
 def get_defender_lines(file_name):
     lines = get_file_lines(file_name)
-    first_defender_line = lines.index("") + 2
+    first_defender_line = lines.index("Defender mixed strategy:") + 1
     return lines[first_defender_line:]
 
 def get_rounded_strategy_lines(input_lines):
@@ -53,13 +53,12 @@ def get_attacker_lines(file_name):
     return lines[1:after_last_attacker_line]
 
 def get_gambit_result_name(game_number, tsv_epoch, env_short_name_payoffs):
-    if tsv_epoch is None:
-        return "gambit_result_" + str(game_number) + "_lcp.txt"
     return "gambit_result_" + str(game_number) + "_" + str(tsv_epoch) + "_" + \
-        env_short_name_payoffs + "_lcp.txt"
+        env_short_name_payoffs + "_lcp_decode.txt"
 
 def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs):
     input_file = get_gambit_result_name(game_number, cur_epoch, env_short_name_payoffs)
+    print("Input file: " + input_file)
 
     defender_lines = get_defender_lines(input_file)
     defender_lines = get_rounded_strategy_lines(defender_lines)
