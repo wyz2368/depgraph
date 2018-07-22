@@ -9,12 +9,12 @@ import gym
 
 from baselines import deepq
 
-def unlock_train_att(env_short_name):
-    lock_name = env_short_name + "_train_att_lock.txt"
+def unlock_train_att(port_lock_name):
+    lock_name = port_lock_name + "_train_att_lock.txt"
     with open(lock_name, 'w') as file:
         file.write("0\n")
 
-def main(env_name, env_short_name, new_epoch, att_port):
+def main(env_name, env_short_name, new_epoch, att_port, port_lock_name):
     '''
     Makes the depgraph environment, builds a multilayer perceptron model,
     trains the model, and saves the result.
@@ -29,7 +29,7 @@ def main(env_name, env_short_name, new_epoch, att_port):
     env = gym.make(env_name)
     if env.get_port() != att_port:
         raise ValueError("Wrong port: " + str(env.get_port()) + " vs. " + str(att_port))
-    unlock_train_att(env_short_name)
+    unlock_train_att(port_lock_name)
 
     strat_file = env_short_name + "_epoch" + str(new_epoch) + "_def.tsv"
     env.setup_att_mixed_strat(strat_file)
@@ -65,14 +65,15 @@ def main(env_name, env_short_name, new_epoch, att_port):
 
 '''
 example: python3 train_dg_java_mlp_att_vs_mixed.py DepgraphJavaEnvVsMixedDef29N-v0 sl29 15 \
-    25335
+    25335 s29
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 5:
-        raise ValueError("Need 4 args: env_name_mixed_def, env_short_name, new_epoch, " + \
-            "att_port")
+    if len(sys.argv) != 6:
+        raise ValueError("Need 5 args: env_name_mixed_def, env_short_name, new_epoch, " + \
+            "att_port, port_lock_name")
     ENV_NAME = sys.argv[1]
     ENV_SHORT_NAME = sys.argv[2]
     NEW_EPOCH = int(sys.argv[3])
     ATT_PORT = int(sys.argv[4])
-    main(ENV_NAME, ENV_SHORT_NAME, NEW_EPOCH, ATT_PORT)
+    PORT_LOCK_NAME = sys.argv[5]
+    main(ENV_NAME, ENV_SHORT_NAME, NEW_EPOCH, ATT_PORT, PORT_LOCK_NAME)
