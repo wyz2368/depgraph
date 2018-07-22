@@ -4,25 +4,19 @@ import time
 import os.path
 
 def get_game_file_name(game_number, tsv_epoch, env_short_name):
-    if tsv_epoch is None:
+    if tsv_epoch is None or tsv_epoch == 0:
         return "game_" + str(game_number) + ".json"
     return "game_" + str(game_number) + "_" + str(tsv_epoch) + "_" + env_short_name + ".json"
 
 def get_gambit_input_name(game_number, tsv_epoch, env_short_name):
-    if tsv_epoch is None:
-        return "game_" + str(game_number) + "_gambit.nfg"
     return "game_" + str(game_number) + "_" + str(tsv_epoch) + "_" + env_short_name + \
         "_gambit.nfg"
 
 def get_gambit_result_name(game_number, tsv_epoch, env_short_name):
-    if tsv_epoch is None:
-        return "gambit_result_" + str(game_number) + "_lcp.txt"
     return "gambit_result_" + str(game_number) + "_" + str(tsv_epoch) + "_" + \
         env_short_name + "_lcp.txt"
 
 def get_decoded_result_name(game_number, tsv_epoch, env_short_name):
-    if tsv_epoch is None:
-        return "gambit_result_" + str(game_number) + "_lcp_decode.txt"
     return "gambit_result_" + str(game_number) + "_" + str(tsv_epoch) + "_" + \
         env_short_name + "_lcp_decode.txt"
 
