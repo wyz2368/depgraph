@@ -3,7 +3,7 @@ import subprocess
 import time
 import os.path
 
-PORT_DIR = "~/gym/gym/gym/envs/board_game/"
+PORT_DIR = "../gym/gym/gym/envs/board_game/"
 
 def get_lines(file_name):
     lines = None

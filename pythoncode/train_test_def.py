@@ -6,7 +6,7 @@ import os.path
 MIN_PORT = 25333
 MAX_PORT = 26333
 PORTS_PER_ROUND = 4
-PORT_DIR = "~/gym/gym/gym/envs/board_game/"
+PORT_DIR = "../gym/gym/gym/envs/board_game/"
 
 def get_lines(file_name):
     lines = None
