@@ -33,7 +33,7 @@ def main(env_name, env_short_name, new_epoch, att_port, port_lock_name):
     print("Environment: " + env_name)
 
     strat_file = env_short_name + "_epoch" + str(new_epoch) + "_def.tsv"
-    env.setup_att_mixed_strat(strat_file)
+    env.setup_def_mixed_strat(strat_file)
 
     my_scope = "deepq_train"
     if new_epoch > 1:
