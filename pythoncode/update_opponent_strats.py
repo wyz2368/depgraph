@@ -1,8 +1,8 @@
 import sys
 
 def write_line(file_name, line):
-    with open(file_name, "w") as file:
-        file.write(line)
+    with open(file_name, "w") as my_file:
+        my_file.write(line)
 
 def main(config_env_short_name, tsv_env_short_name, new_epoch):
     gym_folder = "../gym/gym/gym/envs/board_game/"
@@ -11,6 +11,10 @@ def main(config_env_short_name, tsv_env_short_name, new_epoch):
 
     tsv_name_att = tsv_env_short_name + "_epoch" + str(new_epoch) + "_att.tsv"
     tsv_name_def = tsv_env_short_name + "_epoch" + str(new_epoch) + "_def.tsv"
+
+    print("Updating strats:")
+    print("\t" + config_file_name_att + "\t" + tsv_name_att)
+    print("\t" + config_file_name_def + "\t" + tsv_name_def)
 
     write_line(config_file_name_att, "ATT_MIXED_STRAT_FILE = \"" + tsv_name_att + "\"")
     write_line(config_file_name_def, "DEF_MIXED_STRAT_FILE = \"" + tsv_name_def + "\"")
