@@ -69,10 +69,10 @@ def close_env_process(env_process):
     env_process.kill()
 
 def run_training(env_short_name, new_epoch, env_name_att_net, def_port, port_lock_name, \
-    env_short_name_tsv):
+    env_short_name_tsv, max_timesteps_def):
     cmd_list = ["python3", "train_dg_java_mlp_def_vs_mixed.py", env_name_att_net, \
         env_short_name, str(new_epoch), str(def_port), str(port_lock_name), \
-        env_short_name_tsv]
+        env_short_name_tsv, str(max_timesteps_def)]
     def_out_name = "defVMixed_" + env_short_name + "_epoch" + str(new_epoch) + ".txt"
     if os.path.isfile(def_out_name):
         print("Skipping: " + def_out_name + " already exists.")
@@ -94,12 +94,12 @@ def run_evaluation(env_short_name, new_epoch, env_name_att_net, def_port, port_l
         subprocess.call(cmd_list, stdout=file)
 
 def main(graph_name, env_short_name, new_epoch, env_name_att_net, port_lock_name, \
-    def_port, env_short_name_tsv):
+    def_port, env_short_name_tsv, max_timesteps_def):
     env_process = start_and_return_env_process(graph_name, def_port)
     is_train = True
     write_def_port(port_lock_name, is_train, def_port)
     run_training(env_short_name, new_epoch, env_name_att_net, def_port, port_lock_name, \
-        env_short_name_tsv)
+        env_short_name_tsv, max_timesteps_def)
 
     is_train = False
     wait_for_def_lock(port_lock_name, is_train)
@@ -111,7 +111,7 @@ def main(graph_name, env_short_name, new_epoch, env_name_att_net, port_lock_name
 
 '''
 example: python3 train_test_def.py SepLayerGraph0_noAnd_B.json sl29 16 \
-    DepgraphJavaEnvVsMixedAtt29N-v0 s29 25333 sl29_randNoAndB
+    DepgraphJavaEnvVsMixedAtt29N-v0 s29 25333 sl29_randNoAndB 700000
 requires local files:
 <port_lock_name>_train_def_lock.txt
 <port_lock_name>_eval_def_lock.txt
@@ -119,9 +119,10 @@ requires local files:
 <port_lock_name>_eval_def_port.txt
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 8:
-        raise ValueError("Need 7 args: graph_name, env_short_name, new_epoch, " + \
-            "env_name_att_net, port_lock_name, def_port, env_short_name_tsv")
+    if len(sys.argv) != 9:
+        raise ValueError("Need 8 args: graph_name, env_short_name, new_epoch, " + \
+            "env_name_att_net, port_lock_name, def_port, env_short_name_tsv, " + \
+            "max_timesteps_def")
     GRAPH_NAME = sys.argv[1]
     ENV_SHORT_NAME = sys.argv[2]
     NEW_EPOCH = int(sys.argv[3])
@@ -129,5 +130,6 @@ if __name__ == '__main__':
     PORT_LOCK_NAME = sys.argv[5]
     DEF_PORT = int(sys.argv[6])
     ENV_SHORT_NAME_TSV = sys.argv[7]
+    MAX_TIMESTEPS_DEF = int(sys.argv[8])
     main(GRAPH_NAME, ENV_SHORT_NAME, NEW_EPOCH, ENV_NAME_ATT_NET, PORT_LOCK_NAME, \
-        DEF_PORT, ENV_SHORT_NAME_TSV)
+        DEF_PORT, ENV_SHORT_NAME_TSV, MAX_TIMESTEPS_DEF)

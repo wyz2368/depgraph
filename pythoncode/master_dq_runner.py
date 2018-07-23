@@ -29,7 +29,8 @@ def run_gen_both_payoffs(game_number, env_short_name_payoffs, new_epoch):
     subprocess.call(cmd_list)
 
 def run_train_test_all(graph_name, env_short_name_payoffs, new_epoch, \
-    env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv):
+    env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
+    max_timesteps_def, max_timesteps_att):
     is_train = True
     wait_for_def_lock(port_lock_name, is_train)
     lock_def(port_lock_name, is_train)
@@ -40,10 +41,10 @@ def run_train_test_all(graph_name, env_short_name_payoffs, new_epoch, \
 
     cmd_list_train_def = ["python3", "train_test_def.py", graph_name, \
         env_short_name_payoffs, str(new_epoch), env_name_vs_mixed_att, port_lock_name, \
-        str(def_port), env_short_name_tsv]
+        str(def_port), env_short_name_tsv, str(max_timesteps_def)]
     cmd_list_train_att = ["python3", "train_test_att.py", graph_name, \
         env_short_name_payoffs, str(new_epoch), env_name_vs_mixed_def, str(def_port), \
-        port_lock_name, env_short_name_tsv]
+        port_lock_name, env_short_name_tsv, str(max_timesteps_att)]
     process_train_def = subprocess.Popen(cmd_list_train_def)
     process_train_att = subprocess.Popen(cmd_list_train_att)
 
@@ -75,7 +76,7 @@ def run_add_new_data(game_number, env_short_name_payoffs, new_epoch):
 def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
     env_name_def_net, env_name_att_net, env_name_both, graph_name, \
     env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, def_pkl_prefix, \
-    att_pkl_prefix, port_lock_name):
+    att_pkl_prefix, port_lock_name, max_timesteps_def, max_timesteps_att):
     new_epoch = cur_epoch + 1
     result_file_name = get_add_data_result_file_name(game_number, new_epoch, \
         env_short_name_payoffs)
@@ -103,7 +104,8 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
     # train defender network against current attacker equilibrium, and sample its payoff
     # train attacker network against current defender equilibrium, and sample its payoff
     run_train_test_all(graph_name, env_short_name_payoffs, new_epoch, \
-        env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv)
+        env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
+        max_timesteps_def, max_timesteps_att)
 
     # check if new defender network is beneficial deviation from old equilibrium
     is_def_beneficial = get_check_if_beneficial(env_short_name_payoffs, new_epoch, True)
@@ -137,7 +139,7 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
 def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
         env_name_def_net, env_name_att_net, env_name_both, graph_name, \
         env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, def_pkl_prefix, \
-        att_pkl_prefix, port_lock_name):
+        att_pkl_prefix, port_lock_name, max_timesteps_def, max_timesteps_att):
     should_continue = True
     my_epoch = cur_epoch
     print("\tStarting from epoch: " + str(my_epoch), flush=True)
@@ -147,7 +149,8 @@ def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
         should_continue = run_epoch(game_number, my_epoch, env_short_name_tsv, \
             env_short_name_payoffs, env_name_def_net, env_name_att_net, env_name_both, \
             graph_name, env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, \
-            def_pkl_prefix, att_pkl_prefix, port_lock_name)
+            def_pkl_prefix, att_pkl_prefix, port_lock_name, max_timesteps_def, \
+            max_timesteps_att)
         if should_continue:
             my_epoch += 1
     print("\tConverged at epoch: " + str(my_epoch) + ", time: " + \
@@ -158,15 +161,15 @@ example: python3 master_dq_runner.py 3013 17 sl29_randNoAndB sl29 DepgraphJava29
     DepgraphJavaEnvAtt29N-v0 DepgraphJavaEnvBoth29N-v0 \
     SepLayerGraph0_noAnd_B.json DepgraphJavaEnvVsMixedDef29N-v0 \
     DepgraphJavaEnvVsMixedAtt29N-v0 400 dg_sl29_dq_mlp_rand_epoch dg_sl29_dq_mlp_rand_epoch
-    s29
+    s29 700000 700000
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 15:
-        raise ValueError("Need 14 args: game_number, cur_epoch, env_short_name_tsv, " + \
+    if len(sys.argv) != 17:
+        raise ValueError("Need 16 args: game_number, cur_epoch, env_short_name_tsv, " + \
             "env_short_name_payoffs, env_name_def_net, env_name_att_net, " + \
             "env_name_both, graph_name, env_name_vs_mixed_def, " + \
             "env_name_vs_mixed_att, new_col_count, def_pkl_prefix, att_pkl_prefix, " + \
-            "port_lock_name")
+            "port_lock_name, max_timesteps_def, max_timesteps_att")
     GAME_NUMBER = int(sys.argv[1])
     CUR_EPOCH = int(sys.argv[2])
     ENV_SHORT_NAME_TSV = sys.argv[3]
@@ -181,8 +184,11 @@ if __name__ == '__main__':
     DEF_PKL_PREFIX = sys.argv[12]
     ATT_PKL_PREFIX = sys.argv[13]
     PORT_LOCK_NAME = sys.argv[14]
+    MAX_TIMESTEPS_DEF = int(sys.argv[15])
+    MAX_TIMESTEPS_ATT = int(sys.argv[16])
     main(GAME_NUMBER, CUR_EPOCH, ENV_SHORT_NAME_TSV, ENV_SHORT_NAME_PAYOFFS, \
         ENV_NAME_DEF_NET, ENV_NAME_ATT_NET, \
         ENV_NAME_BOTH, GRAPH_NAME, \
         ENV_NAME_VS_MIXED_DEF, ENV_NAME_VS_MIXED_ATT, NEW_COL_COUNT, \
-        DEF_PKL_PREFIX, ATT_PKL_PREFIX, PORT_LOCK_NAME)
+        DEF_PKL_PREFIX, ATT_PKL_PREFIX, PORT_LOCK_NAME, MAX_TIMESTEPS_DEF, \
+        MAX_TIMESTEPS_ATT)

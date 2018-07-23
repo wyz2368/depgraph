@@ -16,7 +16,8 @@ def unlock_train_def(port_lock_name):
     with open(lock_name, 'w') as file:
         file.write("0\n")
 
-def main(env_name, env_short_name, new_epoch, def_port, port_lock_name, env_short_name_tsv):
+def main(env_name, env_short_name, new_epoch, def_port, port_lock_name, env_short_name_tsv, \
+    max_timesteps_def):
     '''
     Makes the depgraph environment, builds a multilayer perceptron model,
     trains the model, and saves the result.
@@ -46,7 +47,7 @@ def main(env_name, env_short_name, new_epoch, def_port, port_lock_name, env_shor
         env,
         q_func=model,
         lr=5e-5,
-        max_timesteps=700000,
+        max_timesteps=max_timesteps_def,
         buffer_size=30000,
         exploration_fraction=0.5,
         exploration_final_eps=0.03,
@@ -67,16 +68,18 @@ def main(env_name, env_short_name, new_epoch, def_port, port_lock_name, env_shor
 
 '''
 example: python3 train_dg_java_mlp_def_vs_mixed.py DepgraphJavaEnvVsMixedAtt29N-v0 sl29 15 \
-    25333 s29 sl29_randNoAndB
+    25333 s29 sl29_randNoAndB 700000
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 7:
-        raise ValueError("Need 6 args: env_name_mixed_att, env_short_name, new_epoch, " + \
-            "def_port, port_lock_name, env_short_name_tsv")
+    if len(sys.argv) != 8:
+        raise ValueError("Need 7 args: env_name_mixed_att, env_short_name, new_epoch, " + \
+            "def_port, port_lock_name, env_short_name_tsv, max_timesteps_def")
     ENV_NAME = sys.argv[1]
     ENV_SHORT_NAME = sys.argv[2]
     NEW_EPOCH = int(sys.argv[3])
     DEF_PORT = int(sys.argv[4])
     PORT_LOCK_NAME = sys.argv[5]
     ENV_SHORT_NAME_TSV = sys.argv[6]
-    main(ENV_NAME, ENV_SHORT_NAME, NEW_EPOCH, DEF_PORT, PORT_LOCK_NAME, ENV_SHORT_NAME_TSV)
+    MAX_TIMESTEPS_DEF = int(sys.argv[7])
+    main(ENV_NAME, ENV_SHORT_NAME, NEW_EPOCH, DEF_PORT, PORT_LOCK_NAME, ENV_SHORT_NAME_TSV, \
+        MAX_TIMESTEPS_DEF)
