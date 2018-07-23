@@ -79,7 +79,7 @@ def main(game_number, env_short_name, new_epoch):
     att_out_file_name = "out_attPayoffs_" + env_short_name + "_randNoAndB_epoch" + \
         str(new_epoch - 1) + ".txt"
     if os.path.isfile(def_out_file_name) and os.path.isfile(att_out_file_name):
-        print("Skipping: " + def_out_file_name + "and " + \
+        print("Skipping: " + def_out_file_name + " and " + \
             att_out_file_name + " already exist.")
         return
 
