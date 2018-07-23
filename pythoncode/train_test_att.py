@@ -106,8 +106,8 @@ example: python3 train_test_att.py SepLayerGraph0_noAnd_B.json sl29 16 \
     DepgraphJavaEnvVsMixedDef29N-v0 25333 s29 sl29_randNoAndB
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 7:
-        raise ValueError("Need 6 args: graph_name, env_short_name, new_epoch, " + \
+    if len(sys.argv) != 8:
+        raise ValueError("Need 7 args: graph_name, env_short_name, new_epoch, " + \
             "env_name_def_net, def_port, port_lock_name, env_short_name_tsv")
     GRAPH_NAME = sys.argv[1]
     ENV_SHORT_NAME = sys.argv[2]
