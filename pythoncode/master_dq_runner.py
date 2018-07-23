@@ -29,7 +29,7 @@ def run_gen_both_payoffs(game_number, env_short_name_payoffs, new_epoch):
     subprocess.call(cmd_list)
 
 def run_train_test_all(graph_name, env_short_name_payoffs, new_epoch, \
-    env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name):
+    env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv):
     is_train = True
     wait_for_def_lock(port_lock_name, is_train)
     lock_def(port_lock_name, is_train)
@@ -40,10 +40,10 @@ def run_train_test_all(graph_name, env_short_name_payoffs, new_epoch, \
 
     cmd_list_train_def = ["python3", "train_test_def.py", graph_name, \
         env_short_name_payoffs, str(new_epoch), env_name_vs_mixed_att, port_lock_name, \
-        str(def_port)]
+        str(def_port), env_short_name_tsv]
     cmd_list_train_att = ["python3", "train_test_att.py", graph_name, \
         env_short_name_payoffs, str(new_epoch), env_name_vs_mixed_def, str(def_port), \
-        port_lock_name]
+        port_lock_name, env_short_name_tsv]
     process_train_def = subprocess.Popen(cmd_list_train_def)
     process_train_att = subprocess.Popen(cmd_list_train_att)
 
@@ -103,7 +103,7 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
     # train defender network against current attacker equilibrium, and sample its payoff
     # train attacker network against current defender equilibrium, and sample its payoff
     run_train_test_all(graph_name, env_short_name_payoffs, new_epoch, \
-        env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name)
+        env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv)
 
     # check if new defender network is beneficial deviation from old equilibrium
     is_def_beneficial = get_check_if_beneficial(env_short_name_payoffs, new_epoch, True)
