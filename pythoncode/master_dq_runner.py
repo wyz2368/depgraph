@@ -18,8 +18,8 @@ def run_create_tsv(game_number, cur_epoch, env_short_name_tsv, env_short_name_pa
         env_short_name_tsv, env_short_name_payoffs]
     subprocess.call(cmd_list)
 
-def run_update_strats(env_short_name_tsv, env_short_name_payoffs, new_epoch):
-    cmd_list = ["python3", "update_opponent_strats.py", env_short_name_payoffs, \
+def run_update_strats(env_short_name_tsv, port_lock_name, new_epoch):
+    cmd_list = ["python3", "update_opponent_strats.py", port_lock_name, \
         env_short_name_tsv, str(new_epoch)]
     subprocess.call(cmd_list)
 
@@ -92,7 +92,7 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
 
     chdir("pythoncode")
     # set the mixed-strategy opponents to use current TSV file strategies
-    run_update_strats(env_short_name_tsv, env_short_name_payoffs, new_epoch)
+    run_update_strats(env_short_name_tsv, port_lock_name, new_epoch)
     print("\tWill get att and def payoffs, epoch: " + str(new_epoch)+ ", time: " + \
         str(datetime.datetime.now()), flush=True)
     # sample and estimate mean payoff of each defender strategy vs. new equilibrium
