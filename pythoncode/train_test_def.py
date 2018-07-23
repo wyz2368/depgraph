@@ -96,9 +96,9 @@ def main(graph_name, env_short_name, new_epoch, env_name_att_net, port_lock_name
     run_training(env_short_name, new_epoch, env_name_att_net, def_port, port_lock_name)
 
     is_train = False
-    wait_for_def_lock(env_short_name, is_train)
-    lock_def(env_short_name, is_train)
-    write_def_port(env_short_name, is_train, def_port)
+    wait_for_def_lock(port_lock_name, is_train)
+    lock_def(port_lock_name, is_train)
+    write_def_port(port_lock_name, is_train, def_port)
     run_evaluation(env_short_name, new_epoch, env_name_att_net, def_port, port_lock_name)
     close_env_process(env_process)
 
