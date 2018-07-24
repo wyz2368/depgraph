@@ -22,7 +22,7 @@ def main(env_name, env_short_name, new_epoch, att_port, port_lock_name, env_shor
     Makes the depgraph environment, builds a multilayer perceptron model,
     trains the model, and saves the result.
     '''
-    model_name = "dg_" + env_short_name + "_dq_mlp_rand_epoch_" + str(new_epoch) + "_att.pkl"
+    model_name = "dg_" + env_short_name + "_dq_mlp_rand_epoch" + str(new_epoch) + "_att.pkl"
     if os.path.isfile(model_name):
         raise ValueError("Skipping: " + model_name + " already exists.")
 
