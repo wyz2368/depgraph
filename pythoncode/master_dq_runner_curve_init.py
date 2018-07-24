@@ -84,7 +84,7 @@ def run_train_retrain_all(graph_name, env_short_name_payoffs, new_epoch, \
         env_short_name_payoffs, str(new_epoch), env_name_vs_mixed_att, port_lock_name, \
         str(def_port), env_short_name_tsv, str(max_timesteps_def_init), \
         str(max_timesteps_def_retrain)]
-    cmd_list_train_att = ["python3", "train_test_att.py", graph_name, \
+    cmd_list_train_att = ["python3", "train_retrain_att.py", graph_name, \
         env_short_name_payoffs, str(new_epoch), env_name_vs_mixed_def, str(def_port), \
         port_lock_name, env_short_name_tsv, str(max_timesteps_att_init), \
         str(max_timesteps_att_retrain)]
