@@ -20,7 +20,7 @@ def run_gambit(game_number, cur_epoch, env_short_name_payoffs):
     Call a script to find a Nash equilibrium of the current game.
     '''
     cmd_list = ["python3", "gambit_analyze.py", str(game_number), str(cur_epoch), \
-        str(env_short_name_payoffs)]
+        env_short_name_payoffs]
     subprocess.call(cmd_list)
 
 def run_create_tsv(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs):
