@@ -1,15 +1,25 @@
 Setup notes for OpenAI:
 -- notes:
-        has worked on srg.eecs.umich.edu:
-            TensorFlow version 1.4.1
+        has worked on srg.eecs.umich.edu and others:
+            TensorFlow version 1.4.1 (or 1.5.0 or 1.7.0)
                 python3 -c 'import tensorflow as tf; print(tf.__version__)'
                 -- to install: pip3 install tensorflow
+                    or:
+                    pip3 install tensorflow==1.4.1
+                or:
+                TensorFlow 1.7.0
+                or:
+                TensorFlow 1.5.0
             Python3 version 3.5.2
                 python3 -V
             Java version 1.8.0_162, build 1.8.0_162-8u162-b12-0ubuntu0.16.04.2-b12
+                or:
+                Java version 1.8.0_171, build 1.8.0_171-8u171-b11-0ubuntu0.16.04.1-b11
                 java -version
             Ubuntu 16.04.4 LTS, xenial
                 lsb_release -a
+                or:
+                Ubuntu 16.04.5 LTS, xenial
             Intel(R) Xeon(R) CPU E5-1620 v2 @ 3.70GHz
                 cat /proc/cpuinfo | head -20
             CPUs: 8
@@ -40,6 +50,15 @@ Setup notes for OpenAI:
                 pip3 install -e .
         -- Py4J
                 pip3 install py4j
+    -- need to install:
+        -- Gambit
+                gambit-15.1.1
+                    https://sourceforge.net/projects/gambit/files/gambit15/15.1.1
+                    see: https://github.com/gambitproject/gambit/blob/master/INSTALL
+                cd gambit-15.1.1
+                ./configure
+                make
+                sudo make install
 -- check installations:
         -- OpenAI Gym check:
                 python3
@@ -58,6 +77,10 @@ Setup notes for OpenAI:
                 python3 enjoy_cartpole.py
                 -- note: this will fail if there is no display on the server,
                         with error like pyglet.canvas.xlib.NoSuchDisplayException
+        -- Gambit check:
+            gambit-lcp -h
+        -- GameAnalysis check:
+            ga -h
 -- need to modify certain scripts:
         gym/gym/envs/__init__.py
         gym/gym/envs/board_game/__init__.py
