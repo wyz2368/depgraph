@@ -331,8 +331,84 @@ def run_continue_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, 
     env_name_def_net, env_name_att_net, env_name_both, graph_name, \
     env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, old_strat_disc_fact, \
     save_count, port_lock_name, max_timesteps_def_init, \
-    max_timesteps_def_retrain, max_timesteps_att_init, max_timesteps_att_retrain):
+    max_timesteps_def_retrain, max_timesteps_att_init, max_timesteps_att_retrain, \
+    cur_epoch):
+    new_epoch = cur_epoch + 1
+
+    result_file_name = get_add_data_result_file_name(game_number, new_epoch, \
+        env_short_name_payoffs)
+    if os.path.isfile(result_file_name):
+        raise ValueError("Cannot run epoch " + str(cur_epoch) + ": " + \
+            result_file_name + " already exists.")
+
+    print("\tWill run gambit, epoch: " + str(cur_epoch)+ ", time: " + \
+        str(datetime.datetime.now()), flush=True)
+    # get Nash equilibrium of current strategies
+    run_gambit(game_number, cur_epoch, env_short_name_payoffs)
+    # create TSV file for current attacker and defender equilibrium strategies
+    run_create_tsv_curve(game_number, cur_epoch, env_short_name_tsv, \
+        env_short_name_payoffs)
+
+    chdir("pythoncode")
+    # pwd is ~/pythoncode
+    # set the mixed-strategy opponents to use current TSV file strategies
+    run_update_strats(env_short_name_tsv, env_short_name_payoffs, new_epoch)
+    print("\tWill get def payoffs, epoch: " + str(new_epoch)+ ", time: " + \
+        str(datetime.datetime.now()), flush=True)
+    print("\tWill get att payoffs, epoch: " + str(new_epoch)+ ", time: " + \
+        str(datetime.datetime.now()), flush=True)
+    # sample and estimate mean payoff of each defender strategy
+    # vs. new attacker equilibrium
+    # sample and estimate mean payoff of each attacker strategy
+    # vs. new defender equilibrium
+    run_gen_both_payoffs(game_number, env_short_name_payoffs, new_epoch)
+
+    run_create_retrain_strat(old_strat_disc_fact, env_short_name_payoffs)
+
+    print("\tWill train and test both, epoch: " + str(new_epoch)+ ", time: " + \
+        str(datetime.datetime.now()), flush=True)
+    # train attacker network against current defender equilibrium and mix of recents
+    # train defender network against current attacker equilibrium and mix of recents
+    run_train_retrain_all(graph_name, env_short_name_payoffs, new_epoch, \
+        env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
+        max_timesteps_def_init, max_timesteps_def_retrain, max_timesteps_att_init, \
+        max_timesteps_att_retrain, save_count)
+
+    # call select_best_curve.py for attacker and defender
+    best_def_index = get_select_best_curve(env_short_name_payoffs, new_epoch, True, \
+        save_count)
+    best_att_index = get_select_best_curve(env_short_name_payoffs, new_epoch, False, \
+        save_count)
+    if best_def_index is None and best_att_index is None:
+        # neither network beneficially deviates, so stop
+        print("\tConverged after round: " + str(new_epoch), flush=True)
+        return False
+
+    print("\tWill generate new columns, epoch: " + str(new_epoch)+ ", time: " + \
+        str(datetime.datetime.now()), flush=True)
+
+    def_model_to_add = None
+    att_model_to_add = None
+    if best_def_index is not None:
+        def_model_to_add = get_def_model_name(env_short_name_payoffs, new_epoch, \
+            best_def_index)
+    if best_att_index is not None:
+        att_model_to_add = get_def_model_name(env_short_name_payoffs, new_epoch, \
+            best_att_index)
+    run_gen_new_cols(env_name_def_net, env_name_att_net, env_name_both, new_col_count, \
+        new_epoch, env_short_name_payoffs, def_model_to_add, att_model_to_add, graph_name)
+    # append name of each new network (if it beneficially deviates) to list of networks to
+    # use in equilibrium search
+    run_append_net_names(env_short_name_payoffs, def_model_to_add, att_model_to_add)
+
+    chdir("..")
+    # pwd is ~/
+    # add new payoff data to game object (from new beneficially deviating network(s))
+    run_add_new_data(game_number, env_short_name_payoffs, new_epoch)
+
+    print("\tShould continue after round: " + str(new_epoch), flush=True)
     return True
+
 
 def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
         env_name_def_net, env_name_att_net, \
@@ -351,7 +427,7 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
 
     # first epoch is always 0
     my_epoch = 0
-    print("\tWill run epoch: " + str(my_epoch) + ", time: " + \
+    print("\tWill run epochs: 0 and 1, time: " + \
         str(datetime.datetime.now()), flush=True)
     # indicates whether a beneficial deviation was found
     should_continue = run_init_epoch(game_number, env_short_name_tsv, \
@@ -360,6 +436,8 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
         new_col_count, old_strat_disc_fact, save_count, \
         port_lock_name, max_timesteps_def_init, max_timesteps_def_retrain, \
         max_timesteps_att_init, max_timesteps_att_retrain)
+    if should_continue:
+        my_epoch += 2 # first call runs 2 epochs in this case (0 and 1)
     while should_continue:
         print("\tWill run epoch: " + str(my_epoch) + ", time: " + \
             str(datetime.datetime.now()), flush=True)
@@ -368,7 +446,7 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
             graph_name, env_name_vs_mixed_def, env_name_vs_mixed_att, \
             new_col_count, old_strat_disc_fact, save_count, \
             port_lock_name, max_timesteps_def_init, max_timesteps_def_retrain, \
-            max_timesteps_att_init, max_timesteps_att_retrain)
+            max_timesteps_att_init, max_timesteps_att_retrain, my_epoch)
         if should_continue:
             my_epoch += 1
     print("\tConverged at epoch: " + str(my_epoch) + ", time: " + \
