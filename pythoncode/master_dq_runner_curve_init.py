@@ -25,12 +25,13 @@ def run_gambit(game_number, cur_epoch, env_short_name_payoffs):
         env_short_name_payoffs]
     subprocess.call(cmd_list)
 
-def run_create_tsv_curve(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs):
+def run_create_tsv_curve(game_number, cur_epoch, env_short_name_tsv, \
+    env_short_name_payoffs):
     '''
     Run a script to extract the current equilibrium strategies to TSV files.
     '''
-    cmd_list = ["python3", "create_tsv_files_curve.py", str(game_number), str(cur_epoch), \
-        env_short_name_tsv, env_short_name_payoffs]
+    cmd_list = ["python3", "create_tsv_files_curve.py", str(game_number), \
+        str(cur_epoch), env_short_name_tsv, env_short_name_payoffs]
     subprocess.call(cmd_list)
 
 def run_create_retrain_strat(old_strat_disc_fact, env_short_name_payoffs):
@@ -191,8 +192,10 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
         str(datetime.datetime.now()), flush=True)
     print("\tWill get att payoffs, epoch: " + str(new_epoch)+ ", time: " + \
         str(datetime.datetime.now()), flush=True)
-    # sample and estimate mean payoff of each defender strategy vs. new attacker equilibrium
-    # sample and estimate mean payoff of each attacker strategy vs. new defender equilibrium
+    # sample and estimate mean payoff of each defender strategy
+    # vs. new attacker equilibrium
+    # sample and estimate mean payoff of each attacker strategy
+    # vs. new defender equilibrium
     run_gen_both_payoffs(game_number, env_short_name_payoffs, new_epoch)
     print("\tWill train and test both, epoch: " + str(new_epoch)+ ", time: " + \
         str(datetime.datetime.now()), flush=True)
@@ -254,8 +257,10 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
         str(datetime.datetime.now()), flush=True)
     print("\tWill get att payoffs, epoch: " + str(new_epoch)+ ", time: " + \
         str(datetime.datetime.now()), flush=True)
-    # sample and estimate mean payoff of each defender strategy vs. new attacker equilibrium
-    # sample and estimate mean payoff of each attacker strategy vs. new defender equilibrium
+    # sample and estimate mean payoff of each defender strategy
+    # vs. new attacker equilibrium
+    # sample and estimate mean payoff of each attacker strategy
+    # vs. new defender equilibrium
     run_gen_both_payoffs(game_number, env_short_name_payoffs, new_epoch)
 
     run_create_retrain_strat(old_strat_disc_fact, env_short_name_payoffs)
@@ -286,8 +291,8 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
 def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
         env_name_def_net, env_name_att_net, \
         env_name_both, graph_name, \
-        env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, old_strat_disc_fact, \
-        save_count, port_lock_name, max_timesteps_def_init, \
+        env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, \
+        old_strat_disc_fact, save_count, port_lock_name, max_timesteps_def_init, \
         max_timesteps_def_retrain, max_timesteps_att_init, max_timesteps_att_retrain):
     '''
     Call method to run first epoch (epoch 0), and beginning of second epoch (epoch 1).

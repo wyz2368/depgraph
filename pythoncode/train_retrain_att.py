@@ -88,7 +88,7 @@ def run_evaluation_all(env_short_name, new_epoch, env_name_def_net, att_port, \
                         str(retrain_number), str(att_port), str(port_lock_name), \
                         env_short_name_tsv, str(is_retrain_opponent)]
             att_out_name_enj = "att_" + env_short_name + "_randNoAndB_epoch" + \
-                str(new_epoch) + "_enj"
+                str(new_epoch) + "_r" + str(retrain_number) + "_enj"
             if is_retrain_opponent:
                 att_out_name_enj += "_vsRetrain.txt"
             else:
