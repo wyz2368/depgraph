@@ -7,6 +7,14 @@ PORT_DIR = "../gym/gym/gym/envs/board_game/"
 
 RETRAIN_ITERS = 3
 
+def get_lines(file_name):
+    lines = None
+    with open(file_name) as f:
+        lines = f.readlines()
+    lines = [x.strip() for x in lines]
+    lines = [x for x in lines if x]
+    return lines
+
 def write_def_port(port_lock_name, is_train, def_port):
     port_name = PORT_DIR + port_lock_name + "_train_def_port.txt"
     if not is_train:
@@ -28,19 +36,64 @@ def close_env_process(env_process):
     time.sleep(sleep_sec)
     env_process.kill()
 
+def lock_def(port_lock_name, is_train):
+    if not is_def_unlocked(port_lock_name, is_train):
+        raise ValueError("Invalid state")
+    lock_name = PORT_DIR + port_lock_name + "_train_def_lock.txt"
+    if not is_train:
+        lock_name = PORT_DIR + port_lock_name + "_eval_def_lock.txt"
+    with open(lock_name, 'w') as file:
+        file.write("1\n")
+
+def is_def_unlocked(port_lock_name, is_train):
+    lock_name = PORT_DIR + port_lock_name + "_train_def_lock.txt"
+    if not is_train:
+        lock_name = PORT_DIR + port_lock_name + "_eval_def_lock.txt"
+    lines = get_lines(lock_name)
+    return int(lines[0]) == 0
+
+def wait_for_def_lock(port_lock_name, is_train):
+    sleep_time = 5
+    while not is_def_unlocked(port_lock_name, is_train):
+        time.sleep(sleep_time)
+
 def run_train_retrain(env_short_name, new_epoch, env_name_att_net, def_port, \
     port_lock_name, env_short_name_tsv, max_timesteps_def_init, max_timesteps_def_retrain):
     cmd_list = ["python3", "train_dg_java_mlp_def_and_retrain.py", env_name_att_net, \
         env_short_name, str(new_epoch), str(def_port), str(port_lock_name), \
         env_short_name_tsv, str(max_timesteps_def_init), str(max_timesteps_def_retrain)]
-# env_name, env_short_name, new_epoch, def_port, port_lock_name, env_short_name_tsv, \
-#    max_timesteps_def_init, max_timesteps_def_retrain
     def_out_name = "defVMixed_" + env_short_name + "_epoch" + str(new_epoch) + ".txt"
     if os.path.isfile(def_out_name):
         print("Skipping: " + def_out_name + " already exists.")
         return
     with open(def_out_name, "w") as file:
         subprocess.call(cmd_list, stdout=file)
+
+def run_evaluation_all(env_short_name, new_epoch, env_name_att_net, def_port, \
+    port_lock_name, env_short_name_tsv):
+    is_train = False
+    is_retrain_opponent_options = [True, False]
+    for retrain_number in range(RETRAIN_ITERS + 1):
+        for is_retrain_opponent in is_retrain_opponent_options:
+            wait_for_def_lock(port_lock_name, is_train)
+            lock_def(port_lock_name, is_train)
+            write_def_port(port_lock_name, is_train, def_port)
+            cmd_list = ["python3", "enjoy_depgraph_data_vs_mixed_retraining.py",
+                        env_name_att_net, env_short_name, str(new_epoch), \
+                        str(retrain_number), str(def_port), str(port_lock_name), \
+                        env_short_name_tsv, str(is_retrain_opponent)]
+            def_out_name_enj = "def_" + env_short_name + "_randNoAndB_epoch" + \
+                str(new_epoch) + "_enj"
+            if is_retrain_opponent:
+                def_out_name_enj += "_vsRetrain.txt"
+            else:
+                def_out_name_enj += "_vsEq.txt"
+            if os.path.isfile(def_out_name_enj):
+                print("Skipping: " + def_out_name_enj + " already exists.")
+                unlock_eval_def(port_lock_name)
+                continue
+            with open(def_out_name_enj, "w") as file:
+                subprocess.call(cmd_list, stdout=file)
 
 def main(graph_name, env_short_name, new_epoch, env_name_att_net, port_lock_name, \
     def_port, env_short_name_tsv, max_timesteps_def_init, max_timesteps_def_retrain):
@@ -51,6 +104,8 @@ def main(graph_name, env_short_name, new_epoch, env_name_att_net, port_lock_name
         port_lock_name, env_short_name_tsv, max_timesteps_def_init, \
         max_timesteps_def_retrain)
 
+    run_evaluation_all(env_short_name, new_epoch, env_name_att_net, def_port, \
+        port_lock_name, env_short_name_tsv)
     close_env_process(env_process)
 
 '''
