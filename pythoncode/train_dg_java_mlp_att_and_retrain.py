@@ -8,6 +8,7 @@ import os.path
 import gym
 
 from baselines import deepq
+from train_retrain_def import RETRAIN_ITERS
 
 PORT_DIR = "../gym/gym/gym/envs/board_game/"
 
@@ -31,7 +32,7 @@ def main(env_name, env_short_name, new_epoch, att_port, port_lock_name, env_shor
     start = time.time()
     env = gym.make(env_name)
     if env.get_port() != att_port:
-        raise ValueError("Wrong port: " + str(env.get_port()) + " vs. " + str(def_port))
+        raise ValueError("Wrong port: " + str(env.get_port()) + " vs. " + str(att_port))
     unlock_train_att(port_lock_name)
 
     strat_file = env_short_name_tsv + "_epoch" + str(new_epoch) + "_def.tsv"
@@ -62,7 +63,7 @@ def main(env_name, env_short_name, new_epoch, att_port, port_lock_name, env_shor
         path_for_save=model_name,
         retrain_exploration_initial_eps=0.3,
         retrain_exploration_final_eps=0.03,
-        retrain_save_count=3,
+        retrain_save_count=RETRAIN_ITERS,
         max_timesteps_retrain=max_timesteps_att_retrain,
         retrain_config_str=retrain_config_str,
         prefix_for_save=prefix_for_save

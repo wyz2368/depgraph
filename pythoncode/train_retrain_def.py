@@ -5,6 +5,8 @@ import os.path
 
 PORT_DIR = "../gym/gym/gym/envs/board_game/"
 
+RETRAIN_ITERS = 3
+
 def write_def_port(port_lock_name, is_train, def_port):
     port_name = PORT_DIR + port_lock_name + "_train_def_port.txt"
     if not is_train:
