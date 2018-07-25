@@ -3,8 +3,6 @@ import subprocess
 import time
 import os.path
 
-from train_retrain_def import RETRAIN_ITERS
-
 PORT_DIR = "../gym/gym/gym/envs/board_game/"
 
 def get_lines(file_name):
@@ -63,10 +61,12 @@ def close_env_process(env_process):
     env_process.kill()
 
 def run_train_retrain(env_short_name, new_epoch, env_name_def_net, att_port, \
-    port_lock_name, env_short_name_tsv, max_timesteps_att_init, max_timesteps_att_retrain):
+    port_lock_name, env_short_name_tsv, max_timesteps_att_init, max_timesteps_att_retrain, \
+    retrain_iters):
     cmd_list = ["python3", "train_dg_java_mlp_att_and_retrain.py", env_name_def_net, \
         env_short_name, str(new_epoch), str(att_port), str(port_lock_name), \
-        env_short_name_tsv, str(max_timesteps_att_init), str(max_timesteps_att_retrain)]
+        env_short_name_tsv, str(max_timesteps_att_init), str(max_timesteps_att_retrain), \
+        str(retrain_iters)]
     att_out_name = "attVMixed_" + env_short_name + "_epoch" + str(new_epoch) + ".txt"
     if os.path.isfile(att_out_name):
         print("Skipping: " + att_out_name + " already exists.")
@@ -101,7 +101,8 @@ def run_evaluation_all(env_short_name, new_epoch, env_name_def_net, att_port, \
                 subprocess.call(cmd_list, stdout=file)
 
 def main(graph_name, env_short_name, new_epoch, env_name_def_net, def_port, \
-    port_lock_name, env_short_name_tsv, max_timesteps_att_init, max_timesteps_att_retrain):
+    port_lock_name, env_short_name_tsv, max_timesteps_att_init, max_timesteps_att_retrain, \
+    retrain_iters):
     att_port = def_port + 2
     env_process = start_and_return_env_process(graph_name, att_port)
 
@@ -112,7 +113,7 @@ def main(graph_name, env_short_name, new_epoch, env_name_def_net, def_port, \
     write_att_port(port_lock_name, is_train, att_port)
     run_train_retrain(env_short_name, new_epoch, env_name_def_net, att_port, \
         port_lock_name, env_short_name_tsv, max_timesteps_att_init, \
-        max_timesteps_att_retrain)
+        max_timesteps_att_retrain, retrain_iters)
 
     run_evaluation_all(env_short_name, new_epoch, env_name_def_net, att_port, \
         port_lock_name, env_short_name_tsv)
@@ -120,13 +121,13 @@ def main(graph_name, env_short_name, new_epoch, env_name_def_net, def_port, \
 
 '''
 example: python3 train_test_att.py SepLayerGraph0_noAnd_B.json sl29 16 \
-    DepgraphJavaEnvVsMixedDef29N-v0 25333 s29 sl29_randNoAndB 700000 700000
+    DepgraphJavaEnvVsMixedDef29N-v0 25333 s29 sl29_randNoAndB 700000 700000 3
 '''
 if __name__ == '__main__':
     if len(sys.argv) != 10:
         raise ValueError("Need 9 args: graph_name, env_short_name, new_epoch, " + \
             "env_name_def_net, def_port, port_lock_name, env_short_name_tsv, " + \
-            "max_timesteps_att_init, max_timesteps_att_retrain")
+            "max_timesteps_att_init, max_timesteps_att_retrain, retrain_iters")
     GRAPH_NAME = sys.argv[1]
     ENV_SHORT_NAME = sys.argv[2]
     NEW_EPOCH = int(sys.argv[3])
@@ -136,6 +137,7 @@ if __name__ == '__main__':
     ENV_SHORT_NAME_TSV = sys.argv[7]
     MAX_TIMESTEPS_ATT_INIT = int(sys.argv[8])
     MAX_TIMESTEPS_ATT_CONTINUE = int(sys.argv[9])
+    RETRAIN_ITERS = int(sys.argv[10])
     main(GRAPH_NAME, ENV_SHORT_NAME, NEW_EPOCH, ENV_NAME_DEF_NET, DEF_PORT, \
         PORT_LOCK_NAME, ENV_SHORT_NAME_TSV, MAX_TIMESTEPS_ATT_INIT, \
-        MAX_TIMESTEPS_ATT_CONTINUE)
+        MAX_TIMESTEPS_ATT_CONTINUE, RETRAIN_ITERS)

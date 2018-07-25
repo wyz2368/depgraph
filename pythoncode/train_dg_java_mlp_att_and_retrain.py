@@ -8,7 +8,6 @@ import os.path
 import gym
 
 from baselines import deepq
-from train_retrain_def import RETRAIN_ITERS
 
 PORT_DIR = "../gym/gym/gym/envs/board_game/"
 
@@ -18,7 +17,7 @@ def unlock_train_att(port_lock_name):
         file.write("0\n")
 
 def main(env_name, env_short_name, new_epoch, att_port, port_lock_name, env_short_name_tsv, \
-    max_timesteps_att_init, max_timesteps_att_retrain):
+    max_timesteps_att_init, max_timesteps_att_retrain, retrain_iters):
     '''
     Makes the depgraph environment, builds a multilayer perceptron model,
     trains the model, and saves the result.
@@ -63,7 +62,7 @@ def main(env_name, env_short_name, new_epoch, att_port, port_lock_name, env_shor
         path_for_save=model_name,
         retrain_exploration_initial_eps=0.3,
         retrain_exploration_final_eps=0.03,
-        retrain_save_count=RETRAIN_ITERS,
+        retrain_save_count=retrain_iters,
         max_timesteps_retrain=max_timesteps_att_retrain,
         retrain_config_str=retrain_config_str,
         prefix_for_save=prefix_for_save
@@ -76,10 +75,10 @@ def main(env_name, env_short_name, new_epoch, att_port, port_lock_name, env_shor
     print("Opponent was: " + env_name)
 
 if __name__ == '__main__':
-    if len(sys.argv) != 9:
-        raise ValueError("Need 8 args: env_name_mixed_def, env_short_name, new_epoch, " + \
+    if len(sys.argv) != 10:
+        raise ValueError("Need 9 args: env_name_mixed_def, env_short_name, new_epoch, " + \
             "att_port, port_lock_name, env_short_name_tsv, max_timesteps_att_init, " + \
-            "max_timesteps_att_retrain")
+            "max_timesteps_att_retrain, retrain_iters")
     ENV_NAME = sys.argv[1]
     ENV_SHORT_NAME = sys.argv[2]
     NEW_EPOCH = int(sys.argv[3])
@@ -88,5 +87,6 @@ if __name__ == '__main__':
     ENV_SHORT_NAME_TSV = sys.argv[6]
     MAX_TIMESTEPS_ATT_INIT = int(sys.argv[7])
     MAX_TIMESTEPS_ATT_RETRAIN = int(sys.argv[8])
+    RETRAIN_ITERS = int(sys.argv[9])
     main(ENV_NAME, ENV_SHORT_NAME, NEW_EPOCH, ATT_PORT, PORT_LOCK_NAME, ENV_SHORT_NAME_TSV, \
-        MAX_TIMESTEPS_ATT_INIT, MAX_TIMESTEPS_ATT_RETRAIN)
+        MAX_TIMESTEPS_ATT_INIT, MAX_TIMESTEPS_ATT_RETRAIN, RETRAIN_ITERS)

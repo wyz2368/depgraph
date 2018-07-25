@@ -150,7 +150,7 @@ def main(old_strat_disc_fact, strat_min_weight, is_defender, tsv_names_file, \
     print_to_file(strategy_lines, output_file_name)
 
 '''
-example: python3 create_weighted_mixed_strat.py 0.5 0.001 True def_strat_files_s29.txt s29
+example: python3 create_weighted_mixed_strat.py 0.7 0.001 True def_strat_files_s29.txt s29
 '''
 if __name__ == "__main__":
     if len(sys.argv) != 6:

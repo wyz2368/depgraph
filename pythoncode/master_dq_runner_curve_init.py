@@ -15,6 +15,8 @@ from pythoncode.train_test_def import wait_for_def_lock, lock_def, read_def_port
     PORTS_PER_ROUND, MAX_PORT, MIN_PORT
 from add_new_data import get_add_data_result_file_name
 
+RETRAIN_MIN_WEIGHT = 0.001
+
 def run_gambit(game_number, cur_epoch, env_short_name_payoffs):
     '''
     Call a script to find a Nash equilibrium of the current game.
@@ -23,13 +25,24 @@ def run_gambit(game_number, cur_epoch, env_short_name_payoffs):
         env_short_name_payoffs]
     subprocess.call(cmd_list)
 
-def run_create_tsv(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs):
+def run_create_tsv_curve(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs):
     '''
     Run a script to extract the current equilibrium strategies to TSV files.
     '''
-    cmd_list = ["python3", "create_tsv_files.py", str(game_number), str(cur_epoch), \
+    cmd_list = ["python3", "create_tsv_files_curve.py", str(game_number), str(cur_epoch), \
         env_short_name_tsv, env_short_name_payoffs]
     subprocess.call(cmd_list)
+
+def run_create_retrain_strat(old_strat_disc_fact, env_short_name_payoffs):
+    is_defender_items = [True, False]
+    for is_defender in is_defender_items:
+        tsv_names_file = "def_strat_files_" + env_short_name_payoffs + ".txt"
+        if not is_defender:
+            tsv_names_file = "att_strat_files_" + env_short_name_payoffs + ".txt"
+        cmd_list = ["python3", "create_weighted_mixed_strat.py", \
+            str(old_strat_disc_fact), str(RETRAIN_MIN_WEIGHT), str(is_defender), \
+            tsv_names_file, env_short_name_payoffs]
+        subprocess.call(cmd_list)
 
 def run_update_strats(env_short_name_tsv, port_lock_name, new_epoch):
     '''
@@ -71,7 +84,7 @@ def run_train_test_all(graph_name, env_short_name_payoffs, new_epoch, \
 def run_train_retrain_all(graph_name, env_short_name_payoffs, new_epoch, \
     env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
     max_timesteps_def_init, max_timesteps_def_retrain, max_timesteps_att_init, \
-    max_timesteps_att_retrain):
+    max_timesteps_att_retrain, save_count):
     is_train = True
     wait_for_def_lock(port_lock_name, is_train)
     lock_def(port_lock_name, is_train)
@@ -83,11 +96,11 @@ def run_train_retrain_all(graph_name, env_short_name_payoffs, new_epoch, \
     cmd_list_train_def = ["python3", "train_retrain_def.py", graph_name, \
         env_short_name_payoffs, str(new_epoch), env_name_vs_mixed_att, port_lock_name, \
         str(def_port), env_short_name_tsv, str(max_timesteps_def_init), \
-        str(max_timesteps_def_retrain)]
+        str(max_timesteps_def_retrain), str(save_count)]
     cmd_list_train_att = ["python3", "train_retrain_att.py", graph_name, \
         env_short_name_payoffs, str(new_epoch), env_name_vs_mixed_def, str(def_port), \
         port_lock_name, env_short_name_tsv, str(max_timesteps_att_init), \
-        str(max_timesteps_att_retrain)]
+        str(max_timesteps_att_retrain), str(save_count)]
     process_train_def = subprocess.Popen(cmd_list_train_def)
     process_train_att = subprocess.Popen(cmd_list_train_att)
 
@@ -132,20 +145,6 @@ def run_add_new_data(game_number, env_short_name_payoffs, new_epoch):
         str(new_epoch)]
     subprocess.call(cmd_list)
 
-def run_test_curve(env_short_name_tsv, env_short_name_payoffs, cur_epoch, \
-    old_strat_disc_fact, save_count, graph_name, is_defender_net, runs_per_pair, \
-    env_name_vs_mixed_def, env_name_vs_mixed_att):
-    '''
-    Fine-tune the recently-trained network against a weighted mean of previous opponent
-    equilibrium strategies, and evaluate the result of the current and fine-tuned network
-    versions.
-    '''
-    cmd_list = ["python3", "test_curve.py", env_short_name_tsv, env_short_name_payoffs, \
-        str(cur_epoch), str(old_strat_disc_fact), str(save_count), graph_name, \
-        str(is_defender_net), str(runs_per_pair), env_name_vs_mixed_def, \
-        env_name_vs_mixed_att]
-    subprocess.call(cmd_list)
-
 def get_def_model_name(env_short_name_payoffs, new_epoch):
     ''' Get name of the defender network to generate. '''
     return "dg_" + env_short_name_payoffs + "_dq_mlp_rand_epoch" + str(new_epoch) + ".pkl"
@@ -156,10 +155,9 @@ def get_att_model_name(env_short_name_payoffs, new_epoch):
         "_att.pkl"
 
 def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
-    env_name_def_net, \
-    env_name_att_net, env_name_both, graph_name, \
+    env_name_def_net, env_name_att_net, env_name_both, graph_name, \
     env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, old_strat_disc_fact, \
-    save_count, runs_per_pair, port_lock_name, max_timesteps_def_init, \
+    save_count, port_lock_name, max_timesteps_def_init, \
     max_timesteps_def_retrain, max_timesteps_att_init, max_timesteps_att_retrain):
     '''
     Run the first epoch (epoch 0) of training. If no beneficial deviation is found, stop.
@@ -182,7 +180,8 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     # get Nash equilibrium of current strategies
     run_gambit(game_number, cur_epoch, env_short_name_payoffs)
     # create TSV file for current attacker and defender equilibrium strategies
-    run_create_tsv(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs)
+    run_create_tsv_curve(game_number, cur_epoch, env_short_name_tsv, \
+        env_short_name_payoffs)
 
     chdir("pythoncode")
     # pwd is ~/pythoncode
@@ -201,7 +200,7 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     # train defender network against current attacker equilibrium and mix of recents
     run_train_test_all(graph_name, env_short_name_payoffs, new_epoch, \
         env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
-        max_timesteps_def_init, max_timesteps_att_init)
+        max_timesteps_def_init, max_timesteps_att_init, save_count)
 
     # check if new defender network is beneficial deviation from old equilibrium
     is_def_beneficial = get_check_if_beneficial(env_short_name_payoffs, new_epoch, True)
@@ -244,7 +243,8 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     # get Nash equilibrium of current strategies
     run_gambit(game_number, cur_epoch, env_short_name_payoffs)
     # create TSV file for current attacker and defender equilibrium strategies
-    run_create_tsv(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs)
+    run_create_tsv_curve(game_number, cur_epoch, env_short_name_tsv, \
+        env_short_name_payoffs)
 
     chdir("pythoncode")
     # pwd is ~/pythoncode
@@ -258,6 +258,8 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     # sample and estimate mean payoff of each attacker strategy vs. new defender equilibrium
     run_gen_both_payoffs(game_number, env_short_name_payoffs, new_epoch)
 
+    run_create_retrain_strat(old_strat_disc_fact, env_short_name_payoffs)
+
     print("\tWill train and test both, epoch: " + str(new_epoch)+ ", time: " + \
         str(datetime.datetime.now()), flush=True)
     # train attacker network against current defender equilibrium and mix of recents
@@ -265,7 +267,7 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     run_train_retrain_all(graph_name, env_short_name_payoffs, new_epoch, \
         env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
         max_timesteps_def_init, max_timesteps_def_retrain, max_timesteps_att_init, \
-        max_timesteps_att_retrain)
+        max_timesteps_att_retrain, save_count)
 
     # check if new defender network is beneficial deviation from old equilibrium
     is_def_beneficial = get_check_if_beneficial(env_short_name_payoffs, new_epoch, True)
@@ -279,21 +281,13 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
 
     chdir("..")
     # pwd is ~/
-    is_defender_net = True
-    run_test_curve(env_short_name_tsv, env_short_name_payoffs, cur_epoch, \
-        old_strat_disc_fact, save_count, graph_name, is_defender_net, runs_per_pair, \
-        env_name_vs_mixed_def, env_name_vs_mixed_att)
-    is_defender_net = False
-    run_test_curve(env_short_name_tsv, env_short_name_payoffs, cur_epoch, \
-        old_strat_disc_fact, save_count, graph_name, is_defender_net, runs_per_pair, \
-        env_name_vs_mixed_def, env_name_vs_mixed_att)
     return True
 
 def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
         env_name_def_net, env_name_att_net, \
         env_name_both, graph_name, \
         env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, old_strat_disc_fact, \
-        save_count, runs_per_pair, port_lock_name, max_timesteps_def_init, \
+        save_count, port_lock_name, max_timesteps_def_init, \
         max_timesteps_def_retrain, max_timesteps_att_init, max_timesteps_att_retrain):
     '''
     Call method to run first epoch (epoch 0), and beginning of second epoch (epoch 1).
@@ -303,8 +297,6 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
             str(old_strat_disc_fact))
     if save_count < 1:
         raise ValueError("save_count must be >= 1: " + str(save_count))
-    if runs_per_pair < 2:
-        raise ValueError("runs_per_pair must be >= 2: " + str(runs_per_pair))
 
     # first epoch is always 0
     my_epoch = 0
@@ -314,7 +306,7 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
     should_continue = run_init_epoch(game_number, env_short_name_tsv, \
         env_short_name_payoffs, env_name_def_net, env_name_att_net, env_name_both, \
         graph_name, env_name_vs_mixed_def, env_name_vs_mixed_att, \
-        new_col_count, old_strat_disc_fact, save_count, runs_per_pair, \
+        new_col_count, old_strat_disc_fact, save_count, \
         port_lock_name, max_timesteps_def_init, max_timesteps_def_retrain, \
         max_timesteps_att_init, max_timesteps_att_retrain)
     if should_continue:
@@ -329,16 +321,16 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
 example: python3 master_dq_runner_curve_init.py 3013 sl29_randNoAndB sl29 \
     DepgraphJava29N-v0 DepgraphJavaEnvAtt29N-v0 DepgraphJavaEnvBoth29N-v0 \
     SepLayerGraph0_noAnd_B.json DepgraphJavaEnvVsMixedDef29N-v0 \
-    DepgraphJavaEnvVsMixedAtt29N-v0 400 0.5 4 1000 s29 700000 400000 700000 400000
+    DepgraphJavaEnvVsMixedAtt29N-v0 0.5 4 1000 s29 700000 400000 700000 400000
 
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 19:
-        raise ValueError("Need 18 args: game_number, env_short_name_tsv, " + \
+    if len(sys.argv) != 18:
+        raise ValueError("Need 17 args: game_number, env_short_name_tsv, " + \
             "env_short_name_payoffs, env_name_def_net, env_name_att_net, " + \
             "env_name_both, graph_name, env_name_vs_mixed_def, "  + \
             "env_name_vs_mixed_att, new_col_count, " + \
-            "old_strat_disc_fact, save_count, runs_per_pair, " + \
+            "old_strat_disc_fact, save_count, " + \
             "port_lock_name, max_timesteps_def_init, max_timesteps_def_retrain, " + \
             "max_timesteps_att_init, max_timesteps_att_retrain")
     GAME_NUMBER = int(sys.argv[1])
@@ -353,15 +345,14 @@ if __name__ == '__main__':
     NEW_COL_COUNT = int(sys.argv[10])
     OLD_STRAT_DISC_FACT = float(sys.argv[11])
     SAVE_COUNT = int(sys.argv[12])
-    RUNS_PER_PAIR = int(sys.argv[13])
-    PORT_LOCK_NAME = sys.argv[14]
-    MAX_TIMESTEPS_DEF_INIT = int(sys.argv[15])
-    MAX_TIMESTEPS_DEF_RETRAIN = int(sys.argv[16])
-    MAX_TIMESTEPS_ATT_INIT = int(sys.argv[17])
-    MAX_TIMESTEPS_ATT_RETRAIN = int(sys.argv[18])
+    PORT_LOCK_NAME = sys.argv[13]
+    MAX_TIMESTEPS_DEF_INIT = int(sys.argv[14])
+    MAX_TIMESTEPS_DEF_RETRAIN = int(sys.argv[15])
+    MAX_TIMESTEPS_ATT_INIT = int(sys.argv[16])
+    MAX_TIMESTEPS_ATT_RETRAIN = int(sys.argv[17])
     main(GAME_NUMBER, ENV_SHORT_NAME_TSV, ENV_SHORT_NAME_PAYOFFS, \
         ENV_NAME_DEF_NET, ENV_NAME_ATT_NET, ENV_NAME_BOTH, GRAPH_NAME, \
         ENV_NAME_VS_MIXED_DEF, ENV_NAME_VS_MIXED_ATT, NEW_COL_COUNT, \
-        OLD_STRAT_DISC_FACT, SAVE_COUNT, RUNS_PER_PAIR, PORT_LOCK_NAME, \
+        OLD_STRAT_DISC_FACT, SAVE_COUNT, PORT_LOCK_NAME, \
         MAX_TIMESTEPS_DEF_INIT, MAX_TIMESTEPS_DEF_RETRAIN, MAX_TIMESTEPS_ATT_INIT, \
         MAX_TIMESTEPS_ATT_RETRAIN)
