@@ -11,6 +11,7 @@ import subprocess
 from os import chdir
 import os.path
 import pythoncode.check_if_beneficial as check
+import pythoncode.select_best_curve as select
 from pythoncode.train_test_def import wait_for_def_lock, lock_def, read_def_port, \
     PORTS_PER_ROUND, MAX_PORT, MIN_PORT
 from add_new_data import get_add_data_result_file_name
@@ -116,6 +117,14 @@ def get_check_if_beneficial(env_short_name_payoffs, new_epoch, is_def):
     '''
     return check.check_for_cli(env_short_name_payoffs, new_epoch, is_def)
 
+def get_select_best_curve(env_short_name_payoffs, new_epoch, is_def, save_count):
+    '''
+    Get the best of the trained or retrained strategy numbers, or None if none is a
+    beneficial deviation from current equilibrium.
+    '''
+    return select.get_best_retrain_number(env_short_name_payoffs, new_epoch, is_def, \
+        save_count)
+
 def run_gen_new_cols(env_name_def_net, env_name_att_net, env_name_both, new_col_count, \
     new_epoch, env_short_name_payoffs, def_model_to_add, att_model_to_add, graph_name):
     '''
@@ -146,14 +155,23 @@ def run_add_new_data(game_number, env_short_name_payoffs, new_epoch):
         str(new_epoch)]
     subprocess.call(cmd_list)
 
-def get_def_model_name(env_short_name_payoffs, new_epoch):
+def get_def_model_name(env_short_name_payoffs, new_epoch, retrain_index):
     ''' Get name of the defender network to generate. '''
-    return "dg_" + env_short_name_payoffs + "_dq_mlp_rand_epoch" + str(new_epoch) + ".pkl"
+    if new_epoch == 1 or retrain_index == 0:
+        return "dg_" + env_short_name_payoffs + "_dq_mlp_rand_epoch" + str(new_epoch) + \
+            ".pkl"
+    prefix_for_save = "dg_" + env_short_name_payoffs + "_dq_mlp_retrain_epoch" + \
+        str(new_epoch)
+    return prefix_for_save + "_r" + str(retrain_index) + ".pkl"
 
-def get_att_model_name(env_short_name_payoffs, new_epoch):
+def get_att_model_name(env_short_name_payoffs, new_epoch, retrain_index):
     ''' Get name of the attacker network to generate. '''
-    return "dg_" + env_short_name_payoffs + "_dq_mlp_rand_epoch" + str(new_epoch) + \
-        "_att.pkl"
+    if new_epoch == 1 or retrain_index == 0:
+        return "dg_" + env_short_name_payoffs + "_dq_mlp_rand_epoch" + str(new_epoch) + \
+            "_att.pkl"
+    prefix_for_save = "dg_" + env_short_name_payoffs + "_dq_mlp_retrain_epoch" + \
+        str(new_epoch) + "_att"
+    return prefix_for_save + "_r" + str(retrain_index) + ".pkl"
 
 def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     env_name_def_net, env_name_att_net, env_name_both, graph_name, \
@@ -221,10 +239,10 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     # strategies
     def_model_to_add = None
     if is_def_beneficial:
-        def_model_to_add = get_def_model_name(env_short_name_payoffs, new_epoch)
+        def_model_to_add = get_def_model_name(env_short_name_payoffs, new_epoch, 0)
     att_model_to_add = None
     if is_att_beneficial:
-        att_model_to_add = get_att_model_name(env_short_name_payoffs, new_epoch)
+        att_model_to_add = get_att_model_name(env_short_name_payoffs, new_epoch, 0)
     run_gen_new_cols(env_name_def_net, env_name_att_net, env_name_both, new_col_count, \
         new_epoch, env_short_name_payoffs, def_model_to_add, att_model_to_add, graph_name)
     # append name of each new network (if it beneficially deviates) to list of networks to
@@ -274,18 +292,29 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
         max_timesteps_def_init, max_timesteps_def_retrain, max_timesteps_att_init, \
         max_timesteps_att_retrain, save_count)
 
-    # check if new defender network is beneficial deviation from old equilibrium
-    is_def_beneficial = get_check_if_beneficial(env_short_name_payoffs, new_epoch, True)
-    # check if new attacker network is beneficial deviation from old equilibrium
-    is_att_beneficial = get_check_if_beneficial(env_short_name_payoffs, new_epoch, False)
-
-    if not is_def_beneficial and not is_att_beneficial:
+    # call select_best_curve.py for attacker and defender
+    best_def_index = get_select_best_curve(env_short_name_payoffs, new_epoch, True, \
+        save_count)
+    best_att_index = get_select_best_curve(env_short_name_payoffs, new_epoch, False, \
+        save_count)
+    if best_def_index is None and best_att_index is None:
         # neither network beneficially deviates, so stop
         print("\tConverged after round: " + str(new_epoch), flush=True)
         return False
 
-    chdir("..")
-    # pwd is ~/
+    print("\tWill generate new columns, epoch: " + str(new_epoch)+ ", time: " + \
+        str(datetime.datetime.now()), flush=True)
+
+    def_model_to_add = None
+    att_model_to_add = None
+    if best_def_index is not None:
+        def_model_to_add = get_def_model_name(env_short_name_payoffs, new_epoch, \
+            best_def_index)
+    if best_att_index is not None:
+        att_model_to_add = get_def_model_name(env_short_name_payoffs, new_epoch, \
+            best_att_index)
+    run_gen_new_cols(env_name_def_net, env_name_att_net, env_name_both, new_col_count, \
+        new_epoch, env_short_name_payoffs, def_model_to_add, att_model_to_add, graph_name)
     return True
 
 def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
@@ -326,7 +355,7 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
 example: python3 master_dq_runner_curve_init.py 3013 sl29_randNoAndB sl29 \
     DepgraphJava29N-v0 DepgraphJavaEnvAtt29N-v0 DepgraphJavaEnvBoth29N-v0 \
     SepLayerGraph0_noAnd_B.json DepgraphJavaEnvVsMixedDef29N-v0 \
-    DepgraphJavaEnvVsMixedAtt29N-v0 0.5 4 1000 s29 700000 400000 700000 400000
+    DepgraphJavaEnvVsMixedAtt29N-v0 0.7 4 1000 s29 700000 400000 700000 400000
 
 '''
 if __name__ == '__main__':

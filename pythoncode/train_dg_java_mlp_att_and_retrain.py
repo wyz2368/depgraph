@@ -43,7 +43,8 @@ def main(env_name, env_short_name, new_epoch, att_port, port_lock_name, env_shor
     if new_epoch > 1:
         my_scope = "deepq_train_e" + str(new_epoch)
 
-    prefix_for_save = "dg_" + env_short_name + "_dq_mlp_retrain_epoch" + str(new_epoch)
+    prefix_for_save = "dg_" + env_short_name + "_dq_mlp_retrain_epoch" + str(new_epoch) + \
+        "_att"
     retrain_config_str = env_short_name_tsv + "_epoch" + str(new_epoch) + "_retrain_def.tsv"
     deepq.learn_retrain_and_save(
         env,
