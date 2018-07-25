@@ -45,6 +45,11 @@ def lock_def(port_lock_name, is_train):
     with open(lock_name, 'w') as file:
         file.write("1\n")
 
+def unlock_eval_def(port_lock_name):
+    lock_name = PORT_DIR + port_lock_name + "_eval_def_lock.txt"
+    with open(lock_name, 'w') as file:
+        file.write("0\n")
+
 def is_def_unlocked(port_lock_name, is_train):
     lock_name = PORT_DIR + port_lock_name + "_train_def_lock.txt"
     if not is_train:

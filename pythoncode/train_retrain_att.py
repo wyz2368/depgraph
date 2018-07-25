@@ -3,6 +3,8 @@ import subprocess
 import time
 import os.path
 
+from train_retrain_def import RETRAIN_ITERS
+
 PORT_DIR = "../gym/gym/gym/envs/board_game/"
 
 def get_lines(file_name):
@@ -12,6 +14,11 @@ def get_lines(file_name):
     lines = [x.strip() for x in lines]
     lines = [x for x in lines if x]
     return lines
+
+def unlock_eval_att(port_lock_name):
+    lock_name = PORT_DIR + port_lock_name + "_eval_att_lock.txt"
+    with open(lock_name, 'w') as file:
+        file.write("0\n")
 
 def write_att_port(port_lock_name, is_train, att_port):
     port_name = PORT_DIR + port_lock_name + "_train_att_port.txt"
@@ -67,6 +74,32 @@ def run_train_retrain(env_short_name, new_epoch, env_name_def_net, att_port, \
     with open(att_out_name, "w") as file:
         subprocess.call(cmd_list, stdout=file)
 
+def run_evaluation_all(env_short_name, new_epoch, env_name_def_net, att_port, \
+    port_lock_name, env_short_name_tsv):
+    is_train = False
+    is_retrain_opponent_options = [True, False]
+    for retrain_number in range(RETRAIN_ITERS + 1):
+        for is_retrain_opponent in is_retrain_opponent_options:
+            wait_for_att_lock(port_lock_name, is_train)
+            lock_att(port_lock_name, is_train)
+            write_att_port(port_lock_name, is_train, att_port)
+            cmd_list = ["python3", "enjoy_dg_data_vs_mixed_def_retraining.py",
+                        env_name_def_net, env_short_name, str(new_epoch), \
+                        str(retrain_number), str(att_port), str(port_lock_name), \
+                        env_short_name_tsv, str(is_retrain_opponent)]
+            att_out_name_enj = "att_" + env_short_name + "_randNoAndB_epoch" + \
+                str(new_epoch) + "_enj"
+            if is_retrain_opponent:
+                att_out_name_enj += "_vsRetrain.txt"
+            else:
+                att_out_name_enj += "_vsEq.txt"
+            if os.path.isfile(att_out_name_enj):
+                print("Skipping: " + att_out_name_enj + " already exists.")
+                unlock_eval_att(port_lock_name)
+                continue
+            with open(att_out_name_enj, "w") as file:
+                subprocess.call(cmd_list, stdout=file)
+
 def main(graph_name, env_short_name, new_epoch, env_name_def_net, def_port, \
     port_lock_name, env_short_name_tsv, max_timesteps_att_init, max_timesteps_att_retrain):
     att_port = def_port + 2
@@ -81,6 +114,8 @@ def main(graph_name, env_short_name, new_epoch, env_name_def_net, def_port, \
         port_lock_name, env_short_name_tsv, max_timesteps_att_init, \
         max_timesteps_att_retrain)
 
+    run_evaluation_all(env_short_name, new_epoch, env_name_def_net, att_port, \
+        port_lock_name, env_short_name_tsv)
     close_env_process(env_process)
 
 '''
