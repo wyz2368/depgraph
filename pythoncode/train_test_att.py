@@ -111,7 +111,9 @@ def main(graph_name, env_short_name, new_epoch, env_name_def_net, def_port, \
     write_att_port(port_lock_name, is_train, att_port)
     run_evaluation(env_short_name, new_epoch, env_name_def_net, att_port, port_lock_name, \
         env_short_name_tsv)
+    print("Closing env_process for attacker")
     close_env_process(env_process)
+    print("Finished attacker train and test")
 
 '''
 example: python3 train_test_att.py SepLayerGraph0_noAnd_B.json sl29 16 \

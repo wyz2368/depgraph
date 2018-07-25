@@ -119,7 +119,9 @@ def main(graph_name, env_short_name, new_epoch, env_name_att_net, port_lock_name
     write_def_port(port_lock_name, is_train, def_port)
     run_evaluation(env_short_name, new_epoch, env_name_att_net, def_port, port_lock_name, \
         env_short_name_tsv)
+    print("Closing env_process for defender")
     close_env_process(env_process)
+    print("Finished defender train and test")
 
 '''
 example: python3 train_test_def.py SepLayerGraph0_noAnd_B.json sl29 16 \
