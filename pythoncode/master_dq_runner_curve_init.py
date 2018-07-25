@@ -315,6 +315,23 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
             best_att_index)
     run_gen_new_cols(env_name_def_net, env_name_att_net, env_name_both, new_col_count, \
         new_epoch, env_short_name_payoffs, def_model_to_add, att_model_to_add, graph_name)
+    # append name of each new network (if it beneficially deviates) to list of networks to
+    # use in equilibrium search
+    run_append_net_names(env_short_name_payoffs, def_model_to_add, att_model_to_add)
+
+    chdir("..")
+    # pwd is ~/
+    # add new payoff data to game object (from new beneficially deviating network(s))
+    run_add_new_data(game_number, env_short_name_payoffs, new_epoch)
+
+    print("\tShould continue after round: " + str(new_epoch), flush=True)
+    return True
+
+def run_continue_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
+    env_name_def_net, env_name_att_net, env_name_both, graph_name, \
+    env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, old_strat_disc_fact, \
+    save_count, port_lock_name, max_timesteps_def_init, \
+    max_timesteps_def_retrain, max_timesteps_att_init, max_timesteps_att_retrain):
     return True
 
 def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
@@ -343,13 +360,19 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
         new_col_count, old_strat_disc_fact, save_count, \
         port_lock_name, max_timesteps_def_init, max_timesteps_def_retrain, \
         max_timesteps_att_init, max_timesteps_att_retrain)
-    if should_continue:
-        # proceed from epoch 1
-        print("\tShould continue from epoch: 1, time: " + \
+    while should_continue:
+        print("\tWill run epoch: " + str(my_epoch) + ", time: " + \
             str(datetime.datetime.now()), flush=True)
-    else:
-        # did not find beneficial deviation from initial equilibrium
-        print("\tConverged in epoch 0, time: " + str(datetime.datetime.now()), flush=True)
+        should_continue = run_continue_epoch(game_number, env_short_name_tsv, \
+            env_short_name_payoffs, env_name_def_net, env_name_att_net, env_name_both, \
+            graph_name, env_name_vs_mixed_def, env_name_vs_mixed_att, \
+            new_col_count, old_strat_disc_fact, save_count, \
+            port_lock_name, max_timesteps_def_init, max_timesteps_def_retrain, \
+            max_timesteps_att_init, max_timesteps_att_retrain)
+        if should_continue:
+            my_epoch += 1
+    print("\tConverged at epoch: " + str(my_epoch) + ", time: " + \
+        str(datetime.datetime.now()), flush=True)
 
 '''
 example: python3 master_dq_runner_curve_init.py 3013 sl29_randNoAndB sl29 \
