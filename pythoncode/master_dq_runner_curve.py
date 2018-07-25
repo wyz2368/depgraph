@@ -415,7 +415,8 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
         env_name_both, graph_name, \
         env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, \
         old_strat_disc_fact, save_count, port_lock_name, max_timesteps_def_init, \
-        max_timesteps_def_retrain, max_timesteps_att_init, max_timesteps_att_retrain):
+        max_timesteps_def_retrain, max_timesteps_att_init, max_timesteps_att_retrain, \
+        cur_epoch):
     '''
     Call method to run first epoch (epoch 0), and beginning of second epoch (epoch 1).
     '''
@@ -424,20 +425,23 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
             str(old_strat_disc_fact))
     if save_count < 1:
         raise ValueError("save_count must be >= 1: " + str(save_count))
+    if cur_epoch < 0 or cur_epoch == 1:
+        raise ValueError("cur_epoch must be 0 or in {2, . . .}: " + str(cur_epoch))
 
-    # first epoch is always 0
-    my_epoch = 0
-    print("\tWill run epochs: 0 and 1, time: " + \
-        str(datetime.datetime.now()), flush=True)
-    # indicates whether a beneficial deviation was found
-    should_continue = run_init_epoch(game_number, env_short_name_tsv, \
-        env_short_name_payoffs, env_name_def_net, env_name_att_net, env_name_both, \
-        graph_name, env_name_vs_mixed_def, env_name_vs_mixed_att, \
-        new_col_count, old_strat_disc_fact, save_count, \
-        port_lock_name, max_timesteps_def_init, max_timesteps_def_retrain, \
-        max_timesteps_att_init, max_timesteps_att_retrain)
-    if should_continue:
-        my_epoch += 2 # first call runs 2 epochs in this case (0 and 1)
+    my_epoch = cur_epoch
+    should_continue = True
+    if my_epoch == 0:
+        print("\tWill run epochs: 0 and 1, time: " + \
+            str(datetime.datetime.now()), flush=True)
+        # indicates whether a beneficial deviation was found
+        should_continue = run_init_epoch(game_number, env_short_name_tsv, \
+            env_short_name_payoffs, env_name_def_net, env_name_att_net, env_name_both, \
+            graph_name, env_name_vs_mixed_def, env_name_vs_mixed_att, \
+            new_col_count, old_strat_disc_fact, save_count, \
+            port_lock_name, max_timesteps_def_init, max_timesteps_def_retrain, \
+            max_timesteps_att_init, max_timesteps_att_retrain)
+        if should_continue:
+            my_epoch += 2 # first call runs 2 epochs in this case (0 and 1)
     while should_continue:
         print("\tWill run epoch: " + str(my_epoch) + ", time: " + \
             str(datetime.datetime.now()), flush=True)
@@ -453,21 +457,21 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
         str(datetime.datetime.now()), flush=True)
 
 '''
-example: python3 master_dq_runner_curve_init.py 3013 sl29_randNoAndB sl29 \
+example: python3 master_dq_runner_curve.py 3013 sl29_randNoAndB sl29 \
     DepgraphJava29N-v0 DepgraphJavaEnvAtt29N-v0 DepgraphJavaEnvBoth29N-v0 \
     SepLayerGraph0_noAnd_B.json DepgraphJavaEnvVsMixedDef29N-v0 \
-    DepgraphJavaEnvVsMixedAtt29N-v0 0.7 4 1000 s29 700000 400000 700000 400000
+    DepgraphJavaEnvVsMixedAtt29N-v0 0.7 4 1000 s29 700000 400000 700000 400000 0
 
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 18:
-        raise ValueError("Need 17 args: game_number, env_short_name_tsv, " + \
+    if len(sys.argv) != 10:
+        raise ValueError("Need 18 args: game_number, env_short_name_tsv, " + \
             "env_short_name_payoffs, env_name_def_net, env_name_att_net, " + \
             "env_name_both, graph_name, env_name_vs_mixed_def, "  + \
             "env_name_vs_mixed_att, new_col_count, " + \
             "old_strat_disc_fact, save_count, " + \
             "port_lock_name, max_timesteps_def_init, max_timesteps_def_retrain, " + \
-            "max_timesteps_att_init, max_timesteps_att_retrain")
+            "max_timesteps_att_init, max_timesteps_att_retrain, cur_epoch")
     GAME_NUMBER = int(sys.argv[1])
     ENV_SHORT_NAME_TSV = sys.argv[2]
     ENV_SHORT_NAME_PAYOFFS = sys.argv[3]
@@ -485,9 +489,10 @@ if __name__ == '__main__':
     MAX_TIMESTEPS_DEF_RETRAIN = int(sys.argv[15])
     MAX_TIMESTEPS_ATT_INIT = int(sys.argv[16])
     MAX_TIMESTEPS_ATT_RETRAIN = int(sys.argv[17])
+    CUR_EPOCH = int(sys.argv[18])
     main(GAME_NUMBER, ENV_SHORT_NAME_TSV, ENV_SHORT_NAME_PAYOFFS, \
         ENV_NAME_DEF_NET, ENV_NAME_ATT_NET, ENV_NAME_BOTH, GRAPH_NAME, \
         ENV_NAME_VS_MIXED_DEF, ENV_NAME_VS_MIXED_ATT, NEW_COL_COUNT, \
         OLD_STRAT_DISC_FACT, SAVE_COUNT, PORT_LOCK_NAME, \
         MAX_TIMESTEPS_DEF_INIT, MAX_TIMESTEPS_DEF_RETRAIN, MAX_TIMESTEPS_ATT_INIT, \
-        MAX_TIMESTEPS_ATT_RETRAIN)
+        MAX_TIMESTEPS_ATT_RETRAIN, CUR_EPOCH)
