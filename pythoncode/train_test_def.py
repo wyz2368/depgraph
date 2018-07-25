@@ -49,6 +49,16 @@ def lock_def(port_lock_name, is_train):
     with open(lock_name, 'w') as file:
         file.write("1\n")
 
+def unlock_train_def(port_lock_name):
+    lock_name = PORT_DIR + port_lock_name + "_train_def_lock.txt"
+    with open(lock_name, 'w') as file:
+        file.write("0\n")
+
+def unlock_eval_def(port_lock_name):
+    lock_name = PORT_DIR + port_lock_name + "_eval_def_lock.txt"
+    with open(lock_name, 'w') as file:
+        file.write("0\n")
+
 def wait_for_def_lock(port_lock_name, is_train):
     sleep_time = 5
     while not is_def_unlocked(port_lock_name, is_train):
@@ -76,6 +86,7 @@ def run_training(env_short_name, new_epoch, env_name_att_net, def_port, port_loc
     def_out_name = "defVMixed_" + env_short_name + "_epoch" + str(new_epoch) + ".txt"
     if os.path.isfile(def_out_name):
         print("Skipping: " + def_out_name + " already exists.")
+        unlock_train_def(port_lock_name)
         return
     with open(def_out_name, "w") as file:
         subprocess.call(cmd_list, stdout=file)
@@ -89,6 +100,7 @@ def run_evaluation(env_short_name, new_epoch, env_name_att_net, def_port, port_l
         "_enj.txt"
     if os.path.isfile(def_out_name_enj):
         print("Skipping: " + def_out_name_enj + " already exists.")
+        unlock_eval_def(port_lock_name)
         return
     with open(def_out_name_enj, "w") as file:
         subprocess.call(cmd_list, stdout=file)
