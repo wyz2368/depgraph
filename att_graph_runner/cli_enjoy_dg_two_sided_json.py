@@ -26,7 +26,7 @@ def get_payoffs_both(env_name_both, num_sims, def_model_name, att_model_name, gr
     if os.path.isfile(output_file_name):
         raise ValueError("Error: " + output_file_name + " already exists.")
 
-    cmd = "exec java -jar ../depgraphpy4jbothjson/depgraphpy4jbothjson.jar simspecs/ "\
+    cmd = "exec java -jar depgraphpy4jbothjson/depgraphpy4jbothjson.jar simspecs/ "\
         + graph_name + " " + output_file_name
     my_process = subprocess.Popen(cmd, shell=True)
     sleep_sec = 5

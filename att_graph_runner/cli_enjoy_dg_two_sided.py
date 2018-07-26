@@ -21,7 +21,7 @@ def get_payoffs_both_with_sd(env_name_both, num_sims, def_model_name, att_model_
     # see also:
     # https://stackoverflow.com/questions/4789837/
     #     how-to-terminate-a-python-subprocess-launched-with-shell-true
-    cmd = "exec java -jar ../depgraphpy4jboth/depgraphpy4jconfigboth.jar simspecs/ "\
+    cmd = "exec java -jar depgraphpy4jboth/depgraphpy4jconfigboth.jar simspecs/ "\
         + graph_name
     my_process = subprocess.Popen(cmd, shell=True)
     sleep_sec = 5

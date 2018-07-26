@@ -4,7 +4,7 @@ import time
 import os.path
 
 def start_and_return_env_process(graph_name):
-    cmd = "exec java -jar ../depgraphpy4jdefvseither/depgraphpy4jdefvsnetorheuristic.jar " \
+    cmd = "exec java -jar depgraphpy4jdefvseither/depgraphpy4jdefvsnetorheuristic.jar " \
         + graph_name
     env_process = subprocess.Popen(cmd, shell=True)
     sleep_sec = 5

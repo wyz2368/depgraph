@@ -77,7 +77,7 @@ def start_and_return_env_process(graph_name, def_port):
 
 def start_and_return_env_process(graph_name, def_port):
     cmd_list = ["java", "-jar",  \
-        "../depgraphpy4jdefvseither/depgraphpy4jdefvsnetorheuristic.jar", \
+        "depgraphpy4jdefvseither/depgraphpy4jdefvsnetorheuristic.jar", \
         graph_name, str(def_port)]
 
     env_process = subprocess.Popen(cmd_list, stdin=None, stdout=None, stderr=None, \
