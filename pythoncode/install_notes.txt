@@ -50,6 +50,8 @@ Setup notes for OpenAI:
                 pip3 install -e .
         -- Py4J
                 pip3 install py4j
+        -- cloudpickle
+                pip3 install cloudpickle
     -- need to install:
         -- Gambit
                 gambit-15.1.1
@@ -59,6 +61,8 @@ Setup notes for OpenAI:
                 ./configure
                 make
                 sudo make install
+        -- GameAnalysis
+            pip3 install gameanalysis
 -- check installations:
         -- OpenAI Gym check:
                 python3
@@ -66,6 +70,10 @@ Setup notes for OpenAI:
                 env = gym.make('Hex9x9-v0')
                 env.reset()
                 env.render()
+                # if fails try:
+                # cd .local/lib/python3.5/site-packages
+                # mv gym gymtemp
+                # cd ~/
         -- OpenAI baselines check:
                 cd ~/baselines/baselines/baselines/deepq/experiments
                 python3 train_cartpole.py
@@ -74,65 +82,7 @@ Setup notes for OpenAI:
                 -- note: this may fail if CloudPickle is not installed.
                         pip3 install cloudpickle
                         https://pypi.python.org/pypi/cloudpickle/0.2.1
-                python3 enjoy_cartpole.py
-                -- note: this will fail if there is no display on the server,
-                        with error like pyglet.canvas.xlib.NoSuchDisplayException
         -- Gambit check:
             gambit-lcp -h
         -- GameAnalysis check:
             ga -h
--- need to modify certain scripts:
-        gym/gym/envs/__init__.py
-        gym/gym/envs/board_game/__init__.py
-        gym/gym/envs/board_game/depgraph_java.py
-        gym/gym/envs/board_game/depgraph_java_att.py
-        gym/gym/envs/board_game/dg_java_both.py
-        gym/gym/envs/board_game/dg_java_vs_mixed_att.py
-        gym/gym/envs/board_game/dg_java_vs_mixed_def.py
-        baselines/baselines/deepq/__init__.py
-        baselines/baselines/deepq/build_graph.py
-        baselines/baselines/deepq/simple_conservative.py
--- call your gym code to test:
-        python3
-        import gym
-        env = gym.make('Connect4MaxConvAug-v0')
-        env.reset()
-        env.render()
-        env.step(3)
-        env.render()
--- call your baselines code to test:
-        cd ~/baselines/baselines/baselines/deepq/experiments
-        python3 train_c4_minimax_conv.py
--- scripts to use for train and test:
-        pythoncode/enjoy_depgraph_data.py
-        pythoncode/enjoy_depgraphAtt_data.py
-        pythoncode/enjoy_depgraph_data_vs_mixed.py
-        pythoncode/enjoy_dg_data_vs_mixed_def.py
-        pythoncode/enjoy_dg_two_sided.py
-        pythoncode/train_depgraph_java_mlp.py
-        pythoncode/train_depgraph_java_mlp_att.py
-        pythoncode/train_dg_java_mlp_def_vs_mixed.py
-        pythoncode/train_dg_java_mlp_att_vs_mixed.py
--- scripts to use for generating new columns:
-        pythoncode/gen_att_payoffs.py
-        pythoncode/gen_def_payoffs.py
-        pythoncode/generate_new_cols.py
-        pythoncode/cli_enjoy_dg_no_net.py
-        pythoncode/cli_enjoy_dg_def_net.py
-        pythoncode/cli_enjoy_dg_att_net.py
-        pythoncode/cli_enjoy_dg_two_sided.py
-        add_new_data.py
--- Java JAR files to have:
-        depgraphpy4jdefvseither/depgraphpy4jdefvsnetorheuristic.jar
-        depgraphpy4jattvseither/depgraphpy4jattvsnetorheuristic.jar
-        depgraphpy4jboth/depgraphpy4jconfigboth.jar
-        pythoncode/dg4jdefcli/dg4jdefcli.jar
-        pythoncode/dg4jattcli/dg4jattcli.jar
-        pythoncode/dg4jnonetcli/dg4jnonetcli.jar
--- each JAR file's folder needs to have:
-        graphs/RandomGraph30N100E6T1_B.json
--- other library to have:
-        ga
-        # from GameAnalysis library developed by Erik and Bryce
-        -- if not present, use:
-            pip install gameanalysis
