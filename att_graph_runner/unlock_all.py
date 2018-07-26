@@ -11,5 +11,5 @@ def main(port_lock_name):
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         raise ValueError("Need 1 arg: port_lock_name")
-    PORT_LOCK_NAME = sys.argv[2]
+    PORT_LOCK_NAME = sys.argv[1]
     main(PORT_LOCK_NAME)
