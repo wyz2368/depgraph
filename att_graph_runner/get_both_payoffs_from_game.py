@@ -62,8 +62,8 @@ def get_att_and_def_eq_payoffs(game_data, attacker_eq, defender_eq):
 def get_game_file_name(game_number, new_epoch, env_short_name):
     # return the game file name from the previous epoch.
     if new_epoch is None or new_epoch == 1:
-        return "../game_" + str(game_number) + ".json"
-    return "../game_" + str(game_number) + "_" + str(new_epoch - 1) + "_" + \
+        return "game_" + str(game_number) + ".json"
+    return "game_" + str(game_number) + "_" + str(new_epoch - 1) + "_" + \
         env_short_name + ".json"
 
 def print_to_file(best_payoffs, out_file):
