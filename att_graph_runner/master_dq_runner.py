@@ -6,7 +6,14 @@ import os.path
 from add_new_data import get_add_data_result_file_name
 import check_if_beneficial as check
 from train_test_def import wait_for_def_lock, lock_def, read_def_port, \
-    PORTS_PER_ROUND, MAX_PORT, MIN_PORT
+    is_def_unlocked, PORTS_PER_ROUND, MAX_PORT, MIN_PORT
+from train_test_att import is_att_unlocked
+
+def are_all_locks_unlocked(port_lock_name):
+    return is_def_unlocked(port_lock_name, True) and \
+        is_def_unlocked(port_lock_name, False) and \
+        is_att_unlocked(port_lock_name, True) and \
+        is_att_unlocked(port_lock_name, False)
 
 def check_for_files(game_number, env_short_name_payoffs):
     dirs = ["depgraphpy4jattvseither", "depgraphpy4jdefvseither", "depgraphpy4jboth", \
@@ -160,6 +167,8 @@ def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
         env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, def_pkl_prefix, \
         att_pkl_prefix, port_lock_name, max_timesteps_def, max_timesteps_att):
     check_for_files(game_number, env_short_name_payoffs)
+    if not are_all_locks_unlocked(port_lock_name):
+        raise ValueError("Lock is being held: " + port_lock_name)
     should_continue = True
     my_epoch = cur_epoch
     print("\tStarting from epoch: " + str(my_epoch), flush=True)

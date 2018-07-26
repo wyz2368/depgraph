@@ -12,10 +12,17 @@ import os.path
 import check_if_beneficial as check
 import select_best_curve as select
 from train_test_def import wait_for_def_lock, lock_def, read_def_port, \
-    PORTS_PER_ROUND, MAX_PORT, MIN_PORT
+    is_def_unlocked, PORTS_PER_ROUND, MAX_PORT, MIN_PORT
+from train_test_att import is_att_unlocked
 from add_new_data import get_add_data_result_file_name
 
 RETRAIN_MIN_WEIGHT = 0.001
+
+def are_all_locks_unlocked(port_lock_name):
+    return is_def_unlocked(port_lock_name, True) and \
+        is_def_unlocked(port_lock_name, False) and \
+        is_att_unlocked(port_lock_name, True) and \
+        is_att_unlocked(port_lock_name, False)
 
 def check_for_files(game_number, env_short_name_payoffs):
     dirs = ["depgraphpy4jattvseither", "depgraphpy4jdefvseither", "depgraphpy4jboth", \
@@ -434,6 +441,9 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
         raise ValueError("cur_epoch must be 0 or in {2, . . .}: " + str(cur_epoch))
 
     check_for_files(game_number, env_short_name_payoffs)
+    if not are_all_locks_unlocked(port_lock_name):
+        raise ValueError("Lock is being held: " + port_lock_name)
+
     my_epoch = cur_epoch
     should_continue = True
     if my_epoch == 0:
