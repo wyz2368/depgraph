@@ -1,11 +1,31 @@
 import sys
 import datetime
 import subprocess
+import os
 import os.path
 from add_new_data import get_add_data_result_file_name
 import check_if_beneficial as check
 from train_test_def import wait_for_def_lock, lock_def, read_def_port, \
     PORTS_PER_ROUND, MAX_PORT, MIN_PORT
+
+def check_for_files(game_number, env_short_name_payoffs):
+    dirs = ["depgraphpy4jattvseither", "depgraphpy4jdefvseither", "depgraphpy4jboth", \
+            "dg4jattcli", "dg4jdefcli", "dg4jnonetcli", "graphs", "simspecs"]
+    files = ["defaults.json",
+             "game_" + str(game_number) + ".json",
+             "attNetStrings_" + str(env_short_name_payoffs) + ".txt",
+             "defNetStrings_" + str(env_short_name_payoffs) + ".txt",
+             "attStratStrings_" + str(env_short_name_payoffs) + ".txt",
+             "defStratStrings_" + str(env_short_name_payoffs) + ".txt",
+             "oldAttNetNames_" + str(env_short_name_payoffs) + ".txt",
+             "oldDefNetNames_" + str(env_short_name_payoffs) + ".txt"
+            ]
+    for cur_dir in dirs:
+        if not os.path.isdir(cur_dir):
+            raise ValueError("Missing directory: " + cur_dir)
+    for cur_file in files:
+        if not os.path.exists(cur_file):
+            raise ValueError("Missing file: " + cur_file)
 
 def run_gambit(game_number, cur_epoch, env_short_name_payoffs):
     cmd_list = ["python3", "gambit_analyze.py", str(game_number), str(cur_epoch), \
@@ -139,6 +159,7 @@ def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
         env_name_def_net, env_name_att_net, env_name_both, graph_name, \
         env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, def_pkl_prefix, \
         att_pkl_prefix, port_lock_name, max_timesteps_def, max_timesteps_att):
+    check_for_files(game_number, env_short_name_payoffs)
     should_continue = True
     my_epoch = cur_epoch
     print("\tStarting from epoch: " + str(my_epoch), flush=True)

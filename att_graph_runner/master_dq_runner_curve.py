@@ -17,6 +17,25 @@ from add_new_data import get_add_data_result_file_name
 
 RETRAIN_MIN_WEIGHT = 0.001
 
+def check_for_files(game_number, env_short_name_payoffs):
+    dirs = ["depgraphpy4jattvseither", "depgraphpy4jdefvseither", "depgraphpy4jboth", \
+            "dg4jattcli", "dg4jdefcli", "dg4jnonetcli", "graphs", "simspecs"]
+    files = ["defaults.json",
+             "game_" + str(game_number) + ".json",
+             "attNetStrings_" + str(env_short_name_payoffs) + ".txt",
+             "defNetStrings_" + str(env_short_name_payoffs) + ".txt",
+             "attStratStrings_" + str(env_short_name_payoffs) + ".txt",
+             "defStratStrings_" + str(env_short_name_payoffs) + ".txt",
+             "oldAttNetNames_" + str(env_short_name_payoffs) + ".txt",
+             "oldDefNetNames_" + str(env_short_name_payoffs) + ".txt"
+            ]
+    for cur_dir in dirs:
+        if not os.path.isdir(cur_dir):
+            raise ValueError("Missing directory: " + cur_dir)
+    for cur_file in files:
+        if not os.path.exists(cur_file):
+            raise ValueError("Missing file: " + cur_file)
+
 def run_gambit(game_number, cur_epoch, env_short_name_payoffs):
     '''
     Call a script to find a Nash equilibrium of the current game.
@@ -414,6 +433,7 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
     if cur_epoch < 0 or cur_epoch == 1:
         raise ValueError("cur_epoch must be 0 or in {2, . . .}: " + str(cur_epoch))
 
+    check_for_files(game_number, env_short_name_payoffs)
     my_epoch = cur_epoch
     should_continue = True
     if my_epoch == 0:
