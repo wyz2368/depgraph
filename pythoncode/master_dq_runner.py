@@ -3,8 +3,8 @@ import datetime
 import subprocess
 from os import chdir
 import os.path
-import pythoncode.check_if_beneficial as check
 from add_new_data import get_add_data_result_file_name
+import pythoncode.check_if_beneficial as check
 from pythoncode.train_test_def import wait_for_def_lock, lock_def, read_def_port, \
     PORTS_PER_ROUND, MAX_PORT, MIN_PORT
 
@@ -45,8 +45,10 @@ def run_train_test_all(graph_name, env_short_name_payoffs, new_epoch, \
     cmd_list_train_att = ["python3", "train_test_att.py", graph_name, \
         env_short_name_payoffs, str(new_epoch), env_name_vs_mixed_def, str(def_port), \
         port_lock_name, env_short_name_tsv, str(max_timesteps_att)]
-    process_train_def = subprocess.Popen(cmd_list_train_def)
-    process_train_att = subprocess.Popen(cmd_list_train_att)
+    process_train_def = subprocess.Popen(cmd_list_train_def, stdin=None, stdout=None, \
+        stderr=None, close_fds=True)
+    process_train_att = subprocess.Popen(cmd_list_train_att, stdin=None, stdout=None, \
+        stderr=None, close_fds=True)
 
     process_train_def.wait()
     process_train_att.wait()

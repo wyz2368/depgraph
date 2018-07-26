@@ -64,10 +64,24 @@ def wait_for_def_lock(port_lock_name, is_train):
     while not is_def_unlocked(port_lock_name, is_train):
         time.sleep(sleep_time)
 
+'''
 def start_and_return_env_process(graph_name, def_port):
     cmd = "exec java -jar ../depgraphpy4jdefvseither/depgraphpy4jdefvsnetorheuristic.jar " \
         + graph_name + " " + str(def_port)
     env_process = subprocess.Popen(cmd, shell=True)
+    sleep_sec = 5
+    # wait for Java server to start
+    time.sleep(sleep_sec)
+    return env_process
+'''
+
+def start_and_return_env_process(graph_name, def_port):
+    cmd_list = ["java", "-jar",  \
+        "../depgraphpy4jdefvseither/depgraphpy4jdefvsnetorheuristic.jar", \
+        graph_name, str(def_port)]
+
+    env_process = subprocess.Popen(cmd_list, stdin=None, stdout=None, stderr=None, \
+        close_fds=True)
     sleep_sec = 5
     # wait for Java server to start
     time.sleep(sleep_sec)
