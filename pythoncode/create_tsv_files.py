@@ -62,7 +62,7 @@ def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs):
 
     defender_lines = get_defender_lines(input_file)
     defender_lines = get_rounded_strategy_lines(defender_lines)
-    def_output_file = "pythoncode/" + env_short_name_tsv + "_epoch" + str(cur_epoch + 1) + \
+    def_output_file = env_short_name_tsv + "_epoch" + str(cur_epoch + 1) + \
         "_def.tsv"
     if os.path.isfile(def_output_file):
         print("Skipping: " + def_output_file + " already exists.")
@@ -71,7 +71,7 @@ def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs):
 
     attacker_lines = get_attacker_lines(input_file)
     attacker_lines = get_rounded_strategy_lines(attacker_lines)
-    att_output_file = "pythoncode/" + env_short_name_tsv + "_epoch" + str(cur_epoch + 1) + \
+    att_output_file = env_short_name_tsv + "_epoch" + str(cur_epoch + 1) + \
         "_att.tsv"
     if os.path.isfile(att_output_file):
         print("Skipping: " + att_output_file + " already exists.")

@@ -1,11 +1,10 @@
 import sys
 import datetime
 import subprocess
-from os import chdir
 import os.path
 from add_new_data import get_add_data_result_file_name
-import pythoncode.check_if_beneficial as check
-from pythoncode.train_test_def import wait_for_def_lock, lock_def, read_def_port, \
+import check_if_beneficial as check
+from train_test_def import wait_for_def_lock, lock_def, read_def_port, \
     PORTS_PER_ROUND, MAX_PORT, MIN_PORT
 
 def run_gambit(game_number, cur_epoch, env_short_name_payoffs):
@@ -93,7 +92,6 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
     # create TSV file for current attacker and defender equilibrium strategies
     run_create_tsv(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs)
 
-    chdir("pythoncode")
     # set the mixed-strategy opponents to use current TSV file strategies
     run_update_strats(env_short_name_tsv, port_lock_name, new_epoch)
     print("\tWill get att and def payoffs, epoch: " + str(new_epoch)+ ", time: " + \
@@ -131,7 +129,6 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
     run_append_net_names(env_short_name_payoffs, new_epoch, def_pkl_prefix, \
         att_pkl_prefix, is_def_beneficial, is_att_beneficial)
 
-    chdir("..")
     # add new payoff data to game object (from new beneficially deviating network(s))
     run_add_new_data(game_number, env_short_name_payoffs, new_epoch)
 

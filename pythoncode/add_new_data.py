@@ -250,7 +250,7 @@ def main(game_number, game_short_name, new_epoch):
         raise ValueError(game_file_name + " missing.")
     game_data = get_json_data(game_file_name)
 
-    new_payoffs_file_name = "pythoncode/out_newPayoffs_" + game_short_name + \
+    new_payoffs_file_name = "out_newPayoffs_" + game_short_name + \
         "_epoch" + str(new_epoch) + ".json"
     if not os.path.isfile(new_payoffs_file_name):
         raise ValueError(new_payoffs_file_name + " missing.")

@@ -8,11 +8,10 @@ network (the trained one or a fine-tuned version) to proceed with for attacker a
 import sys
 import datetime
 import subprocess
-from os import chdir
 import os.path
-import pythoncode.check_if_beneficial as check
-import pythoncode.select_best_curve as select
-from pythoncode.train_test_def import wait_for_def_lock, lock_def, read_def_port, \
+import check_if_beneficial as check
+import select_best_curve as select
+from train_test_def import wait_for_def_lock, lock_def, read_def_port, \
     PORTS_PER_ROUND, MAX_PORT, MIN_PORT
 from add_new_data import get_add_data_result_file_name
 
@@ -188,7 +187,6 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     '''
     cur_epoch = 0
     new_epoch = 1
-    # pwd is ~/
     result_file_name = get_add_data_result_file_name(game_number, new_epoch + 1, \
         env_short_name_payoffs)
     if os.path.isfile(result_file_name):
@@ -202,8 +200,6 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     run_create_tsv_curve(game_number, cur_epoch, env_short_name_tsv, \
         env_short_name_payoffs)
 
-    chdir("pythoncode")
-    # pwd is ~/pythoncode
     # set the mixed-strategy opponents to use current TSV file strategies
     run_update_strats(env_short_name_tsv, port_lock_name, new_epoch)
     print("\tWill get def payoffs, epoch: " + str(new_epoch)+ ", time: " + \
@@ -249,8 +245,6 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     # use in equilibrium search
     run_append_net_names(env_short_name_payoffs, def_model_to_add, att_model_to_add)
 
-    chdir("..")
-    # pwd is ~/
     # add new payoff data to game object (from new beneficially deviating network(s))
     run_add_new_data(game_number, env_short_name_payoffs, new_epoch)
 
@@ -267,8 +261,6 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     run_create_tsv_curve(game_number, cur_epoch, env_short_name_tsv, \
         env_short_name_payoffs)
 
-    chdir("pythoncode")
-    # pwd is ~/pythoncode
     # set the mixed-strategy opponents to use current TSV file strategies
     run_update_strats(env_short_name_tsv, env_short_name_payoffs, new_epoch)
     print("\tWill get def payoffs, epoch: " + str(new_epoch)+ ", time: " + \
@@ -319,8 +311,6 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     # use in equilibrium search
     run_append_net_names(env_short_name_payoffs, def_model_to_add, att_model_to_add)
 
-    chdir("..")
-    # pwd is ~/
     # add new payoff data to game object (from new beneficially deviating network(s))
     run_add_new_data(game_number, env_short_name_payoffs, new_epoch)
 
@@ -349,8 +339,6 @@ def run_continue_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, 
     run_create_tsv_curve(game_number, cur_epoch, env_short_name_tsv, \
         env_short_name_payoffs)
 
-    chdir("pythoncode")
-    # pwd is ~/pythoncode
     # set the mixed-strategy opponents to use current TSV file strategies
     run_update_strats(env_short_name_tsv, env_short_name_payoffs, new_epoch)
     print("\tWill get def payoffs, epoch: " + str(new_epoch)+ ", time: " + \
@@ -401,8 +389,6 @@ def run_continue_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, 
     # use in equilibrium search
     run_append_net_names(env_short_name_payoffs, def_model_to_add, att_model_to_add)
 
-    chdir("..")
-    # pwd is ~/
     # add new payoff data to game object (from new beneficially deviating network(s))
     run_add_new_data(game_number, env_short_name_payoffs, new_epoch)
 

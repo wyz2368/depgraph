@@ -72,14 +72,12 @@ def append_line(file_name, line):
         file.write(line + "\n")
 
 def append_def_tsv_name(def_output_file, env_short_name_payoffs):
-    def_list_file = "pythoncode/def_strat_files_" + env_short_name_payoffs + ".txt"
-    prefix_length = len("pythoncode/")
-    append_line(def_list_file, def_output_file[prefix_length:])
+    def_list_file = "def_strat_files_" + env_short_name_payoffs + ".txt"
+    append_line(def_list_file, def_output_file)
 
 def append_att_tsv_name(att_output_file, env_short_name_payoffs):
-    att_list_file = "pythoncode/att_strat_files_" + env_short_name_payoffs + ".txt"
-    prefix_length = len("pythoncode/")
-    append_line(att_list_file, att_output_file[prefix_length:])
+    att_list_file = "att_strat_files_" + env_short_name_payoffs + ".txt"
+    append_line(att_list_file, att_output_file)
 
 def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs):
     input_file = get_gambit_result_name(game_number, cur_epoch, env_short_name_payoffs)
@@ -87,7 +85,7 @@ def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs):
 
     defender_lines = get_defender_lines(input_file)
     defender_lines = get_rounded_strategy_lines(defender_lines)
-    def_output_file = "pythoncode/" + env_short_name_tsv + "_epoch" + str(cur_epoch + 1) + \
+    def_output_file = env_short_name_tsv + "_epoch" + str(cur_epoch + 1) + \
         "_def.tsv"
     if os.path.isfile(def_output_file):
         print("Skipping: " + def_output_file + " already exists.")
@@ -97,7 +95,7 @@ def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs):
 
     attacker_lines = get_attacker_lines(input_file)
     attacker_lines = get_rounded_strategy_lines(attacker_lines)
-    att_output_file = "pythoncode/" + env_short_name_tsv + "_epoch" + str(cur_epoch + 1) + \
+    att_output_file = env_short_name_tsv + "_epoch" + str(cur_epoch + 1) + \
         "_att.tsv"
     if os.path.isfile(att_output_file):
         print("Skipping: " + att_output_file + " already exists.")
