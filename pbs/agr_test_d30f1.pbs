@@ -2,7 +2,7 @@
 #PBS -S /bin/sh
 #PBS -A wellman_flux
 #PBS -q flux
-#PBS -l nodes=1,ppn=4,pmem=2000mb,walltime=72:00:00,qos=flux
+#PBS -l nodes=1:ppn=4,pmem=2000mb,walltime=72:00:00,qos=flux
 #PBS -N agr_test_d30f1
 #PBS -W group_list=wellman
 #PBS -o /home/masondw/att_graph_runner/d30f1out
