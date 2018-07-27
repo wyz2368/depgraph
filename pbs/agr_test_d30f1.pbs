@@ -19,6 +19,8 @@ python3 master_dq_runner.py 3014 0 d30f1_randNoAndB d30f1 DepgraphJava-v0 \
     DepgraphJavaAtt-v0 DepgraphJavaEnvBoth-v0 RandomGraph30N100E6T1_B.json \
     DepgraphJavaEnvVsMixedDef-v0 DepgraphJavaEnvVsMixedAtt-v0 400 \
     dg_d30f1_dq_mlp_rand_epoch dg_d30f1_dq_mlp_rand_epoch d30 1000000 700000 1
-cp /tmp/${PBS_JOBID}/*.txt /home/masondw/att_graph_runner
-cp /tmp/${PBS_JOBID}/*.pkl /home/masondw/att_graph_runner
+cp /tmp/${PBS_JOBID}/att_graph_runner/*.txt /home/masondw/att_graph_runner
+cp /tmp/${PBS_JOBID}/att_graph_runner/*.pkl /home/masondw/att_graph_runner
+cp /tmp/${PBS_JOBID}/att_graph_runner/*.json /home/masondw/att_graph_runner
+cp /tmp/${PBS_JOBID}/att_graph_runner/*.tsv /home/masondw/att_graph_runner
 rm -rf /tmp/${PBS_JOBID}
