@@ -143,9 +143,9 @@ def run_training_def(env_short_name, new_epoch, env_name_vs_att, def_port, port_
         return None
 
     def_process = None
-    with open(def_out_name, "w") as file:
-        def_process = subprocess.Popen(cmd_list, stdout=file)
-    return def_process
+    my_file = open(def_out_name, "w")
+    def_process = subprocess.Popen(cmd_list, stdout=my_file, stderr=subprocess.STDOUT)
+    return def_process, my_file
 
 def run_training_att(env_short_name, new_epoch, env_name_vs_def, att_port, port_lock_name, \
     env_short_name_tsv, max_timesteps_att):
@@ -159,9 +159,9 @@ def run_training_att(env_short_name, new_epoch, env_name_vs_def, att_port, port_
         return None
 
     att_process = None
-    with open(att_out_name, "w") as file:
-        att_process = subprocess.Popen(cmd_list, stdout=file)
-    return att_process
+    my_file = open(att_out_name, "w")
+    att_process = subprocess.Popen(cmd_list, stdout=my_file, stderr=subprocess.STDOUT)
+    return att_process, my_file
 
 def run_evaluation_def(env_short_name, new_epoch, env_name_vs_att, def_port, \
     port_lock_name, env_short_name_tsv):
@@ -176,9 +176,9 @@ def run_evaluation_def(env_short_name, new_epoch, env_name_vs_att, def_port, \
         return None
 
     def_process = None
-    with open(def_out_name_enj, "w") as file:
-        def_process = subprocess.Popen(cmd_list, stdout=file)
-    return def_process
+    my_file = open(def_out_name_enj, "w")
+    def_process = subprocess.Popen(cmd_list, stdout=my_file, stderr=subprocess.STDOUT)
+    return def_process, my_file
 
 def run_evaluation_att(env_short_name, new_epoch, env_name_vs_def, att_port, \
     port_lock_name, env_short_name_tsv):
@@ -193,9 +193,9 @@ def run_evaluation_att(env_short_name, new_epoch, env_name_vs_def, att_port, \
         return None
 
     att_process = None
-    with open(att_out_name_enj, "w") as file:
-        att_process = subprocess.Popen(cmd_list, stdout=file)
-    return att_process
+    my_file = open(att_out_name_enj, "w")
+    att_process = subprocess.Popen(cmd_list, stdout=my_file, stderr=subprocess.STDOUT)
+    return att_process, my_file
 
 def run_both(graph_name, env_short_name, new_epoch, env_name_vs_att, env_name_vs_def, \
     port_lock_name, def_port, env_short_name_tsv, max_timesteps_def, max_timesteps_att):
@@ -211,19 +211,21 @@ def run_both(graph_name, env_short_name, new_epoch, env_name_vs_att, env_name_vs
     is_train = True
 
     write_def_port(port_lock_name, is_train, def_port)
-    def_process = run_training_def(env_short_name, new_epoch, env_name_vs_att, def_port, \
-        port_lock_name, env_short_name_tsv, max_timesteps_def)
+    def_process, def_file = run_training_def(env_short_name, new_epoch, env_name_vs_att, \
+        def_port, port_lock_name, env_short_name_tsv, max_timesteps_def)
 
     wait_for_att_lock(port_lock_name, is_train)
     lock_att(port_lock_name, is_train)
     write_att_port(port_lock_name, is_train, att_port)
-    att_process = run_training_att(env_short_name, new_epoch, env_name_vs_def, att_port, \
-        port_lock_name, env_short_name_tsv, max_timesteps_att)
+    att_process, att_file = run_training_att(env_short_name, new_epoch, env_name_vs_def, \
+        att_port, port_lock_name, env_short_name_tsv, max_timesteps_att)
 
     if def_process is not None:
-        def_process.wait()
+        def_process.communicate()
+        def_file.close()
     if att_process is not None:
-        att_process.wait()
+        att_process.communicate()
+        att_file.close()
 
     ### Evaluation
 
@@ -232,19 +234,21 @@ def run_both(graph_name, env_short_name, new_epoch, env_name_vs_att, env_name_vs
     wait_for_def_lock(port_lock_name, is_train)
     lock_def(port_lock_name, is_train)
     write_def_port(port_lock_name, is_train, def_port)
-    def_process_enj = run_evaluation_def(env_short_name, new_epoch, env_name_vs_att, \
-        def_port, port_lock_name, env_short_name_tsv)
+    def_process_enj, def_file_enj = run_evaluation_def(env_short_name, new_epoch, \
+        env_name_vs_att, def_port, port_lock_name, env_short_name_tsv)
 
     wait_for_att_lock(port_lock_name, is_train)
     lock_att(port_lock_name, is_train)
     write_att_port(port_lock_name, is_train, att_port)
-    att_process_enj = run_evaluation_att(env_short_name, new_epoch, env_name_vs_def, \
-        att_port, port_lock_name, env_short_name_tsv)
+    att_process_enj, att_file_enj = run_evaluation_att(env_short_name, new_epoch, \
+        env_name_vs_def, att_port, port_lock_name, env_short_name_tsv)
 
     if def_process_enj is not None:
-        def_process_enj.wait()
+        def_process_enj.communicate()
+        def_file_enj.close()
     if att_process_enj is not None:
-        att_process_enj.wait()
+        att_process_enj.communicate()
+        att_file_enj.close()
 
     ### Takedown
 
