@@ -140,7 +140,7 @@ def run_training_def(env_short_name, new_epoch, env_name_vs_att, def_port, port_
     if os.path.isfile(def_out_name):
         print("Skipping: " + def_out_name + " already exists.")
         unlock_train_def(port_lock_name)
-        return None
+        return None, None
 
     def_process = None
     my_file = open(def_out_name, "w")
@@ -156,7 +156,7 @@ def run_training_att(env_short_name, new_epoch, env_name_vs_def, att_port, port_
     if os.path.isfile(att_out_name):
         print("Skipping: " + att_out_name + " already exists.")
         unlock_train_att(port_lock_name)
-        return None
+        return None, None
 
     att_process = None
     my_file = open(att_out_name, "w")
@@ -173,7 +173,7 @@ def run_evaluation_def(env_short_name, new_epoch, env_name_vs_att, def_port, \
     if os.path.isfile(def_out_name_enj):
         print("Skipping: " + def_out_name_enj + " already exists.")
         unlock_eval_def(port_lock_name)
-        return None
+        return None, None
 
     def_process = None
     my_file = open(def_out_name_enj, "w")
@@ -190,7 +190,7 @@ def run_evaluation_att(env_short_name, new_epoch, env_name_vs_def, att_port, \
     if os.path.isfile(att_out_name_enj):
         print("Skipping: " + att_out_name_enj + " already exists.")
         unlock_eval_att(port_lock_name)
-        return None
+        return None, None
 
     att_process = None
     my_file = open(att_out_name_enj, "w")
