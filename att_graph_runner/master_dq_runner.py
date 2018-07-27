@@ -181,14 +181,16 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
 def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
         env_name_def_net, env_name_att_net, env_name_both, graph_name, \
         env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, def_pkl_prefix, \
-        att_pkl_prefix, port_lock_name, max_timesteps_def, max_timesteps_att):
+        att_pkl_prefix, port_lock_name, max_timesteps_def, max_timesteps_att, \
+        max_new_rounds):
     check_for_files(game_number, env_short_name_payoffs)
     if not are_all_locks_unlocked(port_lock_name):
         raise ValueError("Lock is being held: " + port_lock_name)
     should_continue = True
     my_epoch = cur_epoch
     print("\tStarting from epoch: " + str(my_epoch), flush=True)
-    while should_continue:
+    rounds_left = max_new_rounds
+    while should_continue and rounds_left > 0:
         print("\tWill run epoch: " + str(my_epoch) + ", time: " + \
             str(datetime.datetime.now()), flush=True)
         should_continue = run_epoch(game_number, my_epoch, env_short_name_tsv, \
@@ -198,23 +200,28 @@ def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
             max_timesteps_att)
         if should_continue:
             my_epoch += 1
-    print("\tConverged at epoch: " + str(my_epoch) + ", time: " + \
-        str(datetime.datetime.now()), flush=True)
+            rounds_left -= 1
+    if not should_continue:
+        print("\tConverged at epoch: " + str(my_epoch) + ", time: " + \
+            str(datetime.datetime.now()), flush=True)
+    else:
+        print("\tRan max_new_rounds by epoch: " + str(my_epoch) + ", time: " + \
+            str(datetime.datetime.now()), flush=True)
 
 '''
 example: python3 master_dq_runner.py 3013 17 sl29_randNoAndB sl29 DepgraphJava29N-v0 \
     DepgraphJavaEnvAtt29N-v0 DepgraphJavaEnvBoth29N-v0 \
     SepLayerGraph0_noAnd_B.json DepgraphJavaEnvVsMixedDef29N-v0 \
     DepgraphJavaEnvVsMixedAtt29N-v0 400 dg_sl29_dq_mlp_rand_epoch dg_sl29_dq_mlp_rand_epoch
-    s29 700000 700000
+    s29 700000 700000 None
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 17:
-        raise ValueError("Need 16 args: game_number, cur_epoch, env_short_name_tsv, " + \
+    if len(sys.argv) != 18:
+        raise ValueError("Need 17 args: game_number, cur_epoch, env_short_name_tsv, " + \
             "env_short_name_payoffs, env_name_def_net, env_name_att_net, " + \
             "env_name_both, graph_name, env_name_vs_mixed_def, " + \
             "env_name_vs_mixed_att, new_col_count, def_pkl_prefix, att_pkl_prefix, " + \
-            "port_lock_name, max_timesteps_def, max_timesteps_att")
+            "port_lock_name, max_timesteps_def, max_timesteps_att, max_new_rounds")
     GAME_NUMBER = int(sys.argv[1])
     CUR_EPOCH = int(sys.argv[2])
     ENV_SHORT_NAME_TSV = sys.argv[3]
@@ -231,9 +238,9 @@ if __name__ == '__main__':
     PORT_LOCK_NAME = sys.argv[14]
     MAX_TIMESTEPS_DEF = int(sys.argv[15])
     MAX_TIMESTEPS_ATT = int(sys.argv[16])
+    MAX_NEW_ROUNDS = int(sys.argv[17])
     main(GAME_NUMBER, CUR_EPOCH, ENV_SHORT_NAME_TSV, ENV_SHORT_NAME_PAYOFFS, \
-        ENV_NAME_DEF_NET, ENV_NAME_ATT_NET, \
-        ENV_NAME_BOTH, GRAPH_NAME, \
+        ENV_NAME_DEF_NET, ENV_NAME_ATT_NET, ENV_NAME_BOTH, GRAPH_NAME, \
         ENV_NAME_VS_MIXED_DEF, ENV_NAME_VS_MIXED_ATT, NEW_COL_COUNT, \
         DEF_PKL_PREFIX, ATT_PKL_PREFIX, PORT_LOCK_NAME, MAX_TIMESTEPS_DEF, \
-        MAX_TIMESTEPS_ATT)
+        MAX_TIMESTEPS_ATT, MAX_NEW_ROUNDS)
