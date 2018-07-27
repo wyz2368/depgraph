@@ -8,6 +8,7 @@ import check_if_beneficial as check
 from train_test_def import wait_for_def_lock, lock_def, read_def_port, \
     is_def_unlocked, PORTS_PER_ROUND, MAX_PORT, MIN_PORT
 from train_test_att import is_att_unlocked
+from train_test_both import run_both
 
 def are_all_locks_unlocked(port_lock_name):
     return is_def_unlocked(port_lock_name, True) and \
@@ -53,6 +54,21 @@ def run_gen_both_payoffs(game_number, env_short_name_payoffs, new_epoch):
     cmd_list = ["python3", "get_both_payoffs_from_game.py", str(game_number), \
         env_short_name_payoffs, str(new_epoch)]
     subprocess.call(cmd_list)
+
+def run_train_test_both(graph_name, env_short_name_payoffs, new_epoch, \
+    env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
+    max_timesteps_def, max_timesteps_att):
+    is_train = True
+    wait_for_def_lock(port_lock_name, is_train)
+    lock_def(port_lock_name, is_train)
+    def_port = read_def_port(port_lock_name, is_train)
+    def_port += PORTS_PER_ROUND
+    if def_port >= MAX_PORT:
+        def_port = MIN_PORT
+
+    run_both(graph_name, env_short_name_payoffs, new_epoch, env_name_vs_mixed_att, \
+        env_name_vs_mixed_def, port_lock_name, def_port, env_short_name_tsv, \
+        max_timesteps_def, max_timesteps_att)
 
 def run_train_test_all(graph_name, env_short_name_payoffs, new_epoch, \
     env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
@@ -130,7 +146,7 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
         str(datetime.datetime.now()), flush=True)
     # train defender network against current attacker equilibrium, and sample its payoff
     # train attacker network against current defender equilibrium, and sample its payoff
-    run_train_test_all(graph_name, env_short_name_payoffs, new_epoch, \
+    run_train_test_both(graph_name, env_short_name_payoffs, new_epoch, \
         env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
         max_timesteps_def, max_timesteps_att)
 
