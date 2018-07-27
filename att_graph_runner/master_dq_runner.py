@@ -190,7 +190,7 @@ def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
     my_epoch = cur_epoch
     print("\tStarting from epoch: " + str(my_epoch), flush=True)
     rounds_left = max_new_rounds
-    while should_continue and rounds_left > 0:
+    while should_continue and (rounds_left is None or rounds_left > 0):
         print("\tWill run epoch: " + str(my_epoch) + ", time: " + \
             str(datetime.datetime.now()), flush=True)
         should_continue = run_epoch(game_number, my_epoch, env_short_name_tsv, \
@@ -200,7 +200,8 @@ def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
             max_timesteps_att)
         if should_continue:
             my_epoch += 1
-            rounds_left -= 1
+            if rounds_left is not None:
+                rounds_left -= 1
     if not should_continue:
         print("\tConverged at epoch: " + str(my_epoch) + ", time: " + \
             str(datetime.datetime.now()), flush=True)
@@ -238,7 +239,11 @@ if __name__ == '__main__':
     PORT_LOCK_NAME = sys.argv[14]
     MAX_TIMESTEPS_DEF = int(sys.argv[15])
     MAX_TIMESTEPS_ATT = int(sys.argv[16])
-    MAX_NEW_ROUNDS = int(sys.argv[17])
+    MAX_NEW_ROUNDS = sys.argv[17]
+    if MAX_NEW_ROUNDS == "None":
+        MAX_NEW_ROUNDS = None
+    else:
+        MAX_NEW_ROUNDS = int(MAX_NEW_ROUNDS)
     main(GAME_NUMBER, CUR_EPOCH, ENV_SHORT_NAME_TSV, ENV_SHORT_NAME_PAYOFFS, \
         ENV_NAME_DEF_NET, ENV_NAME_ATT_NET, ENV_NAME_BOTH, GRAPH_NAME, \
         ENV_NAME_VS_MIXED_DEF, ENV_NAME_VS_MIXED_ATT, NEW_COL_COUNT, \
