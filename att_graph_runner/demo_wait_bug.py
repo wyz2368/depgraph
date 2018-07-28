@@ -24,7 +24,7 @@ def start_env_process_def(graph_name, def_port):
 
 def run_evaluation_def(env_short_name, new_epoch, env_name_vs_att, def_port, \
     port_lock_name, env_short_name_tsv):
-    cmd_list = ["python3", "enjoy_depgraph_data_vs_mixed.py", env_name_vs_att, \
+    cmd_list = ["python3", "enjoy_depgraph_data_vs_mixed_short.py", env_name_vs_att, \
         env_short_name, str(new_epoch), str(def_port), str(port_lock_name), \
         env_short_name_tsv]
     def_out_name_enj = "def_" + env_short_name + "_randNoAndB_epoch" + str(new_epoch) + \
