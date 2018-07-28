@@ -5,8 +5,10 @@ import os.path
 
 PORT_DIR = "../gym/gym/gym/envs/board_game/"
 
-def write_def_eval_port(port_lock_name, def_port):
-    port_name = PORT_DIR + port_lock_name + "_eval_def_port.txt"
+def write_def_port(port_lock_name, is_train, def_port):
+    port_name = PORT_DIR + port_lock_name + "_train_def_port.txt"
+    if not is_train:
+        port_name = PORT_DIR + port_lock_name + "_eval_def_port.txt"
     with open(port_name, 'w') as file:
         file.write(str(def_port) + "\n")
 
@@ -41,7 +43,8 @@ def run_evaluation_def(env_short_name, new_epoch, env_name_vs_att, def_port, \
 def main(graph_name, env_short_name, new_epoch, env_name_vs_att, \
     port_lock_name, def_port, env_short_name_tsv):
     env_process_def = start_env_process_def(graph_name, def_port)
-    write_def_eval_port(port_lock_name, def_port)
+    write_def_port(port_lock_name, True, def_port)
+    write_def_port(port_lock_name, False, def_port)
     def_process_enj, def_file_enj = run_evaluation_def(env_short_name, new_epoch, \
         env_name_vs_att, def_port, port_lock_name, env_short_name_tsv)
 
@@ -52,11 +55,13 @@ def main(graph_name, env_short_name, new_epoch, env_name_vs_att, \
         def_file_enj.close()
 
     print("Closing env_process for defender")
+    sleep_sec = 5
+    time.sleep(sleep_sec)
     env_process_def.kill()
 
 '''
 example: python3 demo_wait_bug.py RandomGraph30N100E6T1_B.json d30d1 1 \
-    DepgraphJavaEnvVsMixedAtt-v0 d30 25333 d30d1_randNoAndB
+    DepgraphJavaEnvVsMixedAtt-v0 d30 25333 d30d1_randNoAndB > demo_wait1.txt
 '''
 if __name__ == '__main__':
     if len(sys.argv) != 8:
