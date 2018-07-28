@@ -25,10 +25,9 @@ def start_env_process_def(graph_name, def_port):
     return env_process
 
 def run_evaluation_def(env_short_name, new_epoch, env_name_vs_att, def_port, \
-    port_lock_name, env_short_name_tsv):
+    env_short_name_tsv):
     cmd_list = ["python3", "enjoy_depgraph_data_vs_mixed_short.py", env_name_vs_att, \
-        env_short_name, str(new_epoch), str(def_port), str(port_lock_name), \
-        env_short_name_tsv]
+        env_short_name, str(new_epoch), str(def_port), env_short_name_tsv]
     def_out_name_enj = "def_" + env_short_name + "_randNoAndB_epoch" + str(new_epoch) + \
         "_enj.txt"
     if os.path.isfile(def_out_name_enj):
@@ -46,7 +45,7 @@ def main(graph_name, env_short_name, new_epoch, env_name_vs_att, \
     write_def_port(port_lock_name, True, def_port)
     write_def_port(port_lock_name, False, def_port)
     def_process_enj, def_file_enj = run_evaluation_def(env_short_name, new_epoch, \
-        env_name_vs_att, def_port, port_lock_name, env_short_name_tsv)
+        env_name_vs_att, def_port, env_short_name_tsv)
 
     if def_process_enj is not None:
         print("Waiting for def evaluation")
