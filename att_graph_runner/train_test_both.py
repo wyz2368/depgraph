@@ -221,11 +221,14 @@ def run_both(graph_name, env_short_name, new_epoch, env_name_vs_att, env_name_vs
         att_port, port_lock_name, env_short_name_tsv, max_timesteps_att)
 
     if def_process is not None:
-        def_process.communicate()
+        print("Waiting for def training")
+        def_process.wait()
         def_file.close()
     if att_process is not None:
-        att_process.communicate()
+        print("Waiting for att training")
+        att_process.wait()
         att_file.close()
+    print("Att and def training done")
 
     ### Evaluation
 
@@ -244,10 +247,12 @@ def run_both(graph_name, env_short_name, new_epoch, env_name_vs_att, env_name_vs
         env_name_vs_def, att_port, port_lock_name, env_short_name_tsv)
 
     if def_process_enj is not None:
-        def_process_enj.communicate()
+        print("Waiting for def evaluation")
+        def_process_enj.wait()
         def_file_enj.close()
     if att_process_enj is not None:
-        att_process_enj.communicate()
+        print("Waiting for att evaluation")
+        att_process_enj.wait()
         att_file_enj.close()
 
     ### Takedown
