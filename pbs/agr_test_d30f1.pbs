@@ -11,7 +11,18 @@
 #PBS -V
 #PBS -m abe
 mkdir /tmp/${PBS_JOBID}
-cp -r /home/masondw/att_graph_runner /tmp/${PBS_JOBID}
+mkdir /tmp/${PBS_JOBID}/att_graph_runner
+cp -r /home/masondw/att_graph_runner/depgraphpy4jattvseither /tmp/${PBS_JOBID}/att_graph_runner
+cp -r /home/masondw/att_graph_runner/depgraphpy4jdefvseither /tmp/${PBS_JOBID}/att_graph_runner
+cp -r /home/masondw/att_graph_runner/depgraphpy4jboth /tmp/${PBS_JOBID}/att_graph_runner
+cp -r /home/masondw/att_graph_runner/dg4jattcli /tmp/${PBS_JOBID}/att_graph_runner
+cp -r /home/masondw/att_graph_runner/dg4jdefcli /tmp/${PBS_JOBID}/att_graph_runner
+cp -r /home/masondw/att_graph_runner/dg4jnonetcli /tmp/${PBS_JOBID}/att_graph_runner
+cp -r /home/masondw/att_graph_runner/graphs /tmp/${PBS_JOBID}/att_graph_runner
+cp -r /home/masondw/att_graph_runner/simspecs /tmp/${PBS_JOBID}/att_graph_runner
+cp /home/masondw/att_graph_runner/defaults.json /tmp/${PBS_JOBID}/att_graph_runner
+cp /home/masondw/att_graph_runner/*d30f1* /tmp/${PBS_JOBID}/att_graph_runner
+cp /home/masondw/att_graph_runner/*.py /tmp/${PBS_JOBID}/att_graph_runner
 cp -r /home/masondw/gym /tmp/${PBS_JOBID}
 cp -r /home/masondw/baselines /tmp/${PBS_JOBID}
 cd /tmp/${PBS_JOBID}/att_graph_runner
@@ -19,8 +30,5 @@ python3 master_dq_runner.py 3014 0 d30f1_randNoAndB d30f1 DepgraphJava-v0 \
     DepgraphJavaAtt-v0 DepgraphJavaEnvBoth-v0 RandomGraph30N100E6T1_B.json \
     DepgraphJavaEnvVsMixedDef-v0 DepgraphJavaEnvVsMixedAtt-v0 400 \
     dg_d30f1_dq_mlp_rand_epoch dg_d30f1_dq_mlp_rand_epoch d30 1000000 700000 1
-cp /tmp/${PBS_JOBID}/att_graph_runner/*.txt /home/masondw/att_graph_runner
-cp /tmp/${PBS_JOBID}/att_graph_runner/*.pkl /home/masondw/att_graph_runner
-cp /tmp/${PBS_JOBID}/att_graph_runner/*.json /home/masondw/att_graph_runner
-cp /tmp/${PBS_JOBID}/att_graph_runner/*.tsv /home/masondw/att_graph_runner
+cp /tmp/${PBS_JOBID}/att_graph_runner/*d30f1* /home/masondw/att_graph_runner
 rm -rf /tmp/${PBS_JOBID}
