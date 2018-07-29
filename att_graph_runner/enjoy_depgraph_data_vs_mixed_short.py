@@ -1,5 +1,6 @@
 ''' Play back the dependency graph network that was learned. '''
 import sys
+import os
 import time
 import math
 import numpy as np
@@ -58,6 +59,10 @@ def main(env_name, env_short_name, new_epoch, def_port, env_short_name_tsv):
     print("Stdev reward: " + fmt.format(stdev_reward))
     print("Stderr reward: " + fmt.format(stderr_reward))
     print("Minutes taken: " + str(duration // 60))
+
+    #sys.exit()
+    sys.stdout.flush()
+    os._exit(os.EX_OK)
 
 '''
 python3 enjoy_depgraph_data_vs_mixed.py DepgraphJavaEnvVsMixedAtt29N-v0 sl29 15 25333 \
