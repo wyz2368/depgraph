@@ -20,6 +20,18 @@ def get_decoded_result_name(game_number, tsv_epoch, env_short_name):
     return "gambit_result_" + str(game_number) + "_" + str(tsv_epoch) + "_" + \
         env_short_name + "_lcp_decode.txt"
 
+def call_and_wait_with_timeout(command_str):
+    print("Will run:\n" + command_str)
+    my_process = subprocess.Popen(command_str, shell=True)
+    timeout_seconds = 3600
+    try:
+        my_process.wait(timeout=timeout_seconds)
+    except subprocess.TimeoutExpired:
+        print("Process ran more seconds than: " + str(timeout_seconds))
+    sleep_sec = 5
+    time.sleep(sleep_sec)
+    my_process.kill()
+
 def call_and_wait(command_str):
     print("Will run:\n" + command_str)
     my_process = subprocess.Popen(command_str, shell=True)
@@ -48,7 +60,7 @@ def gambit_analyze(game_number, tsv_epoch, env_short_name):
     if not os.path.isfile(gambit_input_name):
         raise ValueError(gambit_input_name + " missing.")
     command_str = "gambit-lcp < " + gambit_input_name + " -d 8 > " + gambit_result_name
-    call_and_wait(command_str)
+    call_and_wait_with_timeout(command_str)
 
 def call_decode_gambit_solution(game_number, tsv_epoch, env_short_name):
     gambit_input_name = get_gambit_input_name(game_number, tsv_epoch, env_short_name)
