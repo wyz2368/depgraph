@@ -20,7 +20,7 @@ cp -r /home/masondw/att_graph_runner/dg4jdefcli /tmp/${PBS_JOBID}/att_graph_runn
 cp -r /home/masondw/att_graph_runner/dg4jnonetcli /tmp/${PBS_JOBID}/att_graph_runner
 cp -r /home/masondw/att_graph_runner/graphs /tmp/${PBS_JOBID}/att_graph_runner
 cp -r /home/masondw/att_graph_runner/simspecs /tmp/${PBS_JOBID}/att_graph_runner
-cp /home/masondw/att_graph_runner/defaults.json /tmp/${PBS_JOBID}/att_graph_runner
+cp /home/masondw/att_graph_runner/*.json /tmp/${PBS_JOBID}/att_graph_runner
 cp /home/masondw/att_graph_runner/*d30f1* /tmp/${PBS_JOBID}/att_graph_runner
 cp /home/masondw/att_graph_runner/*.py /tmp/${PBS_JOBID}/att_graph_runner
 cp -r /home/masondw/gym /tmp/${PBS_JOBID}
