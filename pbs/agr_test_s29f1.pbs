@@ -1,0 +1,34 @@
+#!/bin/bash
+#PBS -S /bin/sh
+#PBS -A wellman_flux
+#PBS -q flux
+#PBS -l nodes=1:ppn=4,pmem=2000mb,walltime=72:00:00,qos=flux
+#PBS -N agr_test_s29f1
+#PBS -W group_list=wellman
+#PBS -o /home/masondw/att_graph_runner/s29f1out
+#PBS -j oe
+#PBS -M masondw@umich.edu
+#PBS -V
+#PBS -m abe
+mkdir /tmp/${PBS_JOBID}
+mkdir /tmp/${PBS_JOBID}/att_graph_runner
+cp -r /home/masondw/att_graph_runner/depgraphpy4jattvseither /tmp/${PBS_JOBID}/att_graph_runner
+cp -r /home/masondw/att_graph_runner/depgraphpy4jdefvseither /tmp/${PBS_JOBID}/att_graph_runner
+cp -r /home/masondw/att_graph_runner/depgraphpy4jboth /tmp/${PBS_JOBID}/att_graph_runner
+cp -r /home/masondw/att_graph_runner/dg4jattcli /tmp/${PBS_JOBID}/att_graph_runner
+cp -r /home/masondw/att_graph_runner/dg4jdefcli /tmp/${PBS_JOBID}/att_graph_runner
+cp -r /home/masondw/att_graph_runner/dg4jnonetcli /tmp/${PBS_JOBID}/att_graph_runner
+cp -r /home/masondw/att_graph_runner/graphs /tmp/${PBS_JOBID}/att_graph_runner
+cp -r /home/masondw/att_graph_runner/simspecs /tmp/${PBS_JOBID}/att_graph_runner
+cp /home/masondw/att_graph_runner/*.json /tmp/${PBS_JOBID}/att_graph_runner
+cp /home/masondw/att_graph_runner/*s29f1* /tmp/${PBS_JOBID}/att_graph_runner
+cp /home/masondw/att_graph_runner/*.py /tmp/${PBS_JOBID}/att_graph_runner
+cp -r /home/masondw/gym /tmp/${PBS_JOBID}
+cp -r /home/masondw/baselines /tmp/${PBS_JOBID}
+cd /tmp/${PBS_JOBID}/att_graph_runner
+python3 master_dq_runner.py 3013 0 s29f1_randNoAndB s29f1 DepgraphJava29N-v0 \
+    DepgraphJavaEnvAtt29N-v0 DepgraphJavaEnvBoth29N-v0 SepLayerGraph0_noAnd_B.json \
+    DepgraphJavaEnvVsMixedDef29N-v0 DepgraphJavaEnvVsMixedAtt29N-v0 400 \
+    dg_s29f1_dq_mlp_rand_epoch dg_s29f1_dq_mlp_rand_epoch s29 700000 700000 1
+cp /tmp/${PBS_JOBID}/att_graph_runner/*s29f1* /home/masondw/att_graph_runner
+rm -rf /tmp/${PBS_JOBID}
