@@ -4,6 +4,7 @@ an attacker that can mix over heuristic and network strategies.
 '''
 import sys
 import time
+import os
 import os.path
 import gym
 
@@ -65,6 +66,9 @@ def main(env_name, env_short_name, new_epoch, def_port, port_lock_name, env_shor
     minutes = elapsed // 60
     print("Minutes taken: " + str(minutes))
     print("Opponent was: " + env_name)
+
+    sys.stdout.flush()
+    os._exit(os.EX_OK)
 
 '''
 example: python3 train_dg_java_mlp_def_vs_mixed.py DepgraphJavaEnvVsMixedAtt29N-v0 sl29 15 \

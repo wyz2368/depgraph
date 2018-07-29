@@ -144,7 +144,7 @@ def run_training_def(env_short_name, new_epoch, env_name_vs_att, def_port, port_
 
     def_process = None
     my_file = open(def_out_name, "w")
-    def_process = subprocess.Popen(cmd_list, stdout=my_file, stderr=subprocess.STDOUT)
+    def_process = subprocess.Popen(cmd_list, stdout=my_file, stderr=None)
     return def_process, my_file
 
 def run_training_att(env_short_name, new_epoch, env_name_vs_def, att_port, port_lock_name, \
@@ -160,7 +160,7 @@ def run_training_att(env_short_name, new_epoch, env_name_vs_def, att_port, port_
 
     att_process = None
     my_file = open(att_out_name, "w")
-    att_process = subprocess.Popen(cmd_list, stdout=my_file, stderr=subprocess.STDOUT)
+    att_process = subprocess.Popen(cmd_list, stdout=my_file, stderr=None)
     return att_process, my_file
 
 def run_evaluation_def(env_short_name, new_epoch, env_name_vs_att, def_port, \
@@ -177,7 +177,7 @@ def run_evaluation_def(env_short_name, new_epoch, env_name_vs_att, def_port, \
 
     def_process = None
     my_file = open(def_out_name_enj, "w")
-    def_process = subprocess.Popen(cmd_list, stdout=my_file, stderr=subprocess.STDOUT)
+    def_process = subprocess.Popen(cmd_list, stdout=my_file, stderr=None)
     return def_process, my_file
 
 def run_evaluation_att(env_short_name, new_epoch, env_name_vs_def, att_port, \
@@ -194,7 +194,7 @@ def run_evaluation_att(env_short_name, new_epoch, env_name_vs_def, att_port, \
 
     att_process = None
     my_file = open(att_out_name_enj, "w")
-    att_process = subprocess.Popen(cmd_list, stdout=my_file, stderr=subprocess.STDOUT)
+    att_process = subprocess.Popen(cmd_list, stdout=my_file, stderr=None)
     return att_process, my_file
 
 def run_both(graph_name, env_short_name, new_epoch, env_name_vs_att, env_name_vs_def, \

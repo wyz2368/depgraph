@@ -2,6 +2,7 @@
 import sys
 import time
 import math
+import os
 import numpy as np
 import gym
 
@@ -64,6 +65,9 @@ def main(env_name, env_short_name, new_epoch, def_port, port_lock_name, env_shor
     print("Stdev reward: " + fmt.format(stdev_reward))
     print("Stderr reward: " + fmt.format(stderr_reward))
     print("Minutes taken: " + str(duration // 60))
+
+    sys.stdout.flush()
+    os._exit(os.EX_OK)
 
 '''
 python3 enjoy_depgraph_data_vs_mixed.py DepgraphJavaEnvVsMixedAtt29N-v0 sl29 15 25333 s29 \
