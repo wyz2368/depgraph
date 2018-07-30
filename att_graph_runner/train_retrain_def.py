@@ -21,7 +21,7 @@ def write_def_port(port_lock_name, is_train, def_port):
         file.write(str(def_port) + "\n")
 
 def start_and_return_env_process(graph_name, def_port):
-    cmd = "exec java -jar ../depgraphpy4jdefvseither/depgraphpy4jdefvsnetorheuristic.jar " \
+    cmd = "exec java -jar depgraphpy4jdefvseither/depgraphpy4jdefvsnetorheuristic.jar " \
         + graph_name + " " + str(def_port)
     env_process = subprocess.Popen(cmd, shell=True)
     sleep_sec = 5

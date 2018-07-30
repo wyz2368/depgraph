@@ -47,7 +47,7 @@ def wait_for_att_lock(port_lock_name, is_train):
         time.sleep(sleep_time)
 
 def start_and_return_env_process(graph_name, att_port):
-    cmd = "exec java -jar ../depgraphpy4jattvseither/depgraphpy4jattvsnetorheuristic.jar " \
+    cmd = "exec java -jar depgraphpy4jattvseither/depgraphpy4jattvsnetorheuristic.jar " \
         + graph_name + " " + str(att_port)
     env_process = subprocess.Popen(cmd, shell=True)
     sleep_sec = 5
