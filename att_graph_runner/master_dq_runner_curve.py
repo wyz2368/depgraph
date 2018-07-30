@@ -428,7 +428,7 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
         env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, \
         old_strat_disc_fact, save_count, port_lock_name, max_timesteps_def_init, \
         max_timesteps_def_retrain, max_timesteps_att_init, max_timesteps_att_retrain, \
-        cur_epoch):
+        cur_epoch, max_new_rounds):
     '''
     Call method to run first epoch (epoch 0), and beginning of second epoch (epoch 1).
     '''
@@ -446,7 +446,10 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
 
     my_epoch = cur_epoch
     should_continue = True
+    rounds_left = max_new_rounds
     if my_epoch == 0:
+        if max_new_rounds < 2:
+            raise ValueError("Initial run must be at least 2 epochs.")
         print("\tWill run epochs: 0 and 1, time: " + \
             str(datetime.datetime.now()), flush=True)
         # indicates whether a beneficial deviation was found
@@ -458,7 +461,9 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
             max_timesteps_att_init, max_timesteps_att_retrain)
         if should_continue:
             my_epoch += 2 # first call runs 2 epochs in this case (0 and 1)
-    while should_continue:
+            if rounds_left is not None:
+                rounds_left -= 2
+    while should_continue and (rounds_left is None or rounds_left > 0):
         print("\tWill run epoch: " + str(my_epoch) + ", time: " + \
             str(datetime.datetime.now()), flush=True)
         should_continue = run_continue_epoch(game_number, env_short_name_tsv, \
@@ -469,25 +474,32 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
             max_timesteps_att_init, max_timesteps_att_retrain, my_epoch)
         if should_continue:
             my_epoch += 1
-    print("\tConverged at epoch: " + str(my_epoch) + ", time: " + \
-        str(datetime.datetime.now()), flush=True)
+            if rounds_left is not None:
+                rounds_left -= 1
+    if not should_continue:
+        print("\tConverged at epoch: " + str(my_epoch) + ", time: " + \
+            str(datetime.datetime.now()), flush=True)
+    else:
+        print("\tRan max_new_rounds by epoch: " + str(my_epoch) + ", time: " + \
+            str(datetime.datetime.now()), flush=True)
+
 
 '''
 example: python3 master_dq_runner_curve.py 3013 sl29_randNoAndB sl29 \
     DepgraphJava29N-v0 DepgraphJavaEnvAtt29N-v0 DepgraphJavaEnvBoth29N-v0 \
     SepLayerGraph0_noAnd_B.json DepgraphJavaEnvVsMixedDef29N-v0 \
-    DepgraphJavaEnvVsMixedAtt29N-v0 0.7 4 1000 s29 700000 400000 700000 400000 0
+    DepgraphJavaEnvVsMixedAtt29N-v0 0.7 4 1000 s29 700000 400000 700000 400000 0 None
 
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 10:
-        raise ValueError("Need 18 args: game_number, env_short_name_tsv, " + \
+    if len(sys.argv) != 20:
+        raise ValueError("Need 19 args: game_number, env_short_name_tsv, " + \
             "env_short_name_payoffs, env_name_def_net, env_name_att_net, " + \
             "env_name_both, graph_name, env_name_vs_mixed_def, "  + \
             "env_name_vs_mixed_att, new_col_count, " + \
             "old_strat_disc_fact, save_count, " + \
             "port_lock_name, max_timesteps_def_init, max_timesteps_def_retrain, " + \
-            "max_timesteps_att_init, max_timesteps_att_retrain, cur_epoch")
+            "max_timesteps_att_init, max_timesteps_att_retrain, cur_epoch, max_new_rounds")
     GAME_NUMBER = int(sys.argv[1])
     ENV_SHORT_NAME_TSV = sys.argv[2]
     ENV_SHORT_NAME_PAYOFFS = sys.argv[3]
@@ -506,9 +518,14 @@ if __name__ == '__main__':
     MAX_TIMESTEPS_ATT_INIT = int(sys.argv[16])
     MAX_TIMESTEPS_ATT_RETRAIN = int(sys.argv[17])
     CUR_EPOCH = int(sys.argv[18])
+    MAX_NEW_ROUNDS = sys.argv[19]
+    if MAX_NEW_ROUNDS == "None":
+        MAX_NEW_ROUNDS = None
+    else:
+        MAX_NEW_ROUNDS = int(MAX_NEW_ROUNDS)
     main(GAME_NUMBER, ENV_SHORT_NAME_TSV, ENV_SHORT_NAME_PAYOFFS, \
         ENV_NAME_DEF_NET, ENV_NAME_ATT_NET, ENV_NAME_BOTH, GRAPH_NAME, \
         ENV_NAME_VS_MIXED_DEF, ENV_NAME_VS_MIXED_ATT, NEW_COL_COUNT, \
         OLD_STRAT_DISC_FACT, SAVE_COUNT, PORT_LOCK_NAME, \
         MAX_TIMESTEPS_DEF_INIT, MAX_TIMESTEPS_DEF_RETRAIN, MAX_TIMESTEPS_ATT_INIT, \
-        MAX_TIMESTEPS_ATT_RETRAIN, CUR_EPOCH)
+        MAX_TIMESTEPS_ATT_RETRAIN, CUR_EPOCH, MAX_NEW_ROUNDS)
