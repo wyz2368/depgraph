@@ -15,6 +15,8 @@ from train_test_def import wait_for_def_lock, lock_def, read_def_port, \
     is_def_unlocked, PORTS_PER_ROUND, MAX_PORT, MIN_PORT
 from train_test_att import is_att_unlocked
 from add_new_data import get_add_data_result_file_name
+from train_test_both import run_both
+from train_retrain_both import run_retrain_both
 
 RETRAIN_MIN_WEIGHT = 0.001
 
@@ -85,7 +87,7 @@ def run_gen_both_payoffs(game_number, env_short_name_payoffs, new_epoch):
         env_short_name_payoffs, str(new_epoch)]
     subprocess.call(cmd_list)
 
-def run_train_test_all(graph_name, env_short_name_payoffs, new_epoch, \
+def run_train_test_both(graph_name, env_short_name_payoffs, new_epoch, \
     env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
     max_timesteps_def, max_timesteps_att):
     is_train = True
@@ -96,19 +98,11 @@ def run_train_test_all(graph_name, env_short_name_payoffs, new_epoch, \
     if def_port >= MAX_PORT:
         def_port = MIN_PORT
 
-    cmd_list_train_def = ["python3", "train_test_def.py", graph_name, \
-        env_short_name_payoffs, str(new_epoch), env_name_vs_mixed_att, port_lock_name, \
-        str(def_port), env_short_name_tsv, str(max_timesteps_def)]
-    cmd_list_train_att = ["python3", "train_test_att.py", graph_name, \
-        env_short_name_payoffs, str(new_epoch), env_name_vs_mixed_def, str(def_port), \
-        port_lock_name, env_short_name_tsv, str(max_timesteps_att)]
-    process_train_def = subprocess.Popen(cmd_list_train_def)
-    process_train_att = subprocess.Popen(cmd_list_train_att)
+    run_both(graph_name, env_short_name_payoffs, new_epoch, env_name_vs_mixed_att, \
+        env_name_vs_mixed_def, port_lock_name, def_port, env_short_name_tsv, \
+        max_timesteps_def, max_timesteps_att)
 
-    process_train_def.wait()
-    process_train_att.wait()
-
-def run_train_retrain_all(graph_name, env_short_name_payoffs, new_epoch, \
+def run_train_retrain_both(graph_name, env_short_name_payoffs, new_epoch, \
     env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
     max_timesteps_def_init, max_timesteps_def_retrain, max_timesteps_att_init, \
     max_timesteps_att_retrain, save_count):
@@ -120,19 +114,10 @@ def run_train_retrain_all(graph_name, env_short_name_payoffs, new_epoch, \
     if def_port >= MAX_PORT:
         def_port = MIN_PORT
 
-    cmd_list_train_def = ["python3", "train_retrain_def.py", graph_name, \
-        env_short_name_payoffs, str(new_epoch), env_name_vs_mixed_att, port_lock_name, \
-        str(def_port), env_short_name_tsv, str(max_timesteps_def_init), \
-        str(max_timesteps_def_retrain), str(save_count)]
-    cmd_list_train_att = ["python3", "train_retrain_att.py", graph_name, \
-        env_short_name_payoffs, str(new_epoch), env_name_vs_mixed_def, str(def_port), \
-        port_lock_name, env_short_name_tsv, str(max_timesteps_att_init), \
-        str(max_timesteps_att_retrain), str(save_count)]
-    process_train_def = subprocess.Popen(cmd_list_train_def)
-    process_train_att = subprocess.Popen(cmd_list_train_att)
-
-    process_train_def.wait()
-    process_train_att.wait()
+    run_retrain_both(graph_name, env_short_name_payoffs, new_epoch, env_name_vs_mixed_att, \
+        env_name_vs_mixed_def, port_lock_name, def_port, env_short_name_tsv, \
+        max_timesteps_def_init, max_timesteps_def_retrain, max_timesteps_att_init, \
+        max_timesteps_att_retrain, save_count)
 
 def get_check_if_beneficial(env_short_name_payoffs, new_epoch, is_def):
     '''
@@ -241,9 +226,9 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
         str(datetime.datetime.now()), flush=True)
     # train attacker network against current defender equilibrium and mix of recents
     # train defender network against current attacker equilibrium and mix of recents
-    run_train_test_all(graph_name, env_short_name_payoffs, new_epoch, \
+    run_train_test_both(graph_name, env_short_name_payoffs, new_epoch, \
         env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
-        max_timesteps_def_init, max_timesteps_att_init, save_count)
+        max_timesteps_def_init, max_timesteps_att_init)
 
     # check if new defender network is beneficial deviation from old equilibrium
     is_def_beneficial = get_check_if_beneficial(env_short_name_payoffs, new_epoch, True)
@@ -305,7 +290,7 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
         str(datetime.datetime.now()), flush=True)
     # train attacker network against current defender equilibrium and mix of recents
     # train defender network against current attacker equilibrium and mix of recents
-    run_train_retrain_all(graph_name, env_short_name_payoffs, new_epoch, \
+    run_train_retrain_both(graph_name, env_short_name_payoffs, new_epoch, \
         env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
         max_timesteps_def_init, max_timesteps_def_retrain, max_timesteps_att_init, \
         max_timesteps_att_retrain, save_count)
@@ -383,7 +368,7 @@ def run_continue_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, 
         str(datetime.datetime.now()), flush=True)
     # train attacker network against current defender equilibrium and mix of recents
     # train defender network against current attacker equilibrium and mix of recents
-    run_train_retrain_all(graph_name, env_short_name_payoffs, new_epoch, \
+    run_train_retrain_both(graph_name, env_short_name_payoffs, new_epoch, \
         env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
         max_timesteps_def_init, max_timesteps_def_retrain, max_timesteps_att_init, \
         max_timesteps_att_retrain, save_count)
