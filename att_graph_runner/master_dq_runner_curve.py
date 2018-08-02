@@ -473,7 +473,7 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
 example: python3 master_dq_runner_curve.py 3013 sl29_randNoAndB sl29 \
     DepgraphJava29N-v0 DepgraphJavaEnvAtt29N-v0 DepgraphJavaEnvBoth29N-v0 \
     SepLayerGraph0_noAnd_B.json DepgraphJavaEnvVsMixedDef29N-v0 \
-    DepgraphJavaEnvVsMixedAtt29N-v0 0.7 4 1000 s29 700000 400000 700000 400000 0 None
+    DepgraphJavaEnvVsMixedAtt29N-v0 400 0.7 4 s29 700000 400000 700000 400000 0 None
 
 '''
 if __name__ == '__main__':
