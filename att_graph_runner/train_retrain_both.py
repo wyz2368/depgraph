@@ -219,9 +219,9 @@ def run_evaluation_all_att(env_short_name, new_epoch, env_name_def_net, att_port
             with open(att_out_name_enj, "w") as file:
                 subprocess.call(cmd_list, stdout=file)
 
-def run_both(graph_name, env_short_name, new_epoch, env_name_vs_att, env_name_vs_def, \
-             port_lock_name, def_port, env_short_name_tsv, max_timesteps_def_init, \
-             max_timesteps_def_retrain, max_timesteps_att_init, \
+def run_retrain_both(graph_name, env_short_name, new_epoch, env_name_vs_att, \
+            env_name_vs_def, port_lock_name, def_port, env_short_name_tsv, \
+            max_timesteps_def_init, max_timesteps_def_retrain, max_timesteps_att_init, \
              max_timesteps_att_retrain, retrain_iters):
 
     ### Setup
@@ -297,7 +297,7 @@ if __name__ == '__main__':
     MAX_TIMESTEPS_ATT_INIT = int(sys.argv[11])
     MAX_TIMESTEPS_ATT_RETRAIN = int(sys.argv[12])
     RETRAIN_ITERS = int(sys.argv[13])
-    run_both(GRAPH_NAME, ENV_SHORT_NAME, NEW_EPOCH, ENV_NAME_VS_ATT, ENV_NAME_VS_DEF, \
-        PORT_LOCK_NAME, DEF_PORT, ENV_SHORT_NAME_TSV, MAX_TIMESTEPS_DEF_INIT, \
-        MAX_TIMESTEPS_DEF_RETRAIN, MAX_TIMESTEPS_ATT_INIT, MAX_TIMESTEPS_ATT_RETRAIN, \
-        RETRAIN_ITERS)
+    run_retrain_both(GRAPH_NAME, ENV_SHORT_NAME, NEW_EPOCH, ENV_NAME_VS_ATT, \
+        ENV_NAME_VS_DEF, PORT_LOCK_NAME, DEF_PORT, ENV_SHORT_NAME_TSV, \
+        MAX_TIMESTEPS_DEF_INIT, MAX_TIMESTEPS_DEF_RETRAIN, MAX_TIMESTEPS_ATT_INIT, \
+        MAX_TIMESTEPS_ATT_RETRAIN, RETRAIN_ITERS)
