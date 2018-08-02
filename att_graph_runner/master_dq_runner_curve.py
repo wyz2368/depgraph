@@ -433,7 +433,7 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
     should_continue = True
     rounds_left = max_new_rounds
     if my_epoch == 0:
-        if max_new_rounds < 2:
+        if max_new_rounds is not None and max_new_rounds < 2:
             raise ValueError("Initial run must be at least 2 epochs.")
         print("\tWill run epochs: 0 and 1, time: " + \
             str(datetime.datetime.now()), flush=True)
