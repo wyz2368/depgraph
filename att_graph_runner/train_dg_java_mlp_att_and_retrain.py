@@ -18,7 +18,8 @@ def unlock_train_att(port_lock_name):
         file.write("0\n")
 
 def main(env_name_vs_def, env_short_name, new_epoch, att_port, port_lock_name, \
-    env_short_name_tsv, max_timesteps_att_init, max_timesteps_att_retrain, retrain_iters):
+    env_short_name_tsv, max_timesteps_att_init, max_timesteps_att_retrain, \
+    retrain_iters, old_strat_disc_fact):
     '''
     Makes the depgraph environment, builds a multilayer perceptron model,
     trains the model, and saves the result.
@@ -46,7 +47,9 @@ def main(env_name_vs_def, env_short_name, new_epoch, att_port, port_lock_name, \
 
     prefix_for_save = "dg_" + env_short_name + "_dq_mlp_retrain_epoch" + str(new_epoch) + \
         "_att"
-    retrain_config_str = env_short_name_tsv + "_epoch" + str(new_epoch) + "_retrain_def.tsv"
+    fmt = "{0:.2f}"
+    retrain_config_str = env_short_name_tsv + "_epoch" + str(new_epoch) + "_mixed" + \
+        fmt.format(old_strat_disc_fact).replace('.', '_') + "_def.tsv"
     deepq.learn_retrain_and_save(
         env,
         q_func=model,
@@ -80,10 +83,10 @@ def main(env_name_vs_def, env_short_name, new_epoch, att_port, port_lock_name, \
     os._exit(os.EX_OK)
 
 if __name__ == '__main__':
-    if len(sys.argv) != 10:
-        raise ValueError("Need 9 args: env_name_vs_def, env_short_name, new_epoch, " + \
+    if len(sys.argv) != 11:
+        raise ValueError("Need 10 args: env_name_vs_def, env_short_name, new_epoch, " + \
             "att_port, port_lock_name, env_short_name_tsv, max_timesteps_att_init, " + \
-            "max_timesteps_att_retrain, retrain_iters")
+            "max_timesteps_att_retrain, retrain_iters, old_strat_disc_fact")
     ENV_NAME_VS_DEF = sys.argv[1]
     ENV_SHORT_NAME = sys.argv[2]
     NEW_EPOCH = int(sys.argv[3])
@@ -93,5 +96,7 @@ if __name__ == '__main__':
     MAX_TIMESTEPS_ATT_INIT = int(sys.argv[7])
     MAX_TIMESTEPS_ATT_RETRAIN = int(sys.argv[8])
     RETRAIN_ITERS = int(sys.argv[9])
+    OLD_STRAT_DISC_FACT = float(sys.argv[10])
     main(ENV_NAME_VS_DEF, ENV_SHORT_NAME, NEW_EPOCH, ATT_PORT, PORT_LOCK_NAME, \
-        ENV_SHORT_NAME_TSV, MAX_TIMESTEPS_ATT_INIT, MAX_TIMESTEPS_ATT_RETRAIN, RETRAIN_ITERS)
+        ENV_SHORT_NAME_TSV, MAX_TIMESTEPS_ATT_INIT, MAX_TIMESTEPS_ATT_RETRAIN, \
+        RETRAIN_ITERS, OLD_STRAT_DISC_FACT)

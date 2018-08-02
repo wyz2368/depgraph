@@ -105,7 +105,7 @@ def run_train_test_both(graph_name, env_short_name_payoffs, new_epoch, \
 def run_train_retrain_both(graph_name, env_short_name_payoffs, new_epoch, \
     env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
     max_timesteps_def_init, max_timesteps_def_retrain, max_timesteps_att_init, \
-    max_timesteps_att_retrain, save_count):
+    max_timesteps_att_retrain, save_count, old_strat_disc_fact):
     is_train = True
     wait_for_def_lock(port_lock_name, is_train)
     lock_def(port_lock_name, is_train)
@@ -117,7 +117,7 @@ def run_train_retrain_both(graph_name, env_short_name_payoffs, new_epoch, \
     run_retrain_both(graph_name, env_short_name_payoffs, new_epoch, env_name_vs_mixed_att, \
         env_name_vs_mixed_def, port_lock_name, def_port, env_short_name_tsv, \
         max_timesteps_def_init, max_timesteps_def_retrain, max_timesteps_att_init, \
-        max_timesteps_att_retrain, save_count)
+        max_timesteps_att_retrain, save_count, old_strat_disc_fact)
 
 def get_check_if_beneficial(env_short_name_payoffs, new_epoch, is_def):
     '''
@@ -293,7 +293,7 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     run_train_retrain_both(graph_name, env_short_name_payoffs, new_epoch, \
         env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
         max_timesteps_def_init, max_timesteps_def_retrain, max_timesteps_att_init, \
-        max_timesteps_att_retrain, save_count)
+        max_timesteps_att_retrain, save_count, old_strat_disc_fact)
 
     # call select_best_curve.py for attacker and defender
     best_def_index = get_select_best_curve(env_short_name_payoffs, new_epoch, True, \
@@ -371,7 +371,7 @@ def run_continue_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, 
     run_train_retrain_both(graph_name, env_short_name_payoffs, new_epoch, \
         env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
         max_timesteps_def_init, max_timesteps_def_retrain, max_timesteps_att_init, \
-        max_timesteps_att_retrain, save_count)
+        max_timesteps_att_retrain, save_count, old_strat_disc_fact)
 
     # call select_best_curve.py for attacker and defender
     best_def_index = get_select_best_curve(env_short_name_payoffs, new_epoch, True, \
