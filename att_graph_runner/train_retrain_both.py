@@ -167,7 +167,7 @@ def run_train_retrain_att(env_short_name, new_epoch, env_name_vs_def, att_port, 
     att_process = subprocess.Popen(cmd_list, stdout=my_file, stderr=None)
     return att_process, my_file
 
-def run_evaluation_all_def(env_short_name, new_epoch, env_name_att_net, def_port, \
+def run_evaluation_all_def(env_short_name, new_epoch, env_name_vs_att, def_port, \
     port_lock_name, env_short_name_tsv, retrain_iters):
     is_train = False
     is_retrain_opponent_options = [True, False]
@@ -177,8 +177,8 @@ def run_evaluation_all_def(env_short_name, new_epoch, env_name_att_net, def_port
             lock_def(port_lock_name, is_train)
             write_def_port(port_lock_name, is_train, def_port)
             cmd_list = ["python3", "enjoy_depgraph_data_vs_mixed_retraining.py",
-                        env_name_att_net, env_short_name, str(new_epoch), \
-                        str(retrain_number), str(def_port), str(port_lock_name), \
+                        env_name_vs_att, env_short_name, str(new_epoch), \
+                        str(retrain_number), str(def_port), port_lock_name, \
                         env_short_name_tsv, str(is_retrain_opponent)]
             def_out_name_enj = "def_" + env_short_name + "_randNoAndB_epoch" + \
                 str(new_epoch) + "_r" + str(retrain_number) + "_enj"
@@ -204,7 +204,7 @@ def run_evaluation_all_att(env_short_name, new_epoch, env_name_def_net, att_port
             write_att_port(port_lock_name, is_train, att_port)
             cmd_list = ["python3", "enjoy_dg_data_vs_mixed_def_retraining.py",
                         env_name_def_net, env_short_name, str(new_epoch), \
-                        str(retrain_number), str(att_port), str(port_lock_name), \
+                        str(retrain_number), str(att_port), port_lock_name, \
                         env_short_name_tsv, str(is_retrain_opponent)]
             att_out_name_enj = "att_" + env_short_name + "_randNoAndB_epoch" + \
                 str(new_epoch) + "_r" + str(retrain_number) + "_enj"

@@ -14,7 +14,7 @@ def unlock_eval_def(port_lock_name):
     with open(lock_name, 'w') as file:
         file.write("0\n")
 
-def main(env_name, env_short_name, new_epoch, retrain_number, def_port, \
+def main(env_name_vs_att, env_short_name, new_epoch, retrain_number, def_port, \
     port_lock_name, env_short_name_tsv, is_vs_retrain):
     '''
     Load the network from file, and play games of the depdency
@@ -28,11 +28,11 @@ def main(env_name, env_short_name, new_epoch, retrain_number, def_port, \
 
     start_time = time.time()
 
-    env = gym.make(env_name)
+    env = gym.make(env_name_vs_att)
     if env.get_port() != def_port:
         raise ValueError("Wrong port: " + str(env.get_port()) + " vs. " + str(def_port))
     unlock_eval_def(port_lock_name)
-    print("Environment: " + env_name)
+    print("Environment: " + env_name_vs_att)
 
     strat_file = env_short_name_tsv + "_epoch" + str(new_epoch) + "_att.tsv"
     if is_vs_retrain:
@@ -77,13 +77,13 @@ def get_truth_value(str_input):
 
 '''
 example: python3 enjoy_depgraph_data_vs_mixed_retraining.py DepgraphJavaEnvVsMixedAtt29N-v0 \
-    7 0 25333 s29 sl29_randNoAndB True
+    s29m1 7 0 25333 s29 sl29_randNoAndB True
 '''
 if __name__ == '__main__':
     if len(sys.argv) != 9:
-        raise ValueError("Need 8 args: env_name_att_net, env_short_name, new_epoch, " + \
+        raise ValueError("Need 8 args: env_name_vs_att, env_short_name, new_epoch, " + \
             "retrain_number, def_port, port_lock_name, env_short_name_tsv, is_vs_retrain")
-    ENV_NAME = sys.argv[1]
+    ENV_NAME_VS_ATT = sys.argv[1]
     ENV_SHORT_NAME = sys.argv[2]
     NEW_EPOCH = int(sys.argv[3])
     RETRAIN_NUMBER = int(sys.argv[4])
@@ -91,5 +91,5 @@ if __name__ == '__main__':
     PORT_LOCK_NAME = sys.argv[6]
     ENV_SHORT_NAME_TSV = sys.argv[7]
     IS_VS_RETRAIN = get_truth_value(sys.argv[8])
-    main(ENV_NAME, ENV_SHORT_NAME, NEW_EPOCH, RETRAIN_NUMBER, DEF_PORT, PORT_LOCK_NAME, \
-        ENV_SHORT_NAME_TSV, IS_VS_RETRAIN)
+    main(ENV_NAME_VS_ATT, ENV_SHORT_NAME, NEW_EPOCH, RETRAIN_NUMBER, DEF_PORT, \
+        PORT_LOCK_NAME, ENV_SHORT_NAME_TSV, IS_VS_RETRAIN)
