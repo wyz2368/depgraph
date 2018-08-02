@@ -135,7 +135,7 @@ def run_train_retrain_def(env_short_name, new_epoch, env_name_vs_att, def_port, 
     port_lock_name, env_short_name_tsv, max_timesteps_def_init, max_timesteps_def_retrain, \
     retrain_iters):
     cmd_list = ["python3", "train_dg_java_mlp_def_and_retrain.py", env_name_vs_att, \
-        env_short_name, str(new_epoch), str(def_port), str(port_lock_name), \
+        env_short_name, str(new_epoch), str(def_port), port_lock_name, \
         env_short_name_tsv, str(max_timesteps_def_init), str(max_timesteps_def_retrain), \
         str(retrain_iters)]
     def_out_name = "defVMixed_" + env_short_name + "_epoch" + str(new_epoch) + ".txt"
@@ -153,7 +153,7 @@ def run_train_retrain_att(env_short_name, new_epoch, env_name_vs_def, att_port, 
     port_lock_name, env_short_name_tsv, max_timesteps_att_init, max_timesteps_att_retrain, \
     retrain_iters):
     cmd_list = ["python3", "train_dg_java_mlp_att_and_retrain.py", env_name_vs_def, \
-        env_short_name, str(new_epoch), str(att_port), str(port_lock_name), \
+        env_short_name, str(new_epoch), str(att_port), port_lock_name, \
         env_short_name_tsv, str(max_timesteps_att_init), str(max_timesteps_att_retrain), \
         str(retrain_iters)]
     att_out_name = "attVMixed_" + env_short_name + "_epoch" + str(new_epoch) + ".txt"

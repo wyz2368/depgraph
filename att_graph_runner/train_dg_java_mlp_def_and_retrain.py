@@ -4,6 +4,7 @@ an attacker that can mix over heuristic and network strategies.
 '''
 import sys
 import time
+import os
 import os.path
 import gym
 
@@ -16,8 +17,8 @@ def unlock_train_def(port_lock_name):
     with open(lock_name, 'w') as file:
         file.write("0\n")
 
-def main(env_name, env_short_name, new_epoch, def_port, port_lock_name, env_short_name_tsv, \
-    max_timesteps_def_init, max_timesteps_def_retrain, retrain_iters):
+def main(env_name_vs_att, env_short_name, new_epoch, def_port, port_lock_name, \
+    env_short_name_tsv, max_timesteps_def_init, max_timesteps_def_retrain, retrain_iters):
     '''
     Makes the depgraph environment, builds a multilayer perceptron model,
     trains the model, and saves the result.
@@ -26,10 +27,10 @@ def main(env_name, env_short_name, new_epoch, def_port, port_lock_name, env_shor
     if os.path.isfile(model_name):
         raise ValueError("Skipping: " + model_name + " already exists.")
 
-    print("Environment: " + env_name)
+    print("Environment: " + env_name_vs_att)
 
     start = time.time()
-    env = gym.make(env_name)
+    env = gym.make(env_name_vs_att)
     if env.get_port() != def_port:
         raise ValueError("Wrong port: " + str(env.get_port()) + " vs. " + str(def_port))
     unlock_train_def(port_lock_name)
@@ -50,10 +51,10 @@ def main(env_name, env_short_name, new_epoch, def_port, port_lock_name, env_shor
         q_func=model,
         lr=5e-5,
         max_timesteps_init=max_timesteps_def_init,
-        buffer_size=3000,
+        buffer_size=30000,
         exploration_fraction=0.5,
         exploration_final_eps=0.03,
-        checkpoint_freq=3000,
+        checkpoint_freq=30000,
         print_freq=250,
         param_noise=False,
         gamma=0.99,
@@ -72,14 +73,17 @@ def main(env_name, env_short_name, new_epoch, def_port, port_lock_name, env_shor
     elapsed = end - start
     minutes = elapsed // 60
     print("Minutes taken: " + str(minutes))
-    print("Opponent was: " + env_name)
+    print("Opponent was: " + env_name_vs_att)
+
+    sys.stdout.flush()
+    os._exit(os.EX_OK)
 
 if __name__ == '__main__':
     if len(sys.argv) != 10:
-        raise ValueError("Need 9 args: env_name_mixed_att, env_short_name, new_epoch, " + \
+        raise ValueError("Need 9 args: env_name_vs_att, env_short_name, new_epoch, " + \
             "def_port, port_lock_name, env_short_name_tsv, max_timesteps_def_init, " + \
             "max_timesteps_def_retrain, retrain_iters")
-    ENV_NAME = sys.argv[1]
+    ENV_NAME_VS_ATT = sys.argv[1]
     ENV_SHORT_NAME = sys.argv[2]
     NEW_EPOCH = int(sys.argv[3])
     DEF_PORT = int(sys.argv[4])
@@ -88,5 +92,5 @@ if __name__ == '__main__':
     MAX_TIMESTEPS_DEF_INIT = int(sys.argv[7])
     MAX_TIMESTEPS_DEF_RETRAIN = int(sys.argv[8])
     RETRAIN_ITERS = int(sys.argv[9])
-    main(ENV_NAME, ENV_SHORT_NAME, NEW_EPOCH, DEF_PORT, PORT_LOCK_NAME, ENV_SHORT_NAME_TSV, \
-        MAX_TIMESTEPS_DEF_INIT, MAX_TIMESTEPS_DEF_RETRAIN, RETRAIN_ITERS)
+    main(ENV_NAME_VS_ATT, ENV_SHORT_NAME, NEW_EPOCH, DEF_PORT, PORT_LOCK_NAME, \
+        ENV_SHORT_NAME_TSV, MAX_TIMESTEPS_DEF_INIT, MAX_TIMESTEPS_DEF_RETRAIN, RETRAIN_ITERS)
