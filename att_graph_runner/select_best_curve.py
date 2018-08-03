@@ -31,7 +31,7 @@ def get_truth_value(str_input):
 def get_net_payoff(file_name):
     lines = get_file_lines(file_name)
     prefix = "Mean reward: "
-    for i in range(2, len(lines)):
+    for i in range(1, len(lines)):
         if lines[i].startswith(prefix):
             value_str = lines[i][len(prefix):]
             return float(value_str)
