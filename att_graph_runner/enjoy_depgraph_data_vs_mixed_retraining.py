@@ -2,6 +2,7 @@
 import sys
 import time
 import math
+import os
 import numpy as np
 import gym
 
@@ -68,6 +69,9 @@ def main(env_name_vs_att, env_short_name, new_epoch, retrain_number, def_port, \
     print("Stdev reward: " + fmt.format(stdev_reward))
     print("Stderr reward: " + fmt.format(stderr_reward))
     print("Minutes taken: " + str(duration // 60))
+
+    sys.stdout.flush()
+    os._exit(os.EX_OK)
 
 def get_truth_value(str_input):
     if str_input == "True":
