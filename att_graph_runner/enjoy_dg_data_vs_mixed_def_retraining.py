@@ -15,7 +15,7 @@ def unlock_eval_att(port_lock_name):
         file.write("0\n")
 
 def main(env_name_vs_def, env_short_name, new_epoch, retrain_number, att_port, \
-    port_lock_name, env_short_name_tsv, is_vs_retrain, old_strat_disc_fact):
+    port_lock_name, env_short_name_tsv, is_vs_retrain, old_strat_disc_fact, num_episodes):
     '''
     Load the network from file, and play games of the depdency
     graph game against opponent.
@@ -24,7 +24,6 @@ def main(env_name_vs_def, env_short_name, new_epoch, retrain_number, att_port, \
     if retrain_number > 0:
         model_name = "dg_" + env_short_name + "_dq_mlp_retrain_epoch" + str(new_epoch) + \
             "_r" + str(retrain_number) + "_att.pkl"
-    num_episodes = 1000
 
     start_time = time.time()
 
@@ -79,13 +78,13 @@ def get_truth_value(str_input):
 
 '''
 example: python3 enjoy_dg_data_vs_mixed_def_retraining.py DepgraphJavaEnvVsMixedDef29N-v0 \
-    s29m1 7 0 25335 s29 sl29_randNoAndB True 0.7
+    s29m1 7 0 25335 s29 sl29_randNoAndB True 0.7 1000
 '''
 if __name__ == '__main__':
     if len(sys.argv) != 10:
         raise ValueError("Need 9 args: env_name_vs_def, env_short_name, new_epoch, " + \
             "retrain_number, att_port, port_lock_name, env_short_name_tsv, " + \
-            "is_vs_retrain, old_strat_disc_fact")
+            "is_vs_retrain, old_strat_disc_fact, new_eval_count")
     ENV_NAME_VS_DEF = sys.argv[1]
     ENV_SHORT_NAME = sys.argv[2]
     NEW_EPOCH = int(sys.argv[3])
@@ -95,5 +94,7 @@ if __name__ == '__main__':
     ENV_SHORT_NAME_TSV = sys.argv[7]
     IS_VS_RETRAIN = get_truth_value(sys.argv[8])
     OLD_STRAT_DISC_FACT = float(sys.argv[9])
+    NEW_EVAL_COUNT = int(sys.argv[10])
     main(ENV_NAME_VS_DEF, ENV_SHORT_NAME, NEW_EPOCH, RETRAIN_NUMBER, ATT_PORT, \
-        PORT_LOCK_NAME, ENV_SHORT_NAME_TSV, IS_VS_RETRAIN, OLD_STRAT_DISC_FACT)
+        PORT_LOCK_NAME, ENV_SHORT_NAME_TSV, IS_VS_RETRAIN, OLD_STRAT_DISC_FACT, \
+        NEW_EVAL_COUNT)

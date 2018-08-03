@@ -164,10 +164,10 @@ def run_training_att(env_short_name, new_epoch, env_name_vs_def, att_port, port_
     return att_process, my_file
 
 def run_evaluation_def(env_short_name, new_epoch, env_name_vs_att, def_port, \
-    port_lock_name, env_short_name_tsv):
+    port_lock_name, env_short_name_tsv, new_eval_count):
     cmd_list = ["python3", "enjoy_depgraph_data_vs_mixed.py", env_name_vs_att, \
         env_short_name, str(new_epoch), str(def_port), str(port_lock_name), \
-        env_short_name_tsv]
+        env_short_name_tsv, str(new_eval_count)]
     def_out_name_enj = "def_" + env_short_name + "_randNoAndB_epoch" + str(new_epoch) + \
         "_enj.txt"
     if os.path.isfile(def_out_name_enj):
@@ -181,10 +181,10 @@ def run_evaluation_def(env_short_name, new_epoch, env_name_vs_att, def_port, \
     return def_process, my_file
 
 def run_evaluation_att(env_short_name, new_epoch, env_name_vs_def, att_port, \
-    port_lock_name, env_short_name_tsv):
+    port_lock_name, env_short_name_tsv, new_eval_count):
     cmd_list = ["python3", "enjoy_dg_data_vs_mixed_def.py", env_name_vs_def, \
         env_short_name, str(new_epoch), str(att_port), str(port_lock_name), \
-        env_short_name_tsv]
+        env_short_name_tsv, str(new_eval_count)]
     att_out_name_enj = "att_" + env_short_name + "_randNoAndB_epoch" + str(new_epoch) + \
         "_enj.txt"
     if os.path.isfile(att_out_name_enj):
@@ -198,7 +198,8 @@ def run_evaluation_att(env_short_name, new_epoch, env_name_vs_def, att_port, \
     return att_process, my_file
 
 def run_both(graph_name, env_short_name, new_epoch, env_name_vs_att, env_name_vs_def, \
-    port_lock_name, def_port, env_short_name_tsv, max_timesteps_def, max_timesteps_att):
+    port_lock_name, def_port, env_short_name_tsv, max_timesteps_def, max_timesteps_att, \
+    new_eval_count):
 
     ### Setup
 
@@ -238,13 +239,13 @@ def run_both(graph_name, env_short_name, new_epoch, env_name_vs_att, env_name_vs
     lock_def(port_lock_name, is_train)
     write_def_port(port_lock_name, is_train, def_port)
     def_process_enj, def_file_enj = run_evaluation_def(env_short_name, new_epoch, \
-        env_name_vs_att, def_port, port_lock_name, env_short_name_tsv)
+        env_name_vs_att, def_port, port_lock_name, env_short_name_tsv, new_eval_count)
 
     wait_for_att_lock(port_lock_name, is_train)
     lock_att(port_lock_name, is_train)
     write_att_port(port_lock_name, is_train, att_port)
     att_process_enj, att_file_enj = run_evaluation_att(env_short_name, new_epoch, \
-        env_name_vs_def, att_port, port_lock_name, env_short_name_tsv)
+        env_name_vs_def, att_port, port_lock_name, env_short_name_tsv, new_eval_count)
 
     if def_process_enj is not None:
         print("Waiting for def evaluation")
@@ -265,13 +266,13 @@ def run_both(graph_name, env_short_name, new_epoch, env_name_vs_att, env_name_vs
 '''
 example: python3 train_test_both.py SepLayerGraph0_noAnd_B.json sl29 16 \
     DepgraphJavaEnvVsMixedAtt29N-v0 DepgraphJavaEnvVsMixedDef29N-v0 s29 25333 \
-    sl29_randNoAndB 700000 700000
+    sl29_randNoAndB 700000 700000 1000
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 11:
-        raise ValueError("Need 10 args: graph_name, env_short_name, new_epoch, " + \
+    if len(sys.argv) != 12:
+        raise ValueError("Need 11 args: graph_name, env_short_name, new_epoch, " + \
             "env_name_vs_att, env_name_vs_def, port_lock_name, def_port " + \
-            "env_short_name_tsv, max_timesteps_def, max_timesteps_att")
+            "env_short_name_tsv, max_timesteps_def, max_timesteps_att, new_eval_count")
     GRAPH_NAME = sys.argv[1]
     ENV_SHORT_NAME = sys.argv[2]
     NEW_EPOCH = int(sys.argv[3])
@@ -282,5 +283,7 @@ if __name__ == '__main__':
     ENV_SHORT_NAME_TSV = sys.argv[8]
     MAX_TIMESTEPS_DEF = int(sys.argv[9])
     MAX_TIMESTEPS_ATT = int(sys.argv[10])
+    NEW_EVAL_COUNT = int(sys.argv[11])
     run_both(GRAPH_NAME, ENV_SHORT_NAME, NEW_EPOCH, ENV_NAME_VS_ATT, ENV_NAME_VS_DEF, \
-        PORT_LOCK_NAME, DEF_PORT, ENV_SHORT_NAME_TSV, MAX_TIMESTEPS_DEF, MAX_TIMESTEPS_ATT)
+        PORT_LOCK_NAME, DEF_PORT, ENV_SHORT_NAME_TSV, MAX_TIMESTEPS_DEF, \
+        MAX_TIMESTEPS_ATT, NEW_EVAL_COUNT)

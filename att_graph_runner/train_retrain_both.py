@@ -168,7 +168,7 @@ def run_train_retrain_att(env_short_name, new_epoch, env_name_vs_def, att_port, 
     return att_process, my_file
 
 def run_evaluation_all_def(env_short_name, new_epoch, env_name_vs_att, def_port, \
-    port_lock_name, env_short_name_tsv, retrain_iters, old_strat_disc_fact):
+    port_lock_name, env_short_name_tsv, retrain_iters, old_strat_disc_fact, new_eval_count):
     is_train = False
     is_retrain_opponent_options = [True, False]
     for retrain_number in range(retrain_iters + 1):
@@ -180,7 +180,7 @@ def run_evaluation_all_def(env_short_name, new_epoch, env_name_vs_att, def_port,
                         env_name_vs_att, env_short_name, str(new_epoch), \
                         str(retrain_number), str(def_port), port_lock_name, \
                         env_short_name_tsv, str(is_retrain_opponent), \
-                        str(old_strat_disc_fact)]
+                        str(old_strat_disc_fact), str(new_eval_count)]
             def_out_name_enj = "def_" + env_short_name + "_randNoAndB_epoch" + \
                 str(new_epoch) + "_r" + str(retrain_number) + "_enj"
             if is_retrain_opponent:
@@ -195,7 +195,7 @@ def run_evaluation_all_def(env_short_name, new_epoch, env_name_vs_att, def_port,
                 subprocess.call(cmd_list, stdout=file)
 
 def run_evaluation_all_att(env_short_name, new_epoch, env_name_def_net, att_port, \
-    port_lock_name, env_short_name_tsv, retrain_iters, old_strat_disc_fact):
+    port_lock_name, env_short_name_tsv, retrain_iters, old_strat_disc_fact, new_eval_count):
     is_train = False
     is_retrain_opponent_options = [True, False]
     for retrain_number in range(retrain_iters + 1):
@@ -207,7 +207,7 @@ def run_evaluation_all_att(env_short_name, new_epoch, env_name_def_net, att_port
                         env_name_def_net, env_short_name, str(new_epoch), \
                         str(retrain_number), str(att_port), port_lock_name, \
                         env_short_name_tsv, str(is_retrain_opponent), \
-                        str(old_strat_disc_fact)]
+                        str(old_strat_disc_fact), str(new_eval_count)]
             att_out_name_enj = "att_" + env_short_name + "_randNoAndB_epoch" + \
                 str(new_epoch) + "_r" + str(retrain_number) + "_enj"
             if is_retrain_opponent:
@@ -224,7 +224,7 @@ def run_evaluation_all_att(env_short_name, new_epoch, env_name_def_net, att_port
 def run_retrain_both(graph_name, env_short_name, new_epoch, env_name_vs_att, \
             env_name_vs_def, port_lock_name, def_port, env_short_name_tsv, \
             max_timesteps_def_init, max_timesteps_def_retrain, max_timesteps_att_init, \
-             max_timesteps_att_retrain, retrain_iters, old_strat_disc_fact):
+             max_timesteps_att_retrain, retrain_iters, old_strat_disc_fact, new_eval_count):
 
     ### Setup
 
@@ -266,11 +266,11 @@ def run_retrain_both(graph_name, env_short_name, new_epoch, env_name_vs_att, \
 
     run_evaluation_all_def(env_short_name, new_epoch, \
         env_name_vs_att, def_port, port_lock_name, env_short_name_tsv, retrain_iters, \
-        old_strat_disc_fact)
+        old_strat_disc_fact, new_eval_count)
 
     run_evaluation_all_att(env_short_name, new_epoch, \
         env_name_vs_def, att_port, port_lock_name, env_short_name_tsv, retrain_iters, \
-        old_strat_disc_fact)
+        old_strat_disc_fact, new_eval_count)
 
     ### Takedown
 
@@ -282,15 +282,15 @@ def run_retrain_both(graph_name, env_short_name, new_epoch, env_name_vs_att, \
 '''
 example: python3 train_retrain_both.py SepLayerGraph0_noAnd_B.json sl29 16 \
     DepgraphJavaEnvVsMixedAtt29N-v0 DepgraphJavaEnvVsMixedDef29N-v0 s29 25333 \
-    sl29_randNoAndB 700000 400000 700000 400000 3 0.7
+    sl29_randNoAndB 700000 400000 700000 400000 3 0.7 1000
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 15:
-        raise ValueError("Need 14 args: graph_name, env_short_name, new_epoch, " + \
+    if len(sys.argv) != 16:
+        raise ValueError("Need 15 args: graph_name, env_short_name, new_epoch, " + \
             "env_name_vs_att, env_name_vs_def, port_lock_name, def_port " + \
             "env_short_name_tsv, max_timesteps_def_init, max_timesteps_def_retrain, " + \
             "max_timesteps_att_init, max_timesteps_att_retrain, retrain_iters, " + \
-            "old_strat_disc_fact")
+            "old_strat_disc_fact, new_eval_count")
     GRAPH_NAME = sys.argv[1]
     ENV_SHORT_NAME = sys.argv[2]
     NEW_EPOCH = int(sys.argv[3])
@@ -305,7 +305,8 @@ if __name__ == '__main__':
     MAX_TIMESTEPS_ATT_RETRAIN = int(sys.argv[12])
     RETRAIN_ITERS = int(sys.argv[13])
     OLD_STRAT_DISC_FACT = float(sys.argv[14])
+    NEW_EVAL_COUNT = int(sys.argv[15])
     run_retrain_both(GRAPH_NAME, ENV_SHORT_NAME, NEW_EPOCH, ENV_NAME_VS_ATT, \
         ENV_NAME_VS_DEF, PORT_LOCK_NAME, DEF_PORT, ENV_SHORT_NAME_TSV, \
         MAX_TIMESTEPS_DEF_INIT, MAX_TIMESTEPS_DEF_RETRAIN, MAX_TIMESTEPS_ATT_INIT, \
-        MAX_TIMESTEPS_ATT_RETRAIN, RETRAIN_ITERS, OLD_STRAT_DISC_FACT)
+        MAX_TIMESTEPS_ATT_RETRAIN, RETRAIN_ITERS, OLD_STRAT_DISC_FACT, NEW_EVAL_COUNT)

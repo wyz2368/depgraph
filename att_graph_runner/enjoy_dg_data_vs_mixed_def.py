@@ -15,7 +15,8 @@ def unlock_eval_att(port_lock_name):
     with open(lock_name, 'w') as file:
         file.write("0\n")
 
-def main(env_name, env_short_name, new_epoch, att_port, port_lock_name, env_short_name_tsv):
+def main(env_name, env_short_name, new_epoch, att_port, port_lock_name, \
+    env_short_name_tsv, num_episodes):
     '''
         Load the network from file, and play games of the depdency
         graph game against opponent.
@@ -23,7 +24,6 @@ def main(env_name, env_short_name, new_epoch, att_port, port_lock_name, env_shor
         model_name = "depgraph_java_deepq_model2.pkl"
     '''
     model_name = "dg_" + env_short_name + "_dq_mlp_rand_epoch" + str(new_epoch) + "_att.pkl"
-    num_episodes = 1000
 
     start_time = time.time()
 
@@ -70,16 +70,18 @@ def main(env_name, env_short_name, new_epoch, att_port, port_lock_name, env_shor
 
 '''
 python3 enjoy_dg_data_vs_mixed_def.py DepgraphJavaEnvVsMixedDef29N-v0 sl29 15 25335 s29 \
-    sl29_randNoAndB
+    sl29_randNoAndB 1000
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 7:
-        raise ValueError("Need 6 args: env_name_def_net, env_short_name, new_epoch, " + \
-            "att_port, env_short_name_tsv")
+    if len(sys.argv) != 8:
+        raise ValueError("Need 7 args: env_name_def_net, env_short_name, new_epoch, " + \
+            "att_port, env_short_name_tsv, new_eval_count")
     ENV_NAME = sys.argv[1]
     ENV_SHORT_NAME = sys.argv[2]
     NEW_EPOCH = int(sys.argv[3])
     ATT_PORT = int(sys.argv[4])
     PORT_LOCK_NAME = sys.argv[5]
     ENV_SHORT_NAME_TSV = sys.argv[6]
-    main(ENV_NAME, ENV_SHORT_NAME, NEW_EPOCH, ATT_PORT, PORT_LOCK_NAME, ENV_SHORT_NAME_TSV)
+    NEW_EVAL_COUNT = int(sys.argv[7])
+    main(ENV_NAME, ENV_SHORT_NAME, NEW_EPOCH, ATT_PORT, PORT_LOCK_NAME, ENV_SHORT_NAME_TSV, \
+        NEW_EVAL_COUNT)

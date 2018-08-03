@@ -90,7 +90,7 @@ def run_gen_both_payoffs(game_number, env_short_name_payoffs, new_epoch):
 
 def run_train_test_both(graph_name, env_short_name_payoffs, new_epoch, \
     env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
-    max_timesteps_def, max_timesteps_att):
+    max_timesteps_def, max_timesteps_att, new_eval_count):
     is_train = True
     wait_for_def_lock(port_lock_name, is_train)
     lock_def(port_lock_name, is_train)
@@ -101,12 +101,12 @@ def run_train_test_both(graph_name, env_short_name_payoffs, new_epoch, \
 
     run_both(graph_name, env_short_name_payoffs, new_epoch, env_name_vs_mixed_att, \
         env_name_vs_mixed_def, port_lock_name, def_port, env_short_name_tsv, \
-        max_timesteps_def, max_timesteps_att)
+        max_timesteps_def, max_timesteps_att, new_eval_count)
 
 def run_train_retrain_both(graph_name, env_short_name_payoffs, new_epoch, \
     env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
     max_timesteps_def_init, max_timesteps_def_retrain, max_timesteps_att_init, \
-    max_timesteps_att_retrain, save_count, old_strat_disc_fact):
+    max_timesteps_att_retrain, save_count, old_strat_disc_fact, new_eval_count):
     is_train = True
     wait_for_def_lock(port_lock_name, is_train)
     lock_def(port_lock_name, is_train)
@@ -118,7 +118,7 @@ def run_train_retrain_both(graph_name, env_short_name_payoffs, new_epoch, \
     run_retrain_both(graph_name, env_short_name_payoffs, new_epoch, env_name_vs_mixed_att, \
         env_name_vs_mixed_def, port_lock_name, def_port, env_short_name_tsv, \
         max_timesteps_def_init, max_timesteps_def_retrain, max_timesteps_att_init, \
-        max_timesteps_att_retrain, save_count, old_strat_disc_fact)
+        max_timesteps_att_retrain, save_count, old_strat_disc_fact, new_eval_count)
 
 def get_check_if_beneficial(env_short_name_payoffs, new_epoch, is_def):
     '''
@@ -188,7 +188,8 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     env_name_def_net, env_name_att_net, env_name_both, graph_name, \
     env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, old_strat_disc_fact, \
     save_count, port_lock_name, max_timesteps_def_init, \
-    max_timesteps_def_retrain, max_timesteps_att_init, max_timesteps_att_retrain):
+    max_timesteps_def_retrain, max_timesteps_att_init, max_timesteps_att_retrain, \
+    new_eval_count):
     '''
     Run the first epoch (epoch 0) of training. If no beneficial deviation is found, stop.
     Otherwise, begin the next epoch (epoch 1) of training, and stop after the attacker and
@@ -229,7 +230,7 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     # train defender network against current attacker equilibrium and mix of recents
     run_train_test_both(graph_name, env_short_name_payoffs, new_epoch, \
         env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
-        max_timesteps_def_init, max_timesteps_att_init)
+        max_timesteps_def_init, max_timesteps_att_init, new_eval_count)
 
     # check if new defender network is beneficial deviation from old equilibrium
     is_def_beneficial = get_check_if_beneficial(env_short_name_payoffs, new_epoch, True)
@@ -295,7 +296,7 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     run_train_retrain_both(graph_name, env_short_name_payoffs, new_epoch, \
         env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
         max_timesteps_def_init, max_timesteps_def_retrain, max_timesteps_att_init, \
-        max_timesteps_att_retrain, save_count, old_strat_disc_fact)
+        max_timesteps_att_retrain, save_count, old_strat_disc_fact, new_eval_count)
 
     # call select_best_curve.py for attacker and defender
     best_def_index = get_select_best_curve(env_short_name_payoffs, new_epoch, True, \
@@ -335,7 +336,7 @@ def run_continue_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, 
     env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, old_strat_disc_fact, \
     save_count, port_lock_name, max_timesteps_def_init, \
     max_timesteps_def_retrain, max_timesteps_att_init, max_timesteps_att_retrain, \
-    cur_epoch):
+    cur_epoch, new_eval_count):
     new_epoch = cur_epoch + 1
 
     result_file_name = get_add_data_result_file_name(game_number, new_epoch, \
@@ -374,7 +375,7 @@ def run_continue_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, 
     run_train_retrain_both(graph_name, env_short_name_payoffs, new_epoch, \
         env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
         max_timesteps_def_init, max_timesteps_def_retrain, max_timesteps_att_init, \
-        max_timesteps_att_retrain, save_count, old_strat_disc_fact)
+        max_timesteps_att_retrain, save_count, old_strat_disc_fact, new_eval_count)
 
     # call select_best_curve.py for attacker and defender
     best_def_index = get_select_best_curve(env_short_name_payoffs, new_epoch, True, \
@@ -416,7 +417,7 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
         env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, \
         old_strat_disc_fact, save_count, port_lock_name, max_timesteps_def_init, \
         max_timesteps_def_retrain, max_timesteps_att_init, max_timesteps_att_retrain, \
-        cur_epoch, max_new_rounds):
+        cur_epoch, max_new_rounds, new_eval_count):
     '''
     Call method to run first epoch (epoch 0), and beginning of second epoch (epoch 1).
     '''
@@ -446,7 +447,7 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
             graph_name, env_name_vs_mixed_def, env_name_vs_mixed_att, \
             new_col_count, old_strat_disc_fact, save_count, \
             port_lock_name, max_timesteps_def_init, max_timesteps_def_retrain, \
-            max_timesteps_att_init, max_timesteps_att_retrain)
+            max_timesteps_att_init, max_timesteps_att_retrain, new_eval_count)
         if should_continue:
             my_epoch += 2 # first call runs 2 epochs in this case (0 and 1)
             if rounds_left is not None:
@@ -459,7 +460,7 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
             graph_name, env_name_vs_mixed_def, env_name_vs_mixed_att, \
             new_col_count, old_strat_disc_fact, save_count, \
             port_lock_name, max_timesteps_def_init, max_timesteps_def_retrain, \
-            max_timesteps_att_init, max_timesteps_att_retrain, my_epoch)
+            max_timesteps_att_init, max_timesteps_att_retrain, my_epoch, new_eval_count)
         if should_continue:
             my_epoch += 1
             if rounds_left is not None:
@@ -476,18 +477,19 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
 example: python3 master_dq_runner_curve.py 3013 sl29_randNoAndB sl29 \
     DepgraphJava29N-v0 DepgraphJavaEnvAtt29N-v0 DepgraphJavaEnvBoth29N-v0 \
     SepLayerGraph0_noAnd_B.json DepgraphJavaEnvVsMixedDef29N-v0 \
-    DepgraphJavaEnvVsMixedAtt29N-v0 400 0.7 4 s29 700000 400000 700000 400000 0 None
+    DepgraphJavaEnvVsMixedAtt29N-v0 400 0.7 4 s29 700000 400000 700000 400000 0 None 1000
 
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 20:
-        raise ValueError("Need 19 args: game_number, env_short_name_tsv, " + \
+    if len(sys.argv) != 21:
+        raise ValueError("Need 20 args: game_number, env_short_name_tsv, " + \
             "env_short_name_payoffs, env_name_def_net, env_name_att_net, " + \
             "env_name_both, graph_name, env_name_vs_mixed_def, "  + \
-            "env_name_vs_mixed_att, new_col_count, " + \
+            "env_name_vs_mixed_att, new_col_count" + \
             "old_strat_disc_fact, save_count, " + \
             "port_lock_name, max_timesteps_def_init, max_timesteps_def_retrain, " + \
-            "max_timesteps_att_init, max_timesteps_att_retrain, cur_epoch, max_new_rounds")
+            "max_timesteps_att_init, max_timesteps_att_retrain, cur_epoch, " + \
+            "max_new_rounds, new_eval_count")
     GAME_NUMBER = int(sys.argv[1])
     ENV_SHORT_NAME_TSV = sys.argv[2]
     ENV_SHORT_NAME_PAYOFFS = sys.argv[3]
@@ -511,9 +513,10 @@ if __name__ == '__main__':
         MAX_NEW_ROUNDS = None
     else:
         MAX_NEW_ROUNDS = int(MAX_NEW_ROUNDS)
+    NEW_EVAL_COUNT = int(sys.argv[20])
     main(GAME_NUMBER, ENV_SHORT_NAME_TSV, ENV_SHORT_NAME_PAYOFFS, \
         ENV_NAME_DEF_NET, ENV_NAME_ATT_NET, ENV_NAME_BOTH, GRAPH_NAME, \
         ENV_NAME_VS_MIXED_DEF, ENV_NAME_VS_MIXED_ATT, NEW_COL_COUNT, \
         OLD_STRAT_DISC_FACT, SAVE_COUNT, PORT_LOCK_NAME, \
         MAX_TIMESTEPS_DEF_INIT, MAX_TIMESTEPS_DEF_RETRAIN, MAX_TIMESTEPS_ATT_INIT, \
-        MAX_TIMESTEPS_ATT_RETRAIN, CUR_EPOCH, MAX_NEW_ROUNDS)
+        MAX_TIMESTEPS_ATT_RETRAIN, CUR_EPOCH, MAX_NEW_ROUNDS, NEW_EVAL_COUNT)
