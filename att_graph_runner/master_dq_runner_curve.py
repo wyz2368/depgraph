@@ -62,7 +62,8 @@ def run_create_tsv_curve(game_number, cur_epoch, env_short_name_tsv, \
         str(cur_epoch), env_short_name_tsv, env_short_name_payoffs]
     subprocess.call(cmd_list)
 
-def run_create_retrain_strat(old_strat_disc_fact, env_short_name_payoffs):
+def run_create_retrain_strat(old_strat_disc_fact, env_short_name_payoffs, \
+    env_short_name_tsv):
     is_defender_items = [True, False]
     for is_defender in is_defender_items:
         tsv_names_file = "def_strat_files_" + env_short_name_payoffs + ".txt"
@@ -70,7 +71,7 @@ def run_create_retrain_strat(old_strat_disc_fact, env_short_name_payoffs):
             tsv_names_file = "att_strat_files_" + env_short_name_payoffs + ".txt"
         cmd_list = ["python3", "create_weighted_mixed_strat.py", \
             str(old_strat_disc_fact), str(RETRAIN_MIN_WEIGHT), str(is_defender), \
-            tsv_names_file, env_short_name_payoffs]
+            tsv_names_file, env_short_name_tsv]
         subprocess.call(cmd_list)
 
 def run_update_strats(env_short_name_tsv, port_lock_name, new_epoch):
@@ -284,7 +285,8 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     # vs. new defender equilibrium
     run_gen_both_payoffs(game_number, env_short_name_payoffs, new_epoch)
 
-    run_create_retrain_strat(old_strat_disc_fact, env_short_name_payoffs)
+    run_create_retrain_strat(old_strat_disc_fact, env_short_name_payoffs, \
+        env_short_name_tsv)
 
     print("\tWill train and test both, epoch: " + str(new_epoch)+ ", time: " + \
         str(datetime.datetime.now()), flush=True)
@@ -362,7 +364,8 @@ def run_continue_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, 
     # vs. new defender equilibrium
     run_gen_both_payoffs(game_number, env_short_name_payoffs, new_epoch)
 
-    run_create_retrain_strat(old_strat_disc_fact, env_short_name_payoffs)
+    run_create_retrain_strat(old_strat_disc_fact, env_short_name_payoffs, \
+        env_short_name_tsv)
 
     print("\tWill train and test both, epoch: " + str(new_epoch)+ ", time: " + \
         str(datetime.datetime.now()), flush=True)
