@@ -81,8 +81,8 @@ example: python3 enjoy_depgraph_data_vs_mixed_retraining.py \
     DepgraphJavaEnvVsMixedAtt29N-v0 s29m1 7 0 25333 s29 sl29_randNoAndB True 0.7 1000
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 10:
-        raise ValueError("Need 9 args: env_name_vs_att, env_short_name, new_epoch, " + \
+    if len(sys.argv) != 11:
+        raise ValueError("Need 10 args: env_name_vs_att, env_short_name, new_epoch, " + \
             "retrain_number, def_port, port_lock_name, env_short_name_tsv, " + \
             "is_vs_retrain, old_strat_disc_fact, new_eval_count")
     ENV_NAME_VS_ATT = sys.argv[1]
