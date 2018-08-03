@@ -171,7 +171,7 @@ def run_evaluation_all_def(env_short_name, new_epoch, env_name_vs_att, def_port,
     port_lock_name, env_short_name_tsv, retrain_iters, old_strat_disc_fact, new_eval_count):
     is_train = False
     is_retrain_opponent_options = [True, False]
-    for retrain_number in range(retrain_iters + 1):
+    for retrain_number in range(retrain_iters):
         for is_retrain_opponent in is_retrain_opponent_options:
             wait_for_def_lock(port_lock_name, is_train)
             lock_def(port_lock_name, is_train)
@@ -198,7 +198,7 @@ def run_evaluation_all_att(env_short_name, new_epoch, env_name_def_net, att_port
     port_lock_name, env_short_name_tsv, retrain_iters, old_strat_disc_fact, new_eval_count):
     is_train = False
     is_retrain_opponent_options = [True, False]
-    for retrain_number in range(retrain_iters + 1):
+    for retrain_number in range(retrain_iters):
         for is_retrain_opponent in is_retrain_opponent_options:
             wait_for_att_lock(port_lock_name, is_train)
             lock_att(port_lock_name, is_train)

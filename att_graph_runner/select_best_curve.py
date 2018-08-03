@@ -105,7 +105,7 @@ def get_best_retrain_number(env_short_name, is_defender, new_epoch, save_count):
 
     vs_eq_payoffs = []
     vs_retrain_payoffs = []
-    for retrain_number in range(save_count + 1):
+    for retrain_number in range(save_count):
         vs_eq_file = get_eval_file_name(env_short_name, is_defender, False, new_epoch, \
             retrain_number)
         vs_eq_payoff = get_net_payoff(vs_eq_file)
