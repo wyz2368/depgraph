@@ -30,10 +30,12 @@ def get_truth_value(str_input):
 
 def get_net_payoff(file_name):
     lines = get_file_lines(file_name)
-    line_3 = lines[2]
     prefix = "Mean reward: "
-    value_str = line_3[len(prefix):]
-    return float(value_str)
+    for i in range(2, len(lines)):
+        if lines[i].startswith(prefix):
+            value_str = lines[i][len(prefix):]
+            return float(value_str)
+    raise ValueError("Prefix not found: " + str(lines))
 
 def get_eq_payoff(file_name):
     eq_json = get_json_data(file_name)
