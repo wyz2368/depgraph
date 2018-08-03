@@ -24,7 +24,7 @@ def main(env_name_vs_def, env_short_name, new_epoch, retrain_number, att_port, \
     model_name = "dg_" + env_short_name + "_dq_mlp_rand_epoch" + str(new_epoch) + "_att.pkl"
     if retrain_number > 0:
         model_name = "dg_" + env_short_name + "_dq_mlp_retrain_epoch" + str(new_epoch) + \
-            "_r" + str(retrain_number) + "_att.pkl"
+            "_att_r" + str(retrain_number) + ".pkl"
 
     start_time = time.time()
 

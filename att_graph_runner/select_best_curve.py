@@ -81,7 +81,7 @@ def get_eval_file_name(env_short_name, is_defender, is_retrain_opponent, new_epo
         result += "_vsEq.txt"
     return result
 
-def get_best_retrain_number(env_short_name, is_defender, new_epoch, save_count):
+def get_best_retrain_number(env_short_name, new_epoch, is_defender, save_count):
     '''
     Returns the index in {0, . . ., save_count} of the best trained or retrained agent,
     as defined below. The agent will be a defender if is_defender, in new_epoch round of
