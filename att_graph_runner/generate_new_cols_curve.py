@@ -31,11 +31,11 @@ def get_net_scope(net_name):
     epoch_index = net_name.find('epoch')
     num_start_index = epoch_index + len("epoch")
     num_end_index = None
-    if "_att.pkl" in net_name:
-        # attacker network
-        num_end_index = net_name.find("_att.pkl", num_start_index)
+    if "_att.pkl" in net_name or "_r" in net_name:
+        # attacker network or retrained network
+        num_end_index = net_name.find("_", num_start_index)
     else:
-        # defender network
+        # defender network, not retrained
         num_end_index = net_name.find(".pkl", num_start_index)
     return "deepq_train_e" + net_name[num_start_index : num_end_index]
 
