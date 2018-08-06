@@ -45,3 +45,13 @@ The code was written by Thanh Nguyen with help from Mason Wright.
     * Into folder: depgraph -> Finish
 11. File -> Import -> General -> File System -> depgraph/testDirs
     * Into folder: depgraph/testDirs -> Finish
+
+## Jar Dependencies
+* Apache Commons Math: http://commons.apache.org/proper/commons-math/download_math.cgi
+* CPLEX Optimizer: https://www.ibm.com/analytics/cplex-optimizer
+* Google Gson: https://mvnrepository.com/artifact/com.google.code.gson/gson/2.2.4
+* JSON-Java: https://github.com/stleary/JSON-java
+* JGraphT: https://jgrapht.org/
+* JGraphX: https://github.com/jgraph/jgraphx
+* Json-Simple: https://code.google.com/archive/p/json-simple/
+* Py4J: https://www.py4j.org/install.html
