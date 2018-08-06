@@ -33,6 +33,10 @@ The code was written by Thanh Nguyen with help from Mason Wright.
         * gson-2.2.4.jar
         * java-json.jar
         * jgrapht-core-1.0.1.jar
+        * jgrapht-ext-1.1.0.jar
+        * jgraphx.jar
+        * json-simple-3.0.2.jar
+        * py4j0.10.6.jar
 8. File -> Import -> General -> File System -> depgraph/graphs
     * Into folder: depgraph/graphs -> Finish
 9. File -> Import -> General -> File System -> depgraph/simspecs
