@@ -45,8 +45,6 @@ def main(env_name_vs_att, env_short_name, new_epoch, def_port, port_lock_name, \
     if new_epoch > 1:
         my_scope = "deepq_train_e" + str(new_epoch)
 
-
-
     prefix_for_save = "dg_" + env_short_name + "_dq_mlp_retrain_epoch" + str(new_epoch)
     fmt = "{0:.2f}"
     retrain_config_str = env_short_name_tsv + "_epoch" + str(new_epoch) + "_mixed" + \
