@@ -46,10 +46,10 @@ The code was written by Thanh Nguyen with help from Mason Wright.
     * Into folder: depgraph/testDirs -> Finish
 
 ## Jar Dependencies
-* Apache Commons Math: http://commons.apache.org/proper/commons-math/download_math.cgi
+* Apache Commons Math 3.6.1: http://commons.apache.org/proper/commons-math/download_math.cgi
 * CPLEX Optimizer: https://www.ibm.com/analytics/cplex-optimizer
-* Google Gson: https://mvnrepository.com/artifact/com.google.code.gson/gson/2.2.4
-* JGraphT: https://jgrapht.org/
+* Google Gson 2.2.4: https://mvnrepository.com/artifact/com.google.code.gson/gson/2.2.4
+* JGraphT 1.0.1: https://jgrapht.org/
 * JGraphX: https://github.com/jgraph/jgraphx
-* Json-Simple: https://cliftonlabs.github.io/json-simple/
-* Py4J: https://www.py4j.org/install.html
+* Json-Simple 3.0.2: https://cliftonlabs.github.io/json-simple/
+* Py4J 0.10.6: https://www.py4j.org/install.html
