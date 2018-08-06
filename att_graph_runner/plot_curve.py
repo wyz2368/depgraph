@@ -67,7 +67,7 @@ def make_plot(vs_eq_gains, vs_retrain_gains, winner_index, save_name):
     # slope = -1.0 * (1.0 - CUR_EQ_WEIGHT) / CUR_EQ_WEIGHT
     colors = ['g'] * len(vs_eq_gains)
     colors[winner_index] = 'r'
-    markers = ['o' * len(vs_eq_gains)]
+    markers = ['o'] * len(vs_eq_gains)
     markers[winner_index] = 'x'
 
     fig, ax = plt.subplots()
