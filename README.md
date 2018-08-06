@@ -31,7 +31,6 @@ The code was written by Thanh Nguyen with help from Mason Wright.
         * commons-math3-3.6.1.jar
         * cplex.jar
         * gson-2.2.4.jar
-        * java-json.jar
         * jgrapht-core-1.0.1.jar
         * jgrapht-ext-1.1.0.jar
         * jgraphx.jar
@@ -50,7 +49,6 @@ The code was written by Thanh Nguyen with help from Mason Wright.
 * Apache Commons Math: http://commons.apache.org/proper/commons-math/download_math.cgi
 * CPLEX Optimizer: https://www.ibm.com/analytics/cplex-optimizer
 * Google Gson: https://mvnrepository.com/artifact/com.google.code.gson/gson/2.2.4
-* JSON-Java: https://github.com/stleary/JSON-java
 * JGraphT: https://jgrapht.org/
 * JGraphX: https://github.com/jgraph/jgraphx
 * Json-Simple: https://code.google.com/archive/p/json-simple/
