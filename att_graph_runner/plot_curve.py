@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 import sys
 import matplotlib.pyplot as plt
 from select_best_curve import CUR_EQ_WEIGHT, get_cur_eq_payoff, get_eval_file_name, \
@@ -64,17 +66,29 @@ def get_values(env_short_name, new_epoch, is_defender, save_count):
     return vs_eq_gains, vs_retrain_gains, winner_index
 
 def make_plot(vs_eq_gains, vs_retrain_gains, winner_index, save_name):
-    # slope = -1.0 * (1.0 - CUR_EQ_WEIGHT) / CUR_EQ_WEIGHT
-    colors = ['g'] * len(vs_eq_gains)
-    colors[winner_index] = 'r'
-    markers = ['o'] * len(vs_eq_gains)
-    markers[winner_index] = 'x'
-
     fig, ax = plt.subplots()
-    ax.scatter(vs_retrain_gains, vs_eq_gains, color=colors, marker=markers)
-
     for i in range(len(vs_eq_gains)):
-        ax.annotate(str(i), (vs_retrain_gains[i], vs_eq_gains[i]))
+        if i == winner_index:
+            ax.scatter(vs_retrain_gains[i], vs_eq_gains[i], color='g', marker='o', s=100)
+        else:
+            ax.scatter(vs_retrain_gains[i], vs_eq_gains[i], color='r', marker='x', s=100)
+        ax.annotate(str(i), (vs_retrain_gains[i], vs_eq_gains[i]), fontsize=16)
+
+    ax.axhline(y=0, color='gray', lw=2.0, linestyle='--')
+    ax.axvline(x=0, color='gray', lw=2.0, linestyle='--')
+
+    # slope = -1.0 * (1.0 - CUR_EQ_WEIGHT) / CUR_EQ_WEIGHT
+
+    # Hide the right and top spines
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+
+    # Only show ticks on the left and bottom spines
+    ax.yaxis.set_ticks_position('left')
+    ax.xaxis.set_ticks_position('bottom')
+
+    plt.ylabel('Gain vs. current eq', fontsize=20)
+    plt.xlabel('Improvement vs. eq mix,\nover net 0', fontsize=20)
 
     fig.savefig(save_name, bbox_inches='tight')
 
