@@ -9,6 +9,8 @@ The code was written by Thanh Nguyen with help from Mason Wright.
 
 1. git clone git@strategicreasoning.eecs.umich.edu:masondw/depgraph.git
     * Clone the repository, editing above ssh link as needed
+    * Can also use HTML link, like:
+        * git clone https://strategicreasoning.eecs.umich.edu/masondw/depgraph.git
 2. git checkout my_awesome_branch
     * Switch to your personal branch, assuming it exists
 3. git branch
