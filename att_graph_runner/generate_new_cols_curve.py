@@ -32,7 +32,7 @@ def get_net_scope(net_name):
     epoch_index = net_name.find('epoch')
     num_start_index = epoch_index + len("epoch")
     num_end_index = None
-    retrain_pattern = re.compile("r_[0-9]+")
+    retrain_pattern = re.compile("_r[0-9]+")
     if "_att.pkl" in net_name or retrain_pattern.search(net_name):
         # attacker network or retrained network
         num_end_index = net_name.find("_", num_start_index)
