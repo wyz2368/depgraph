@@ -46,6 +46,9 @@ The code was written by Thanh Nguyen with help from Mason Wright.
     * Into folder: depgraph -> Finish
 11. File -> Import -> General -> File System -> depgraph/testDirs
     * Into folder: depgraph/testDirs -> Finish
+12. Optional: Get helpful add-ons for Eclipse
+    * Find Bugs: http://findbugs.sourceforge.net/
+    * Checkstyle: http://checkstyle.sourceforge.net/
 
 ## Jar Dependencies
 * Apache Commons Math 3.6.1: http://commons.apache.org/proper/commons-math/download_math.cgi
