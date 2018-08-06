@@ -9,6 +9,7 @@ Requirements:
 import sys
 import json
 import time
+import re
 import os.path
 
 from cli_enjoy_dg_two_sided import get_payoffs_both
@@ -31,7 +32,8 @@ def get_net_scope(net_name):
     epoch_index = net_name.find('epoch')
     num_start_index = epoch_index + len("epoch")
     num_end_index = None
-    if "_att.pkl" in net_name or "_r" in net_name:
+    retrain_pattern = re.compile("r_[0-9]+")
+    if "_att.pkl" in net_name or retrain_pattern.search(net_name):
         # attacker network or retrained network
         num_end_index = net_name.find("_", num_start_index)
     else:
@@ -199,7 +201,7 @@ def main(env_name_def_net, env_name_att_net, env_name_both, \
     print_json(out_file_name, result_dict)
 
 '''
-example: python3 generate_new_cols.py DepgraphJava29N-v0 DepgraphJavaEnvAtt29N-v0 \
+example: python3 generate_new_cols_curve.py DepgraphJava29N-v0 DepgraphJavaEnvAtt29N-v0 \
     DepgraphJavaEnvBoth29N-v0 400 1 sl29 dg_s29_dq_mlp_rand_epoch17_afterRetrain_r1.pkl \
     None SepLayerGraph0_noAnd_B.json
 '''

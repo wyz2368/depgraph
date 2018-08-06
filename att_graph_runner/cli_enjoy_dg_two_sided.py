@@ -52,6 +52,8 @@ def get_payoffs_both_with_sd(env_name_both, num_sims, def_model_name, att_model_
                 cur_agent = attacker
                 cur_sess = att_sess
             with cur_sess.as_default():
+                if str(obs.get_shape()) == "(?, 240)": # kludge
+                    obs = obs.reshape(1, obs.size)
                 obs, done, _, is_def_turn = env.step(cur_agent(obs)[0])
         def_rewards.append(env.get_defender_reward())
         att_rewards.append(env.get_attacker_reward())
@@ -128,8 +130,8 @@ def get_payoffs_both(env_name_both, num_sims, def_model_name, att_model_name, gr
     my_process.kill()
     return result
 
-# DepgraphJavaEnvBoth-v0 100 dg_rand_30n_noAnd_B_eq_2.pkl dg_dqmlp_rand30NoAnd_B_att_fixed.pkl
-# RandomGraph30N100E6T1_B.json
+# DepgraphJavaEnvBoth-v0 100 dg_rand_30n_noAnd_B_eq_2.pkl \
+# dg_dqmlp_rand30NoAnd_B_att_fixed.pkl RandomGraph30N100E6T1_B.json
 if __name__ == '__main__':
     if len(sys.argv) != 8:
         raise ValueError("Need 7 args: env_name_both, num_sims, def_model_name, " + \
