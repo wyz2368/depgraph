@@ -37,7 +37,7 @@ The code was written by Thanh Nguyen with help from Mason Wright.
         * json-simple-3.0.2.jar
         * py4j0.10.6.jar
     * add external libraries:
-        * JUnit 4.0
+        * JUnit 4
 8. File -> Import -> General -> File System -> depgraph/graphs
     * Into folder: depgraph/graphs -> Finish
 9. File -> Import -> General -> File System -> depgraph/simspecs
