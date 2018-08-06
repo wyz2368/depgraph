@@ -1,3 +1,4 @@
+
 Setup notes for OpenAI:
 -- notes:
         has worked on srg.eecs.umich.edu and others:
@@ -12,6 +13,8 @@ Setup notes for OpenAI:
                 TensorFlow 1.5.0
             Python3 version 3.5.2
                 python3 -V
+            Matplotlib 2.2.2
+                pip3 install matplotlib
             Java version 1.8.0_162, build 1.8.0_162-8u162-b12-0ubuntu0.16.04.2-b12
                 or:
                 Java version 1.8.0_171, build 1.8.0_171-8u171-b11-0ubuntu0.16.04.1-b11
@@ -78,6 +81,9 @@ Setup notes for OpenAI:
                 python3
                 import tensorflow
                 # may need to downgrade to version 1.5 (see above for pip3 instructions)
+        -- Matplotlib check:
+                python3
+                import matplotlib
         -- OpenAI Gym check:
                 python3
                 import gym
