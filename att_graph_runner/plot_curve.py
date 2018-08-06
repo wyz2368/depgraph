@@ -1,4 +1,5 @@
 import sys
+import matplotlib.pyplot as plt
 from select_best_curve import CUR_EQ_WEIGHT, get_cur_eq_payoff, get_eval_file_name, \
     get_net_payoff
 
@@ -8,13 +9,6 @@ def get_truth_value(str_input):
     if str_input == "False":
         return False
     raise ValueError("Must be True or False: " + str_input)
-
-def main(env_short_name, new_epoch, is_defender, save_count):
-    vs_eq_gains, vs_retrain_gains, winner = get_values(env_short_name, new_epoch, \
-        is_defender, save_count)
-    print(vs_eq_gains)
-    print(vs_retrain_gains)
-    print(winner)
 
 def get_values(env_short_name, new_epoch, is_defender, save_count):
     '''
@@ -64,15 +58,44 @@ def get_values(env_short_name, new_epoch, is_defender, save_count):
             scores.append(float('-inf'))
     if True not in is_eligible:
         return None
-    winner = scores.index(max(scores))
-    if not is_eligible[winner]:
-        raise ValueError("Illegal result: " + str(winner) + ", " + str(is_eligible))
-    return vs_eq_gains, vs_retrain_gains, winner
+    winner_index = scores.index(max(scores))
+    if not is_eligible[winner_index]:
+        raise ValueError("Illegal result: " + str(winner_index) + ", " + str(is_eligible))
+    return vs_eq_gains, vs_retrain_gains, winner_index
 
-# example: python3 plot_best_curve.py d30cd1_randNoAndB 2 True 4
+def make_plot(vs_eq_gains, vs_retrain_gains, winner_index, save_name):
+    # slope = -1.0 * (1.0 - CUR_EQ_WEIGHT) / CUR_EQ_WEIGHT
+    colors = ['g'] * len(vs_eq_gains)
+    colors[winner_index] = 'r'
+    markers = ['o' * len(vs_eq_gains)]
+    markers[winner_index] = 'x'
+
+    fig, ax = plt.subplots()
+    ax.scatter(vs_retrain_gains, vs_eq_gains, color=colors, marker=markers)
+
+    for i in range(len(vs_eq_gains)):
+        ax.annotate(str(i), (vs_retrain_gains[i], vs_eq_gains[i]))
+
+    fig.savefig(save_name, bbox_inches='tight')
+
+def main(env_short_name, new_epoch, is_defender, save_count):
+    vs_eq_gains, vs_retrain_gains, winner_index = get_values(env_short_name, new_epoch, \
+        is_defender, save_count)
+    print(vs_eq_gains)
+    print(vs_retrain_gains)
+    print(winner_index)
+
+    save_name = "curve_" + env_short_name + "_" + str(new_epoch)
+    if is_defender:
+        save_name += "_def.pdf"
+    else:
+        save_name += "_att.pdf"
+    make_plot(vs_eq_gains, vs_retrain_gains, winner_index, save_name)
+
+# example: python3 plot_curve.py d30cd1 2 True 4
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
-        raise ValueError("Needs 3 arguments: env_short_name, new_epoch, is_defender, " + \
+    if len(sys.argv) != 5:
+        raise ValueError("Needs 4 arguments: env_short_name, new_epoch, is_defender, " + \
             "save_count")
     ENV_SHORT_NAME = sys.argv[1]
     NEW_EPOCH = int(sys.argv[2])
