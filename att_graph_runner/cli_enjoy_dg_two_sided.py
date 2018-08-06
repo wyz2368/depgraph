@@ -52,8 +52,6 @@ def get_payoffs_both_with_sd(env_name_both, num_sims, def_model_name, att_model_
                 cur_agent = attacker
                 cur_sess = att_sess
             with cur_sess.as_default():
-                if str(obs.get_shape()) == "(?, 240)": # kludge
-                    obs = obs.reshape(1, obs.size)
                 obs, done, _, is_def_turn = env.step(cur_agent(obs)[0])
         def_rewards.append(env.get_defender_reward())
         att_rewards.append(env.get_attacker_reward())
