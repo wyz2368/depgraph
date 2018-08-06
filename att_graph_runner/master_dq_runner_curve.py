@@ -317,7 +317,7 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
         def_model_to_add = get_def_model_name(env_short_name_payoffs, new_epoch, \
             best_def_index)
     if best_att_index is not None:
-        att_model_to_add = get_def_model_name(env_short_name_payoffs, new_epoch, \
+        att_model_to_add = get_att_model_name(env_short_name_payoffs, new_epoch, \
             best_att_index)
     run_gen_new_cols(env_name_def_net, env_name_att_net, env_name_both, new_col_count, \
         new_epoch, env_short_name_payoffs, def_model_to_add, att_model_to_add, graph_name)
@@ -396,7 +396,7 @@ def run_continue_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, 
         def_model_to_add = get_def_model_name(env_short_name_payoffs, new_epoch, \
             best_def_index)
     if best_att_index is not None:
-        att_model_to_add = get_def_model_name(env_short_name_payoffs, new_epoch, \
+        att_model_to_add = get_att_model_name(env_short_name_payoffs, new_epoch, \
             best_att_index)
     run_gen_new_cols(env_name_def_net, env_name_att_net, env_name_both, new_col_count, \
         new_epoch, env_short_name_payoffs, def_model_to_add, att_model_to_add, graph_name)
