@@ -51,5 +51,5 @@ The code was written by Thanh Nguyen with help from Mason Wright.
 * Google Gson: https://mvnrepository.com/artifact/com.google.code.gson/gson/2.2.4
 * JGraphT: https://jgrapht.org/
 * JGraphX: https://github.com/jgraph/jgraphx
-* Json-Simple: https://code.google.com/archive/p/json-simple/
+* Json-Simple: https://cliftonlabs.github.io/json-simple/
 * Py4J: https://www.py4j.org/install.html
