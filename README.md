@@ -5,6 +5,15 @@ They represent an attacker and defender seeking control over a computer network.
 
 The code was written by Thanh Nguyen with help from Mason Wright.
 
+## Checking out from GitLab
+
+1. git clone git@strategicreasoning.eecs.umich.edu:masondw/depgraph.git
+    * Clone the repository, editing above ssh link as needed
+2. git checkout my_awesome_branch
+    * Switch to your personal branch, assuming it exists
+3. git branch
+    * Verify you are using your own branch
+
 ## Eclipse build
 
 1. File -> Import -> Git -> Projects form Git
