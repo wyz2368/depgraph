@@ -88,7 +88,10 @@ if __name__ == "__main__":
     NEW_EPOCH = int(sys.argv[2])
     DEF_PKL_PREFIX = sys.argv[3]
     ATT_PKL_PREFIX = sys.argv[4]
-    SHOULD_ADD_DEF = get_truth_value(sys.argv[5])
-    SHOULD_ATT_ATT = get_truth_value(sys.argv[6])
-    main(ENV_SHORT_NAME, NEW_EPOCH, DEF_PKL_PREFIX, ATT_PKL_PREFIX, SHOULD_ADD_DEF, \
-        SHOULD_ATT_ATT)
+    try:
+        SHOULD_ADD_DEF = get_truth_value(sys.argv[5])
+        SHOULD_ADD_ATT = get_truth_value(sys.argv[6])
+        main(ENV_SHORT_NAME, NEW_EPOCH, DEF_PKL_PREFIX, ATT_PKL_PREFIX, SHOULD_ADD_DEF, \
+            SHOULD_ADD_ATT)
+    except ValueError:
+        sys.exit(1)

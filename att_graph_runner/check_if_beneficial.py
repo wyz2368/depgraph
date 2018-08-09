@@ -54,7 +54,11 @@ def check_for_cli(env_short_name, new_epoch, is_defender):
             str(new_epoch) + "_enj.txt"
 
     eq_payoff = get_eq_payoff(eq_payoff_file)
-    net_payoff = get_net_payoff(net_payoff_file)
+    try:
+        net_payoff = get_net_payoff(net_payoff_file)
+    except ValueError:
+        sys.exit(1)
+
     return net_payoff > eq_payoff
 
 def main(env_short_name, new_epoch, is_defender):
@@ -66,5 +70,9 @@ if __name__ == "__main__":
         raise ValueError("Needs 3 arguments: env_short_name, new_epoch, is_defender")
     ENV_SHORT_NAME = sys.argv[1]
     NEW_EPOCH = int(sys.argv[2])
-    IS_DEFENDER = get_truth_value(sys.argv[3])
+    try:
+        IS_DEFENDER = get_truth_value(sys.argv[3])
+    except ValueError:
+        sys.exit(1)
+
     main(ENV_SHORT_NAME, NEW_EPOCH, IS_DEFENDER)

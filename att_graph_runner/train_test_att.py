@@ -113,7 +113,10 @@ def main(graph_name, env_short_name, new_epoch, env_name_vs_def, def_port, \
 
     is_train = True
     wait_for_att_lock(port_lock_name, is_train)
-    lock_att(port_lock_name, is_train)
+    try:
+        lock_att(port_lock_name, is_train)
+    except ValueError:
+        sys.exit(1)
 
     write_att_port(port_lock_name, is_train, att_port)
     run_training_att(env_short_name, new_epoch, env_name_vs_def, att_port, port_lock_name, \
@@ -121,7 +124,11 @@ def main(graph_name, env_short_name, new_epoch, env_name_vs_def, def_port, \
 
     is_train = False
     wait_for_att_lock(port_lock_name, is_train)
-    lock_att(port_lock_name, is_train)
+    try:
+        lock_att(port_lock_name, is_train)
+    except ValueError:
+        sys.exit(1)
+
     write_att_port(port_lock_name, is_train, att_port)
     run_evaluation_att(env_short_name, new_epoch, env_name_vs_def, att_port, \
         port_lock_name, env_short_name_tsv)

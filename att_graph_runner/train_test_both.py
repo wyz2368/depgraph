@@ -236,13 +236,19 @@ def run_both(graph_name, env_short_name, new_epoch, env_name_vs_att, env_name_vs
     is_train = False
 
     wait_for_def_lock(port_lock_name, is_train)
-    lock_def(port_lock_name, is_train)
+    try:
+        lock_def(port_lock_name, is_train)
+    except ValueError:
+        sys.exit(1)
     write_def_port(port_lock_name, is_train, def_port)
     def_process_enj, def_file_enj = run_evaluation_def(env_short_name, new_epoch, \
         env_name_vs_att, def_port, port_lock_name, env_short_name_tsv, new_eval_count)
 
     wait_for_att_lock(port_lock_name, is_train)
-    lock_att(port_lock_name, is_train)
+    try:
+        lock_att(port_lock_name, is_train)
+    except ValueError:
+        sys.exit(1)
     write_att_port(port_lock_name, is_train, att_port)
     att_process_enj, att_file_enj = run_evaluation_att(env_short_name, new_epoch, \
         env_name_vs_def, att_port, port_lock_name, env_short_name_tsv, new_eval_count)

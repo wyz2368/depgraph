@@ -58,8 +58,11 @@ def check_for_missing_payoffs(game_data):
     Check for combinations of attacker strategy and defender strategy from the role strategy
     lists, that do not have corresponding payoffs.
     '''
-    defender_strats = get_defender_strats(game_data)
-    attacker_strats = get_attacker_strats(game_data)
+    try:
+        defender_strats = get_defender_strats(game_data)
+        attacker_strats = get_attacker_strats(game_data)
+    except ValueError:
+        sys.exit(1)
     found_missing = False
     for defender in defender_strats:
         for attacker in attacker_strats:
@@ -75,8 +78,11 @@ def check_for_extra_payoffs(game_data):
     Check for payoff entries where either the defender strategy or attacker strategy
     is not present in the role strategy list.
     '''
-    defender_strats = get_defender_strats(game_data)
-    attacker_strats = get_attacker_strats(game_data)
+    try:
+        defender_strats = get_defender_strats(game_data)
+        attacker_strats = get_attacker_strats(game_data)
+    except ValueError:
+        sys.exit(1)
 
     missing_defs = set()
     missing_atts = set()
@@ -161,9 +167,12 @@ def check_game(game_file):
     and print out their names and all payoff tuples
     '''
     game_data = get_json_data(game_file)
-    no_dups = check_for_duplicates(game_data)
     no_missing = check_for_missing_payoffs(game_data)
-    no_extra = check_for_extra_payoffs(game_data)
+    try:
+        no_extra = check_for_extra_payoffs(game_data)
+        no_dups = check_for_duplicates(game_data)
+    except ValueError:
+        sys.exit(1)
     return no_dups and no_missing and no_extra
 
 if __name__ == '__main__':

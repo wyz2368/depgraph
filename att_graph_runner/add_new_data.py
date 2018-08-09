@@ -64,7 +64,11 @@ def add_defender_strategy(game_data, new_strategy):
     '''
     Add the new strategy name go game data -> "role" of "name" "defender" -> "strategies"
     '''
-    def_role = get_defender_role(game_data)
+    try:
+        def_role = get_defender_role(game_data)
+    except ValueError:
+        sys.exit(1)
+
     def_strategies = def_role["strategies"]
     def_strategies.append(new_strategy)
 
@@ -72,7 +76,11 @@ def add_attacker_strategy(game_data, new_strategy):
     '''
     Add the new strategy name go game data -> "role" of "name" "attacker" -> "strategies"
     '''
-    att_role = get_attacker_role(game_data)
+    try:
+        att_role = get_attacker_role(game_data)
+    except ValueError:
+        sys.exit(1)
+
     att_strategies = att_role["strategies"]
     att_strategies.append(new_strategy)
 
@@ -209,7 +217,11 @@ def augment_game_data(game_data, new_data):
     if def_strat_name is None and att_strat_name is None:
         raise ValueError("Both strategy names cannot be None.")
 
-    original_num_sims = get_original_num_sims(game_data)
+    try:
+        original_num_sims = get_original_num_sims(game_data)
+    except ValueError:
+        sys.exit(1)
+
     new_num_sims = new_data["num_sims"]
 
     next_profile_id = get_max_profile_id(game_data) + 1
@@ -218,10 +230,13 @@ def augment_game_data(game_data, new_data):
         (def_strat, att_strat, def_payoff, att_payoff) = result_to_add
         if def_strat in game_data and att_strat in game_data[def_strat]:
             print("Danger: duplicate profile: " + def_strat + " " + att_strat)
-            sys.exit()
-        add_profile(game_data, def_strat, att_strat, def_payoff, att_payoff, \
-                    next_profile_id, next_symmetry_group_id, \
-                    original_num_sims, new_num_sims)
+            sys.exit(1)
+        try:
+            add_profile(game_data, def_strat, att_strat, def_payoff, att_payoff, \
+                        next_profile_id, next_symmetry_group_id, \
+                        original_num_sims, new_num_sims)
+        except ValueError:
+            sys.exit(1)
         next_profile_id += 1
         next_symmetry_group_id += 2
 
@@ -255,7 +270,10 @@ def main(game_number, game_short_name, new_epoch):
     if not os.path.isfile(new_payoffs_file_name):
         raise ValueError(new_payoffs_file_name + " missing.")
     new_data = get_json_data(new_payoffs_file_name)
-    augment_game_data(game_data, new_data)
+    try:
+        augment_game_data(game_data, new_data)
+    except ValueError:
+        sys.exit(1)
 
     result_file_name = get_add_data_result_file_name(game_number, new_epoch, \
         game_short_name)
@@ -266,9 +284,11 @@ def main(game_number, game_short_name, new_epoch):
 
 if __name__ == '__main__':
     if len(sys.argv) != 4:
-        raise ValueError( \
-            "Need 3 args: game_number, game_short_name, new_epoch")
+        raise ValueError("Need 3 args: game_number, game_short_name, new_epoch")
     GAME_NUMBER = int(sys.argv[1])
     GAME_SHORT_NAME = sys.argv[2]
     NEW_EPOCH = int(sys.argv[3])
-    main(GAME_NUMBER, GAME_SHORT_NAME, NEW_EPOCH)
+    try:
+        main(GAME_NUMBER, GAME_SHORT_NAME, NEW_EPOCH)
+    except ValueError:
+        sys.exit(1)

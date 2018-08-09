@@ -92,11 +92,15 @@ def main(game_number, env_short_name, new_epoch):
 
     game_file_name = get_game_file_name(game_number, new_epoch, env_short_name)
     if not os.path.isfile(game_file_name):
-        raise ValueError(game_file_name + " missing.")
+        print(game_file_name + " missing.")
+        sys.exit(1)
     game_data = get_json_data(game_file_name)
 
-    att_payoff, def_payoff = \
-        get_att_and_def_eq_payoffs(game_data, att_mixed_strat, def_mixed_strat)
+    try:
+        att_payoff, def_payoff = \
+            get_att_and_def_eq_payoffs(game_data, att_mixed_strat, def_mixed_strat)
+    except ValueError:
+        sys.exit(1)
 
     att_result = {}
     att_result["mean_reward"] = att_payoff

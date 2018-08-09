@@ -73,7 +73,8 @@ def get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
             result[new_defender_model][att_heuristic] = list(mean_rewards_tuple)
         if att_heuristics:
             duration_att_heuristics = time.time() - start_time_att_heuristics
-            time_per_att_heuristic = int(duration_att_heuristics * 1.0 / len(att_heuristics))
+            time_per_att_heuristic = \
+                int(duration_att_heuristics * 1.0 / len(att_heuristics))
             print("Seconds per attacker heuristic: " + str(time_per_att_heuristic))
 
         # run new_defender_model against all att_networks
@@ -100,7 +101,8 @@ def get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
             result[new_attacker_model][def_heuristic] = list(mean_rewards_tuple)
         if def_heuristics:
             duration_def_heuristics = time.time() - start_time_def_heuristics
-            time_per_def_heuristic = int(duration_def_heuristics * 1.0 / len(def_heuristics))
+            time_per_def_heuristic = \
+                int(duration_def_heuristics * 1.0 / len(def_heuristics))
             print("Seconds per defender heuristic: " + str(time_per_def_heuristic))
 
         # run new_attacker_model against all def_networks
@@ -119,7 +121,8 @@ def get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
         mean_rewards_tuple = get_payoffs_both( \
             env_name_both, num_sims, new_defender_model, new_attacker_model, graph_name, \
             get_net_scope(new_defender_model), get_net_scope(new_attacker_model))
-        print(str((new_defender_model, new_attacker_model)) + "\n" + str(mean_rewards_tuple))
+        print(str((new_defender_model, new_attacker_model)) + "\n" + \
+            str(mean_rewards_tuple))
         result[new_defender_model][new_attacker_model] = list(mean_rewards_tuple)
     duration = time.time() - start_time
     print("Minutes taken: " + str(duration // 60))
@@ -192,9 +195,13 @@ def main(env_name_def_net, env_name_att_net, env_name_both, \
     if not is_att_beneficial:
         new_attacker = None
 
-    result_dict = get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
-        num_sims, new_defender, new_attacker, \
-        def_heuristics, att_heuristics, def_networks, att_networks, graph_name)
+    try:
+        result_dict = get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
+            num_sims, new_defender, new_attacker, \
+            def_heuristics, att_heuristics, def_networks, att_networks, graph_name)
+    except ValueError:
+        sys.exit(1)
+
     print_json(out_file_name, result_dict)
 
 '''
@@ -203,18 +210,25 @@ example: python3 generate_new_cols.py DepgraphJava29N-v0 DepgraphJavaEnvAtt29N-v
 '''
 if __name__ == '__main__':
     if len(sys.argv) != 10:
-        raise ValueError("Need 9 args: env_name_def_net, env_name_att_net, env_name_both, " +
-                         "num_sims, new_epoch, env_short_name, is_def_beneficial, " + \
-                         "is_att_beneficial, graph_name")
+        raise ValueError("Need 9 args: env_name_def_net, env_name_att_net, " + \
+                         "env_name_both, num_sims, new_epoch, env_short_name, " + \
+                         "is_def_beneficial, is_att_beneficial, graph_name")
     ENV_NAME_DEF_NET = sys.argv[1]
     ENV_NAME_ATT_NET = sys.argv[2]
     ENV_NAME_BOTH = sys.argv[3]
     NUM_SIMS = int(float(sys.argv[4]))
     NEW_EPOCH = int(float(sys.argv[5]))
     ENV_SHORT_NAME = sys.argv[6]
-    IS_DEF_BENEFICIAL = get_truth_value(sys.argv[7])
-    IS_ATT_BENEFICIAL = get_truth_value(sys.argv[8])
+    try:
+        IS_DEF_BENEFICIAL = get_truth_value(sys.argv[7])
+        IS_ATT_BENEFICIAL = get_truth_value(sys.argv[8])
+    except ValueError:
+        sys.exit(1)
+
     GRAPH_NAME = sys.argv[9]
-    main(ENV_NAME_DEF_NET, ENV_NAME_ATT_NET, ENV_NAME_BOTH, \
-        NUM_SIMS, NEW_EPOCH, ENV_SHORT_NAME, IS_DEF_BENEFICIAL, \
-        IS_ATT_BENEFICIAL, GRAPH_NAME)
+    try:
+        main(ENV_NAME_DEF_NET, ENV_NAME_ATT_NET, ENV_NAME_BOTH, \
+            NUM_SIMS, NEW_EPOCH, ENV_SHORT_NAME, IS_DEF_BENEFICIAL, \
+            IS_ATT_BENEFICIAL, GRAPH_NAME)
+    except ValueError:
+        sys.exit(1)

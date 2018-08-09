@@ -69,7 +69,11 @@ def run_train_test_both(graph_name, env_short_name_payoffs, new_epoch, \
     is_train = True
     wait_for_def_lock(port_lock_name, is_train)
     lock_def(port_lock_name, is_train)
-    def_port = read_def_port(port_lock_name, is_train)
+    try:
+        def_port = read_def_port(port_lock_name, is_train)
+    except ValueError:
+        sys.exit(1)
+
     def_port += PORTS_PER_ROUND
     if def_port >= MAX_PORT:
         def_port = MIN_PORT
@@ -108,10 +112,14 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
     result_file_name = get_add_data_result_file_name(game_number, new_epoch, \
         env_short_name_payoffs)
     if os.path.isfile(result_file_name):
-        raise ValueError("Cannot run epoch " + str(cur_epoch) + ": " + \
-            result_file_name + " already exists.")
+        print("Cannot run epoch " + str(cur_epoch) + ": " + result_file_name + \
+            " already exists.")
+        sys.exit(1)
 
-    check_game_file(game_number, cur_epoch, env_short_name_payoffs)
+    try:
+        check_game_file(game_number, cur_epoch, env_short_name_payoffs)
+    except ValueError:
+        sys.exit(1)
 
     print("\tWill run gambit, epoch: " + str(cur_epoch)+ ", time: " + \
         str(datetime.datetime.now()), flush=True)
@@ -168,9 +176,14 @@ def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
         env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, def_pkl_prefix, \
         att_pkl_prefix, port_lock_name, max_timesteps_def, max_timesteps_att, \
         max_new_rounds, new_eval_count):
-    check_for_files(game_number, env_short_name_payoffs)
+    try:
+        check_for_files(game_number, env_short_name_payoffs)
+    except ValueError:
+        sys.exit(1)
+
     if not are_all_locks_unlocked(port_lock_name):
-        raise ValueError("Lock is being held: " + port_lock_name)
+        print("Lock is being held: " + port_lock_name)
+        sys.exit(1)
     should_continue = True
     my_epoch = cur_epoch
     print("\tStarting from epoch: " + str(my_epoch), flush=True)

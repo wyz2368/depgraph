@@ -6,7 +6,8 @@ import os.path
 def get_game_file_name(game_number, tsv_epoch, env_short_name):
     if tsv_epoch is None or tsv_epoch == 0:
         return "game_" + str(game_number) + ".json"
-    return "game_" + str(game_number) + "_" + str(tsv_epoch) + "_" + env_short_name + ".json"
+    return "game_" + str(game_number) + "_" + str(tsv_epoch) + "_" + env_short_name + \
+        ".json"
 
 def get_gambit_input_name(game_number, tsv_epoch, env_short_name):
     return "game_" + str(game_number) + "_" + str(tsv_epoch) + "_" + env_short_name + \
@@ -78,9 +79,12 @@ def call_decode_gambit_solution(game_number, tsv_epoch, env_short_name):
     call_and_wait(command_str)
 
 def main(game_number, tsv_epoch, env_short_name):
-    make_gambit_file(game_number, tsv_epoch, env_short_name)
-    gambit_analyze(game_number, tsv_epoch, env_short_name)
-    call_decode_gambit_solution(game_number, tsv_epoch, env_short_name)
+    try:
+        make_gambit_file(game_number, tsv_epoch, env_short_name)
+        gambit_analyze(game_number, tsv_epoch, env_short_name)
+        call_decode_gambit_solution(game_number, tsv_epoch, env_short_name)
+    except ValueError:
+        sys.exit(1)
 
 # example: python3 gambit_analyze.py 3013 None sl29
 if __name__ == '__main__':
