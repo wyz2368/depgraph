@@ -174,7 +174,10 @@ def run_evaluation_all_def(env_short_name, new_epoch, env_name_vs_att, def_port,
     for retrain_number in range(retrain_iters):
         for is_retrain_opponent in is_retrain_opponent_options:
             wait_for_def_lock(port_lock_name, is_train)
-            lock_def(port_lock_name, is_train)
+            try:
+                lock_def(port_lock_name, is_train)
+            except ValueError:
+                sys.exit(1)
             write_def_port(port_lock_name, is_train, def_port)
             cmd_list = ["python3", "enjoy_depgraph_data_vs_mixed_retraining.py",
                         env_name_vs_att, env_short_name, str(new_epoch), \
@@ -201,7 +204,10 @@ def run_evaluation_all_att(env_short_name, new_epoch, env_name_def_net, att_port
     for retrain_number in range(retrain_iters):
         for is_retrain_opponent in is_retrain_opponent_options:
             wait_for_att_lock(port_lock_name, is_train)
-            lock_att(port_lock_name, is_train)
+            try:
+                lock_att(port_lock_name, is_train)
+            except ValueError:
+                sys.exit(1)
             write_att_port(port_lock_name, is_train, att_port)
             cmd_list = ["python3", "enjoy_dg_data_vs_mixed_def_retraining.py",
                         env_name_def_net, env_short_name, str(new_epoch), \
@@ -243,7 +249,10 @@ def run_retrain_both(graph_name, env_short_name, new_epoch, env_name_vs_att, \
         old_strat_disc_fact)
 
     wait_for_att_lock(port_lock_name, is_train)
-    lock_att(port_lock_name, is_train)
+    try:
+        lock_att(port_lock_name, is_train)
+    except ValueError:
+        sys.exit(1)
     write_att_port(port_lock_name, is_train, att_port)
     att_process, att_file = run_train_retrain_att(env_short_name, new_epoch, \
         env_name_vs_def, att_port, port_lock_name, env_short_name_tsv, \

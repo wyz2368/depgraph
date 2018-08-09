@@ -102,7 +102,10 @@ def run_train_test_both(graph_name, env_short_name_payoffs, new_epoch, \
     is_train = True
     wait_for_def_lock(port_lock_name, is_train)
     lock_def(port_lock_name, is_train)
-    def_port = read_def_port(port_lock_name, is_train)
+    try:
+        def_port = read_def_port(port_lock_name, is_train)
+    except ValueError:
+        sys.exit(1)
     def_port += PORTS_PER_ROUND
     if def_port >= MAX_PORT:
         def_port = MIN_PORT
@@ -118,7 +121,10 @@ def run_train_retrain_both(graph_name, env_short_name_payoffs, new_epoch, \
     is_train = True
     wait_for_def_lock(port_lock_name, is_train)
     lock_def(port_lock_name, is_train)
-    def_port = read_def_port(port_lock_name, is_train)
+    try:
+        def_port = read_def_port(port_lock_name, is_train)
+    except ValueError:
+        sys.exit(1)
     def_port += PORTS_PER_ROUND
     if def_port >= MAX_PORT:
         def_port = MIN_PORT
@@ -213,7 +219,10 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     if os.path.isfile(result_file_name):
         raise ValueError("Cannot run init: " + result_file_name + " already exists.")
 
-    check_game_file(game_number, cur_epoch, env_short_name_payoffs)
+    try:
+        check_game_file(game_number, cur_epoch, env_short_name_payoffs)
+    except ValueError:
+        sys.exit(1)
 
     print("\tWill run gambit, epoch: " + str(cur_epoch)+ ", time: " + \
         str(datetime.datetime.now()), flush=True)
@@ -355,7 +364,10 @@ def run_continue_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, 
         raise ValueError("Cannot run epoch " + str(cur_epoch) + ": " + \
             result_file_name + " already exists.")
 
-    check_game_file(game_number, cur_epoch, env_short_name_payoffs)
+    try:
+        check_game_file(game_number, cur_epoch, env_short_name_payoffs)
+    except ValueError:
+        sys.exit(1)
 
     print("\tWill run gambit, epoch: " + str(cur_epoch)+ ", time: " + \
         str(datetime.datetime.now()), flush=True)
@@ -441,7 +453,10 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
     if cur_epoch < 0 or cur_epoch == 1:
         raise ValueError("cur_epoch must be 0 or in {2, . . .}: " + str(cur_epoch))
 
-    check_for_files(game_number, env_short_name_payoffs)
+    try:
+        check_for_files(game_number, env_short_name_payoffs)
+    except ValueError:
+        sys.exit(1)
     if not are_all_locks_unlocked(port_lock_name):
         raise ValueError("Lock is being held: " + port_lock_name)
 
@@ -454,12 +469,15 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
         print("\tWill run epochs: 0 and 1, time: " + \
             str(datetime.datetime.now()), flush=True)
         # indicates whether a beneficial deviation was found
-        should_continue = run_init_epoch(game_number, env_short_name_tsv, \
-            env_short_name_payoffs, env_name_def_net, env_name_att_net, env_name_both, \
-            graph_name, env_name_vs_mixed_def, env_name_vs_mixed_att, \
-            new_col_count, old_strat_disc_fact, save_count, \
-            port_lock_name, max_timesteps_def_init, max_timesteps_def_retrain, \
-            max_timesteps_att_init, max_timesteps_att_retrain, new_eval_count)
+        try:
+            should_continue = run_init_epoch(game_number, env_short_name_tsv, \
+                env_short_name_payoffs, env_name_def_net, env_name_att_net, env_name_both, \
+                graph_name, env_name_vs_mixed_def, env_name_vs_mixed_att, \
+                new_col_count, old_strat_disc_fact, save_count, \
+                port_lock_name, max_timesteps_def_init, max_timesteps_def_retrain, \
+                max_timesteps_att_init, max_timesteps_att_retrain, new_eval_count)
+        except ValueError:
+            sys.exit(1)
         if should_continue:
             my_epoch += 2 # first call runs 2 epochs in this case (0 and 1)
             if rounds_left is not None:
@@ -467,12 +485,15 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
     while should_continue and (rounds_left is None or rounds_left > 0):
         print("\tWill run epoch: " + str(my_epoch) + ", time: " + \
             str(datetime.datetime.now()), flush=True)
-        should_continue = run_continue_epoch(game_number, env_short_name_tsv, \
-            env_short_name_payoffs, env_name_def_net, env_name_att_net, env_name_both, \
-            graph_name, env_name_vs_mixed_def, env_name_vs_mixed_att, \
-            new_col_count, old_strat_disc_fact, save_count, \
-            port_lock_name, max_timesteps_def_init, max_timesteps_def_retrain, \
-            max_timesteps_att_init, max_timesteps_att_retrain, my_epoch, new_eval_count)
+        try:
+            should_continue = run_continue_epoch(game_number, env_short_name_tsv, \
+                env_short_name_payoffs, env_name_def_net, env_name_att_net, env_name_both, \
+                graph_name, env_name_vs_mixed_def, env_name_vs_mixed_att, \
+                new_col_count, old_strat_disc_fact, save_count, \
+                port_lock_name, max_timesteps_def_init, max_timesteps_def_retrain, \
+                max_timesteps_att_init, max_timesteps_att_retrain, my_epoch, new_eval_count)
+        except ValueError:
+            sys.exit(1)
         if should_continue:
             my_epoch += 1
             if rounds_left is not None:

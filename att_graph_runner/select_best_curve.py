@@ -110,11 +110,17 @@ def get_best_retrain_number(env_short_name, new_epoch, is_defender, save_count):
     for retrain_number in range(save_count):
         vs_eq_file = get_eval_file_name(env_short_name, is_defender, False, new_epoch, \
             retrain_number)
-        vs_eq_payoff = get_net_payoff(vs_eq_file)
+        try:
+            vs_eq_payoff = get_net_payoff(vs_eq_file)
+        except ValueError:
+            sys.exit(1)
         vs_eq_payoffs.append(vs_eq_payoff)
         vs_retrain_file = get_eval_file_name(env_short_name, is_defender, True, new_epoch, \
             retrain_number)
-        vs_retrain_payoff = get_net_payoff(vs_retrain_file)
+        try:
+            vs_retrain_payoff = get_net_payoff(vs_retrain_file)
+        except ValueError:
+            sys.exit(1)
         vs_retrain_payoffs.append(vs_retrain_payoff)
 
     vs_eq_gains = [x - cur_eq_payoff for x in vs_eq_payoffs]
@@ -137,7 +143,11 @@ def get_best_retrain_number(env_short_name, new_epoch, is_defender, save_count):
     return result
 
 def main(env_short_name, new_epoch, is_defender, save_count):
-    return get_best_retrain_number(env_short_name, new_epoch, is_defender, save_count)
+    try:
+        result = get_best_retrain_number(env_short_name, new_epoch, is_defender, save_count)
+    except ValueError:
+        sys.exit(1)
+    return result
 
 # example: python3 select_best_curve.py sl29_randNoAndB 14 True 3
 if __name__ == "__main__":
@@ -146,6 +156,9 @@ if __name__ == "__main__":
             "save_count")
     ENV_SHORT_NAME = sys.argv[1]
     NEW_EPOCH = int(sys.argv[2])
-    IS_DEFENDER = get_truth_value(sys.argv[3])
+    try:
+        IS_DEFENDER = get_truth_value(sys.argv[3])
+    except ValueError:
+        sys.exit(1)
     SAVE_COUNT = int(sys.argv[4])
     main(ENV_SHORT_NAME, NEW_EPOCH, IS_DEFENDER, SAVE_COUNT)
