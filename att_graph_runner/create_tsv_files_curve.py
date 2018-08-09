@@ -79,7 +79,7 @@ def append_att_tsv_name(att_output_file, env_short_name_payoffs):
     att_list_file = "att_strat_files_" + env_short_name_payoffs + ".txt"
     append_line(att_list_file, att_output_file)
 
-def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs):
+def create_tsv_curve(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs):
     input_file = get_gambit_result_name(game_number, cur_epoch, env_short_name_payoffs)
     print("Input file: " + input_file)
 
@@ -118,4 +118,4 @@ if __name__ == "__main__":
     CUR_EPOCH = int(sys.argv[2])
     ENV_SHORT_NAME_TSV = sys.argv[3]
     ENV_SHORT_NAME_PAYOFFS = sys.argv[4]
-    main(GAME_NUMBER, CUR_EPOCH, ENV_SHORT_NAME_TSV, ENV_SHORT_NAME_PAYOFFS)
+    create_tsv_curve(GAME_NUMBER, CUR_EPOCH, ENV_SHORT_NAME_TSV, ENV_SHORT_NAME_PAYOFFS)

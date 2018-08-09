@@ -52,7 +52,7 @@ def get_truth_value(str_input):
         return False
     raise ValueError("Must be True or False: " + str_input)
 
-def main(env_short_name, def_model_to_add, att_model_to_add):
+def append_names_curve(env_short_name, def_model_to_add, att_model_to_add):
     '''
     For whichever of def_model_to_add or att_model_to_add are not None,
     append that name(s) to the appropriate files that list network strategies to include
@@ -113,6 +113,6 @@ if __name__ == "__main__":
     if ATT_MODEL_TO_ADD == "None":
         ATT_MODEL_TO_ADD = None
     try:
-        main(ENV_SHORT_NAME, DEF_MODEL_TO_ADD, ATT_MODEL_TO_ADD)
+        append_names_curve(ENV_SHORT_NAME, DEF_MODEL_TO_ADD, ATT_MODEL_TO_ADD)
     except ValueError:
         sys.exit(1)

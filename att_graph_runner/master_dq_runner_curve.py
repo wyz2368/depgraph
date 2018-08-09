@@ -14,11 +14,16 @@ import select_best_curve as select
 from train_test_def import wait_for_def_lock, lock_def, read_def_port, \
     is_def_unlocked, PORTS_PER_ROUND, MAX_PORT, MIN_PORT
 from train_test_att import is_att_unlocked
-from add_new_data import get_add_data_result_file_name
+from add_new_data import get_add_data_result_file_name, add_data
 from train_test_both import run_both
 from train_retrain_both import run_retrain_both
 from check_game_data import check_game
-from gambit_analyze import get_game_file_name
+from gambit_analyze import get_game_file_name, do_gambit_analyze
+from create_tsv_files_curve import create_tsv_curve
+from create_weighted_mixed_strat import create_strat
+from update_opponent_strats import update_strats
+from get_both_payoffs_from_game import get_both_payoffs
+from append_net_names_curve import append_names_curve
 
 RETRAIN_MIN_WEIGHT = 0.001
 
@@ -57,18 +62,14 @@ def run_gambit(game_number, cur_epoch, env_short_name_payoffs):
     '''
     Call a script to find a Nash equilibrium of the current game.
     '''
-    cmd_list = ["python3", "gambit_analyze.py", str(game_number), str(cur_epoch), \
-        env_short_name_payoffs]
-    subprocess.call(cmd_list)
+    do_gambit_analyze(game_number, cur_epoch, env_short_name_payoffs)
 
 def run_create_tsv_curve(game_number, cur_epoch, env_short_name_tsv, \
     env_short_name_payoffs):
     '''
     Run a script to extract the current equilibrium strategies to TSV files.
     '''
-    cmd_list = ["python3", "create_tsv_files_curve.py", str(game_number), \
-        str(cur_epoch), env_short_name_tsv, env_short_name_payoffs]
-    subprocess.call(cmd_list)
+    create_tsv_curve(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs)
 
 def run_create_retrain_strat(old_strat_disc_fact, env_short_name_payoffs, \
     env_short_name_tsv):
@@ -77,24 +78,21 @@ def run_create_retrain_strat(old_strat_disc_fact, env_short_name_payoffs, \
         tsv_names_file = "def_strat_files_" + env_short_name_payoffs + ".txt"
         if not is_defender:
             tsv_names_file = "att_strat_files_" + env_short_name_payoffs + ".txt"
-        cmd_list = ["python3", "create_weighted_mixed_strat.py", \
-            str(old_strat_disc_fact), str(RETRAIN_MIN_WEIGHT), str(is_defender), \
-            tsv_names_file, env_short_name_tsv]
-        subprocess.call(cmd_list)
+        try:
+            create_strat(old_strat_disc_fact, RETRAIN_MIN_WEIGHT, is_defender, \
+                tsv_names_file, env_short_name_tsv)
+        except ValueError:
+            sys.exit(1)
 
 def run_update_strats(env_short_name_tsv, port_lock_name, new_epoch):
     '''
     Run a script to update the config files for the Gym environments to reference the new
     equilibrium strategies' TSV files.
     '''
-    cmd_list = ["python3", "update_opponent_strats.py", port_lock_name, \
-        env_short_name_tsv, str(new_epoch)]
-    subprocess.call(cmd_list)
+    update_strats(port_lock_name, env_short_name_tsv, new_epoch)
 
 def run_gen_both_payoffs(game_number, env_short_name_payoffs, new_epoch):
-    cmd_list = ["python3", "get_both_payoffs_from_game.py", str(game_number), \
-        env_short_name_payoffs, str(new_epoch)]
-    subprocess.call(cmd_list)
+    get_both_payoffs(game_number, env_short_name_payoffs, new_epoch)
 
 def run_train_test_both(graph_name, env_short_name_payoffs, new_epoch, \
     env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
@@ -167,18 +165,20 @@ def run_append_net_names(env_short_name_payoffs, def_model_to_add, att_model_to_
     Add the names of the new attacker and defender nets (whichever were beneficial
     deviations) to the lists of network strategies in the game.
     '''
-    cmd_list = ["python3", "append_net_names_curve.py", env_short_name_payoffs, \
-        str(def_model_to_add), str(att_model_to_add)]
-    subprocess.call(cmd_list)
+    try:
+        append_names_curve(env_short_name_payoffs, def_model_to_add, att_model_to_add)
+    except ValueError:
+        sys.exit(1)
 
 def run_add_new_data(game_number, env_short_name_payoffs, new_epoch):
     '''
     Add the data on payoffs with the new beneficially deviating
     strategy/strategies to the game's Json file.
     '''
-    cmd_list = ["python3", "add_new_data.py", str(game_number), env_short_name_payoffs, \
-        str(new_epoch)]
-    subprocess.call(cmd_list)
+    try:
+        add_data(game_number, env_short_name_payoffs, new_epoch)
+    except ValueError:
+        sys.exit(1)
 
 def get_def_model_name(env_short_name_payoffs, new_epoch, retrain_index):
     ''' Get name of the defender network to generate. '''

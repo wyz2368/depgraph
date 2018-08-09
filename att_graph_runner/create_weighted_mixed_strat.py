@@ -121,7 +121,7 @@ def get_strategy_lines(truncated_strategy):
         range(len(keys_sorted))]
     return lines
 
-def main(old_strat_disc_fact, strat_min_weight, is_defender, tsv_names_file, \
+def create_strat(old_strat_disc_fact, strat_min_weight, is_defender, tsv_names_file, \
     env_short_name_tsv):
     # get epoch number to use, same as number of names in tsv_names_file
     cur_epoch = get_cur_epoch(tsv_names_file)
@@ -174,7 +174,7 @@ if __name__ == "__main__":
     TSV_NAMES_FILE = sys.argv[4]
     ENV_SHORT_NAME_TSV = sys.argv[5]
     try:
-        main(OLD_STRAT_DISC_FACT, STRAT_MIN_WEIGHT, IS_DEFENDER, TSV_NAMES_FILE, \
+        create_strat(OLD_STRAT_DISC_FACT, STRAT_MIN_WEIGHT, IS_DEFENDER, TSV_NAMES_FILE, \
             ENV_SHORT_NAME_TSV)
     except ValueError:
         sys.exit(1)
