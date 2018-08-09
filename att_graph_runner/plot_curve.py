@@ -1,5 +1,7 @@
 import matplotlib
 matplotlib.use('Agg')
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
 import sys
 import matplotlib.pyplot as plt
 from select_best_curve import CUR_EQ_WEIGHT, get_cur_eq_payoff, get_eval_file_name, \
