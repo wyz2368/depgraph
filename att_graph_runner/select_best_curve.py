@@ -1,7 +1,9 @@
 import sys
 import json
 
-CUR_EQ_WEIGHT = 0.5
+# makes weight of current equilibrium approch 0.5 from above, if discounting is 0.7,
+# as number of epochs approaches infinity.
+CUR_EQ_WEIGHT = 2. / 7
 
 def get_json_data(json_file):
     '''
