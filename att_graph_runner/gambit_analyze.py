@@ -78,7 +78,7 @@ def call_decode_gambit_solution(game_number, tsv_epoch, env_short_name):
         gambit_result_name + " > " + gambit_decoded_name
     call_and_wait(command_str)
 
-def main(game_number, tsv_epoch, env_short_name):
+def do_gambit_analyze(game_number, tsv_epoch, env_short_name):
     try:
         make_gambit_file(game_number, tsv_epoch, env_short_name)
         gambit_analyze(game_number, tsv_epoch, env_short_name)
@@ -97,4 +97,4 @@ if __name__ == '__main__':
     if TSV_EPOCH is not None:
         TSV_EPOCH = int(TSV_EPOCH)
     ENV_SHORT_NAME = sys.argv[3]
-    main(GAME_NUM, TSV_EPOCH, ENV_SHORT_NAME)
+    do_gambit_analyze(GAME_NUM, TSV_EPOCH, ENV_SHORT_NAME)

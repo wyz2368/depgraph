@@ -252,7 +252,7 @@ def get_add_data_result_file_name(game_number, new_epoch, env_short_name):
         env_short_name + ".json"
 
 # example: python3 add_new_data.py 3013 sl29 1
-def main(game_number, game_short_name, new_epoch):
+def add_data(game_number, game_short_name, new_epoch):
     '''
     Load the pre-existing game payoff data, then load the new payoff entries and
     strategy names.
@@ -289,6 +289,6 @@ if __name__ == '__main__':
     GAME_SHORT_NAME = sys.argv[2]
     NEW_EPOCH = int(sys.argv[3])
     try:
-        main(GAME_NUMBER, GAME_SHORT_NAME, NEW_EPOCH)
+        add_data(GAME_NUMBER, GAME_SHORT_NAME, NEW_EPOCH)
     except ValueError:
         sys.exit(1)

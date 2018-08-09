@@ -4,7 +4,7 @@ def write_line(file_name, line):
     with open(file_name, "w") as my_file:
         my_file.write(line)
 
-def main(port_lock_name, tsv_env_short_name, new_epoch):
+def update_strats(port_lock_name, tsv_env_short_name, new_epoch):
     gym_folder = "../gym/gym/gym/envs/board_game/"
     config_file_name_att = gym_folder + port_lock_name + "_att_config.py"
     config_file_name_def = gym_folder + port_lock_name + "_def_config.py"
@@ -27,4 +27,4 @@ if __name__ == "__main__":
     PORT_LOCK_NAME = sys.argv[1]
     TSV_ENV_SHORT_NAME = sys.argv[2]
     NEW_EPOCH = int(sys.argv[3])
-    main(PORT_LOCK_NAME, TSV_ENV_SHORT_NAME, NEW_EPOCH)
+    update_strats(PORT_LOCK_NAME, TSV_ENV_SHORT_NAME, NEW_EPOCH)

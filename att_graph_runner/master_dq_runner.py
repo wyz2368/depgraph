@@ -3,14 +3,18 @@ import datetime
 import subprocess
 import os
 import os.path
-from add_new_data import get_add_data_result_file_name
+from add_new_data import get_add_data_result_file_name, add_data
 import check_if_beneficial as check
 from train_test_def import wait_for_def_lock, lock_def, read_def_port, \
     is_def_unlocked, PORTS_PER_ROUND, MAX_PORT, MIN_PORT
 from train_test_att import is_att_unlocked
 from train_test_both import run_both
 from check_game_data import check_game
-from gambit_analyze import get_game_file_name
+from gambit_analyze import get_game_file_name, do_gambit_analyze
+from create_tsv_files import create_tsv
+from update_opponent_strats import update_strats
+from get_both_payoffs_from_game import get_both_payoffs
+from append_net_names import append_names
 
 def are_all_locks_unlocked(port_lock_name):
     return is_def_unlocked(port_lock_name, True) and \
@@ -44,24 +48,16 @@ def check_game_file(game_number, cur_epoch, env_short_name_payoffs):
         raise ValueError("Invalid game file: " + game_file_name)
 
 def run_gambit(game_number, cur_epoch, env_short_name_payoffs):
-    cmd_list = ["python3", "gambit_analyze.py", str(game_number), str(cur_epoch), \
-        env_short_name_payoffs]
-    subprocess.call(cmd_list)
+    do_gambit_analyze(game_number, cur_epoch, env_short_name_payoffs)
 
 def run_create_tsv(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs):
-    cmd_list = ["python3", "create_tsv_files.py", str(game_number), str(cur_epoch), \
-        env_short_name_tsv, env_short_name_payoffs]
-    subprocess.call(cmd_list)
+    create_tsv(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs)
 
 def run_update_strats(env_short_name_tsv, port_lock_name, new_epoch):
-    cmd_list = ["python3", "update_opponent_strats.py", port_lock_name, \
-        env_short_name_tsv, str(new_epoch)]
-    subprocess.call(cmd_list)
+    update_strats(port_lock_name, env_short_name_tsv, new_epoch)
 
 def run_gen_both_payoffs(game_number, env_short_name_payoffs, new_epoch):
-    cmd_list = ["python3", "get_both_payoffs_from_game.py", str(game_number), \
-        env_short_name_payoffs, str(new_epoch)]
-    subprocess.call(cmd_list)
+    get_both_payoffs(game_number, env_short_name_payoffs, new_epoch)
 
 def run_train_test_both(graph_name, env_short_name_payoffs, new_epoch, \
     env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
@@ -94,15 +90,17 @@ def run_gen_new_cols(env_name_def_net, env_name_att_net, env_name_both, new_col_
 
 def run_append_net_names(env_short_name_payoffs, new_epoch, def_pkl_prefix, \
     att_pkl_prefix, is_def_beneficial, is_att_beneficial):
-    cmd_list = ["python3", "append_net_names.py", env_short_name_payoffs, str(new_epoch), \
-        def_pkl_prefix, att_pkl_prefix, str(is_def_beneficial), \
-        str(is_att_beneficial)]
-    subprocess.call(cmd_list)
+    try:
+        append_names(env_short_name_payoffs, new_epoch, def_pkl_prefix, att_pkl_prefix, \
+            is_def_beneficial, is_att_beneficial)
+    except ValueError:
+        sys.exit(1)
 
 def run_add_new_data(game_number, env_short_name_payoffs, new_epoch):
-    cmd_list = ["python3", "add_new_data.py", str(game_number), env_short_name_payoffs, \
-        str(new_epoch)]
-    subprocess.call(cmd_list)
+    try:
+        add_data(game_number, env_short_name_payoffs, new_epoch)
+    except ValueError:
+        sys.exit(1)
 
 def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
     env_name_def_net, env_name_att_net, env_name_both, graph_name, \

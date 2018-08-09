@@ -56,7 +56,7 @@ def get_gambit_result_name(game_number, tsv_epoch, env_short_name_payoffs):
     return "gambit_result_" + str(game_number) + "_" + str(tsv_epoch) + "_" + \
         env_short_name_payoffs + "_lcp_decode.txt"
 
-def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs):
+def create_tsv(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs):
     input_file = get_gambit_result_name(game_number, cur_epoch, env_short_name_payoffs)
     print("Input file: " + input_file)
 
@@ -95,4 +95,4 @@ if __name__ == "__main__":
     CUR_EPOCH = int(sys.argv[2])
     ENV_SHORT_NAME_TSV = sys.argv[3]
     ENV_SHORT_NAME_PAYOFFS = sys.argv[4]
-    main(GAME_NUMBER, CUR_EPOCH, ENV_SHORT_NAME_TSV, ENV_SHORT_NAME_PAYOFFS)
+    create_tsv(GAME_NUMBER, CUR_EPOCH, ENV_SHORT_NAME_TSV, ENV_SHORT_NAME_PAYOFFS)

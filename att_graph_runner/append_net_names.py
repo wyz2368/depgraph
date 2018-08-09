@@ -35,7 +35,7 @@ def get_truth_value(str_input):
         return False
     raise ValueError("Must be True or False: " + str_input)
 
-def main(env_short_name, new_epoch, def_pkl_prefix, att_pkl_prefix, should_add_def, \
+def append_names(env_short_name, new_epoch, def_pkl_prefix, att_pkl_prefix, should_add_def, \
     should_add_att):
     if not should_add_att and not should_add_def:
         raise ValueError("Must add at least one file: " + str(should_add_def) + \
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     try:
         SHOULD_ADD_DEF = get_truth_value(sys.argv[5])
         SHOULD_ADD_ATT = get_truth_value(sys.argv[6])
-        main(ENV_SHORT_NAME, NEW_EPOCH, DEF_PKL_PREFIX, ATT_PKL_PREFIX, SHOULD_ADD_DEF, \
-            SHOULD_ADD_ATT)
+        append_names(ENV_SHORT_NAME, NEW_EPOCH, DEF_PKL_PREFIX, ATT_PKL_PREFIX, \
+            SHOULD_ADD_DEF, SHOULD_ADD_ATT)
     except ValueError:
         sys.exit(1)

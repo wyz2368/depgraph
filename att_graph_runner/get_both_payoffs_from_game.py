@@ -73,7 +73,7 @@ def print_to_file(best_payoffs, out_file):
     with open(out_file, 'w') as my_file:
         json.dump(best_payoffs, my_file)
 
-def main(game_number, env_short_name, new_epoch):
+def get_both_payoffs(game_number, env_short_name, new_epoch):
     def_out_file_name = "out_defPayoffs_" + env_short_name + "_randNoAndB_epoch" + \
         str(new_epoch - 1) + ".txt"
     att_out_file_name = "out_attPayoffs_" + env_short_name + "_randNoAndB_epoch" + \
@@ -116,4 +116,4 @@ if __name__ == '__main__':
     GAME_NUMBER = int(sys.argv[1])
     ENV_SHORT_NAME = sys.argv[2]
     NEW_EPOCH = int(sys.argv[3])
-    main(GAME_NUMBER, ENV_SHORT_NAME, NEW_EPOCH)
+    get_both_payoffs(GAME_NUMBER, ENV_SHORT_NAME, NEW_EPOCH)
