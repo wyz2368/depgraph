@@ -1,7 +1,7 @@
 import sys
 import json
 
-# makes weight of current equilibrium approch 0.5 from above, if discounting is 0.7,
+# makes weight of current equilibrium approach 0.5 from above, if discounting is 0.7,
 # as number of epochs approaches infinity.
 CUR_EQ_WEIGHT = 2. / 7
 
