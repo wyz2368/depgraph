@@ -195,9 +195,12 @@ def main(env_name_def_net, env_name_att_net, env_name_both, \
     new_defender = def_model_to_add
     new_attacker = att_model_to_add
 
-    result_dict = get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
-        num_sims, new_defender, new_attacker, \
-        def_heuristics, att_heuristics, def_networks, att_networks, graph_name)
+    try:
+        result_dict = get_result_dict(env_name_def_net, env_name_att_net, env_name_both, \
+            num_sims, new_defender, new_attacker, \
+            def_heuristics, att_heuristics, def_networks, att_networks, graph_name)
+    except ValueError:
+        sys.exit(1)
     print_json(out_file_name, result_dict)
 
 '''
@@ -223,6 +226,9 @@ if __name__ == '__main__':
     if ATT_MODEL_TO_ADD == "None":
         ATT_MODEL_TO_ADD = None
     GRAPH_NAME = sys.argv[9]
-    main(ENV_NAME_DEF_NET, ENV_NAME_ATT_NET, ENV_NAME_BOTH, \
-        NUM_SIMS, NEW_EPOCH, ENV_SHORT_NAME, DEF_MODEL_TO_ADD, \
-        ATT_MODEL_TO_ADD, GRAPH_NAME)
+    try:
+        main(ENV_NAME_DEF_NET, ENV_NAME_ATT_NET, ENV_NAME_BOTH, \
+            NUM_SIMS, NEW_EPOCH, ENV_SHORT_NAME, DEF_MODEL_TO_ADD, \
+            ATT_MODEL_TO_ADD, GRAPH_NAME)
+    except ValueError:
+        sys.exit(1)

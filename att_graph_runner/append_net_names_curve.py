@@ -112,4 +112,7 @@ if __name__ == "__main__":
     ATT_MODEL_TO_ADD = sys.argv[3]
     if ATT_MODEL_TO_ADD == "None":
         ATT_MODEL_TO_ADD = None
-    main(ENV_SHORT_NAME, DEF_MODEL_TO_ADD, ATT_MODEL_TO_ADD)
+    try:
+        main(ENV_SHORT_NAME, DEF_MODEL_TO_ADD, ATT_MODEL_TO_ADD)
+    except ValueError:
+        sys.exit(1)

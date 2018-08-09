@@ -54,7 +54,10 @@ def get_cur_epoch(tsv_names_file):
 def get_round_to_mixed_strat(strat_file_names):
     result = []
     for strat_file in strat_file_names:
-        cur_strat = get_strat_from_file(strat_file)
+        try:
+            cur_strat = get_strat_from_file(strat_file)
+        except ValueError:
+            sys.exit(1)
         result.append(cur_strat)
     return result
 
@@ -141,11 +144,17 @@ def main(old_strat_disc_fact, strat_min_weight, is_defender, tsv_names_file, \
         print("Skipping: " + output_file_name + " already exists.")
         return
 
-    strat_file_names = get_file_lines(tsv_names_file)
+    try:
+        strat_file_names = get_file_lines(tsv_names_file)
+    except ValueError:
+        sys.exit(1)
     round_to_mixed_strat = get_round_to_mixed_strat(strat_file_names)
     weights = get_normalized_weights(old_strat_disc_fact, cur_epoch)
     weighted_strategy = get_weighted_strategy(round_to_mixed_strat, weights)
-    truncated_strategy = get_truncated_strategy(weighted_strategy, strat_min_weight)
+    try:
+        truncated_strategy = get_truncated_strategy(weighted_strategy, strat_min_weight)
+    except ValueError:
+        sys.exit(1)
     strategy_lines = get_strategy_lines(truncated_strategy)
     print_to_file(strategy_lines, output_file_name)
 
@@ -158,8 +167,14 @@ if __name__ == "__main__":
             "is_defender, tsv_names_file, env_short_name_tsv")
     OLD_STRAT_DISC_FACT = float(sys.argv[1])
     STRAT_MIN_WEIGHT = float(sys.argv[2])
-    IS_DEFENDER = get_truth_value(sys.argv[3])
+    try:
+        IS_DEFENDER = get_truth_value(sys.argv[3])
+    except ValueError:
+        sys.exit(1)
     TSV_NAMES_FILE = sys.argv[4]
     ENV_SHORT_NAME_TSV = sys.argv[5]
-    main(OLD_STRAT_DISC_FACT, STRAT_MIN_WEIGHT, IS_DEFENDER, TSV_NAMES_FILE, \
-        ENV_SHORT_NAME_TSV)
+    try:
+        main(OLD_STRAT_DISC_FACT, STRAT_MIN_WEIGHT, IS_DEFENDER, TSV_NAMES_FILE, \
+            ENV_SHORT_NAME_TSV)
+    except ValueError:
+        sys.exit(1)
