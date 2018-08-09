@@ -9,6 +9,8 @@ from train_test_def import wait_for_def_lock, lock_def, read_def_port, \
     is_def_unlocked, PORTS_PER_ROUND, MAX_PORT, MIN_PORT
 from train_test_att import is_att_unlocked
 from train_test_both import run_both
+from check_game_data import check_game
+from gambit_analyze import get_game_file_name
 
 def are_all_locks_unlocked(port_lock_name):
     return is_def_unlocked(port_lock_name, True) and \
@@ -34,6 +36,12 @@ def check_for_files(game_number, env_short_name_payoffs):
     for cur_file in files:
         if not os.path.exists(cur_file):
             raise ValueError("Missing file: " + cur_file)
+
+def check_game_file(game_number, cur_epoch, env_short_name_payoffs):
+    game_file_name = get_game_file_name(game_number, cur_epoch, env_short_name_payoffs)
+    is_valid = check_game(game_file_name)
+    if not is_valid:
+        raise ValueError("Invalid game file: " + game_file_name)
 
 def run_gambit(game_number, cur_epoch, env_short_name_payoffs):
     cmd_list = ["python3", "gambit_analyze.py", str(game_number), str(cur_epoch), \
@@ -102,6 +110,8 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
     if os.path.isfile(result_file_name):
         raise ValueError("Cannot run epoch " + str(cur_epoch) + ": " + \
             result_file_name + " already exists.")
+
+    check_game_file(game_number, cur_epoch, env_short_name_payoffs)
 
     print("\tWill run gambit, epoch: " + str(cur_epoch)+ ", time: " + \
         str(datetime.datetime.now()), flush=True)

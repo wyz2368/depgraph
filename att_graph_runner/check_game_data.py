@@ -68,6 +68,7 @@ def check_for_missing_payoffs(game_data):
                 found_missing = True
     if not found_missing:
         print("No missing payoffs.")
+    return not found_missing
 
 def check_for_extra_payoffs(game_data):
     '''
@@ -101,7 +102,7 @@ def check_for_extra_payoffs(game_data):
         print("Missing attackers: " + str(missing_atts))
     if not missing_atts and not missing_defs:
         print("No extra payoffs found.")
-
+    return (not missing_atts) and (not missing_defs)
 
 def check_for_duplicates(game_data):
     '''
@@ -150,22 +151,24 @@ def check_for_duplicates(game_data):
                 print("\n")
     if not any_problems:
         print("No duplicate payoffs found.")
+    return not any_problems
 
 # python check_game_data.py game_3014_5.json
-def main(game_file):
+def check_game(game_file):
     '''
     Load the pre-existing game payoff data,
     check for duplicate profiles,
     and print out their names and all payoff tuples
     '''
     game_data = get_json_data(game_file)
-    check_for_duplicates(game_data)
-    check_for_missing_payoffs(game_data)
-    check_for_extra_payoffs(game_data)
+    no_dups = check_for_duplicates(game_data)
+    no_missing = check_for_missing_payoffs(game_data)
+    no_extra = check_for_extra_payoffs(game_data)
+    return no_dups and no_missing and no_extra
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         raise ValueError( \
             "Need 3 args: game_file")
     GAME_FILE = sys.argv[1]
-    main(GAME_FILE)
+    check_game(GAME_FILE)
