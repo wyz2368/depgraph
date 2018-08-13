@@ -26,6 +26,7 @@ The code was written by Thanh Nguyen with help from Mason Wright.
 5. Import using the New Project Wizard -> Finish
 6. Java Project -> Next
     * Java SE 8 [1.8.0_121] -> depgraph (title of your choice) -> Finish
+    * If this fails, try again but uncheck "use default location", instead using the location of the git repo.
 7. Configure the build path:
     * link source: depgraph/src
     * link source: depgraph/test
