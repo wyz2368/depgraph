@@ -16,9 +16,6 @@ import utils.DGraphUtils;
 import utils.EncodingUtils;
 import utils.JsonUtils;
 
-import com.github.cliftonlabs.json_simple.JsonArray;
-import com.github.cliftonlabs.json_simple.JsonObject;
-
 /**
  * Wrapper for a game of depgraph, 
  * to be used by Py4J.
@@ -53,9 +50,7 @@ public final class DepgraphPy4JGreedyConfigNeitherNetworkCLIJson {
 	 * Used to reply to getGame().
 	 */
 	private static DepgraphPy4JGreedyConfigNeitherNetworkCLIJson singleton;
-	
-	private JsonArray gameArray = new JsonArray();
-	
+		
 	/**
 	 * Public constructor.
 	 * 
