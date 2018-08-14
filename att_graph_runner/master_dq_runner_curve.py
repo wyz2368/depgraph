@@ -203,7 +203,7 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
     env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, old_strat_disc_fact, \
     save_count, port_lock_name, max_timesteps_def_init, \
     max_timesteps_def_retrain, max_timesteps_att_init, max_timesteps_att_retrain, \
-    new_eval_count):
+    new_eval_count, run_two_rounds):
     '''
     Run the first epoch (epoch 0) of training. If no beneficial deviation is found, stop.
     Otherwise, begin the next epoch (epoch 1) of training, and stop after the attacker and
@@ -279,6 +279,9 @@ def run_init_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, \
 
     # add new payoff data to game object (from new beneficially deviating network(s))
     run_add_new_data(game_number, env_short_name_payoffs, new_epoch)
+
+    if not run_two_rounds:
+        return False
 
     print("\tWill continue after round: " + str(new_epoch), flush=True)
 
@@ -450,8 +453,10 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
             str(old_strat_disc_fact))
     if save_count < 1:
         raise ValueError("save_count must be >= 1: " + str(save_count))
-    if cur_epoch < 0 or cur_epoch == 1:
-        raise ValueError("cur_epoch must be 0 or in {2, . . .}: " + str(cur_epoch))
+    if cur_epoch < 0:
+        raise ValueError("cur_epoch must be >= 0:" + str(cur_epoch))
+    if max_new_rounds is not None and max_new_rounds < 1:
+        raise ValueError("max_new_rounds must be >= 1: " + str(max_new_rounds))
 
     try:
         check_for_files(game_number, env_short_name_payoffs)
@@ -464,18 +469,22 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
     should_continue = True
     rounds_left = max_new_rounds
     if my_epoch == 0:
-        if max_new_rounds is not None and max_new_rounds < 2:
-            raise ValueError("Initial run must be at least 2 epochs.")
-        print("\tWill run epochs: 0 and 1, time: " + \
-            str(datetime.datetime.now()), flush=True)
+        if max_new_rounds == 1:
+            print("\tWill run epoch: 0, time: " + \
+                str(datetime.datetime.now()), flush=True)
+        else:
+            print("\tWill run epochs: 0 and 1, time: " + \
+                str(datetime.datetime.now()), flush=True)
         # indicates whether a beneficial deviation was found
+        run_two_rounds = (max_new_rounds is None or max_new_rounds > 1)
         try:
             should_continue = run_init_epoch(game_number, env_short_name_tsv, \
                 env_short_name_payoffs, env_name_def_net, env_name_att_net, env_name_both, \
                 graph_name, env_name_vs_mixed_def, env_name_vs_mixed_att, \
                 new_col_count, old_strat_disc_fact, save_count, \
                 port_lock_name, max_timesteps_def_init, max_timesteps_def_retrain, \
-                max_timesteps_att_init, max_timesteps_att_retrain, new_eval_count)
+                max_timesteps_att_init, max_timesteps_att_retrain, new_eval_count, \
+                run_two_rounds)
         except ValueError:
             sys.exit(1)
         if should_continue:
