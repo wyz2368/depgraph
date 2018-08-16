@@ -31,7 +31,7 @@ The code was written by Thanh Nguyen with help from Mason Wright.
 7. Configure the build path:
     * link source: depgraph/src
     * link source: depgraph/test
-    * add extrernal jars:
+    * add extrernal jars: (available in Google Drive folder depgraphJars)
         * commons-math3-3.6.1.jar
         * cplex.jar
         * gson-2.2.4.jar
