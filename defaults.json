@@ -1,0 +1,18 @@
+{
+  "configuration": {
+    "numSim": 10000,
+    "numTimeStep": 10,
+    "graphID": 1,
+    "numNode": 100,
+    "numEdge": 500,
+    "numTarget": 10,
+    "totalNumAlert": 20,
+    "minNumAlert": 2,
+    "maxNumAlert": 5,
+    "discFact": 0.9,
+    "aRewardLB": 1,
+    "aRewardUB": 10,
+    "dPenaltyLB": -10,
+    "dPenaltyUB": -1
+  }
+}
