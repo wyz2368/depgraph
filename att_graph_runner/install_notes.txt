@@ -43,6 +43,9 @@ Setup notes for OpenAI:
                         sudo apt-get install swig
                         . . . works on Linux.
                         http://www.swig.org/download.html
+                -- note: this will fail if cmake is not installeed.
+                		brew install cmake
+                		. . . works on Mac.
         -- OpenAI Baselines
                 https://github.com/openai/baselines
                 mkdir baselines
@@ -51,6 +54,9 @@ Setup notes for OpenAI:
                 git clone https://github.com/masonwright14/baselines.git
                 cd baselines
                 pip3 install -e .
+                -- note: this will fail if you don't have MPI installed
+                	brew install mpich
+                	pip3 install mpi4py
         -- Py4J
                 pip3 install py4j
         -- cloudpickle
