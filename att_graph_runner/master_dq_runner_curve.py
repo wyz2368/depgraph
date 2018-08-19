@@ -122,6 +122,7 @@ def run_train_retrain_both(graph_name, env_short_name_payoffs, new_epoch, \
     try:
         def_port = read_def_port(port_lock_name, is_train)
     except ValueError:
+        print("Error reading def port")
         sys.exit(1)
     def_port += PORTS_PER_ROUND
     if def_port >= MAX_PORT:
@@ -404,6 +405,7 @@ def run_continue_epoch(game_number, env_short_name_tsv, env_short_name_payoffs, 
         max_timesteps_def_init, max_timesteps_def_retrain, max_timesteps_att_init, \
         max_timesteps_att_retrain, save_count, old_strat_disc_fact, new_eval_count)
 
+    print("Will select best trained networks")
     # call select_best_curve.py for attacker and defender
     best_def_index = get_select_best_curve(env_short_name_payoffs, new_epoch, True, \
         save_count)
@@ -486,6 +488,7 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
                 max_timesteps_att_init, max_timesteps_att_retrain, new_eval_count, \
                 run_two_rounds)
         except ValueError:
+            print("Value Error encountered")
             sys.exit(1)
         if should_continue:
             my_epoch += 2 # first call runs 2 epochs in this case (0 and 1)
@@ -502,6 +505,7 @@ def main(game_number, env_short_name_tsv, env_short_name_payoffs, \
                 port_lock_name, max_timesteps_def_init, max_timesteps_def_retrain, \
                 max_timesteps_att_init, max_timesteps_att_retrain, my_epoch, new_eval_count)
         except ValueError:
+            print("Value Error encountered")
             sys.exit(1)
         if should_continue:
             my_epoch += 1

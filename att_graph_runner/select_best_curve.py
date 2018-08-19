@@ -115,6 +115,7 @@ def get_best_retrain_number(env_short_name, new_epoch, is_defender, save_count):
         try:
             vs_eq_payoff = get_net_payoff(vs_eq_file)
         except ValueError:
+            print("Error in getting vs. eq payoff")
             sys.exit(1)
         vs_eq_payoffs.append(vs_eq_payoff)
         vs_retrain_file = get_eval_file_name(env_short_name, is_defender, True, new_epoch, \
@@ -122,6 +123,7 @@ def get_best_retrain_number(env_short_name, new_epoch, is_defender, save_count):
         try:
             vs_retrain_payoff = get_net_payoff(vs_retrain_file)
         except ValueError:
+            print("Error in getting vs. retrain payoff")
             sys.exit(1)
         vs_retrain_payoffs.append(vs_retrain_payoff)
 
@@ -148,6 +150,7 @@ def main(env_short_name, new_epoch, is_defender, save_count):
     try:
         result = get_best_retrain_number(env_short_name, new_epoch, is_defender, save_count)
     except ValueError:
+        print("Error in getting best result network")
         sys.exit(1)
     return result
 

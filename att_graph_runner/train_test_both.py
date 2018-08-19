@@ -267,7 +267,7 @@ def run_both(graph_name, env_short_name, new_epoch, env_name_vs_att, env_name_vs
     print("Closing env_process for defender and attacker")
     close_env_process(env_process_def)
     close_env_process(env_process_att)
-    print("Finished defender train and test")
+    print("Finished attacker and defender train and test")
 
 '''
 example: python3 train_test_both.py SepLayerGraph0_noAnd_B.json sl29 16 \

@@ -286,7 +286,7 @@ def run_retrain_both(graph_name, env_short_name, new_epoch, env_name_vs_att, \
     print("Closing env_process for defender and attacker")
     close_env_process(env_process_def)
     close_env_process(env_process_att)
-    print("Finished defender train and test")
+    print("Finished attacker and defender train, retrain, and test")
 
 '''
 example: python3 train_retrain_both.py SepLayerGraph0_noAnd_B.json sl29 16 \
