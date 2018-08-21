@@ -413,7 +413,7 @@ public final class DepgraphPy4JGreedyConfigBothJson {
 	 * @param input a set of integers
 	 * @return a sorted (ascending) list with the same integers
 	 */
-	private static List<Integer> sortedFromSet(final Set<Integer> input) {
+	static List<Integer> sortedFromSet(final Set<Integer> input) {
 		final List<Integer> result = new ArrayList<Integer>(input);
 		Collections.sort(result);
 		return result;

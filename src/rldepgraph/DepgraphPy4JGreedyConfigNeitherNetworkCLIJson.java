@@ -8,10 +8,8 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 import agent.AgentFactory;
 import agent.Attacker;
 import agent.Defender;
-import game.GameSimulation;
 import game.GameSimulationSpec;
 import model.DependencyGraph;
-import py4j.GatewayServer;
 import utils.DGraphUtils;
 import utils.EncodingUtils;
 import utils.JsonUtils;
@@ -34,17 +32,7 @@ public final class DepgraphPy4JGreedyConfigNeitherNetworkCLIJson {
 	/**
 	 * Inner object that represents the game state.
 	 */
-	private GameSimulation sim;
-	
-	/**
-	 * The defender agent.
-	 */
-	private Defender defender;
-	
-	/**
-	 * The attacker agent.
-	 */
-	private Attacker attacker;
+	private RLGameSimulationNoNet sim;
 
 	/**
 	 * Used to reply to getGame().
@@ -59,25 +47,27 @@ public final class DepgraphPy4JGreedyConfigNeitherNetworkCLIJson {
 	 * @param defStratName the defender pure strategy name
 	 * @param attackStratName the attacker pure strategy name
 	 * @param graphFileName the name of the graph file to use
+	 * @param outputJsonFileName the output Json file name to use
+	 * @param runCount how many runs to do
 	 */
 	private DepgraphPy4JGreedyConfigNeitherNetworkCLIJson(
 		final String simSpecFolderName,
 		final String defStratName,
 		final String attackStratName,
-		final String graphFileName
+		final String graphFileName,
+		final String outputJsonFileName,
+		final int runCount
 	) {
 		if (simSpecFolderName == null
 			|| defStratName == null
 			|| attackStratName == null) {
 			throw new IllegalArgumentException();
 		}
-		this.defender = null;
-		this.attacker = null;
 		
-		final double discFact = setupEnvironment(
-			simSpecFolderName, graphFileName);
-		setupDefender(defStratName, discFact);
-		setupAttacker(attackStratName, discFact);
+		setupEnvironment(
+			simSpecFolderName,
+			graphFileName,
+			outputJsonFileName);
 	}
 
 	/**
@@ -85,10 +75,11 @@ public final class DepgraphPy4JGreedyConfigNeitherNetworkCLIJson {
 	 * @param args has two args: attackerStratName and graphFileName
 	 */
 	public static void main(final String[] args) {
-		final int argsCount = 3;
+		final int argsCount = 5;
 		if (args == null || args.length != argsCount) {
 			throw new IllegalArgumentException(
-		"Need 3 args: defStratName, attackerStratName, graphFileName "
+		"Need 4 args: defStratName, attackerStratName, " + 
+			"graphFileName, outputJsonFileName, runCount"
 			);
 		}
 		final String simSpecFolderName = "simspecs/";
@@ -97,50 +88,23 @@ public final class DepgraphPy4JGreedyConfigNeitherNetworkCLIJson {
 		// RandomGraph30N100E2T1.json
 		// SepLayerGraph0.json
 		final String graphFileName = args[2];
+		final String outputJsonFileName = args[3];
+		final int runCount = Integer.parseInt(args[4]);
 		
 		// set up Py4J server
 		singleton = new DepgraphPy4JGreedyConfigNeitherNetworkCLIJson(
 			simSpecFolderName,
 			defStratName,
 			attackerStratName,
-			graphFileName
+			graphFileName,
+			outputJsonFileName,
+			runCount
 		);
-		final GatewayServer gatewayServer = new GatewayServer(singleton);
-		gatewayServer.start();
-		System.out.println("Gateway Server Started");
-	}
-	
-	/**
-	 * Initialize defender.
-	 * @param defenderString the defender pure strategy
-	 * @param discFact the discount factor of the game
-	 */
-	private void setupDefender(
-		final String defenderString, final double discFact) {
-		final String defenderName =
-			EncodingUtils.getStrategyName(defenderString);
-		final Map<String, Double> defenderParams =
-			EncodingUtils.getStrategyParams(defenderString);
-		this.defender =
-			AgentFactory.createDefender(
-				defenderName, defenderParams, discFact);
-	}
-	
-	/**
-	 * Initialize attacker.
-	 * @param attackerString the attacker pure strategy
-	 * @param discFact the discount factor of the game
-	 */
-	private void setupAttacker(
-		final String attackerString,
-		final double discFact
-	) {
-		final String attackerName =
-			EncodingUtils.getStrategyName(attackerString);
-		final Map<String, Double> attackerParams =
-			EncodingUtils.getStrategyParams(attackerString);
-		this.attacker = AgentFactory.createAttacker(
-				attackerName, attackerParams, discFact);
+		
+		for (int i = 0; i < runCount; i++) {
+			singleton.resetAndRunSim();
+		}
+		singleton.printJson();
 	}
 	
 	/**
@@ -150,11 +114,13 @@ public final class DepgraphPy4JGreedyConfigNeitherNetworkCLIJson {
 	 * @param simSpecFolderName the folder the simulation spec
 	 * file should come from
 	 * @param graphFileName the file name of the graph file
+	 * @param outputJsonFileName the output Json file name to use
 	 * @return the discount factor of the environment
 	 */
-	private double setupEnvironment(
+	private void setupEnvironment(
 		final String simSpecFolderName,
-		final String graphFileName
+		final String graphFileName,
+		final String outputJsonFileName
 	) {
 		final String graphFolderName = "graphs";
 		final GameSimulationSpec simSpec =
@@ -185,12 +151,13 @@ public final class DepgraphPy4JGreedyConfigNeitherNetworkCLIJson {
 			AgentFactory.createAttacker(
 				attackerName, attackerParams, simSpec.getDiscFact());
 
-		RandomDataGenerator rng = new RandomDataGenerator();
+		final RandomDataGenerator rdg = new RandomDataGenerator();
 		final int numTimeStep = simSpec.getNumTimeStep();
 		final double discFact = simSpec.getDiscFact();
-		this.sim = new GameSimulation(
-			depGraph, curAttacker, curDefender, rng, numTimeStep, discFact);
-		return discFact;
+		this.sim = new RLGameSimulationNoNet(
+			depGraph, curAttacker, curDefender, 
+			rdg.getRandomGenerator(), rdg, numTimeStep, discFact,
+			graphFileName, outputJsonFileName);
 	}
 	
 	/**
@@ -202,16 +169,20 @@ public final class DepgraphPy4JGreedyConfigNeitherNetworkCLIJson {
 	}
 	
 	/**
-	 * Reset and run the game once, storing the attacker and defender 
-	 * discounted payoffs.
+	 * Runs a complete simulation and prints Json.
 	 */
-	public void resetAndRunOnce() {
-		// clear the game state.
+	public void resetAndRunSim() {
 		this.sim.reset();
-		this.sim.setDefender(this.defender);
-		this.sim.setAttacker(this.attacker);
-		
-		this.sim.runSimulation();
+		while (!this.sim.isGameOver()) {
+			this.sim.step();
+		}
+	}
+	
+	/**
+	 * Record this.games to a Json output file. 
+	 */
+	public void printJson() {
+		this.sim.printJsonToFile();
 	}
 	
 	/**
