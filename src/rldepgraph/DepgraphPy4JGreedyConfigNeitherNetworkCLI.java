@@ -52,6 +52,11 @@ public final class DepgraphPy4JGreedyConfigNeitherNetworkCLI {
 	private static DepgraphPy4JGreedyConfigNeitherNetworkCLI singleton;
 	
 	/**
+	 * Discount factor for future rewards.
+	 */
+	private final double discFact;
+	
+	/**
 	 * Public constructor.
 	 * 
 	 * @param simSpecFolderName the folder from which simulation_spec.json
@@ -74,10 +79,10 @@ public final class DepgraphPy4JGreedyConfigNeitherNetworkCLI {
 		this.defender = null;
 		this.attacker = null;
 		
-		final double discFact = setupEnvironment(
+		this.discFact = setupEnvironment(
 			simSpecFolderName, graphFileName);
-		setupDefender(defStratName, discFact);
-		setupAttacker(attackStratName, discFact);
+		setupDefender(defStratName);
+		setupAttacker(attackStratName);
 	}
 
 	/**
@@ -113,34 +118,31 @@ public final class DepgraphPy4JGreedyConfigNeitherNetworkCLI {
 	/**
 	 * Initialize defender.
 	 * @param defenderString the defender pure strategy
-	 * @param discFact the discount factor of the game
 	 */
 	private void setupDefender(
-		final String defenderString, final double discFact) {
+		final String defenderString) {
 		final String defenderName =
 			EncodingUtils.getStrategyName(defenderString);
 		final Map<String, Double> defenderParams =
 			EncodingUtils.getStrategyParams(defenderString);
 		this.defender =
 			AgentFactory.createDefender(
-				defenderName, defenderParams, discFact);
+				defenderName, defenderParams, this.discFact);
 	}
 	
 	/**
 	 * Initialize attacker.
 	 * @param attackerString the attacker pure strategy
-	 * @param discFact the discount factor of the game
 	 */
 	private void setupAttacker(
-		final String attackerString,
-		final double discFact
+		final String attackerString
 	) {
 		final String attackerName =
 			EncodingUtils.getStrategyName(attackerString);
 		final Map<String, Double> attackerParams =
 			EncodingUtils.getStrategyParams(attackerString);
 		this.attacker = AgentFactory.createAttacker(
-				attackerName, attackerParams, discFact);
+			attackerName, attackerParams, this.discFact);
 	}
 	
 	/**
@@ -214,6 +216,30 @@ public final class DepgraphPy4JGreedyConfigNeitherNetworkCLI {
 		this.sim.runSimulation();
 	}
 	
+	/**
+	 * Set attacker and defender to the given agents, reset, and
+	 * run runCount times.
+	 * @param defString the new defender string
+	 * @param attString the new attacker string
+	 * @param runCount how many runs to perform with the new agents
+	 */
+	public void resetAndRunForGivenAgents(
+		final String defString,
+		final String attString,
+		final Integer runCount
+	) {
+		setupDefender(defString);
+		setupAttacker(attString);
+		
+		this.sim.reset();
+		this.sim.setDefender(this.defender);
+		this.sim.setAttacker(this.attacker);
+		
+		for (int i = 0; i < runCount; i++) {
+			this.sim.runSimulation();
+		}
+	}
+		
 	/**
 	 * @return the total discounted reward of the defender
 	 * in this game instance.
