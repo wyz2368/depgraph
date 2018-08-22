@@ -1,6 +1,8 @@
 package rldepgraph;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
@@ -222,8 +224,11 @@ public final class DepgraphPy4JGreedyConfigNeitherNetworkCLI {
 	 * @param defString the new defender string
 	 * @param attString the new attacker string
 	 * @param runCount how many runs to perform with the new agents
+	 * @result a list of Doubles containing the defender mean payoff,
+	 * then the attacker mean payoff, standard error of the mean of defender
+	 * payoff, then standard error of the mean of attacker payoff.
 	 */
-	public void resetAndRunForGivenAgents(
+	public List<Double> resetAndRunForGivenAgents(
 		final String defString,
 		final String attString,
 		final Integer runCount
@@ -231,13 +236,36 @@ public final class DepgraphPy4JGreedyConfigNeitherNetworkCLI {
 		setupDefender(defString);
 		setupAttacker(attString);
 		
-		this.sim.reset();
 		this.sim.setDefender(this.defender);
 		this.sim.setAttacker(this.attacker);
 		
+		double totalDefenderPayoff = 0.0;
+		double totalAttackerPayoff = 0.0;
+		double sumSquaresDefPayoff = 0.0;
+		double sumSquaresAttPayoff = 0.0;
+		final List<Double> result = new ArrayList<Double>();
 		for (int i = 0; i < runCount; i++) {
+			this.sim.reset();
 			this.sim.runSimulation();
+			totalDefenderPayoff += getDefenderTotalPayoff();
+			totalAttackerPayoff += getAttackerTotalPayoff();
+			sumSquaresDefPayoff += getDefenderTotalPayoff() * getDefenderTotalPayoff();
+			sumSquaresAttPayoff += getAttackerTotalPayoff() * getAttackerTotalPayoff();
 		}
+		final double meanDefenderPayoff = totalDefenderPayoff / runCount;
+		final double meanAttackerPayoff = totalAttackerPayoff / runCount;
+		final double varDefenderPayoff = sumSquaresDefPayoff / runCount -
+			meanDefenderPayoff * meanDefenderPayoff;
+		final double varAttackerPayoff = sumSquaresAttPayoff / runCount -
+			meanAttackerPayoff * meanAttackerPayoff;
+		final double stdErrDefPayoff = Math.sqrt(varDefenderPayoff * 1.0 / runCount);
+		final double stdErrAttPayoff = Math.sqrt(varAttackerPayoff * 1.0 / runCount);
+
+		result.add(meanDefenderPayoff);
+		result.add(meanAttackerPayoff);
+		result.add(stdErrDefPayoff);
+		result.add(stdErrAttPayoff);
+		return result;
 	}
 		
 	/**

@@ -94,7 +94,7 @@ public final class GameSimulation {
 	
 	public void runSimulation() {
 		if (!isAllInactive()) {
-			throw new IllegalStateException();
+			throw new IllegalStateException("Error: All nodes should be inactive at first.");
 		}
 		// Start simulation
 		DefenderObservation dObservation =
