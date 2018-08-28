@@ -21,18 +21,13 @@
         -- may need to add to path to call ga:
                 .bash_profile:
                         export PATH="/home/masondw/.local/bin:$PATH"
--- files needed locally:
-    -- dg4jnonetcli/
+-- files needed to add locally in pas_experiments folder:
+    -- dg4jnonetcli/ # available in Mason's Google Drive folder, att_graph_jars
         defaults.json
         dg4jnonetcli.jar
         dg4jnonetcli_lib/
         graphs/
         simspecs/
-    -- graphs/
-        SepLayerGraph0_noAnd_B.json
-        RandomGraph30N100E6T1_B.json
-    -- simspecs/
-        simulation_spec.json
 -- check installations:
     -- Python3 check:
         python3 -V
