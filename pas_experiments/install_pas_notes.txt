@@ -1,0 +1,30 @@
+
+-- need to install:
+    -- Python3
+    -- Gambit
+        gambit-15.1.1
+            https://sourceforge.net/projects/gambit/files/gambit15/15.1.1
+            see: https://github.com/gambitproject/gambit/blob/master/INSTALL
+        # https://sourceforge.net/projects/gambit/files/gambit15/15.1.1
+        # download gambit-15.1.1.tar.gz, open it, and copy to target computer at ~/
+        cd gambit-15.1.1
+        ./configure
+        # note: make may require gcc-6 and g++-6, not newer versions, to compile
+        # gambit. (gcc-5 and g++-5 also seem to work, but not 7.)
+        # gcc -v # should return version 6. same for g++ -v
+        make
+        sudo make install
+    -- GameAnalysis
+        # https://github.com/egtaonline/gameanalysis
+        pip3 install gameanalysis --user
+        # must be installed under Python3, not Python2.
+        -- may need to add to path to call ga:
+                .bash_profile:
+                        export PATH="/home/masondw/.local/bin:$PATH"
+-- check installations:
+    -- Python3 check:
+        python3 -V
+    -- Gambit check:
+        gambit-lcp -h
+    -- GameAnalysis check:
+        ga -h
