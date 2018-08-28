@@ -3,6 +3,29 @@ from get_payoff_from_game_pas import get_json_data
 from generate_new_cols_pas import get_new_payoff_file_name, print_json
 from utility import get_game_file_name
 
+def get_defender_role(game_data):
+    '''
+    Get the object from game data -> "role" with "name" of "defender"
+    '''
+    roles_list = game_data["roles"]
+    for role in roles_list:
+        if role["name"] == "defender":
+            return role
+    raise ValueError("Defender role not found")
+
+def add_defender_strategy(game_data, new_strategy):
+    '''
+    Add the new strategy name go game data -> "role" of "name" "defender" -> "strategies"
+    '''
+    try:
+        def_role = get_defender_role(game_data)
+    except ValueError:
+        sys.exit(1)
+
+    def_strategies = def_role["strategies"]
+    def_strategies.append(new_strategy)
+
+
 def add_profile(game_data, def_strat, att_strat, def_payoff, att_payoff, \
     next_profile_id, next_symmetry_group_id):
     '''
@@ -44,6 +67,7 @@ def augment_game_data(game_data, new_data):
     next_profile_id = get_max_profile_id(game_data) + 1
     next_symmetry_group_id = get_max_symmetry_group_id(game_data) + 1
     def_strat_name = get_new_def_strat(new_data)
+    add_defender_strategy(game_data, def_strat_name)
     for result_to_add in get_results_to_add(new_data, def_strat_name):
         (def_strat, att_strat, def_payoff, att_payoff) = result_to_add
         add_profile(game_data, def_strat, att_strat, def_payoff, att_payoff, \
