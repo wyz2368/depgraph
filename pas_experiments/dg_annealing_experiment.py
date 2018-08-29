@@ -11,6 +11,7 @@ from generate_new_cols_pas import gen_new_cols
 from add_new_data_pas import add_data
 from depgraph_connect import convert_params_from_0_1, get_def_name
 from utility import get_game_file_name, get_result_name, get_deviations_name
+from ground_truth_annealing import get_ground_truth_dev_prob
 
 def get_att_eq(run_name, test_round, cur_step):
     att_mixed_strat_name = get_tsv_strat_name(run_name, test_round, cur_step, False)
@@ -36,7 +37,8 @@ def record_result_tuples(result_name, result_tuples):
             csv_writer.writerow(cur_tuple)
 
 def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_per_param, \
-    neighbor_variance, should_print, run_name, samples_new_column):
+    neighbor_variance, should_print, run_name, samples_new_column, \
+    annealing_count_ground_truth):
     results = []
     deviation_sequences = []
     start_time_all = time.time()
@@ -89,7 +91,10 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
                 was_confirmed = True
                 break
             cur_step += 1
-        cur_result = (was_confirmed, test_round)
+        ground_truth_dev_prob = get_ground_truth_dev_prob(max_samples, samples_per_param, \
+            neighbor_variance, should_print, None, att_mixed_strat, def_payoff_old, \
+            annealing_count_ground_truth)
+        cur_result = (was_confirmed, test_round, ground_truth_dev_prob)
         if test_round % 10 == 0:
             print("round " + str(test_round) + " result: " + str(cur_result), flush=True)
         results.append(cur_result)
@@ -103,7 +108,8 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
     return results, deviation_sequences
 
 def main(max_p, error_tolerance, test_count, max_rounds, max_steps, samples_per_param, \
-    neighbor_variance, should_print, run_name, samples_new_column):
+    neighbor_variance, should_print, run_name, samples_new_column, \
+    annealing_count_ground_truth):
     result_name = get_result_name(run_name)
     if os.path.exists(result_name):
         raise ValueError("File exists: " + result_name)
@@ -121,13 +127,14 @@ def main(max_p, error_tolerance, test_count, max_rounds, max_steps, samples_per_
     print("samples_per_param: " + str(samples_per_param))
     print("neighbor_variance: " + fmt.format(neighbor_variance))
     print("run_name: " + run_name)
-    print("samples_new_column: " + str(samples_new_column) + "\n")
+    print("samples_new_column: " + str(samples_new_column))
+    print("annealing_count_ground_truth: " + str(annealing_count_ground_truth) + "\n")
 
     alpha_list = [error_tolerance * 1.0 / max_rounds] * max_rounds
     print("alpha_list: " + str(alpha_list))
     result_tuples, deviation_sequences = get_results(max_p, alpha_list, test_count, \
         max_rounds, max_steps, samples_per_param, neighbor_variance, should_print, \
-        run_name, samples_new_column)
+        run_name, samples_new_column, annealing_count_ground_truth)
     record_result_tuples(result_name, result_tuples)
     record_deviations(deviations_name, deviation_sequences)
 
@@ -136,10 +143,10 @@ example: python3 dg_annealing_experiment.py
 or: stdbuf -i0 -o0 -e0 python3 dg_annealing_experiment.py > out_dg1_b.txt
 
 good debugging values:
-(0.2, 0.2, 2, 3, 3, 3, 0.05, True, "dg1", 3)
+(0.2, 0.2, 2, 3, 3, 3, 0.05, True, "dg1", 3, 10)
 
 good final values:
-(0.05, 0.1, 700, 3, 100, 25, 0.03, True, dg1, 25)
+(0.05, 0.1, 700, 3, 100, 25, 0.03, True, dg1, 25, 400)
 '''
 if __name__ == "__main__":
     MAX_P = 0.2
@@ -152,5 +159,7 @@ if __name__ == "__main__":
     SHOULD_PRINT = True
     RUN_NAME = "dg1"
     SAMPLES_NEW_COLUMN = 3
+    ANNEALING_COUNT_GROUND_TRUTH = 10
     main(MAX_P, ERROR_TOLERANCE, TEST_COUNT, MAX_STEPS, MAX_SAMPLES, SAMPLES_PER_PARAM, \
-        NEIGHBOR_VARIANCE, SHOULD_PRINT, RUN_NAME, SAMPLES_NEW_COLUMN)
+        NEIGHBOR_VARIANCE, SHOULD_PRINT, RUN_NAME, SAMPLES_NEW_COLUMN, \
+        ANNEALING_COUNT_GROUND_TRUTH)
