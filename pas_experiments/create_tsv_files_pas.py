@@ -16,7 +16,6 @@ def get_file_lines(file_name):
 
 def get_defender_lines(file_name):
     lines = get_file_lines(file_name)
-    print(lines)
     first_defender_line = lines.index("Defender mixed strategy:") + 1
     return lines[first_defender_line:]
 
