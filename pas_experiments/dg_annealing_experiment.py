@@ -73,6 +73,9 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
                 if def_payoff_cur > def_payoff_old:
                     found_dev = True
                     deviation_sequence.append(deviating_strat)
+                    if should_print:
+                        print("found deviation after step: " + str(cur_step) + \
+                            ", round " + str(test_round))
                     if cur_step + 1 < max_steps:
                         def_name = convert_deviating_strat_to_def_name(deviating_strat)
                         gen_new_cols(def_name, run_name, test_round, cur_step, \
@@ -131,7 +134,7 @@ def main(max_p, error_tolerance, test_count, max_rounds, max_steps, samples_per_
 if __name__ == "__main__":
     MAX_P = 0.2
     ERROR_TOLERANCE = 0.2
-    TEST_COUNT = 3
+    TEST_COUNT = 2
     MAX_STEPS = 3
     MAX_SAMPLES = 3
     SAMPLES_PER_PARAM = 3

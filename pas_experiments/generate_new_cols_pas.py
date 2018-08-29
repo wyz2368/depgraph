@@ -37,7 +37,7 @@ def get_result_dict(deviating_strat, samples_new_column, attacker_strats):
     close_gateway()
     close_process(my_process)
     duration = time.time() - start_time
-    print("Seconds used for generating column: " + str(duration))
+    print("Seconds used for generating column: " + str(int(duration)))
     return result
 
 def gen_new_cols(deviating_strat, run_name, test_round, cur_step, samples_new_column):
