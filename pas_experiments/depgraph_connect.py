@@ -2,7 +2,7 @@ import subprocess
 import time
 import random
 import sys
-from math import ceil, sqrt
+from math import ceil, sqrt, isnan
 from py4j.java_gateway import JavaGateway
 
 GATEWAY = None
@@ -45,13 +45,23 @@ def count_dict(mixed_strat, run_count):
         if weight > 0.001:
             cur_count = int(ceil(weight * run_count))
             result[pure_strat] = cur_count
-    while sum(result.values()) > run_count:
-        key = random.choice(list(result.keys()))
-        result[key] -= 1
     while sum(result.values()) < run_count:
+        key = random.choice(list(result.keys()))
+        result[key] += 1
+    while sum(result.values()) > run_count:
         key = random.choice(list(result.keys()))
         if result[key] > 0:
             result[key] -= 1
+    to_remove = set()
+    for pure_strat, weight in result.items():
+        if weight == 0:
+            to_remove.add(pure_strat)
+    for pure_strat in to_remove:
+        result.pop(pure_strat, None)
+    if sum(result.values()) != run_count:
+        raise ValueError("Invalid sum: " + str(sum(result.values())))
+    if min(result.values()) <= 0:
+        raise ValueError("Invalid value <= 0: " + str(result.values()))
     return result
 
 def get_mean_payoffs(def_strat, att_mixed_strat, run_count):
@@ -65,6 +75,10 @@ def get_mean_payoffs(def_strat, att_mixed_strat, run_count):
     for att_pure_strat, cur_count in count_per_pure_att_strat.items():
         [cur_def_payoff, cur_att_payoff, cur_def_std_error, cur_att_std_error] = \
             JAVA_GAME.resetAndRunForGivenAgents(def_strat, att_pure_strat, cur_count)
+        if isnan(cur_def_payoff) or isnan(cur_att_payoff) or isnan(cur_def_std_error) or \
+            isnan(cur_att_std_error):
+            raise ValueError("NaN returned from Java, attacker: " + att_pure_strat + \
+                "\ndefender: " + def_strat + "\ncur_count: " + str(cur_count))
         def_payoff += cur_def_payoff * cur_count * 1. / run_count
         att_payoff += cur_att_payoff * cur_count * 1. / run_count
         def_stdev += (cur_def_std_error * sqrt(cur_count)) * 1. / run_count
@@ -110,7 +124,6 @@ def get_def_name(params_java):
 def sample_mean_def_payoff(params_0_1, run_count, att_mixed_strat):
     params_java = convert_params_from_0_1(params_0_1)
     def_name = get_def_name(params_java)
-    print("\t" + def_name)
     def_payoff, _, def_std_error, _ = get_mean_payoffs(def_name, att_mixed_strat, run_count)
     fmt = "{0:.2f}"
     print("Defender payoff std error: " + fmt.format(def_std_error))

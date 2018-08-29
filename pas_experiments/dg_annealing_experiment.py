@@ -46,7 +46,7 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
         was_confirmed = False
         deviation_sequence = []
         while cur_step < max_steps:
-            print("new round: test round " + str(test_round) + ",\tcur step: " + \
+            print("new round: test round " + str(test_round) + ", cur step: " + \
                 str(cur_step))
             do_gambit_analyze(run_name, test_round, cur_step)
             create_tsv(run_name, test_round, cur_step)
@@ -91,14 +91,15 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
             cur_step += 1
         cur_result = (was_confirmed, test_round)
         if test_round % 10 == 0:
-            print(str(test_round) + "\t" + str(cur_result), flush=True)
+            print("round " + str(test_round) + " result: " + str(cur_result), flush=True)
         results.append(cur_result)
         deviation_sequences.append(deviation_sequence)
         seconds_taken_round = time.time() - start_time_round
-        print("Seconds taken for round " + str(test_round) + "of " + str(test_count) + \
-            ": " + str(int(seconds_taken_round)), flush=True)
+        print("Minutes taken for round " + str(test_round) + " of " + str(test_count) + \
+            ": " + str(int(seconds_taken_round // 60)), flush=True)
     seconds_taken_all = time.time() - start_time_all
-    print("Minutes taken for all rounds: " + str(int(seconds_taken_all // 60)), flush=True)
+    print("Minutes taken for all rounds: " + str(int(seconds_taken_all // 60)) + "\n", \
+        flush=True)
     return results, deviation_sequences
 
 def main(max_p, error_tolerance, test_count, max_rounds, max_steps, samples_per_param, \
@@ -131,6 +132,7 @@ def main(max_p, error_tolerance, test_count, max_rounds, max_steps, samples_per_
     record_deviations(deviations_name, deviation_sequences)
 
 # example: python3 dg_annealing_experiment.py
+# or: stdbuf -i0 -o0 -e0 python3 dg_annealing_experiment.py > out_dg1_b.txt
 if __name__ == "__main__":
     MAX_P = 0.2
     ERROR_TOLERANCE = 0.2
