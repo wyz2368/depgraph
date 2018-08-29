@@ -131,8 +131,16 @@ def main(max_p, error_tolerance, test_count, max_rounds, max_steps, samples_per_
     record_result_tuples(result_name, result_tuples)
     record_deviations(deviations_name, deviation_sequences)
 
-# example: python3 dg_annealing_experiment.py
-# or: stdbuf -i0 -o0 -e0 python3 dg_annealing_experiment.py > out_dg1_b.txt
+'''
+example: python3 dg_annealing_experiment.py
+or: stdbuf -i0 -o0 -e0 python3 dg_annealing_experiment.py > out_dg1_b.txt
+
+good debugging values:
+(0.2, 0.2, 2, 3, 3, 3, 0.05, True, "dg1", 3)
+
+good final values:
+(0.05, 0.1, 700, 3, 100, 25, 0.03, True, dg1, 25)
+'''
 if __name__ == "__main__":
     MAX_P = 0.2
     ERROR_TOLERANCE = 0.2
