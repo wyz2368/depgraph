@@ -149,5 +149,5 @@ def find_params_simulated_annealing(param_count, max_steps, max_temp, samples_pe
     duration = time.time() - start_time
     print("Best params: " + str([fmt.format(x) for x in best_params]))
     print("Best mean value: " + fmt.format(best_value))
-    print("Seconds used: " + fmt.format(duration))
+    print("Seconds used for simulated annealing: " + str(int(duration)))
     return best_params, best_value

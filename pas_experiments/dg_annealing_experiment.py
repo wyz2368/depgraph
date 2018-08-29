@@ -39,13 +39,15 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
     neighbor_variance, should_print, run_name, samples_new_column):
     results = []
     deviation_sequences = []
-    start_time = time.time()
+    start_time_all = time.time()
     for test_round in range(test_count):
+        start_time_round = time.time()
         cur_step = 0
         was_confirmed = False
         deviation_sequence = []
         while cur_step < max_steps:
-            print("new round: " + str(test_round) + "\t" + str(cur_step))
+            print("new round: test round " + str(test_round) + ",\tcur step: " + \
+                str(cur_step))
             do_gambit_analyze(run_name, test_round, cur_step)
             create_tsv(run_name, test_round, cur_step)
 
@@ -89,8 +91,11 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
             print(str(test_round) + "\t" + str(cur_result), flush=True)
         results.append(cur_result)
         deviation_sequences.append(deviation_sequence)
-    seconds_taken = time.time() - start_time
-    print("Seconds taken for all rounds: " + str(seconds_taken), flush=True)
+        seconds_taken_round = time.time() - start_time_round
+        print("Seconds taken for round " + str(test_round) + "of " + str(test_count) + \
+            ": " + str(int(seconds_taken_round)), flush=True)
+    seconds_taken_all = time.time() - start_time_all
+    print("Minutes taken for all rounds: " + str(int(seconds_taken_all // 60)), flush=True)
     return results, deviation_sequences
 
 def main(max_p, error_tolerance, test_count, max_rounds, max_steps, samples_per_param, \
@@ -102,6 +107,18 @@ def main(max_p, error_tolerance, test_count, max_rounds, max_steps, samples_per_
     if os.path.exists(deviations_name):
         raise ValueError("File exists: " + deviations_name)
 
+    fmt = "{0:.6f}"
+    print("Will run dg_annealing_experiment.py:")
+    print("max_p: " + fmt.format(max_p))
+    print("error_tolerance: " + fmt.format(error_tolerance))
+    print("test_count: " + str(test_count))
+    print("max_rounds: " + str(max_rounds))
+    print("max_steps: " + str(max_steps))
+    print("samples_per_param: " + str(samples_per_param))
+    print("neighbor_variance: " + fmt.format(neighbor_variance))
+    print("run_name: " + run_name)
+    print("samples_new_column: " + str(samples_new_column) + "\n")
+
     alpha_list = [error_tolerance * 1.0 / max_rounds] * max_rounds
     print("alpha_list: " + str(alpha_list))
     result_tuples, deviation_sequences = get_results(max_p, alpha_list, test_count, \
@@ -112,10 +129,10 @@ def main(max_p, error_tolerance, test_count, max_rounds, max_steps, samples_per_
 
 # example: python3 dg_annealing_experiment.py
 if __name__ == "__main__":
-    MAX_P = 0.1
-    ERROR_TOLERANCE = 0.1
+    MAX_P = 0.2
+    ERROR_TOLERANCE = 0.2
     TEST_COUNT = 3
-    MAX_STEPS = 5
+    MAX_STEPS = 3
     MAX_SAMPLES = 3
     SAMPLES_PER_PARAM = 3
     NEIGHBOR_VARIANCE = 0.05
