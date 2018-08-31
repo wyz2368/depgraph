@@ -64,14 +64,26 @@ def count_dict(mixed_strat, run_count):
         raise ValueError("Invalid value <= 0: " + str(result.values()))
     return result
 
+def get_variance(counts, means, variances, overall_mean):
+    # v = (1 / (n - 1)) * [\sum n_i (m_i - m)^2 + \sum (n_i - 1) v_i]
+    total_count = sum(counts)
+    term = 0
+    for cur_index in range(len(means)):
+        term += counts[cur_index] * ((means[cur_index] - overall_mean) ** 2) + \
+            (counts[cur_index] - 1) * variances[cur_index]
+    return term / (total_count - 1.)
+
 def get_mean_payoffs(def_strat, att_mixed_strat, run_count):
     if JAVA_GAME is None or GATEWAY is None:
         raise ValueError("Must set up JAVA_GAME and GATEWAY first.")
     count_per_pure_att_strat = count_dict(att_mixed_strat, run_count)
     def_payoff = 0
     att_payoff = 0
-    def_stdev = 0
-    att_stdev = 0
+    def_means = []
+    def_vars = []
+    att_means = []
+    att_vars = []
+    counts = []
     for att_pure_strat, cur_count in count_per_pure_att_strat.items():
         [cur_def_payoff, cur_att_payoff, cur_def_std_error, cur_att_std_error] = \
             JAVA_GAME.resetAndRunForGivenAgents(def_strat, att_pure_strat, cur_count)
@@ -81,10 +93,15 @@ def get_mean_payoffs(def_strat, att_mixed_strat, run_count):
                 "\ndefender: " + def_strat + "\ncur_count: " + str(cur_count))
         def_payoff += cur_def_payoff * cur_count * 1. / run_count
         att_payoff += cur_att_payoff * cur_count * 1. / run_count
-        def_stdev += (cur_def_std_error * sqrt(cur_count)) * 1. / run_count
-        att_stdev += (cur_att_std_error * sqrt(cur_count)) * 1. / run_count
-    def_std_error = def_stdev / sqrt(run_count)
-    att_std_error = att_stdev / sqrt(run_count)
+        def_means.append(cur_def_payoff)
+        att_means.append(cur_att_payoff)
+        def_vars.append((cur_def_std_error * sqrt(cur_count)) ** 2)
+        att_vars.append((cur_att_std_error * sqrt(cur_count)) ** 2)
+        counts.append(cur_count)
+    def_variance = get_variance(counts, def_means, def_vars, def_payoff)
+    att_variance = get_variance(counts, att_means, att_vars, att_payoff)
+    def_std_error = sqrt(def_variance) / sqrt(run_count)
+    att_std_error = sqrt(att_variance) / sqrt(run_count)
     return def_payoff, att_payoff, def_std_error, att_std_error
 
 def setup_gateway():
