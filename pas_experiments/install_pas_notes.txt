@@ -21,6 +21,8 @@
         -- may need to add to path to call ga:
                 .bash_profile:
                         export PATH="/home/masondw/.local/bin:$PATH"
+    -- statsmodels
+        pip3 install statsmodels
 -- files needed to add locally in pas_experiments folder:
     -- dg4jnonetcli/ # available in Mason's Google Drive folder, att_graph_jars
         defaults.json
@@ -35,3 +37,7 @@
         gambit-lcp -h
     -- GameAnalysis check:
         ga -h
+    -- statsmodels check:
+        python3
+        import statsmodels
+
