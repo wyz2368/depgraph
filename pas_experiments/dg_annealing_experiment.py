@@ -147,6 +147,9 @@ good debugging values:
 
 good final values:
 (0.05, 0.1, 700, 3, 100, 25, 0.03, True, dg1, 25, 400)
+
+compromise final values:
+(0.05, 0.1, 1, 3, 20, 25, 0.03, True, dg1_a, 25, 200)
 '''
 if __name__ == "__main__":
     MAX_P = 0.2
