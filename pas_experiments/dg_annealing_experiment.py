@@ -86,8 +86,7 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
                         print("found deviation after annealing step " + \
                             str(cur_annealing_step) + ", strategy step " + str(cur_step) + \
                             ", round " + str(test_round))
-                        print("Best value found: " + fmt.format(cur_best_value))
-                        print("Value to beat was: " + fmt.format(def_payoff_old))
+                        print("New estimate beats old value: " + fmt.format(def_payoff_cur))
                     if cur_step + 1 < max_steps:
                         def_name = convert_deviating_strat_to_def_name(deviating_strat)
                         gen_new_cols(def_name, run_name, test_round, cur_step, \
