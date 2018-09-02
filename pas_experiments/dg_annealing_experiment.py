@@ -38,7 +38,7 @@ def record_result_tuples(result_name, result_tuples):
 
 def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_per_param, \
     neighbor_variance, should_print, run_name, samples_new_column, \
-    annealing_count_ground_truth):
+    anneal_ground_truth_max, anneal_ground_truth_min, early_stop_level):
     results = []
     deviation_sequences = []
     start_time_all = time.time()
@@ -105,7 +105,7 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
             cur_step += 1
         ground_truth_dev_prob = get_ground_truth_dev_prob(max_samples, samples_per_param, \
             neighbor_variance, should_print, None, att_mixed_strat, def_payoff_old, \
-            annealing_count_ground_truth)
+            anneal_ground_truth_max, anneal_ground_truth_min, early_stop_level)
         cur_result = (was_confirmed, test_round, ground_truth_dev_prob)
         if test_round % 10 == 0:
             print("round " + str(test_round) + " result: " + str(cur_result), flush=True)
@@ -121,7 +121,7 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
 
 def main(max_p, error_tolerance, test_count, max_rounds, max_steps, samples_per_param, \
     neighbor_variance, should_print, run_name, samples_new_column, \
-    annealing_count_ground_truth):
+    anneal_ground_truth_max, anneal_ground_truth_min, early_stop_level):
     result_name = get_result_name(run_name)
     if os.path.exists(result_name):
         raise ValueError("File exists: " + result_name)
@@ -140,13 +140,16 @@ def main(max_p, error_tolerance, test_count, max_rounds, max_steps, samples_per_
     print("neighbor_variance: " + fmt.format(neighbor_variance))
     print("run_name: " + run_name)
     print("samples_new_column: " + str(samples_new_column))
-    print("annealing_count_ground_truth: " + str(annealing_count_ground_truth) + "\n")
+    print("anneal_ground_truth_max: " + str(anneal_ground_truth_max))
+    print("anneal_ground_truth_min: " + str(anneal_ground_truth_min))
+    print("early_stop_level: " + fmt.format(early_stop_level) + "\n")
 
     alpha_list = [error_tolerance * 1.0 / max_rounds] * max_rounds
     print("alpha_list: " + str(alpha_list))
     result_tuples, deviation_sequences = get_results(max_p, alpha_list, test_count, \
         max_rounds, max_steps, samples_per_param, neighbor_variance, should_print, \
-        run_name, samples_new_column, annealing_count_ground_truth)
+        run_name, samples_new_column, anneal_ground_truth_max, anneal_ground_truth_min, \
+        early_stop_level)
     record_result_tuples(result_name, result_tuples)
     record_deviations(deviations_name, deviation_sequences)
 
@@ -155,13 +158,13 @@ example: python3 dg_annealing_experiment.py
 or: stdbuf -i0 -o0 -e0 python3 dg_annealing_experiment.py > out_dg1_b.txt
 
 good debugging values:
-(0.2, 0.2, 2, 3, 3, 3, 0.05, True, "dg1", 3, 10)
+(0.2, 0.2, 2, 3, 3, 3, 0.05, True, "dg1", 3, 10, 10, 0.4)
 
 good final values:
-(0.05, 0.1, 700, 3, 100, 25, 0.03, True, dg1, 25, 400)
+(0.05, 0.1, 700, 3, 100, 25, 0.03, True, dg1, 25, 400, 20, 0.1)
 
 compromise final values:
-(0.05, 0.1, 1, 3, 20, 25, 0.03, True, dg1_a, 25, 200)
+(0.05, 0.1, 1, 3, 20, 25, 0.03, True, dg1_a, 25, 200, 10, 0.1)
 '''
 if __name__ == "__main__":
     MAX_P = 0.2
@@ -174,7 +177,9 @@ if __name__ == "__main__":
     SHOULD_PRINT = True
     RUN_NAME = "dg1"
     SAMPLES_NEW_COLUMN = 3
-    ANNEALING_COUNT_GROUND_TRUTH = 10
+    ANNEAL_GROUND_TRUTH_MAX = 10
+    ANNEAL_GROUND_TRUTH_MIN = 10
+    EARLY_STOP_LEVEL = MAX_P * 2
     main(MAX_P, ERROR_TOLERANCE, TEST_COUNT, MAX_STEPS, MAX_SAMPLES, SAMPLES_PER_PARAM, \
         NEIGHBOR_VARIANCE, SHOULD_PRINT, RUN_NAME, SAMPLES_NEW_COLUMN, \
-        ANNEALING_COUNT_GROUND_TRUTH)
+        ANNEAL_GROUND_TRUTH_MAX, ANNEAL_GROUND_TRUTH_MIN, EARLY_STOP_LEVEL)
