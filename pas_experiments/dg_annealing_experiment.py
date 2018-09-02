@@ -73,9 +73,10 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
                     samples_per_param, neighbor_variance, should_print, None, \
                     att_mixed_strat)
                 if should_print:
-                    print("Finished annealing round" + str(cur_annealing_step) + " of " + \
+                    print("Finished annealing round " + str(cur_annealing_step) + " of " + \
                         str(cur_n))
                     print("Mean def payoff to beat was: " + fmt.format(def_payoff_old))
+                    print("Estimated best value was: " + fmt.format(cur_best_value))
                 def_payoff_cur = get_def_payoff(deviating_strat, run_name, test_round, \
                     cur_step, samples_new_column, att_mixed_strat)
                 if def_payoff_cur > def_payoff_old:
@@ -93,6 +94,10 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
                             samples_new_column)
                         add_data(run_name, test_round, cur_step)
                     break
+                else:
+                    if should_print:
+                        print("New estimate fails to beat old value: " + \
+                            fmt.format(def_payoff_cur))
             seconds_taken_simulated_annealing = time.time() - start_time_sim_annealing
             print("Minutes used for all simulated annealing: " + \
                 str(int(seconds_taken_simulated_annealing // 60)))
