@@ -42,6 +42,7 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
     results = []
     deviation_sequences = []
     start_time_all = time.time()
+    fmt = "{0:.2f}"
     for test_round in range(test_count):
         start_time_round = time.time()
         cur_step = 0
@@ -61,7 +62,7 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
             def_payoff_old = get_def_payoff_eq(run_name, test_round, cur_step)
             found_dev = False
             att_mixed_strat = get_att_eq(run_name, test_round, cur_step)
-            for _ in range(cur_n):
+            for cur_annealing_step in range(cur_n):
                 output_name = get_game_file_name(run_name, test_round, cur_step + 1)
                 if os.path.isfile(output_name):
                     print("Skipping, file already exists: " + output_name)
@@ -70,13 +71,18 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
                 deviating_strat, _ = run_depgraph_annealing(max_samples, \
                     samples_per_param, neighbor_variance, should_print, None, \
                     att_mixed_strat)
+                if should_print:
+                    print("Finished annealing round" + str(cur_annealing_step) + " of " + \
+                        str(cur_n))
+                    print("Mean def payoff to beat was: " + fmt.format(def_payoff_old))
                 def_payoff_cur = get_def_payoff(deviating_strat, run_name, test_round, \
                     cur_step, samples_new_column, att_mixed_strat)
                 if def_payoff_cur > def_payoff_old:
                     found_dev = True
                     deviation_sequence.append(deviating_strat)
                     if should_print:
-                        print("found deviation after step: " + str(cur_step) + \
+                        print("found deviation after annealing step " + \
+                            str(cur_annealing_step) + ", strategy step " + str(cur_step) + \
                             ", round " + str(test_round))
                     if cur_step + 1 < max_steps:
                         def_name = convert_deviating_strat_to_def_name(deviating_strat)
