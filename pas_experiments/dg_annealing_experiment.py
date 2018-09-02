@@ -62,13 +62,14 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
             def_payoff_old = get_def_payoff_eq(run_name, test_round, cur_step)
             found_dev = False
             att_mixed_strat = get_att_eq(run_name, test_round, cur_step)
+            start_time_sim_annealing = time.time()
             for cur_annealing_step in range(cur_n):
                 output_name = get_game_file_name(run_name, test_round, cur_step + 1)
                 if os.path.isfile(output_name):
                     print("Skipping, file already exists: " + output_name)
                     break
                 # deviating_strat is in [0, 1]^3
-                deviating_strat, _ = run_depgraph_annealing(max_samples, \
+                deviating_strat, cur_best_value = run_depgraph_annealing(max_samples, \
                     samples_per_param, neighbor_variance, should_print, None, \
                     att_mixed_strat)
                 if should_print:
@@ -84,12 +85,17 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
                         print("found deviation after annealing step " + \
                             str(cur_annealing_step) + ", strategy step " + str(cur_step) + \
                             ", round " + str(test_round))
+                        print("Best value found: " + fmt.format(cur_best_value))
+                        print("Value to beat was: " + fmt.format(def_payoff_old))
                     if cur_step + 1 < max_steps:
                         def_name = convert_deviating_strat_to_def_name(deviating_strat)
                         gen_new_cols(def_name, run_name, test_round, cur_step, \
                             samples_new_column)
                         add_data(run_name, test_round, cur_step)
                     break
+            seconds_taken_simulated_annealing = time.time() - start_time_sim_annealing
+            print("Minutes used for all simulated annealing: " + \
+                str(int(seconds_taken_simulated_annealing // 60)))
             if not found_dev:
                 if should_print:
                     print("confirmed after step: " + str(cur_step) + ", round " + \

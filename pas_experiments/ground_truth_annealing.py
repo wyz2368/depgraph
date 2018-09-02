@@ -13,8 +13,9 @@ def get_ground_truth_dev_prob(max_steps, samples_per_param, neighbor_variance, \
             neighbor_variance, should_print, initial_params, att_mixed_strat)
         if cur_value > def_payoff_old:
             beneficial_count += 1
-        if (cur_index + 1) % print_freq == 0:
-            print("Finished round: " + str(cur_index))
+        if (cur_index + 1) % print_freq == 0 or should_print:
+            print("Finished ground truth annealing round " + str(cur_index) + ", of " + \
+                str(annealing_count_ground_truth))
     duration = time.time() - start_time
     print("Minutes taken for getting ground truth dev prob: " + str(int(duration // 60)))
     return beneficial_count * 1. / annealing_count_ground_truth
