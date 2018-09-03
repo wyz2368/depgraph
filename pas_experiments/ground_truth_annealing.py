@@ -1,6 +1,7 @@
 import time
 from statsmodels.stats.proportion import proportion_confint
 from dg_annealing import run_depgraph_annealing
+from enjoy_def_pas import get_def_payoff
 
 def should_continue_anneal(count_so_far, beneficial_count, \
     anneal_ground_truth_max, anneal_ground_truth_min, early_stop_level):
@@ -17,7 +18,8 @@ def should_continue_anneal(count_so_far, beneficial_count, \
 def get_ground_truth_dev_prob(max_steps, samples_per_param, neighbor_variance, \
                               should_print, initial_params, att_mixed_strat, \
                               def_payoff_old, anneal_ground_truth_max, \
-                              anneal_ground_truth_min, early_stop_level):
+                              anneal_ground_truth_min, early_stop_level, \
+                              run_name, test_round, cur_step):
     if anneal_ground_truth_max < anneal_ground_truth_min or \
         anneal_ground_truth_min < 1 or early_stop_level <= 0.0 or early_stop_level > 1.0:
         raise ValueError("invalid inputs")
@@ -27,12 +29,18 @@ def get_ground_truth_dev_prob(max_steps, samples_per_param, neighbor_variance, \
     print_freq = 25
     beneficial_count = 0
     count_so_far = 0
+    fmt = "{0:.2f}"
     while should_continue_anneal(count_so_far, beneficial_count, anneal_ground_truth_max, \
             anneal_ground_truth_min, early_stop_level):
-        _, cur_value = run_depgraph_annealing(max_steps, samples_per_param, \
+        deviating_strat, _ = run_depgraph_annealing(max_steps, samples_per_param, \
             neighbor_variance, should_print, initial_params, att_mixed_strat)
+        def_payoff_cur = get_def_payoff(deviating_strat, run_name, test_round, \
+            cur_step, samples_per_param, att_mixed_strat)
         count_so_far += 1
-        if cur_value > def_payoff_old:
+        if should_print:
+            print("Cur payoff " + fmt.format(def_payoff_cur) + ", vs. goal " + \
+                fmt.format(def_payoff_old))
+        if def_payoff_cur > def_payoff_old:
             beneficial_count += 1
         if (count_so_far) % print_freq == 0:
             print("Finished round: " + str(count_so_far))

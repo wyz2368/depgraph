@@ -109,7 +109,8 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
             cur_step += 1
         ground_truth_dev_prob = get_ground_truth_dev_prob(max_samples, samples_per_param, \
             neighbor_variance, should_print, None, att_mixed_strat, def_payoff_old, \
-            anneal_ground_truth_max, anneal_ground_truth_min, early_stop_level)
+            anneal_ground_truth_max, anneal_ground_truth_min, early_stop_level, run_name, \
+            test_round, cur_step)
         cur_result = (was_confirmed, test_round, ground_truth_dev_prob)
         if test_round % 10 == 0:
             print("round " + str(test_round) + " result: " + str(cur_result), flush=True)
