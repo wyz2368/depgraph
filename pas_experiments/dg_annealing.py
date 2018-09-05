@@ -8,7 +8,7 @@ def run_depgraph_annealing(max_steps, samples_per_param, neighbor_variance, shou
                            initial_params_java, att_mixed_strat):
     my_process = setup_default()
     param_count = 3
-    max_temp = 50
+    max_temp = 15
     if initial_params_java is not None:
         initial_params_0_1 = convert_params_to_0_1(initial_params_java)
     else:
