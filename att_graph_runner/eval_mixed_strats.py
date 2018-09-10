@@ -2,6 +2,9 @@ import sys
 from create_weighted_mixed_strat import get_strat_from_file
 from get_both_payoffs_from_game import get_json_data
 from generate_new_cols import get_net_scope
+from cli_enjoy_dg_att_net import get_payoffs_att_net_with_sd
+from cli_enjoy_dg_def_net import get_payoffs_def_net_with_sd
+from cli_enjoy_dg_two_sided import get_payoffs_both_with_sd
 
 def is_old_network(strat_name):
     return "dg_dqmlp_rand30NoAnd_B_" in strat_name or \
@@ -74,6 +77,9 @@ def get_att_and_def_payoffs_with_stdev(game_data, attacker, defender):
             return (att_payoff, def_payoff, att_stdev, def_stdev)
     raise ValueError("Missing payoffs: " + attacker + "\t" + defender)
 
+def weighted_mean(values, weights):
+    return sum([x * y for x, y in zip(values, weights)]) * 1. / sum(weights)
+
 # payoff_sd
 def get_payoffs_with_stderr(tuple_counts, env_name_def_net, env_name_att_net, \
     env_name_both, game_file, graph_name):
@@ -94,11 +100,13 @@ def get_payoffs_with_stderr(tuple_counts, env_name_def_net, env_name_att_net, \
         else if is_network(att_strat) and not is_network(def_strat):
             # run att net vs. def heuristic
             att_scope = hybrid_get_net_scope(att_strat)
-            pass
+            def_payoff, att_payoff, def_stdev, att_stdev = get_payoffs_att_net_with_sd( \
+                env_name_att_net, cur_count, def_strat, att_strat, graph_name, att_scope)
         else if not is_network(att_strat) and is_network(def_strat):
             # run att heuristic vs. def net
             def_scope = hybrid_get_net_scope(def_strat)
-            pass
+            def_payoff, att_payoff, def_stdev, att_stdev = get_payoffs_def_net_with_sd( \
+                env_name_def_net, cur_count, def_strat, att_strat, graph_name, def_scope)
         else:
             # run att net vs. def net
             att_scope = hybrid_get_net_scope(att_strat)
@@ -110,7 +118,10 @@ def get_payoffs_with_stderr(tuple_counts, env_name_def_net, env_name_att_net, \
         att_means.append(att_payoff)
         def_stdevs.append(def_stdev)
         att_stdevs.append(att_stdev)
-    pass
+    def_mean = weighted_mean(def_means, counts)
+    att_mean = weighted_mean(att_means, counts)
+    # TODO get std errors
+    return def_mean, att_mean
 
 def is_network(strat_name):
     return ".pkl" in strat_name
