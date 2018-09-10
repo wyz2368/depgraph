@@ -1,4 +1,6 @@
 import sys
+import time
+from math import sqrt
 from create_weighted_mixed_strat import get_strat_from_file
 from get_both_payoffs_from_game import get_json_data
 from generate_new_cols import get_net_scope
@@ -11,6 +13,15 @@ def is_old_network(strat_name):
         "dg_rand_30n_noAnd_B_" in strat_name or \
         "depgraph_dq_mlp_rand_epoch" in strat_name
 
+def get_variance(counts, means, variances, overall_mean):
+    # v = (1 / (n - 1)) * [\sum n_i (m_i - m)^2 + \sum (n_i - 1) v_i]
+    total_count = sum(counts)
+    term = 0
+    for cur_index in range(len(means)):
+        term += counts[cur_index] * ((means[cur_index] - overall_mean) ** 2) + \
+            (counts[cur_index] - 1) * variances[cur_index]
+    return term / (total_count - 1.)
+
 def old_get_net_scope(net_name):
     # name is like:
     # *epochNUM_* or *epochNUM[a-z]* or *epochNUM.pkl, where NUM is an integer > 1,
@@ -19,8 +30,7 @@ def old_get_net_scope(net_name):
     # if "epoch" is absent: return None.
     # else if NUM is 2: return "deepq_train".
     # else: return "deepq_train_eNUM", inserting the integer for NUM
-    if net_name == "dg_rand_30n_noAnd_B_eq_2.pkl" or \
-        net_name == "dg_dqmlp_rand30NoAnd_B_att_fixed.pkl":
+    if net_name in ["dg_rand_30n_noAnd_B_eq_2.pkl", "dg_dqmlp_rand30NoAnd_B_att_fixed.pkl"]:
         return None
 
     epoch_index = net_name.find('epoch')
@@ -53,7 +63,7 @@ def get_strat_tuple_counts(att_mixed_strat, def_mixed_strat, num_sims):
         raise ValueError("num_sims must be positive")
     result = []
     for att_pure_strat, att_prob in att_mixed_strat.items():
-        for def_pure_strat, def_prob in def_pure_strat.items():
+        for def_pure_strat, def_prob in def_mixed_strat.items():
             expected_count = int(att_prob * def_prob * num_sims)
             if expected_count > 0:
                 cur_tuple = (att_pure_strat, def_pure_strat, expected_count)
@@ -80,7 +90,6 @@ def get_att_and_def_payoffs_with_stdev(game_data, attacker, defender):
 def weighted_mean(values, weights):
     return sum([x * y for x, y in zip(values, weights)]) * 1. / sum(weights)
 
-# payoff_sd
 def get_payoffs_with_stderr(tuple_counts, env_name_def_net, env_name_att_net, \
     env_name_both, game_file, graph_name):
     def_means = []
@@ -97,12 +106,12 @@ def get_payoffs_with_stderr(tuple_counts, env_name_def_net, env_name_att_net, \
             # get expected payoff from game file
             att_payoff, def_payoff, att_stdev, def_stdev = \
                 get_att_and_def_payoffs_with_stdev(game_data, att_strat, def_strat)
-        else if is_network(att_strat) and not is_network(def_strat):
+        elif is_network(att_strat) and not is_network(def_strat):
             # run att net vs. def heuristic
             att_scope = hybrid_get_net_scope(att_strat)
             def_payoff, att_payoff, def_stdev, att_stdev = get_payoffs_att_net_with_sd( \
                 env_name_att_net, cur_count, def_strat, att_strat, graph_name, att_scope)
-        else if not is_network(att_strat) and is_network(def_strat):
+        elif not is_network(att_strat) and is_network(def_strat):
             # run att heuristic vs. def net
             def_scope = hybrid_get_net_scope(def_strat)
             def_payoff, att_payoff, def_stdev, att_stdev = get_payoffs_def_net_with_sd( \
@@ -120,8 +129,14 @@ def get_payoffs_with_stderr(tuple_counts, env_name_def_net, env_name_att_net, \
         att_stdevs.append(att_stdev)
     def_mean = weighted_mean(def_means, counts)
     att_mean = weighted_mean(att_means, counts)
-    # TODO get std errors
-    return def_mean, att_mean
+
+    def_vars = [x ** 2 for x in def_stdevs]
+    att_vars = [x ** 2 for x in att_stdevs]
+    def_variance = get_variance(counts, def_means, def_vars, def_mean)
+    att_variance = get_variance(counts, att_means, att_vars, att_mean)
+    def_stderr = sqrt(def_variance) / sqrt(sum(counts))
+    att_stderr = sqrt(att_variance) / sqrt(sum(counts))
+    return def_mean, att_mean, def_stderr, att_stderr
 
 def is_network(strat_name):
     return ".pkl" in strat_name
@@ -129,11 +144,24 @@ def is_network(strat_name):
 def main(env_name_def_net, env_name_att_net, env_name_both, game_file, num_sims, \
     att_mixed_strat_file, def_mixed_strat_file, graph_name):
     # get mixed strategies from file
+    start_time = time.time()
     att_strat = get_strat_from_file(att_mixed_strat_file)
     def_strat = get_strat_from_file(def_mixed_strat_file)
 
     tuple_counts = get_strat_tuple_counts(att_strat, def_strat, num_sims)
-    pass
+    def_mean, att_mean, def_stderr, att_stderr = get_payoffs_with_stderr( \
+        tuple_counts, env_name_def_net, env_name_att_net, env_name_both, game_file, \
+        graph_name)
+    print("def_mean, att_mean, def_stderr, att_stderr:")
+    fmt = "{0:.5f}"
+    print(fmt.format(def_mean))
+    print(fmt.format(att_mean))
+    print(fmt.format(def_stderr))
+    print(fmt.format(att_stderr))
+
+    duration = time.time() - start_time
+    minutes_taken = int(duration * 1. / 60)
+    print("Duration: " + str(minutes_taken))
 
 '''
 example: python3 eval_mixed_strats.py DepgraphJava-v0 DepgraphJavaEnvAtt-v0 \
