@@ -7,6 +7,7 @@ from generate_new_cols import get_net_scope
 from cli_enjoy_dg_att_net import get_payoffs_att_net_with_sd
 from cli_enjoy_dg_def_net import get_payoffs_def_net_with_sd
 from cli_enjoy_dg_two_sided import get_payoffs_both_with_sd
+from append_net_names import get_truth_value
 
 def is_old_network(strat_name):
     return "dg_dqmlp_rand30NoAnd_B_" in strat_name or \
@@ -91,7 +92,7 @@ def weighted_mean(values, weights):
     return sum([x * y for x, y in zip(values, weights)]) * 1. / sum(weights)
 
 def get_payoffs_with_stderr(tuple_counts, env_name_def_net, env_name_att_net, \
-    env_name_both, game_file, graph_name):
+    env_name_both, game_file, graph_name, should_print):
     def_means = []
     att_means = []
     def_stdevs = []
@@ -100,8 +101,13 @@ def get_payoffs_with_stderr(tuple_counts, env_name_def_net, env_name_att_net, \
 
     game_data = get_json_data(game_file)
 
+    fmt = "{0:.4f}"
     for att_strat, def_strat, cur_count in tuple_counts:
+        if should_print:
+            print("Will run: " + def_strat + " vs. " + att_strat + ", " + str(cur_count) + \
+                " times.")
         att_payoff, def_payoff, att_stdev, def_stdev = None, None, None, None
+        start_cur = time.time()
         if not is_network(att_strat) and not is_network(def_strat):
             # get expected payoff from game file
             att_payoff, def_payoff, att_stdev, def_stdev = \
@@ -123,10 +129,15 @@ def get_payoffs_with_stderr(tuple_counts, env_name_def_net, env_name_att_net, \
             def_payoff, att_payoff, def_stdev, att_stdev = \
                 get_payoffs_both_with_sd(env_name_both, cur_count, def_strat, \
                     att_strat, graph_name, def_scope, att_scope)
+        duration_cur = time.time() - start_cur
         def_means.append(def_payoff)
         att_means.append(att_payoff)
         def_stdevs.append(def_stdev)
         att_stdevs.append(att_stdev)
+        if should_print:
+            print(fmt.format(def_payoff) + "\t" + fmt.format(att_payoff) + \
+                fmt.format(def_stdev) + fmt.format(att_stdev))
+            print("Seconds taken current: " + str(int(duration_cur)))
     def_mean = weighted_mean(def_means, counts)
     att_mean = weighted_mean(att_means, counts)
 
@@ -142,36 +153,36 @@ def is_network(strat_name):
     return ".pkl" in strat_name
 
 def main(env_name_def_net, env_name_att_net, env_name_both, game_file, num_sims, \
-    att_mixed_strat_file, def_mixed_strat_file, graph_name):
+    att_mixed_strat_file, def_mixed_strat_file, graph_name, should_print):
     # get mixed strategies from file
-    start_time = time.time()
+    overall_start_time = time.time()
     att_strat = get_strat_from_file(att_mixed_strat_file)
     def_strat = get_strat_from_file(def_mixed_strat_file)
 
     tuple_counts = get_strat_tuple_counts(att_strat, def_strat, num_sims)
     def_mean, att_mean, def_stderr, att_stderr = get_payoffs_with_stderr( \
         tuple_counts, env_name_def_net, env_name_att_net, env_name_both, game_file, \
-        graph_name)
+        graph_name, should_print)
     print("def_mean, att_mean, def_stderr, att_stderr:")
-    fmt = "{0:.5f}"
+    fmt = "{0:.4f}"
     print(fmt.format(def_mean))
     print(fmt.format(att_mean))
     print(fmt.format(def_stderr))
     print(fmt.format(att_stderr))
 
-    duration = time.time() - start_time
-    minutes_taken = int(duration * 1. / 60)
-    print("Duration: " + str(minutes_taken))
+    overall_duration = time.time() - overall_start_time
+    minutes_taken_overall = int(overall_duration * 1. / 60)
+    print("Minutes taken overall: " + str(minutes_taken_overall))
 
 '''
 example: python3 eval_mixed_strats.py DepgraphJava-v0 DepgraphJavaEnvAtt-v0 \
-    DepgraphJavaEnvBoth-v0 1000 game_3014.json 1 RandomGraph30N100E6T1_B.json
+    DepgraphJavaEnvBoth-v0 1000 game_3014.json 1 RandomGraph30N100E6T1_B.json True
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 9:
-        raise ValueError("Need 8 args: env_name_def_net, env_name_att_net, " + \
+    if len(sys.argv) != 10:
+        raise ValueError("Need 9 args: env_name_def_net, env_name_att_net, " + \
                          "env_name_both, game_file, num_sims, att_mixed_strat, " + \
-                         "def_mixed_strat, graph_name")
+                         "def_mixed_strat, graph_name, should_print")
     ENV_NAME_DEF_NET = sys.argv[1]
     ENV_NAME_ATT_NET = sys.argv[2]
     ENV_NAME_BOTH = sys.argv[3]
@@ -180,5 +191,6 @@ if __name__ == '__main__':
     ATT_MIXED_STRAT = sys.argv[6]
     DEF_MIXED_STRAT = sys.argv[7]
     GRAPH_NAME = sys.argv[8]
+    SHOULD_PRINT = get_truth_value(sys.argv[9])
     main(ENV_NAME_DEF_NET, ENV_NAME_ATT_NET, ENV_NAME_BOTH, \
-        GAME_FILE, NUM_SIMS, ATT_MIXED_STRAT, DEF_MIXED_STRAT, GRAPH_NAME)
+        GAME_FILE, NUM_SIMS, ATT_MIXED_STRAT, DEF_MIXED_STRAT, GRAPH_NAME, SHOULD_PRINT)
