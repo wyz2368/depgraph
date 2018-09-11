@@ -135,8 +135,8 @@ def get_payoffs_with_stderr(tuple_counts, env_name_def_net, env_name_att_net, \
         def_stdevs.append(def_stdev)
         att_stdevs.append(att_stdev)
         if should_print:
-            print(fmt.format(def_payoff) + "\t" + fmt.format(att_payoff) + \
-                fmt.format(def_stdev) + fmt.format(att_stdev))
+            print(fmt.format(def_payoff) + "\t" + fmt.format(att_payoff) \
+                + "\t" + fmt.format(def_stdev) + "\t" + fmt.format(att_stdev))
             print("Seconds taken current: " + str(int(duration_cur)))
     def_mean = weighted_mean(def_means, counts)
     att_mean = weighted_mean(att_means, counts)
