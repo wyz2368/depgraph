@@ -3,7 +3,7 @@ import time
 from math import sqrt
 from create_weighted_mixed_strat import get_strat_from_file
 from get_both_payoffs_from_game import get_json_data
-from generate_new_cols import get_net_scope
+from generate_new_cols_curve import get_net_scope
 from cli_enjoy_dg_att_net import get_payoffs_att_net_with_sd
 from cli_enjoy_dg_def_net import get_payoffs_def_net_with_sd
 from cli_enjoy_dg_two_sided import get_payoffs_both_with_sd
