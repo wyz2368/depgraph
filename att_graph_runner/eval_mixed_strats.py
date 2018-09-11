@@ -175,7 +175,7 @@ def main(env_name_def_net, env_name_att_net, env_name_both, game_file, num_sims,
     print("Minutes taken overall: " + str(minutes_taken_overall))
 
 '''
-example: python3 eval_mixed_strats.py DepgraphJava-v0 DepgraphJavaEnvAtt-v0 \
+example: python3 eval_mixed_strats.py DepgraphJava-v0 DepgraphJavaAtt-v0 \
     DepgraphJavaEnvBoth-v0 game_3014.json 1000 d30_epoch24_att.tsv \
     d30cd1_randNoAndB_epoch21_def.tsv RandomGraph30N100E6T1_B.json True
 '''
