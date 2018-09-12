@@ -146,6 +146,12 @@ def union_game_data(game_data_a, game_data_b, att_nets_a, def_nets_a, att_nets_b
 
 def main(old_game_file_a, old_game_file_b, runs_per_pair, env_name_both, graph_name, \
     result_payoffs_file, result_game_file):
+    print("old_game_file_a: " + old_game_file_a)
+    print("old_game_file_b: " + old_game_file_b)
+    print("num_sims: " + str(runs_per_pair))
+    print("result_payoffs_file: " + result_payoffs_file)
+    print("result_game_file: " + result_game_file)
+
     game_data_a = get_json_data(old_game_file_a)
     game_data_b = get_json_data(old_game_file_b)
     if not is_game_data_valid(game_data_a) or not is_game_data_valid(game_data_b):
