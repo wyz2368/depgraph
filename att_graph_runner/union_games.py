@@ -39,14 +39,23 @@ def generate_new_payoffs(att_nets_a, def_nets_a, att_nets_b, def_nets_b, num_sim
     result["graph_name"] = graph_name
     start_time = time.time()
 
-    count_to_generate = len(att_nets_a) * len(def_nets_b) + len(att_nets_b) * \
-        len(def_nets_a)
+    a_attack_to_generate = len(att_nets_a) * len(def_nets_b)
+    b_attack_to_generate = len(att_nets_b) * len(def_nets_a)
+    count_to_generate = a_attack_to_generate + b_attack_to_generate
     print("Will generate: " + str(count_to_generate) + " pairs of payoffs.")
+    print("Count with " + old_game_file_a + " attacker: " + str(a_attack_to_generate))
+    print("Count with " + old_game_file_b + " attacker: " + str(b_attack_to_generate))
+    print("a attacker nets: " + att_nets_a)
+    print("a defender nets: " + def_nets_a)
+    print("b attacker nets: " + att_nets_b)
+    print("b defender nets: " + def_nets_b)
+
     cur_index = 0
     for att_net in att_nets_a:
         for def_net in def_nets_b:
             print("Payoffs " + str(cur_index) + " of " + str(count_to_generate) + ":", \
                 flush=True)
+            cur_start_time = time.time()
             mean_rewards_tuple = get_payoffs_both( \
                 env_name_both, num_sims, def_net, att_net, graph_name, \
                 hybrid_get_net_scope(def_net), hybrid_get_net_scope(att_net))
@@ -55,10 +64,13 @@ def generate_new_payoffs(att_nets_a, def_nets_a, att_nets_b, def_nets_b, num_sim
                 result[def_net] = {}
             result[def_net][att_net] = list(mean_rewards_tuple)
             cur_index += 1
+            cur_duration = time.time() - cur_start_time
+            print("Seconds cur pair: " + str(int(cur_duration)), flush=True)
     for att_net in att_nets_b:
         for def_net in def_nets_a:
             print("Payoffs " + str(cur_index) + " of " + str(count_to_generate) + ":", \
                 flush=True)
+            cur_start_time = time.time()
             mean_rewards_tuple = get_payoffs_both( \
                 env_name_both, num_sims, def_net, att_net, graph_name, \
                 hybrid_get_net_scope(def_net), hybrid_get_net_scope(att_net))
@@ -67,6 +79,8 @@ def generate_new_payoffs(att_nets_a, def_nets_a, att_nets_b, def_nets_b, num_sim
                 result[def_net] = {}
             result[def_net][att_net] = list(mean_rewards_tuple)
             cur_index += 1
+            cur_duration = time.time() - cur_start_time
+            print("Seconds cur pair: " + str(int(cur_duration)), flush=True)
     duration = time.time() - start_time
     print("Minutes taken: " + str(duration // 60))
     return result
