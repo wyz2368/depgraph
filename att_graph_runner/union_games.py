@@ -39,8 +39,13 @@ def generate_new_payoffs(att_nets_a, def_nets_a, att_nets_b, def_nets_b, num_sim
     result["graph_name"] = graph_name
     start_time = time.time()
 
+    count_to_generate = len(att_nets_a) * len(def_nets_b) + len(att_nets_b) * \
+        len(def_nets_a)
+    print("Will generate: " + str(count_to_generate) + " pairs of payoffs.")
+    cur_index = 0
     for att_net in att_nets_a:
         for def_net in def_nets_b:
+            print("Payoffs " + str(cur_index) + " of " + str(count_to_generate) + ":")
             mean_rewards_tuple = get_payoffs_both( \
                 env_name_both, num_sims, def_net, att_net, graph_name, \
                 hybrid_get_net_scope(def_net), hybrid_get_net_scope(att_net))
@@ -48,8 +53,10 @@ def generate_new_payoffs(att_nets_a, def_nets_a, att_nets_b, def_nets_b, num_sim
             if def_net not in result:
                 result[def_net] = {}
             result[def_net][att_net] = list(mean_rewards_tuple)
+            cur_index += 1
     for att_net in att_nets_b:
         for def_net in def_nets_a:
+            print("Payoffs " + str(cur_index) + " of " + str(count_to_generate) + ":")
             mean_rewards_tuple = get_payoffs_both( \
                 env_name_both, num_sims, def_net, att_net, graph_name, \
                 hybrid_get_net_scope(def_net), hybrid_get_net_scope(att_net))
@@ -57,6 +64,7 @@ def generate_new_payoffs(att_nets_a, def_nets_a, att_nets_b, def_nets_b, num_sim
             if def_net not in result:
                 result[def_net] = {}
             result[def_net][att_net] = list(mean_rewards_tuple)
+            cur_index += 1
     duration = time.time() - start_time
     print("Minutes taken: " + str(duration // 60))
     return result
@@ -168,6 +176,10 @@ def main(old_game_file_a, old_game_file_b, runs_per_pair, env_name_both, graph_n
     combined_game_data = union_game_data(game_data_a, game_data_b, att_nets_a, def_nets_a, \
         att_nets_b, def_nets_b, att_heuristics, def_heuristics, new_payoffs_dict)
     print_json(result_game_file, combined_game_data)
+
+    new_game_dict = get_json_data(result_game_file)
+    if not is_game_data_valid(new_game_dict):
+        raise ValueError("Invalid result data")
 
 '''
 example: python3 union_games.py game_3014_20_d30cd1.json game_3014_23.json \
