@@ -45,22 +45,24 @@ def generate_new_payoffs(att_nets_a, def_nets_a, att_nets_b, def_nets_b, num_sim
     cur_index = 0
     for att_net in att_nets_a:
         for def_net in def_nets_b:
-            print("Payoffs " + str(cur_index) + " of " + str(count_to_generate) + ":")
+            print("Payoffs " + str(cur_index) + " of " + str(count_to_generate) + ":", \
+                flush=True)
             mean_rewards_tuple = get_payoffs_both( \
                 env_name_both, num_sims, def_net, att_net, graph_name, \
                 hybrid_get_net_scope(def_net), hybrid_get_net_scope(att_net))
-            print(str((def_net, att_net)) + "\n" + str(mean_rewards_tuple))
+            print(str((def_net, att_net)) + "\n" + str(mean_rewards_tuple), flush=True)
             if def_net not in result:
                 result[def_net] = {}
             result[def_net][att_net] = list(mean_rewards_tuple)
             cur_index += 1
     for att_net in att_nets_b:
         for def_net in def_nets_a:
-            print("Payoffs " + str(cur_index) + " of " + str(count_to_generate) + ":")
+            print("Payoffs " + str(cur_index) + " of " + str(count_to_generate) + ":", \
+                flush=True)
             mean_rewards_tuple = get_payoffs_both( \
                 env_name_both, num_sims, def_net, att_net, graph_name, \
                 hybrid_get_net_scope(def_net), hybrid_get_net_scope(att_net))
-            print(str((def_net, att_net)) + "\n" + str(mean_rewards_tuple))
+            print(str((def_net, att_net)) + "\n" + str(mean_rewards_tuple), flush=True)
             if def_net not in result:
                 result[def_net] = {}
             result[def_net][att_net] = list(mean_rewards_tuple)
@@ -117,7 +119,8 @@ def get_game_b_results_to_add(game_data_b, att_nets_b, def_nets_b, att_heuristic
     return result
 
 def union_game_data(game_data_a, game_data_b, att_nets_a, def_nets_a, att_nets_b, \
-    def_nets_b, att_heuristics, def_heuristics, new_payoffs_dict):
+    def_nets_b, att_heuristics, def_heuristics, new_payoffs_dict, old_game_file_a, \
+    old_game_file_b):
     result = copy.deepcopy(game_data_a)
     for def_net in def_nets_b:
         add_defender_strategy(result, def_net)
@@ -142,6 +145,15 @@ def union_game_data(game_data_a, game_data_b, att_nets_a, def_nets_a, att_nets_b
                     original_num_sims, new_num_sims)
         next_profile_id += 1
         next_symmetry_group_id += 2
+
+    network_source = "network_source"
+    result[network_source] = {}
+    result[network_source][old_game_file_a] = []
+    result[network_source][old_game_file_a] = []
+    result[network_source][old_game_file_a].extend(att_nets_a)
+    result[network_source][old_game_file_a].extend(def_nets_a)
+    result[network_source][old_game_file_b].extend(att_nets_b)
+    result[network_source][old_game_file_b].extend(def_nets_b)
     return result
 
 def main(old_game_file_a, old_game_file_b, runs_per_pair, env_name_both, graph_name, \
@@ -151,6 +163,7 @@ def main(old_game_file_a, old_game_file_b, runs_per_pair, env_name_both, graph_n
     print("num_sims: " + str(runs_per_pair))
     print("result_payoffs_file: " + result_payoffs_file)
     print("result_game_file: " + result_game_file)
+    sys.stdout.flush()
 
     game_data_a = get_json_data(old_game_file_a)
     game_data_b = get_json_data(old_game_file_b)
@@ -180,7 +193,8 @@ def main(old_game_file_a, old_game_file_b, runs_per_pair, env_name_both, graph_n
     def_heuristics = get_defender_heuristics(game_data_a)
 
     combined_game_data = union_game_data(game_data_a, game_data_b, att_nets_a, def_nets_a, \
-        att_nets_b, def_nets_b, att_heuristics, def_heuristics, new_payoffs_dict)
+        att_nets_b, def_nets_b, att_heuristics, def_heuristics, new_payoffs_dict, \
+        old_game_file_a, old_game_file_b)
     print_json(result_game_file, combined_game_data)
 
     new_game_dict = get_json_data(result_game_file)
