@@ -45,6 +45,8 @@ def generate_new_payoffs(att_nets_a, def_nets_a, att_nets_b, def_nets_b, num_sim
                 env_name_both, num_sims, def_net, att_net, graph_name, \
                 hybrid_get_net_scope(def_net), hybrid_get_net_scope(att_net))
             print(str((def_net, att_net)) + "\n" + str(mean_rewards_tuple))
+            if def_net not in result:
+                result[def_net] = {}
             result[def_net][att_net] = list(mean_rewards_tuple)
     for att_net in att_nets_b:
         for def_net in def_nets_a:
@@ -52,6 +54,8 @@ def generate_new_payoffs(att_nets_a, def_nets_a, att_nets_b, def_nets_b, num_sim
                 env_name_both, num_sims, def_net, att_net, graph_name, \
                 hybrid_get_net_scope(def_net), hybrid_get_net_scope(att_net))
             print(str((def_net, att_net)) + "\n" + str(mean_rewards_tuple))
+            if def_net not in result:
+                result[def_net] = {}
             result[def_net][att_net] = list(mean_rewards_tuple)
     duration = time.time() - start_time
     print("Minutes taken: " + str(duration // 60))
@@ -167,7 +171,8 @@ def main(old_game_file_a, old_game_file_b, runs_per_pair, env_name_both, graph_n
 
 '''
 example: python3 union_games.py game_3014_20_d30cd1.json game_3014_23.json \
-   400 DepgraphJavaEnvBoth-v0 RandomGraph30N100E6T1_B.json game_3014_comb_d30cd1_d30n1.json
+   400 DepgraphJavaEnvBoth-v0 RandomGraph30N100E6T1_B.json payoffs_d30cd1_d30n1.json \
+   game_comb_d30cd1_d30n1.json
 '''
 if __name__ == '__main__':
     if len(sys.argv) != 8:
