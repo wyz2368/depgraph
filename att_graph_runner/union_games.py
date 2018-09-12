@@ -45,10 +45,10 @@ def generate_new_payoffs(att_nets_a, def_nets_a, att_nets_b, def_nets_b, num_sim
     print("Will generate: " + str(count_to_generate) + " pairs of payoffs.")
     print("Count with " + old_game_file_a + " attacker: " + str(a_attack_to_generate))
     print("Count with " + old_game_file_b + " attacker: " + str(b_attack_to_generate))
-    print("a attacker nets: " + att_nets_a)
-    print("a defender nets: " + def_nets_a)
-    print("b attacker nets: " + att_nets_b)
-    print("b defender nets: " + def_nets_b)
+    print("a attacker nets: " + str(att_nets_a))
+    print("a defender nets: " + str(def_nets_a))
+    print("b attacker nets: " + str(att_nets_b))
+    print("b defender nets: " + str(def_nets_b))
 
     cur_index = 0
     for att_net in att_nets_a:
