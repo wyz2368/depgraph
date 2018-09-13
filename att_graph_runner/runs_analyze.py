@@ -71,8 +71,31 @@ def get_attacker_mixed_strat(decoded_result_name):
         result[parts[0]] = float(parts[1])
     return result
 
+def find_old_game_file_name(strat, unioned_game_data):
+    for old_game_file_name, cur_strats in unioned_game_data["network_source"]:
+        if strat in cur_strats:
+            return old_game_file_name
+    raise ValueError("Strategy not found: " + strat)
+
+def get_run_fractions(mixed_strat, unioned_game_data):
+    result = {}
+    for strat, weight in mixed_strat.items():
+        old_game_file_name = find_old_game_file_name(strat, unioned_game_data)
+        if old_game_file_name in result:
+            result[old_game_file_name] += weight
+        else:
+            result[old_game_file_name] = weight
+    return result
+
 def print_results(unioned_game_data, defender_mixed_strat, attacker_mixed_strat):
-    pass
+    defender_run_to_fraction = get_run_fractions(defender_mixed_strat, unioned_game_data)
+    attacker_run_to_fraction = get_run_fractions(attacker_mixed_strat, unioned_game_data)
+
+    print("Defender run to eq fraction:")
+    print(defender_run_to_fraction)
+
+    print("Attacker run to eq fraction:")
+    print(attacker_run_to_fraction)
 
 def main(unioned_game_file):
     make_union_gambit_file(unioned_game_file)
