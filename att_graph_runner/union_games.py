@@ -125,6 +125,10 @@ def get_game_b_results_to_add(game_data_b, att_nets_b, def_nets_b, att_heuristic
             (mean_def_reward, mean_att_reward) = get_payoffs(game_data_b, def_strat, \
                 att_net)
             result.append((def_strat, att_net, mean_def_reward, mean_att_reward))
+        for def_net in def_nets_b:
+            (mean_def_reward, mean_att_reward) = get_payoffs(game_data_b, def_net, \
+                att_net)
+            result.append((def_net, att_net, mean_def_reward, mean_att_reward))
     for att_strat in att_heuristics:
         for def_net in def_nets_b:
             (mean_def_reward, mean_att_reward) = get_payoffs(game_data_b, def_net, \
