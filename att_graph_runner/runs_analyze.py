@@ -72,7 +72,7 @@ def get_attacker_mixed_strat(decoded_result_name):
     return result
 
 def find_old_game_file_name(strat, unioned_game_data):
-    for old_game_file_name, cur_strats in unioned_game_data["network_source"]:
+    for old_game_file_name, cur_strats in unioned_game_data["network_source"].items():
         if strat in cur_strats:
             return old_game_file_name
     raise ValueError("Strategy not found: " + strat)
