@@ -4,6 +4,7 @@ from gambit_analyze import call_and_wait, call_and_wait_with_timeout
 from get_both_payoffs_from_game import get_json_data
 from create_tsv_files import get_defender_lines, get_attacker_lines, \
     get_rounded_strategy_lines
+from eval_mixed_strats import is_network
 
 def get_unioned_gambit_input_name(unioned_game_file):
     result = unioned_game_file[:-5] + "_gambit.nfg"
@@ -72,6 +73,8 @@ def get_attacker_mixed_strat(decoded_result_name):
     return result
 
 def find_old_game_file_name(strat, unioned_game_data):
+    if not is_network(strat):
+        return None
     for old_game_file_name, cur_strats in unioned_game_data["network_source"].items():
         if strat in cur_strats:
             return old_game_file_name
@@ -81,10 +84,11 @@ def get_run_fractions(mixed_strat, unioned_game_data):
     result = {}
     for strat, weight in mixed_strat.items():
         old_game_file_name = find_old_game_file_name(strat, unioned_game_data)
-        if old_game_file_name in result:
-            result[old_game_file_name] += weight
-        else:
-            result[old_game_file_name] = weight
+        if old_game_file_name is not None:
+            if old_game_file_name in result:
+                result[old_game_file_name] += weight
+            else:
+                result[old_game_file_name] = weight
     return result
 
 def print_results(unioned_game_data, defender_mixed_strat, attacker_mixed_strat):
