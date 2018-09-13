@@ -163,7 +163,7 @@ def union_game_data(game_data_a, game_data_b, att_nets_a, def_nets_a, att_nets_b
     network_source = "network_source"
     result[network_source] = {}
     result[network_source][old_game_file_a] = []
-    result[network_source][old_game_file_a] = []
+    result[network_source][old_game_file_b] = []
     result[network_source][old_game_file_a].extend(att_nets_a)
     result[network_source][old_game_file_a].extend(def_nets_a)
     result[network_source][old_game_file_b].extend(att_nets_b)
