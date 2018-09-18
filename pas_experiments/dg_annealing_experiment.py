@@ -50,14 +50,14 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
         deviation_sequence = []
         while cur_step < max_steps:
             print("new round: test round " + str(test_round) + ", cur step: " + \
-                str(cur_step))
+                str(cur_step), flush=True)
             do_gambit_analyze(run_name, test_round, cur_step)
             create_tsv(run_name, test_round, cur_step)
 
             error_prob_one_side = alpha_list[cur_step]
             cur_n = get_n(max_p, error_prob_one_side)
             if should_print:
-                print("cur_n: " + str(cur_n))
+                print("cur_n: " + str(cur_n), flush=True)
 
             def_payoff_old = get_def_payoff_eq(run_name, test_round, cur_step)
             found_dev = False
@@ -66,7 +66,7 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
             for cur_annealing_step in range(cur_n):
                 output_name = get_game_file_name(run_name, test_round, cur_step + 1)
                 if os.path.isfile(output_name):
-                    print("Skipping, file already exists: " + output_name)
+                    print("Skipping, file already exists: " + output_name, flush=True)
                     break
                 # deviating_strat is in [0, 1]^3
                 deviating_strat, cur_best_value = run_depgraph_annealing(max_samples, \
@@ -74,9 +74,11 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
                     att_mixed_strat)
                 if should_print:
                     print("Finished annealing round " + str(cur_annealing_step) + " of " + \
-                        str(cur_n))
-                    print("Mean def payoff to beat was: " + fmt.format(def_payoff_old))
-                    print("Estimated best value was: " + fmt.format(cur_best_value))
+                        str(cur_n), flush=True)
+                    print("Mean def payoff to beat was: " + fmt.format(def_payoff_old),\
+                        flush=True)
+                    print("Estimated best value was: " + fmt.format(cur_best_value), \
+                        flush=True)
                 def_payoff_cur = get_def_payoff(deviating_strat, run_name, test_round, \
                     cur_step, samples_new_column, att_mixed_strat)
                 if def_payoff_cur > def_payoff_old:
@@ -85,8 +87,9 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
                     if should_print:
                         print("found deviation after annealing step " + \
                             str(cur_annealing_step) + ", strategy step " + str(cur_step) + \
-                            ", round " + str(test_round))
-                        print("New estimate beats old value: " + fmt.format(def_payoff_cur))
+                            ", round " + str(test_round), flush=True)
+                        print("New estimate beats old value: " + fmt.format(def_payoff_cur), \
+                            flush=True)
                     if cur_step + 1 < max_steps:
                         def_name = convert_deviating_strat_to_def_name(deviating_strat)
                         gen_new_cols(def_name, run_name, test_round, cur_step, \
@@ -96,14 +99,14 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
                 else:
                     if should_print:
                         print("New estimate fails to beat old value: " + \
-                            fmt.format(def_payoff_cur))
+                            fmt.format(def_payoff_cur), flush=True)
             seconds_taken_simulated_annealing = time.time() - start_time_sim_annealing
             print("Minutes used for all simulated annealing: " + \
-                str(int(seconds_taken_simulated_annealing // 60)))
+                str(int(seconds_taken_simulated_annealing // 60)), flush=True)
             if not found_dev:
                 if should_print:
                     print("confirmed after step: " + str(cur_step) + ", round " + \
-                        str(test_round))
+                        str(test_round), flush=True)
                 was_confirmed = True
                 break
             cur_step += 1
@@ -147,10 +150,10 @@ def main(max_p, error_tolerance, test_count, max_rounds, max_steps, samples_per_
     print("samples_new_column: " + str(samples_new_column))
     print("anneal_ground_truth_max: " + str(anneal_ground_truth_max))
     print("anneal_ground_truth_min: " + str(anneal_ground_truth_min))
-    print("early_stop_level: " + fmt.format(early_stop_level) + "\n")
+    print("early_stop_level: " + fmt.format(early_stop_level) + "\n", flush=True)
 
     alpha_list = [error_tolerance * 1.0 / max_rounds] * max_rounds
-    print("alpha_list: " + str(alpha_list))
+    print("alpha_list: " + str(alpha_list), flush=True)
     result_tuples, deviation_sequences = get_results(max_p, alpha_list, test_count, \
         max_rounds, max_steps, samples_per_param, neighbor_variance, should_print, \
         run_name, samples_new_column, anneal_ground_truth_max, anneal_ground_truth_min, \
