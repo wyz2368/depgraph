@@ -2,7 +2,7 @@
 #PBS -S /bin/sh
 #PBS -A wellman_flux
 #PBS -q flux
-#PBS -l nodes=1:ppn=4,pmem=2000mb,walltime=72:00:00,qos=flux
+#PBS -l nodes=1:ppn=4,pmem=4000mb,walltime=42:00:00,qos=flux
 #PBS -N agr_test_s29f1
 #PBS -W group_list=wellman
 #PBS -o /home/masondw/att_graph_runner/s29f1out
@@ -29,6 +29,6 @@ cd /tmp/${PBS_JOBID}/att_graph_runner
 python3 master_dq_runner.py 3013 0 s29f1_randNoAndB s29f1 DepgraphJava29N-v0 \
     DepgraphJavaEnvAtt29N-v0 DepgraphJavaEnvBoth29N-v0 SepLayerGraph0_noAnd_B.json \
     DepgraphJavaEnvVsMixedDef29N-v0 DepgraphJavaEnvVsMixedAtt29N-v0 400 \
-    dg_s29f1_dq_mlp_rand_epoch dg_s29f1_dq_mlp_rand_epoch s29 700000 700000 1 1000
+    dg_s29f1_dq_mlp_rand_epoch dg_s29f1_dq_mlp_rand_epoch s29 700000 700000 1 1000 True True
 cp /tmp/${PBS_JOBID}/att_graph_runner/*s29f1* /home/masondw/att_graph_runner
 rm -rf /tmp/${PBS_JOBID}

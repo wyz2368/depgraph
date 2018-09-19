@@ -3,9 +3,9 @@
 #PBS -A wellman_flux
 #PBS -q flux
 #PBS -l nodes=1:ppn=4,pmem=4000mb,walltime=42:00:00,qos=flux
-#PBS -N agr_test_d30f1
+#PBS -N agr_test_s29cf1_cur
 #PBS -W group_list=wellman
-#PBS -o /home/masondw/att_graph_runner/d30f1out
+#PBS -o /home/masondw/att_graph_runner/s29cf1out
 #PBS -j oe
 #PBS -M masondw@umich.edu
 #PBS -V
@@ -21,14 +21,15 @@ cp -r /home/masondw/att_graph_runner/dg4jnonetcli /tmp/${PBS_JOBID}/att_graph_ru
 cp -r /home/masondw/att_graph_runner/graphs /tmp/${PBS_JOBID}/att_graph_runner
 cp -r /home/masondw/att_graph_runner/simspecs /tmp/${PBS_JOBID}/att_graph_runner
 cp /home/masondw/att_graph_runner/*.json /tmp/${PBS_JOBID}/att_graph_runner
-cp /home/masondw/att_graph_runner/*d30f1* /tmp/${PBS_JOBID}/att_graph_runner
+cp /home/masondw/att_graph_runner/*s29cf1* /tmp/${PBS_JOBID}/att_graph_runner
 cp /home/masondw/att_graph_runner/*.py /tmp/${PBS_JOBID}/att_graph_runner
 cp -r /home/masondw/gym /tmp/${PBS_JOBID}
 cp -r /home/masondw/baselines /tmp/${PBS_JOBID}
 cd /tmp/${PBS_JOBID}/att_graph_runner
-python3 master_dq_runner.py 3014 0 d30f1_randNoAndB d30f1 DepgraphJava-v0 \
-    DepgraphJavaAtt-v0 DepgraphJavaEnvBoth-v0 RandomGraph30N100E6T1_B.json \
-    DepgraphJavaEnvVsMixedDef-v0 DepgraphJavaEnvVsMixedAtt-v0 400 \
-    dg_d30f1_dq_mlp_rand_epoch dg_d30f1_dq_mlp_rand_epoch d30 1000000 700000 1 1000 True True
-cp /tmp/${PBS_JOBID}/att_graph_runner/*d30f1* /home/masondw/att_graph_runner
+python3 master_dq_runner_curve.py 3013 s29cf1_randNoAndB s29cf1 \
+    DepgraphJava29N-v0 DepgraphJavaEnvAtt29N-v0 DepgraphJavaEnvBoth29N-v0 \
+    SepLayerGraph0_noAnd_B.json \
+    DepgraphJavaEnvVsMixedDef29N-v0 DepgraphJavaEnvVsMixedAtt29N-v0 400 0.7 4 s29 \
+    700000 400000 700000 400000 1 1 500
+cp /tmp/${PBS_JOBID}/att_graph_runner/*s29cf1* /home/masondw/att_graph_runner
 rm -rf /tmp/${PBS_JOBID}
