@@ -38,7 +38,7 @@ def record_result_tuples(result_name, result_tuples):
 
 def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_per_param, \
     neighbor_variance, should_print, run_name, samples_new_column, \
-    anneal_ground_truth_max, anneal_ground_truth_min, early_stop_level):
+    anneal_ground_truth_max, anneal_ground_truth_min, early_stop_level, epsilon_tolerance):
     results = []
     deviation_sequences = []
     start_time_all = time.time()
@@ -81,15 +81,16 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
                         flush=True)
                 def_payoff_cur = get_def_payoff(deviating_strat, run_name, test_round, \
                     cur_step, samples_new_column, att_mixed_strat)
-                if def_payoff_cur > def_payoff_old:
+                if def_payoff_cur > def_payoff_old + epsilon_tolerance:
                     found_dev = True
                     deviation_sequence.append(deviating_strat)
                     if should_print:
                         print("found deviation after annealing step " + \
                             str(cur_annealing_step) + ", strategy step " + str(cur_step) + \
                             ", round " + str(test_round), flush=True)
-                        print("New estimate beats old value: " + fmt.format(def_payoff_cur), \
-                            flush=True)
+                        print("New estimate beats old value by epsilon_tolerance of " + \
+                            fmt.format(epsilon_tolerance) + ": " + \
+                            fmt.format(def_payoff_cur), flush=True)
                     if cur_step + 1 < max_steps:
                         def_name = convert_deviating_strat_to_def_name(deviating_strat)
                         gen_new_cols(def_name, run_name, test_round, cur_step, \
@@ -98,8 +99,9 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
                     break
                 else:
                     if should_print:
-                        print("New estimate fails to beat old value: " + \
-                            fmt.format(def_payoff_cur), flush=True)
+                        print("New estimate fails to beat old value by " + \
+                            "epsilon_tolerance of " + fmt.format(epsilon_tolerance) + \
+                            ": " + fmt.format(def_payoff_cur), flush=True)
             seconds_taken_simulated_annealing = time.time() - start_time_sim_annealing
             print("Minutes used for all simulated annealing: " + \
                 str(int(seconds_taken_simulated_annealing // 60)), flush=True)
@@ -113,7 +115,7 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
         ground_truth_dev_prob = get_ground_truth_dev_prob(max_samples, samples_per_param, \
             neighbor_variance, should_print, None, att_mixed_strat, def_payoff_old, \
             anneal_ground_truth_max, anneal_ground_truth_min, early_stop_level, run_name, \
-            test_round, cur_step)
+            test_round, cur_step, epsilon_tolerance)
         cur_result = (was_confirmed, test_round, ground_truth_dev_prob)
         if test_round % 10 == 0:
             print("round " + str(test_round) + " result: " + str(cur_result), flush=True)
@@ -129,13 +131,15 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
 
 def main(max_p, error_tolerance, test_count, max_rounds, max_steps, samples_per_param, \
     neighbor_variance, should_print, run_name, samples_new_column, \
-    anneal_ground_truth_max, anneal_ground_truth_min, early_stop_level):
+    anneal_ground_truth_max, anneal_ground_truth_min, early_stop_level, epsilon_tolerance):
     result_name = get_result_name(run_name)
     if os.path.exists(result_name):
         raise ValueError("File exists: " + result_name)
     deviations_name = get_deviations_name(run_name)
     if os.path.exists(deviations_name):
         raise ValueError("File exists: " + deviations_name)
+    if epsilon_tolerance < 0.0:
+        raise ValueError("epsilon_tolerance must be >= 0.0: " + str(epsilon_tolerance))
 
     fmt = "{0:.6f}"
     print("Will run dg_annealing_experiment.py:")
@@ -150,14 +154,15 @@ def main(max_p, error_tolerance, test_count, max_rounds, max_steps, samples_per_
     print("samples_new_column: " + str(samples_new_column))
     print("anneal_ground_truth_max: " + str(anneal_ground_truth_max))
     print("anneal_ground_truth_min: " + str(anneal_ground_truth_min))
-    print("early_stop_level: " + fmt.format(early_stop_level) + "\n", flush=True)
+    print("early_stop_level: " + fmt.format(early_stop_level))
+    print("epsilon_tolerance: " + fmt.format(epsilon_tolerance) + "\n", flush=True)
 
     alpha_list = [error_tolerance * 1.0 / max_rounds] * max_rounds
     print("alpha_list: " + str(alpha_list), flush=True)
     result_tuples, deviation_sequences = get_results(max_p, alpha_list, test_count, \
         max_rounds, max_steps, samples_per_param, neighbor_variance, should_print, \
         run_name, samples_new_column, anneal_ground_truth_max, anneal_ground_truth_min, \
-        early_stop_level)
+        early_stop_level, epsilon_tolerance)
     record_result_tuples(result_name, result_tuples)
     record_deviations(deviations_name, deviation_sequences)
 
@@ -166,13 +171,13 @@ example: python3 dg_annealing_experiment.py
 or: stdbuf -i0 -o0 -e0 python3 dg_annealing_experiment.py > out_dg1_b.txt
 
 good debugging values:
-(0.2, 0.2, 2, 3, 3, 3, 0.05, True, "dg1", 3, 10, 10, 0.4)
+(0.2, 0.2, 2, 3, 3, 3, 0.05, True, "dg1", 3, 10, 10, 0.4, 0.0)
 
 good final values:
-(0.05, 0.1, 700, 10, 20, 400, 0.03, True, dg1, 400, 400, 20, 0.1)
+(0.05, 0.1, 700, 10, 20, 400, 0.03, True, dg1, 400, 400, 20, 0.1, 0.0)
 
 compromise final values:
-(0.05, 0.1, 1, 7, 10, 400, 0.03, True, dg1_a, 400, 200, 10, 0.1)
+(0.05, 0.1, 1, 7, 10, 400, 0.03, True, dg1_a, 400, 200, 10, 0.1, 1.0)
 '''
 if __name__ == "__main__":
     MAX_P = 0.2
@@ -188,6 +193,8 @@ if __name__ == "__main__":
     ANNEAL_GROUND_TRUTH_MAX = 10
     ANNEAL_GROUND_TRUTH_MIN = 10
     EARLY_STOP_LEVEL = MAX_P * 2
+    EPSILON_TOLERANCE = 1.0
     main(MAX_P, ERROR_TOLERANCE, TEST_COUNT, MAX_STEPS, MAX_SAMPLES, SAMPLES_PER_PARAM, \
         NEIGHBOR_VARIANCE, SHOULD_PRINT, RUN_NAME, SAMPLES_NEW_COLUMN, \
-        ANNEAL_GROUND_TRUTH_MAX, ANNEAL_GROUND_TRUTH_MIN, EARLY_STOP_LEVEL)
+        ANNEAL_GROUND_TRUTH_MAX, ANNEAL_GROUND_TRUTH_MIN, EARLY_STOP_LEVEL, \
+        EPSILON_TOLERANCE)

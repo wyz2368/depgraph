@@ -19,9 +19,10 @@ def get_ground_truth_dev_prob(max_steps, samples_per_param, neighbor_variance, \
                               should_print, initial_params, att_mixed_strat, \
                               def_payoff_old, anneal_ground_truth_max, \
                               anneal_ground_truth_min, early_stop_level, \
-                              run_name, test_round, cur_step):
+                              run_name, test_round, cur_step, epsilon_tolerance):
     if anneal_ground_truth_max < anneal_ground_truth_min or \
-        anneal_ground_truth_min < 1 or early_stop_level <= 0.0 or early_stop_level > 1.0:
+        anneal_ground_truth_min < 1 or early_stop_level <= 0.0 or early_stop_level > 1.0 \
+        or epsilon_tolerance < 0.0:
         raise ValueError("invalid inputs")
     start_time = time.time()
     print("Will run simulated annealing, up to " + str(anneal_ground_truth_max) + \
@@ -39,8 +40,9 @@ def get_ground_truth_dev_prob(max_steps, samples_per_param, neighbor_variance, \
         count_so_far += 1
         if should_print:
             print("Cur payoff " + fmt.format(def_payoff_cur) + ", vs. goal " + \
-                fmt.format(def_payoff_old))
-        if def_payoff_cur > def_payoff_old:
+                fmt.format(def_payoff_old) + " plus epsilon_tolerance " + \
+                fmt.format(epsilon_tolerance))
+        if def_payoff_cur > def_payoff_old + epsilon_tolerance:
             beneficial_count += 1
         if (count_so_far) % print_freq == 0:
             print("Finished round: " + str(count_so_far))
