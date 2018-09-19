@@ -171,26 +171,26 @@ example: python3 dg_annealing_experiment.py
 or: stdbuf -i0 -o0 -e0 python3 dg_annealing_experiment.py > out_dg1_b.txt
 
 good debugging values:
-(0.2, 0.2, 2, 3, 3, 3, 0.05, True, "dg1", 3, 10, 10, 0.4, 0.0)
+(0.2, 0.2, 2, 3, 3, 3, 0.05, True, "dg1", 3, 10, 10, 0.4, 0.1)
 
 good final values:
-(0.05, 0.1, 700, 10, 20, 400, 0.03, True, dg1, 400, 400, 20, 0.1, 0.0)
+(0.05, 0.1, 700, 10, 20, 400, 0.03, True, dg1, 400, 400, 20, 0.1, 0.1)
 
 compromise final values:
-(0.05, 0.1, 1, 7, 10, 400, 0.03, True, dg1_a, 400, 200, 10, 0.1, 1.0)
+(0.05, 0.1, 1, 10, 5, 400, 0.03, True, dg1_a, 400, 200, 10, 0.1, 1.0)
 '''
 if __name__ == "__main__":
-    MAX_P = 0.2
-    ERROR_TOLERANCE = 0.2
-    TEST_COUNT = 2
-    MAX_STEPS = 3
-    MAX_SAMPLES = 3
-    SAMPLES_PER_PARAM = 3
-    NEIGHBOR_VARIANCE = 0.05
+    MAX_P = 0.05
+    ERROR_TOLERANCE = 0.1
+    TEST_COUNT = 1
+    MAX_STEPS = 10
+    MAX_SAMPLES = 5
+    SAMPLES_PER_PARAM = 400
+    NEIGHBOR_VARIANCE = 0.03
     SHOULD_PRINT = True
-    RUN_NAME = "dg1"
-    SAMPLES_NEW_COLUMN = 3
-    ANNEAL_GROUND_TRUTH_MAX = 10
+    RUN_NAME = "dg12"
+    SAMPLES_NEW_COLUMN = 400
+    ANNEAL_GROUND_TRUTH_MAX = 200
     ANNEAL_GROUND_TRUTH_MIN = 10
     EARLY_STOP_LEVEL = MAX_P * 2
     EPSILON_TOLERANCE = 1.0
