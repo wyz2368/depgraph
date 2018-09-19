@@ -143,7 +143,7 @@ def sample_mean_def_payoff(params_0_1, run_count, att_mixed_strat):
     def_name = get_def_name(params_java)
     def_payoff, _, def_std_error, _ = get_mean_payoffs(def_name, att_mixed_strat, run_count)
     fmt = "{0:.2f}"
-    print("Defender payoff std error: " + fmt.format(def_std_error))
+    print("Defender payoff std error: " + fmt.format(def_std_error), flush=True)
     return def_payoff
 
 '''
