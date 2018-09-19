@@ -14,7 +14,7 @@ from gambit_analyze import get_game_file_name, do_gambit_analyze
 from create_tsv_files import create_tsv
 from update_opponent_strats import update_strats
 from get_both_payoffs_from_game import get_both_payoffs
-from append_net_names import append_names
+from append_net_names import append_names, get_truth_value
 
 def are_all_locks_unlocked(port_lock_name):
     return is_def_unlocked(port_lock_name, True) and \
@@ -105,7 +105,8 @@ def run_add_new_data(game_number, env_short_name_payoffs, new_epoch):
 def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
     env_name_def_net, env_name_att_net, env_name_both, graph_name, \
     env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, def_pkl_prefix, \
-    att_pkl_prefix, port_lock_name, max_timesteps_def, max_timesteps_att, new_eval_count):
+    att_pkl_prefix, port_lock_name, max_timesteps_def, max_timesteps_att, new_eval_count, \
+    continue_after_train, continue_after_payoff_gen):
     new_epoch = cur_epoch + 1
     result_file_name = get_add_data_result_file_name(game_number, new_epoch, \
         env_short_name_payoffs)
@@ -141,6 +142,10 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
         env_name_vs_mixed_att, env_name_vs_mixed_def, port_lock_name, env_short_name_tsv, \
         max_timesteps_def, max_timesteps_att, new_eval_count)
 
+    if not continue_after_train:
+        print("Stopping early after training.")
+        sys.exit(1)
+
     # check if new defender network is beneficial deviation from old equilibrium
     is_def_beneficial = get_check_if_beneficial(env_short_name_payoffs, new_epoch, True)
     # check if new attacker network is beneficial deviation from old equilibrium
@@ -158,6 +163,11 @@ def run_epoch(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs
     run_gen_new_cols(env_name_def_net, env_name_att_net, env_name_both, new_col_count, \
         new_epoch, env_short_name_payoffs, is_def_beneficial, is_att_beneficial, \
         graph_name)
+
+    if not continue_after_payoff_gen:
+        print("Stopping early after payoff generation.")
+        sys.exit(1)
+
     # append name of each new network (if it beneficially deviates) to list of networks to
     # use in equilibrium search
     run_append_net_names(env_short_name_payoffs, new_epoch, def_pkl_prefix, \
@@ -173,7 +183,7 @@ def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
         env_name_def_net, env_name_att_net, env_name_both, graph_name, \
         env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, def_pkl_prefix, \
         att_pkl_prefix, port_lock_name, max_timesteps_def, max_timesteps_att, \
-        max_new_rounds, new_eval_count):
+        max_new_rounds, new_eval_count, continue_after_train, continue_after_payoff_gen):
     try:
         check_for_files(game_number, env_short_name_payoffs)
     except ValueError:
@@ -193,7 +203,8 @@ def main(game_number, cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
             env_short_name_payoffs, env_name_def_net, env_name_att_net, env_name_both, \
             graph_name, env_name_vs_mixed_def, env_name_vs_mixed_att, new_col_count, \
             def_pkl_prefix, att_pkl_prefix, port_lock_name, max_timesteps_def, \
-            max_timesteps_att, new_eval_count)
+            max_timesteps_att, new_eval_count, continue_after_train, \
+            continue_after_payoff_gen)
         if should_continue:
             my_epoch += 1
             if rounds_left is not None:
@@ -210,16 +221,16 @@ example: python3 master_dq_runner.py 3013 17 sl29_randNoAndB sl29 DepgraphJava29
     DepgraphJavaEnvAtt29N-v0 DepgraphJavaEnvBoth29N-v0 \
     SepLayerGraph0_noAnd_B.json DepgraphJavaEnvVsMixedDef29N-v0 \
     DepgraphJavaEnvVsMixedAtt29N-v0 400 dg_sl29_dq_mlp_rand_epoch dg_sl29_dq_mlp_rand_epoch
-    s29 700000 700000 None 1000
+    s29 700000 700000 None 1000 True True
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 19:
-        raise ValueError("Need 18 args: game_number, cur_epoch, env_short_name_tsv, " + \
+    if len(sys.argv) != 21:
+        raise ValueError("Need 20 args: game_number, cur_epoch, env_short_name_tsv, " + \
             "env_short_name_payoffs, env_name_def_net, env_name_att_net, " + \
             "env_name_both, graph_name, env_name_vs_mixed_def, " + \
             "env_name_vs_mixed_att, new_col_count, def_pkl_prefix, att_pkl_prefix, " + \
             "port_lock_name, max_timesteps_def, max_timesteps_att, max_new_rounds, " + \
-            "new_eval_count")
+            "new_eval_count, continue_after_train, continue_after_payoff_gen")
     GAME_NUMBER = int(sys.argv[1])
     CUR_EPOCH = int(sys.argv[2])
     ENV_SHORT_NAME_TSV = sys.argv[3]
@@ -242,8 +253,11 @@ if __name__ == '__main__':
     else:
         MAX_NEW_ROUNDS = int(MAX_NEW_ROUNDS)
     NEW_EVAL_COUNT = int(sys.argv[18])
+    CONTINUE_AFTER_TRAIN = get_truth_value(sys.argv[19])
+    CONTINUE_AFTER_PAYOFF_GEN = get_truth_value(sys.argv[20])
     main(GAME_NUMBER, CUR_EPOCH, ENV_SHORT_NAME_TSV, ENV_SHORT_NAME_PAYOFFS, \
         ENV_NAME_DEF_NET, ENV_NAME_ATT_NET, ENV_NAME_BOTH, GRAPH_NAME, \
         ENV_NAME_VS_MIXED_DEF, ENV_NAME_VS_MIXED_ATT, NEW_COL_COUNT, \
         DEF_PKL_PREFIX, ATT_PKL_PREFIX, PORT_LOCK_NAME, MAX_TIMESTEPS_DEF, \
-        MAX_TIMESTEPS_ATT, MAX_NEW_ROUNDS, NEW_EVAL_COUNT)
+        MAX_TIMESTEPS_ATT, MAX_NEW_ROUNDS, NEW_EVAL_COUNT, CONTINUE_AFTER_TRAIN, \
+        CONTINUE_AFTER_PAYOFF_GEN)
