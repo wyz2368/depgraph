@@ -112,6 +112,8 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
                 was_confirmed = True
                 break
             cur_step += 1
+        if cur_step == max_steps:
+            cur_step -= 1 # needed to find ground truth deviation probability
         ground_truth_dev_prob = get_ground_truth_dev_prob(max_samples, samples_per_param, \
             neighbor_variance, should_print, None, att_mixed_strat, def_payoff_old, \
             anneal_ground_truth_max, anneal_ground_truth_min, early_stop_level, run_name, \
