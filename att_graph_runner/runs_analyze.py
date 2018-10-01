@@ -75,10 +75,7 @@ def get_defender_lines_all(decoded_result_name):
             cur_min = 0
         else:
             cur_min = split_indexes[i - 1] + 1
-        if i == len(split_indexes) - 1:
-            cur_max = len(lines) - 1
-        else:
-            cur_max = split_indexes[i] - 1
+        cur_max = split_indexes[i] - 1
         cur_lines = lines[cur_min:cur_max + 1]
         first_defender_line = cur_lines.index("Defender mixed strategy:") + 1
         cur_def_lines = cur_lines[first_defender_line:]
@@ -97,10 +94,7 @@ def get_attacker_lines_all(decoded_result_name):
             cur_min = 0
         else:
             cur_min = split_indexes[i - 1] + 1
-        if i == len(split_indexes) - 1:
-            cur_max = len(lines) - 1
-        else:
-            cur_max = split_indexes[i] - 1
+        cur_max = split_indexes[i] - 1
         cur_lines = lines[cur_min:cur_max + 1]
         after_last_attacker_line = cur_lines.index("")
         cur_att_lines = cur_lines[1:after_last_attacker_line]
@@ -109,6 +103,7 @@ def get_attacker_lines_all(decoded_result_name):
 
 def get_all_defender_mixed_strats(decoded_result_name):
     all_lines = get_defender_lines_all(decoded_result_name)
+    all_lines = [filter(None, lines) for lines in all_lines]
     all_lines = [get_rounded_strategy_lines(x) for x in all_lines]
     results = []
     for lines in all_lines:
