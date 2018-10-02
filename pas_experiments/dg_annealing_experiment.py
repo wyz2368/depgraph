@@ -179,7 +179,7 @@ good final values:
 (0.05, 0.1, 700, 10, 20, 400, 0.03, True, dg1, 400, 400, 20, 0.1, 0.1)
 
 compromise final values:
-(0.05, 0.1, 1, 10, 5, 400, 0.03, True, dg1_a, 400, 200, 10, 0.1, 1.0)
+(0.05, 0.1, 1, 10, 5, 100, 0.03, True, dg14, 400, 200, 10, 0.1, 2.0)
 '''
 if __name__ == "__main__":
     MAX_P = 0.05
@@ -187,15 +187,15 @@ if __name__ == "__main__":
     TEST_COUNT = 1
     MAX_STEPS = 10
     MAX_SAMPLES = 5
-    SAMPLES_PER_PARAM = 400
+    SAMPLES_PER_PARAM = 100
     NEIGHBOR_VARIANCE = 0.03
     SHOULD_PRINT = True
-    RUN_NAME = "dg12"
+    RUN_NAME = "dg14"
     SAMPLES_NEW_COLUMN = 400
     ANNEAL_GROUND_TRUTH_MAX = 200
     ANNEAL_GROUND_TRUTH_MIN = 10
     EARLY_STOP_LEVEL = MAX_P * 2
-    EPSILON_TOLERANCE = 1.0
+    EPSILON_TOLERANCE = 2.0
     main(MAX_P, ERROR_TOLERANCE, TEST_COUNT, MAX_STEPS, MAX_SAMPLES, SAMPLES_PER_PARAM, \
         NEIGHBOR_VARIANCE, SHOULD_PRINT, RUN_NAME, SAMPLES_NEW_COLUMN, \
         ANNEAL_GROUND_TRUTH_MAX, ANNEAL_GROUND_TRUTH_MIN, EARLY_STOP_LEVEL, \
