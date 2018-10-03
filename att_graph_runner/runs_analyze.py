@@ -194,7 +194,7 @@ def main(unioned_game_file):
     print_all_results(unioned_game_data, defender_mixed_strats, attacker_mixed_strats)
 
 '''
-example: python3 runs_analyze.py game_comb_d30cd1_d30n1.json
+example: python3 runs_analyze.py game_comb_d30cd1_d30n1_200.json
 '''
 if __name__ == '__main__':
     if len(sys.argv) != 2:
