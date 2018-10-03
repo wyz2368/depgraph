@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+from scipy import stats
 from runs_analyze import get_unioned_decoded_result_name, get_all_defender_mixed_strats, \
     get_all_attacker_mixed_strats
 from get_both_payoffs_from_game import get_json_data, get_att_and_def_eq_payoffs, \
@@ -106,6 +107,15 @@ def get_run_to_ranks(run_to_regrets):
         run_to_ranks[cur_run_name].append(cur_rank)
     return run_to_ranks
 
+def welch_t_test_regrets(run_names, run_to_regrets):
+    if len(run_names) != 2:
+        raise ValueError("Expected two classes to compare: " + str(run_names))
+
+    left_vals = run_to_regrets[run_names[0]]
+    right_vals = run_to_regrets[run_names[1]]
+    _, p_value = stats.ttest_ind(left_vals, right_vals, equal_var=False)
+    return p_value
+
 def analyze_eq(game_data, defender_mixed_strat, attacker_mixed_strat):
     att_eq_payoff, def_eq_payoff = get_att_and_def_eq_payoffs(game_data, \
         attacker_mixed_strat, defender_mixed_strat)
@@ -117,6 +127,11 @@ def analyze_eq(game_data, defender_mixed_strat, attacker_mixed_strat):
         defender_mixed_strat, att_eq_payoff)
     analyze_means(run_names, run_to_def_regrets, run_to_att_regrets)
     analyze_means_nonzero(run_names, run_to_def_regrets, run_to_att_regrets)
+    fmt = "{0:.3f}"
+    print("defender regrets two-sided p-value: " + fmt.format(welch_t_test_regrets(\
+        run_names, run_to_def_regrets)))
+    print("attacker regrets two-sided p-value: " + fmt.format(welch_t_test_regrets(\
+        run_names, run_to_att_regrets)))
 
     run_to_def_ranks = get_run_to_ranks(run_to_def_regrets)
     run_to_att_ranks = get_run_to_ranks(run_to_att_regrets)
