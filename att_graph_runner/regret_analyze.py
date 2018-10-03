@@ -57,6 +57,22 @@ def mean_nonzero(values):
     values = [x for x in values if abs(x) > tol]
     return np.mean(values)
 
+def analyze_mean_ranks(run_names, run_to_def_ranks, run_to_att_ranks):
+    fmt = "{0:.3f}"
+    for run_name in run_names:
+        mean_def_regret = np.mean(run_to_def_ranks[run_name])
+        mean_att_regret = np.mean(run_to_att_ranks[run_name])
+        print(run_name + ", def mean rank: " + fmt.format(mean_def_regret) + \
+            ", att mean rank: " + fmt.format(mean_att_regret))
+
+def analyze_mean_nonzero_ranks(run_names, run_to_def_ranks, run_to_att_ranks):
+    fmt = "{0:.3f}"
+    for run_name in run_names:
+        mean_def_regret = mean_nonzero(run_to_def_ranks[run_name])
+        mean_att_regret = mean_nonzero(run_to_att_ranks[run_name])
+        print(run_name + ", def mean nonzero rank: " + fmt.format(mean_def_regret) + \
+            ", att mean nonzero rank: " + fmt.format(mean_att_regret))
+
 def analyze_means(run_names, run_to_def_regrets, run_to_att_regrets):
     fmt = "{0:.3f}"
     for run_name in run_names:
@@ -87,26 +103,25 @@ def get_run_to_ranks(run_to_regrets):
         if i > 0 and to_sort[i][0] > to_sort[i - 1][0]:
             cur_rank += 1
         cur_run_name = to_sort[i][1]
-        run_to_ranks[cur_run_name] = cur_rank
+        run_to_ranks[cur_run_name].append(cur_rank)
     return run_to_ranks
 
 def analyze_eq(game_data, defender_mixed_strat, attacker_mixed_strat):
     att_eq_payoff, def_eq_payoff = get_att_and_def_eq_payoffs(game_data, \
         attacker_mixed_strat, defender_mixed_strat)
-
     run_names = get_run_names(game_data)
 
     run_to_def_regrets = get_run_to_def_regrets(run_names, game_data, \
-        attacker_mixed_strat, att_eq_payoff)
+        attacker_mixed_strat, def_eq_payoff)
     run_to_att_regrets = get_run_to_att_regrets(run_names, game_data, \
-        defender_mixed_strat, def_eq_payoff)
+        defender_mixed_strat, att_eq_payoff)
     analyze_means(run_names, run_to_def_regrets, run_to_att_regrets)
     analyze_means_nonzero(run_names, run_to_def_regrets, run_to_att_regrets)
 
     run_to_def_ranks = get_run_to_ranks(run_to_def_regrets)
     run_to_att_ranks = get_run_to_ranks(run_to_att_regrets)
-    analyze_means(run_names, run_to_def_ranks, run_to_att_ranks)
-    analyze_means_nonzero(run_names, run_to_def_ranks, run_to_att_ranks)
+    analyze_mean_ranks(run_names, run_to_def_ranks, run_to_att_ranks)
+    analyze_mean_nonzero_ranks(run_names, run_to_def_ranks, run_to_att_ranks)
 
 def analyze_all_eqs(game_data, defender_mixed_strats, attacker_mixed_strats):
     for i in range(len(defender_mixed_strats)):
@@ -121,7 +136,7 @@ def main(unioned_game_file):
     analyze_all_eqs(unioned_game_data, defender_mixed_strats, attacker_mixed_strats)
 
 '''
-example: python3 regret_analyze.py game_comb_d30cd1_d30n1.json
+example: python3 regret_analyze.py combined_outputs/game_comb_d30cd1_d30n1.json
 '''
 if __name__ == '__main__':
     if len(sys.argv) != 2:
