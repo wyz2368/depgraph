@@ -1,0 +1,106 @@
+import sys
+import numpy as np
+from get_both_payoffs_from_game import get_json_data
+from runs_analyze import get_unioned_decoded_result_name, get_all_defender_mixed_strats, \
+    get_all_attacker_mixed_strats
+from get_both_payoffs_from_game import get_att_and_def_eq_payoffs, get_att_and_def_payoffs
+
+def get_run_names(game_data):
+    return list(game_data["network_source"].keys())
+
+def get_network_names(game_data, run_name, is_defender):
+    run_networks = unioned_game_data["network_source"][run_name]
+    if is_defender:
+        def_networks = [x for x in run_networks if "att" not in x]
+        return def_networks
+    att_networks = [x for x in run_networks if "att" in x]
+    return att_networks
+
+def get_def_payoff_vs_eq(game_data, attacker_eq, defender):
+    def_result = 0
+    for attacker, att_weight in attacker_eq.items():
+        _, def_payoff = get_att_and_def_payoffs(game_data, attacker, defender)
+        def_result += att_weight * def_payoff
+    return def_result
+
+def get_att_payoff_vs_eq(game_data, defender_eq, attacker):
+    att_result = 0
+    for defender, def_weight in defender_eq.items():
+        att_payoff, _ = get_att_and_def_payoffs(game_data, attacker, defender)
+        att_result += def_weight * att_payoff
+    return att_result
+
+def get_run_to_def_regrets(run_names, game_data, attacker_mixed_strat):
+    run_to_def_regrets = {}
+    for run_name in run_names:
+        def_net_names = get_network_names(game_data, run_name, True)
+        def_payoffs = [get_def_payoff_vs_eq(game_data, attacker_mixed_strat, defender) for \
+            defender in def_net_names]
+        def_regrets = [max(def_eq_payoff - cur_def_payoff, 0) for cur_def_payoff in \
+            def_payoffs]
+        run_to_def_regrets[run_name] = def_regrets
+    return run_to_def_regrets
+
+def get_run_to_att_regrets(run_names, game_data, defender_mixed_strat):
+    run_to_att_regrets = {}
+    for run_name in run_names:
+        att_net_names = get_network_names(game_data, run_name, False)
+        att_payoffs = [get_att_payoff_vs_eq(game_data, defender_mixed_strat, attacker) for \
+            attacker in att_net_names]
+        att_regrets = [max(att_eq_payoff - cur_att_payoff, 0) for cur_att_payoff in \
+            att_payoffs]
+        run_to_att_regrets[run_name] = att_regrets
+    return run_to_att_regrets
+
+def mean_nonzero(values):
+    tol = 0.1
+    values = [x for x in values if abs(x) > tol]
+    return np.mean(values)
+
+def analyze_means(run_names, run_to_def_regrets, run_to_att_regrets):
+    fmt = "{0:.3f}"
+    for run_name in run_names:
+        mean_def_regret = np.mean(run_to_def_regrets[run_name])
+        mean_att_regret = np.mean(run_to_att_regrets[run_name])
+        print(run_name + ", def mean regret: " + fmt.format(mean_def_regret) + \
+            ", att mean regret: " + fmt.format(mean_att_regret))
+
+def analyze_means_nonzero(run_names, run_to_def_regrets, run_to_att_regrets):
+    fmt = "{0:.3f}"
+    for run_name in run_names:
+        mean_def_regret = mean_nonzero(run_to_def_regrets[run_name])
+        mean_att_regret = mean_nonzero(run_to_att_regrets[run_name])
+        print(run_name + ", def mean nonzero regret: " + fmt.format(mean_def_regret) + \
+            ", att mean nonzero regret: " + fmt.format(mean_att_regret))
+
+def analyze_eq(game_data, defender_mixed_strat, attacker_mixed_strat):
+    att_eq_payoff, def_eq_payoff = get_att_and_def_eq_payoffs(game_data, \
+        attacker_mixed_strat, defender_mixed_strat)
+
+    run_names = get_run_names(game_data)
+
+    run_to_def_regrets = get_run_to_def_regrets(run_names, game_data, attacker_mixed_strat)
+    run_to_att_regrets = get_run_to_att_regrets(run_names, game_data, defender_mixed_strat)
+    analyze_means(run_names, run_to_def_regrets, run_to_att_regrets)
+    analyze_means_nonzero(run_names, run_to_def_regrets, run_to_att_regrets)
+
+def analyze_all_eqs(game_data, defender_mixed_strats, attacker_mixed_strats):
+    for i in range(len(defender_mixed_strats)):
+        analyze_eq(game_data, defender_mixed_strats[i], attacker_mixed_strats[i])
+
+def main(unioned_game_file):
+    unioned_game_data = get_json_data(unioned_game_file)
+
+    decoded_result_name = get_unioned_decoded_result_name(unioned_game_file)
+    defender_mixed_strats = get_all_defender_mixed_strats(decoded_result_name)
+    attacker_mixed_strats = get_all_attacker_mixed_strats(decoded_result_name)
+    analyze_all_eqs(unioned_game_data, defender_mixed_strats, attacker_mixed_strats)
+
+'''
+example: python3 regret_analyze.py game_comb_d30cd1_d30n1.json
+'''
+if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        raise ValueError("Need 1 arg: unioned_game_file")
+    UNIONED_GAME_FILE = sys.argv[1]
+    main(UNIONED_GAME_FILE)
