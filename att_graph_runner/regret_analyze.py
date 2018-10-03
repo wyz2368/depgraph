@@ -1,15 +1,15 @@
 import sys
 import numpy as np
-from get_both_payoffs_from_game import get_json_data
 from runs_analyze import get_unioned_decoded_result_name, get_all_defender_mixed_strats, \
     get_all_attacker_mixed_strats
-from get_both_payoffs_from_game import get_att_and_def_eq_payoffs, get_att_and_def_payoffs
+from get_both_payoffs_from_game import get_json_data, get_att_and_def_eq_payoffs, \
+    get_att_and_def_payoffs
 
 def get_run_names(game_data):
     return list(game_data["network_source"].keys())
 
 def get_network_names(game_data, run_name, is_defender):
-    run_networks = unioned_game_data["network_source"][run_name]
+    run_networks = game_data["network_source"][run_name]
     if is_defender:
         def_networks = [x for x in run_networks if "att" not in x]
         return def_networks
@@ -30,7 +30,7 @@ def get_att_payoff_vs_eq(game_data, defender_eq, attacker):
         att_result += def_weight * att_payoff
     return att_result
 
-def get_run_to_def_regrets(run_names, game_data, attacker_mixed_strat):
+def get_run_to_def_regrets(run_names, game_data, attacker_mixed_strat, def_eq_payoff):
     run_to_def_regrets = {}
     for run_name in run_names:
         def_net_names = get_network_names(game_data, run_name, True)
@@ -41,7 +41,7 @@ def get_run_to_def_regrets(run_names, game_data, attacker_mixed_strat):
         run_to_def_regrets[run_name] = def_regrets
     return run_to_def_regrets
 
-def get_run_to_att_regrets(run_names, game_data, defender_mixed_strat):
+def get_run_to_att_regrets(run_names, game_data, defender_mixed_strat, att_eq_payoff):
     run_to_att_regrets = {}
     for run_name in run_names:
         att_net_names = get_network_names(game_data, run_name, False)
@@ -73,16 +73,40 @@ def analyze_means_nonzero(run_names, run_to_def_regrets, run_to_att_regrets):
         print(run_name + ", def mean nonzero regret: " + fmt.format(mean_def_regret) + \
             ", att mean nonzero regret: " + fmt.format(mean_att_regret))
 
+def get_run_to_ranks(run_to_regrets):
+    to_sort = []
+    run_to_ranks = {}
+    for run_name, regrets in run_to_regrets.items():
+        run_to_ranks[run_name] = []
+        for regret in regrets:
+            to_sort.append((regret, run_name))
+    to_sort.sort(key=lambda tup: tup[0])
+
+    cur_rank = 0
+    for i in range(len(to_sort)):
+        if i > 0 and to_sort[i][0] > to_sort[i - 1][0]:
+            cur_rank += 1
+        cur_run_name = to_sort[i][1]
+        run_to_ranks[cur_run_name] = cur_rank
+    return run_to_ranks
+
 def analyze_eq(game_data, defender_mixed_strat, attacker_mixed_strat):
     att_eq_payoff, def_eq_payoff = get_att_and_def_eq_payoffs(game_data, \
         attacker_mixed_strat, defender_mixed_strat)
 
     run_names = get_run_names(game_data)
 
-    run_to_def_regrets = get_run_to_def_regrets(run_names, game_data, attacker_mixed_strat)
-    run_to_att_regrets = get_run_to_att_regrets(run_names, game_data, defender_mixed_strat)
+    run_to_def_regrets = get_run_to_def_regrets(run_names, game_data, \
+        attacker_mixed_strat, att_eq_payoff)
+    run_to_att_regrets = get_run_to_att_regrets(run_names, game_data, \
+        defender_mixed_strat, def_eq_payoff)
     analyze_means(run_names, run_to_def_regrets, run_to_att_regrets)
     analyze_means_nonzero(run_names, run_to_def_regrets, run_to_att_regrets)
+
+    run_to_def_ranks = get_run_to_ranks(run_to_def_regrets)
+    run_to_att_ranks = get_run_to_ranks(run_to_att_regrets)
+    analyze_means(run_names, run_to_def_ranks, run_to_att_ranks)
+    analyze_means_nonzero(run_names, run_to_def_ranks, run_to_att_ranks)
 
 def analyze_all_eqs(game_data, defender_mixed_strats, attacker_mixed_strats):
     for i in range(len(defender_mixed_strats)):
