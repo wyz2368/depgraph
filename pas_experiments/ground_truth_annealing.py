@@ -55,7 +55,8 @@ def get_ground_truth_dev_prob(max_steps, samples_per_param, neighbor_variance, \
         if def_payoff_cur > def_payoff_old + epsilon_tolerance:
             beneficial_count += 1
         if (count_so_far) % print_freq == 0:
-            print("Finished round: " + str(count_so_far) + ", of max: " + str(max_steps))
+            print("Finished round: " + str(count_so_far) + ", of max: " + \
+                str(anneal_ground_truth_max))
             print("Current beneficial dev prob estimate: " + \
                 str(beneficial_count * 1. / count_so_far))
     duration = time.time() - start_time
