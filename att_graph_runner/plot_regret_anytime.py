@@ -59,13 +59,13 @@ def get_final_payoffs(final_def_eq, final_att_eq, game_data):
 def get_all_def_eq_regrets(def_eqs, final_att_eq, game_data):
     _, final_def_payoff = get_final_payoffs(def_eqs[-1], final_att_eq, game_data)
     def_eq_payoffs = get_all_def_eq_payoffs(def_eqs, final_att_eq, game_data)
-    result = [x - final_def_payoff for x in def_eq_payoffs]
+    result = [round(final_def_payoff - x, 2) for x in def_eq_payoffs]
     return result
 
 def get_all_att_eq_regrets(att_eqs, final_def_eq, game_data):
     final_att_payoff, _ = get_final_payoffs(final_def_eq, att_eqs[-1], game_data)
     att_eq_payoffs = get_all_att_eq_payoffs(att_eqs, final_def_eq, game_data)
-    result = [x - final_att_payoff for x in att_eq_payoffs]
+    result = [round(final_att_payoff - x, 2) for x in att_eq_payoffs]
     return result
 
 def get_def_net_payoff(game_data, attacker_eq, def_net):
@@ -99,13 +99,13 @@ def get_all_att_net_payoffs(att_nets, final_def_eq, game_data):
 def get_all_def_net_regrets(def_nets, final_def_eq, final_att_eq, game_data):
     _, final_def_payoff = get_final_payoffs(final_def_eq, final_att_eq, game_data)
     def_net_payoffs = get_all_def_net_payoffs(def_nets, final_att_eq, game_data)
-    result = [x - final_def_payoff for x in def_net_payoffs]
+    result = [round(final_def_payoff - x, 2) for x in def_net_payoffs]
     return result
 
 def get_all_att_net_regrets(att_nets, final_def_eq, final_att_eq, game_data):
     final_att_payoff, _ = get_final_payoffs(final_def_eq, final_att_eq, game_data)
     att_net_payoffs = get_all_att_net_payoffs(att_nets, final_def_eq, game_data)
-    result = [x - final_att_payoff for x in att_net_payoffs]
+    result = [round(final_att_payoff - x, 2) for x in att_net_payoffs]
     return result
 
 def main(game_file, env_short_name_payoffs, env_short_name_tsv):
@@ -135,7 +135,8 @@ def main(game_file, env_short_name_payoffs, env_short_name_tsv):
     print("Name for plot files: " + env_short_name_payoffs)
 
 '''
-example: python3 plot_regret_anytime.py game_3014_20_d30cd1.json d30cd1 d30cd1_randNoAndB
+example: python3 plot_regret_anytime.py game_outputs2/game_3014_20_d30cd1.json \
+    d30cd1 d30cd1_randNoAndB
 '''
 if __name__ == '__main__':
     if len(sys.argv) != 4:
