@@ -1,5 +1,10 @@
 import sys
 import os
+import matplotlib
+matplotlib.use('agg')
+import matplotlib.pyplot as plt
+import matplotlib.ticker as tick
+from pylab import savefig
 from plot_payoffs_auto import get_eq_name
 from get_both_payoffs_from_game import get_eq_from_file, get_json_data, \
     get_att_and_def_eq_payoffs, get_att_and_def_payoffs
@@ -124,6 +129,50 @@ def get_all_att_net_regrets(att_nets, final_def_eq, final_att_eq, game_data):
             result.append(round(final_att_payoff - cur_payoff, 2))
     return result
 
+def plot_results(def_regrets, att_regrets, env_short_name_payoffs, is_network):
+    fig, ax = plt.subplots()
+    fig.set_size_inches(8, 5)
+
+    my_lw = 2
+    my_len = max(len(def_regrets), len(att_regrets))
+    if is_network:
+        plt.scatter(range(my_len), def_regrets, label='Defender')
+        plt.scatter(range(my_len), att_regrets, label='Attacker', \
+            marker='x')
+    else:
+        plt.plot(range(my_len), def_regrets, lw=my_lw, label='Defender')
+        plt.plot(range(my_len), att_regrets, lw=my_lw, label='Attacker', \
+            linestyle='--')
+
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    plt.ylabel('Regret', fontsize=16)
+    plt.xlabel('Training round', fontsize=16)
+    ax.yaxis.set_ticks_position('left')
+    ax.tick_params(labelsize=14)
+    tick_spacing = 2
+    ax.xaxis.set_major_locator(tick.MultipleLocator(tick_spacing))
+    ax.legend()
+    plt.tick_params(
+        axis='x',          # changes apply to the x-axis
+        which='both',      # both major and minor ticks are affected
+        top='off'         # ticks along the top edge are off
+    )
+    plt.tick_params(
+        axis='y',          # changes apply to the y-axis
+        which='both',      # both major and minor ticks are affected
+        right='off'         # ticks along the right edge are off
+    )
+    plt.tight_layout()
+
+    #plt.show()
+    save_name = env_short_name_payoffs + "_eq_regrets.pdf"
+    if is_network:
+        save_name = env_short_name_payoffs + "_net_regrets.pdf"
+    savefig(save_name)
+
 def main(game_file, env_short_name_payoffs, env_short_name_tsv):
     game_data = get_json_data(game_file)
     def_eqs = get_all_eqs(env_short_name_tsv, True)
@@ -148,7 +197,8 @@ def main(game_file, env_short_name_payoffs, env_short_name_tsv):
     print("Attacker net. regrets:")
     print(att_net_regrets)
 
-    print("Name for plot files: " + env_short_name_payoffs)
+    plot_results(def_eq_regrets, att_eq_regrets, env_short_name_payoffs, False)
+    plot_results(def_net_regrets, att_net_regrets, env_short_name_payoffs, True)
 
 '''
 example: python3 plot_regret_anytime.py game_outputs2/game_3014_20_d30cd1.json \
