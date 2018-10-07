@@ -85,27 +85,43 @@ def get_att_net_payoff(game_data, defender_eq, att_net):
 def get_all_def_net_payoffs(def_nets, final_att_eq, game_data):
     result = []
     for def_net in def_nets:
-        def_payoff = get_def_net_payoff(game_data, final_att_eq, def_net)
-        result.append(def_payoff)
+        if def_net is None:
+            result.append(None)
+        else:
+            def_payoff = get_def_net_payoff(game_data, final_att_eq, def_net)
+            result.append(def_payoff)
     return result
 
 def get_all_att_net_payoffs(att_nets, final_def_eq, game_data):
     result = []
     for att_net in att_nets:
-        att_payoff = get_att_net_payoff(game_data, final_def_eq, att_net)
-        result.append(att_payoff)
+        if att_net is None:
+            result.append(None)
+        else:
+            att_payoff = get_att_net_payoff(game_data, final_def_eq, att_net)
+            result.append(att_payoff)
     return result
 
 def get_all_def_net_regrets(def_nets, final_def_eq, final_att_eq, game_data):
     _, final_def_payoff = get_final_payoffs(final_def_eq, final_att_eq, game_data)
     def_net_payoffs = get_all_def_net_payoffs(def_nets, final_att_eq, game_data)
-    result = [round(final_def_payoff - x, 2) for x in def_net_payoffs]
+    result = []
+    for cur_payoff in def_net_payoffs:
+        if cur_payoff is None:
+            result.append(None)
+        else:
+            result.append(round(final_def_payoff - cur_payoff, 2))
     return result
 
 def get_all_att_net_regrets(att_nets, final_def_eq, final_att_eq, game_data):
     final_att_payoff, _ = get_final_payoffs(final_def_eq, final_att_eq, game_data)
     att_net_payoffs = get_all_att_net_payoffs(att_nets, final_def_eq, game_data)
-    result = [round(final_att_payoff - x, 2) for x in att_net_payoffs]
+    result = []
+    for cur_payoff in att_net_payoffs:
+        if cur_payoff is None:
+            result.append(None)
+        else:
+            result.append(round(final_att_payoff - cur_payoff, 2))
     return result
 
 def main(game_file, env_short_name_payoffs, env_short_name_tsv):
