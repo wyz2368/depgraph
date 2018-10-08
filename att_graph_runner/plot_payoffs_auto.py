@@ -44,6 +44,16 @@ def get_eq_from_file(file_name):
         result[strat] = weight
     return result
 
+def get_d30_early_eq_name(cur_epoch, is_defender):
+    indexes = ["1", "2", "3", "4", "5", "6e", "7e", "8", "9", "10", "11", "12"]
+    eqs_dir = "eqs2/"
+    result = eqs_dir + "randNoAnd_B_epoch" + indexes[cur_epoch]
+    if is_defender:
+        result += "_def.tsv"
+    else:
+        result += "_att.tsv"
+    return result
+
 def get_old_eq_name(env_short_name_tsv, cur_epoch, is_defender):
     eqs_dir = "eqs2/"
     if env_short_name_tsv == "s29n1":
@@ -56,6 +66,8 @@ def get_old_eq_name(env_short_name_tsv, cur_epoch, is_defender):
             result += "_att.tsv"
         return result
     if env_short_name_tsv == "d30n1":
+        if cur_epoch <= 11:
+            return get_d30_early_eq_name(cur_epoch, is_defender)
         result = eqs_dir + "d30_epoch" + str(cur_epoch + 1)
         if is_defender:
             result += "_def.tsv"

@@ -32,14 +32,19 @@ def get_networks_by_round(game_data, is_defender, net_count):
         all_nets = get_defender_networks(game_data)
     else:
         all_nets = get_attacker_networks(game_data)
+    print(all_nets)
     cur_index = 0
     result = []
     for cur_net in range(1, net_count):
-        if str(cur_net) in all_nets[cur_index]:
+        if cur_index < len(all_nets) and \
+            ((str(cur_net) in all_nets[cur_index]) or \
+                all_nets[cur_index] in ["dg_rand_30n_noAnd_B_eq_2.pkl", \
+                "dg_dqmlp_rand30NoAnd_B_att_fixed.pkl"]):
             result.append(all_nets[cur_index])
             cur_index += 1
         else:
             result.append(None)
+    print(result)
     return result
 
 def get_all_def_eq_payoffs(def_eqs, final_att_eq, game_data):
