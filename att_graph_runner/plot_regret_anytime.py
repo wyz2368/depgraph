@@ -186,6 +186,8 @@ def main(game_file, env_short_name_payoffs, env_short_name_tsv):
     print(att_eq_regrets)
 
     net_count = len(def_eqs) - 1
+    if env_short_name_tsv == "s29n1":
+        net_count -= 1
     def_nets = get_networks_by_round(game_data, True, net_count)
     att_nets = get_networks_by_round(game_data, False, net_count)
     check_net_lists(def_nets, att_nets)
