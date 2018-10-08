@@ -57,6 +57,7 @@ def get_d30_early_eq_name(cur_epoch, is_defender):
 def get_old_eq_name(env_short_name_tsv, cur_epoch, is_defender):
     eqs_dir = "eqs2/"
     if env_short_name_tsv == "s29n1":
+        cur_epoch -= 1
         if cur_epoch >= 14:
             cur_epoch += 1
         result = eqs_dir + "sl29_randNoAndB_epoch" + str(cur_epoch + 1)
@@ -94,10 +95,21 @@ def get_round_count(env_short_name_tsv):
             return result
         result += 1
 
+def get_d30n1_game_name(cur_epoch):
+    items = ["1", "2", "3", "4", "5_fixed_aug", "6e", "7e", "8c", "9_aug"]
+    game_dir = "game_outputs2/"
+    return game_dir + "game_3014_" + items[cur_epoch - 1] + ".json"
+
 def get_game_name(game_number, env_short_name_payoffs, cur_epoch):
     game_dir = "game_outputs2/"
     if cur_epoch == 0:
         return game_dir + "game_" + str(game_number) + ".json"
+    if env_short_name_payoffs == "d30n1":
+        if cur_epoch <= 9:
+            return get_d30n1_game_name(cur_epoch)
+        return game_dir + "game_" + str(game_number) + "_" + str(cur_epoch) + ".json"
+    elif env_short_name_payoffs == "s29n1":
+        return game_dir + "game_" + str(game_number) + "_" + str(cur_epoch) + ".json"
     return game_dir + "game_" + str(game_number) + "_" + str(cur_epoch) + \
         "_" + env_short_name_payoffs + ".json"
 
@@ -145,7 +157,30 @@ def get_net_name(cur_epoch, env_short_name_payoffs, is_defender):
         else:
             # defender network
             num_end_index = net_name.find(".pkl", num_start_index)
-        my_epoch = int(net_name[num_start_index : num_end_index])
+        if net_name in ["dg_dqmlp_rand30NoAnd_B_att_fixed.pkl", \
+            "dg_rand_30n_noAnd_B_eq_2.pkl"]:
+            my_epoch = 1
+        elif net_name == "depgraph_dq_mlp_rand_epoch2_b.pkl":
+            my_epoch = 2
+        elif net_name == "dg_dqmlp_rand30NoAnd_B_epoch5_att_c.pkl":
+            my_epoch = 5
+        elif net_name in ["dg_dqmlp_rand30NoAnd_B_epoch6e_att.pkl", \
+            "depgraph_dq_mlp_rand_epoch6e.pkl"]:
+            my_epoch = 6
+        elif net_name in ["dg_dqmlp_rand30NoAnd_B_epoch7e_att.pkl", \
+            "depgraph_dq_mlp_rand_epoch7e.pkl"]:
+            my_epoch = 7
+        elif net_name in ["dg_dqmlp_rand30NoAnd_B_epoch8_att_fixed.pkl", \
+            "depgraph_dq_mlp_rand_epoch8_fixed.pkl"]:
+            my_epoch = 8
+        elif net_name in ["depgraph_dq_mlp_rand_epoch9_fixed.pkl"]:
+            my_epoch = 9
+        elif net_name in ["depgraph_dq_mlp_rand_epoch10_fixed.pkl"]:
+            my_epoch = 10
+        elif net_name in ["depgraph_dq_mlp_rand_epoch11_fixed.pkl"]:
+            my_epoch = 11
+        else:
+            my_epoch = int(net_name[num_start_index : num_end_index])
         if my_epoch == cur_epoch:
             return net_name
     return None
@@ -153,6 +188,7 @@ def get_net_name(cur_epoch, env_short_name_payoffs, is_defender):
 def get_payoff_net_vs_eq(cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
     is_defender, game_number):
     net_name = get_net_name(cur_epoch + 1, env_short_name_payoffs, is_defender)
+    print(net_name)
     if net_name is None:
         return None
     game_file_name = get_game_name(game_number, env_short_name_payoffs, \
@@ -279,6 +315,10 @@ def main(game_number, env_short_name_payoffs, env_short_name_tsv):
     att_eq_payoffs, def_eq_payoffs, att_net_payoffs, def_net_payoffs = \
         get_all_payoffs(round_count, env_short_name_tsv, env_short_name_payoffs, \
             game_number)
+    print(att_eq_payoffs)
+    print(att_net_payoffs)
+    print(def_eq_payoffs)
+    print(def_net_payoffs)
     att_net_payoffs = get_cutoff_dev_payoffs(att_eq_payoffs, att_net_payoffs)
     def_net_payoffs = get_cutoff_dev_payoffs(def_eq_payoffs, def_net_payoffs)
     print(att_eq_payoffs)
