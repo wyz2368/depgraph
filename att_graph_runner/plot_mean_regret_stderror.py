@@ -23,14 +23,14 @@ def plot_regrets_with_stderr(def_regrets, att_regrets, def_errs, att_errs, \
     att_errs = att_errs[:len(att_regrets)]
     if should_use_fill:
         fill_alpha = 0.25
-        plt.plot(range(len(def_regrets)), def_regrets, lw=my_lw, label='Def. gain', \
+        plt.plot(range(len(def_regrets)), def_regrets, lw=my_lw, label='Def. regret', \
             color='blue')
         def_mins = [def_regrets[i] - def_errs[i] for i in range(len(def_errs))]
         def_maxes = [def_regrets[i] + def_errs[i] for i in range(len(def_errs))]
         plt.fill_between(range(len(def_regrets)), def_mins, def_maxes,
                          alpha=fill_alpha, edgecolor='blue', facecolor='blue', linewidth=0)
 
-        plt.plot(range(len(att_regrets)), att_regrets, lw=my_lw, label='Att. gain', \
+        plt.plot(range(len(att_regrets)), att_regrets, lw=my_lw, label='Att. regret', \
             color='orange', linestyle='--')
         att_mins = [att_regrets[i] - att_errs[i] for i in range(len(att_errs))]
         att_maxes = [att_regrets[i] + att_errs[i] for i in range(len(att_errs))]
@@ -51,7 +51,7 @@ def plot_regrets_with_stderr(def_regrets, att_regrets, def_errs, att_errs, \
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
-    plt.ylabel('Mean gain', fontsize=16)
+    plt.ylabel('Mean regret', fontsize=16)
     plt.xlabel('Training round', fontsize=16)
     ax.yaxis.set_ticks_position('left')
     ax.tick_params(labelsize=14)
@@ -61,7 +61,7 @@ def plot_regrets_with_stderr(def_regrets, att_regrets, def_errs, att_errs, \
     def_highs = [x + y for x, y in zip(def_regrets, def_errs)]
     att_highs = [x + y for x, y in zip(att_regrets, att_errs)]
     y_max = max(max(def_highs), max(att_highs))
-    ax.set_ylim(-5, y_max + 5)
+    ax.set_ylim(-3, y_max + 5)
     plt.tick_params(
         axis='x',          # changes apply to the x-axis
         which='both',      # both major and minor ticks are affected
