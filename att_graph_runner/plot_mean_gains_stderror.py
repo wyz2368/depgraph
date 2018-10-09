@@ -12,19 +12,35 @@ def get_env_short_name_tsv(env_short_name_payoffs):
     return env_short_name_payoffs + "_randNoAndB"
 
 def plot_gains_with_stderr(def_gains, att_gains, def_errs, att_errs, \
-    env_short_name_payoffs):
+    env_short_name_payoffs, should_use_fill):
     fig, ax = plt.subplots()
     fig.set_size_inches(8, 5)
 
     my_lw = 2
-
     def_errs = def_errs[:len(def_gains)]
-    plt.errorbar(range(len(def_gains)), def_gains, yerr=def_errs, lw=my_lw, \
-        label='Def. gain', color='blue', elinewidth=1)
     att_errs = att_errs[:len(att_gains)]
-    plt.errorbar(range(len(att_gains)), att_gains, yerr=att_errs, lw=my_lw, \
-        linestyle='--', label='Att. gain', color='orange', \
-        elinewidth=1)
+    if should_use_fill:
+        fill_alpha = 0.25
+        plt.plot(range(len(def_gains)), def_gains, lw=my_lw, label='Def. gain', \
+            color='blue')
+        def_mins = [def_gains[i] - def_errs[i] for i in range(len(def_errs))]
+        def_maxes = [def_gains[i] + def_errs[i] for i in range(len(def_errs))]
+        plt.fill_between(range(len(def_gains)), def_mins, def_maxes,
+                         alpha=fill_alpha, edgecolor='blue', facecolor='blue', linewidth=0)
+
+        plt.plot(range(len(att_gains)), att_gains, lw=my_lw, label='Att. gain', \
+            color='orange', linestyle='--')
+        att_mins = [att_gains[i] - att_errs[i] for i in range(len(att_errs))]
+        att_maxes = [att_gains[i] + att_errs[i] for i in range(len(att_errs))]
+        plt.fill_between(range(len(att_gains)), att_mins, att_maxes,
+                         alpha=fill_alpha, edgecolor='orange', facecolor='orange', \
+                         linewidth=0)
+    else:
+        plt.errorbar(range(len(def_gains)), def_gains, yerr=def_errs, lw=my_lw, \
+            label='Def. gain', color='blue', elinewidth=1)
+        plt.errorbar(range(len(att_gains)), att_gains, yerr=att_errs, lw=my_lw, \
+            linestyle='--', label='Att. gain', color='orange', \
+            elinewidth=1)
 
     ax.axhline(0, color='black', lw=1)
     ax.axvline(0, color='black', lw=1)
@@ -40,7 +56,9 @@ def plot_gains_with_stderr(def_gains, att_gains, def_errs, att_errs, \
     tick_spacing = 2
     ax.xaxis.set_major_locator(tick.MultipleLocator(tick_spacing))
     ax.legend()
-    y_max = max(max(def_gains), max(att_gains))
+    def_highs = [x + y for x, y in zip(def_gains, def_errs)]
+    att_highs = [x + y for x, y in zip(att_gains, att_errs)]
+    y_max = max(max(def_highs), max(att_highs))
     ax.set_ylim(-10, y_max + 10)
     plt.tick_params(
         axis='x',          # changes apply to the x-axis
@@ -83,7 +101,7 @@ def main(game_number, env_short_name_payoffs_list):
     # print(str(len(att_gains)) + "\t" + str(len(def_gains)))
     save_env_name = env_short_name_payoffs_list[0] + "_mean_stderr"
     plot_gains_with_stderr(mean_def_gain, mean_att_gain, sem_def_gain, sem_att_gain, \
-        save_env_name)
+        save_env_name, True)
 
 '''
 example: python3 plot_mean_gains_stderror.py 3014 d30d1 d30m1 d30n1 d30f1 d30f2

@@ -42,6 +42,9 @@ def get_standard_errors(payoff_lists):
             cur_count = len(cur_values)
             cur_standard_error = cur_stdev * 1.0 / math.sqrt(cur_count)
             result.append(cur_standard_error)
+    #for i in range(len(payoff_lists[0])):
+    #    print([x[i] for x in payoff_lists])
+    #    print(result[i])
     return result
 
 def get_gain(net_payoff, eq_payoff):
