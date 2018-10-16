@@ -35,7 +35,7 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, \
     results = []
     deviation_sequences = []
     start_time_all = time.time()
-    fmt = "{0:.4f}"
+    fmt = "{0:.6f}"
     for test_round in range(test_count):
         start_time_round = time.time()
         cur_step = 0

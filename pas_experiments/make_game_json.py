@@ -3,7 +3,7 @@ import json
 from fpsb_annealing import get_def_payoff
 
 def get_strats(strat_count):
-    fmt = "{0:.4f}"
+    fmt = "{0:.6f}"
     result = sorted([fmt.format(random.random()) for _ in range(strat_count)])
     while len(result) != len(set(result)):
         result = sorted([fmt.format(random.random()) for _ in range(strat_count)])

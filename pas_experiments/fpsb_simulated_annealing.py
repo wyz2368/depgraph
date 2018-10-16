@@ -49,7 +49,7 @@ def find_params_simulated_annealing_fpsb(param_count, max_steps, max_temp,
     saved_value = None
     best_params = saved_params.copy()
     best_value = None
-    fmt = "{0:.4f}"
+    fmt = "{0:.6f}"
     for time_step in range(max_steps):
         cur_temp = get_temp(time_step, max_steps, max_temp)
         cur_neighbor = [neighbor_truncated_gaussian(x, \
