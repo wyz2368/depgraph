@@ -174,7 +174,7 @@ if __name__ == "__main__":
     MAX_P = 0.05
     ERROR_TOLERANCE = 0.1
     TEST_COUNT = 1
-    MAX_STEPS = 10
+    MAX_STEPS = 4
     MAX_SAMPLES = 50
     NEIGHBOR_VARIANCE = 0.003
     SHOULD_PRINT = True
