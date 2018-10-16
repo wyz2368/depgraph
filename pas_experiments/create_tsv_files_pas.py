@@ -1,8 +1,7 @@
 import sys
 import os
 import random
-from gambit_analyze_pas import get_decoded_result_name
-from utility import print_to_file, get_tsv_strat_name
+from utility import print_to_file, get_tsv_strat_name, get_decoded_result_name
 
 def get_file_lines(file_name):
     '''
