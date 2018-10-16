@@ -10,6 +10,9 @@ from fpsb_gen_new_cols import gen_new_cols_fpsb
 from add_new_data_pas import add_data
 from utility import get_game_file_name, get_result_name, get_deviations_name
 from fpsb_ground_truth import get_ground_truth_dev_prob_fpsb
+from make_game_json import make_game
+
+OPPONENT_STRATS = 10
 
 def get_att_eq(run_name, test_round, cur_step):
     att_mixed_strat_name = get_tsv_strat_name(run_name, test_round, cur_step, False)
@@ -44,6 +47,7 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, \
         while cur_step < max_steps:
             print("new round: test round " + str(test_round) + ", cur step: " + \
                 str(cur_step), flush=True)
+            make_game(OPPONENT_STRATS)
             do_gambit_analyze(run_name, test_round, cur_step)
             create_tsv(run_name, test_round, cur_step)
 

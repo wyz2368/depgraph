@@ -47,11 +47,11 @@ def get_dict_result(strats):
             cur_id += 3
     return result
 
-def main(strat_count):
+def make_game(strat_count):
     strats = get_strats(strat_count)
     dict_result = get_dict_result(strats)
     print_json(dict_result)
 
 if __name__ == "__main__":
     STRAT_COUNT = 10
-    main(STRAT_COUNT)
+    make_game(STRAT_COUNT)
