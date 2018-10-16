@@ -107,8 +107,8 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, \
             cur_step -= 1 # needed to find ground truth deviation probability
         ground_truth_dev_prob = get_ground_truth_dev_prob_fpsb(max_samples, \
             neighbor_variance, should_print, None, att_mixed_strat, def_payoff_old, \
-            anneal_ground_truth_max, anneal_ground_truth_min, early_stop_level, run_name, \
-            test_round, cur_step, epsilon_tolerance)
+            anneal_ground_truth_max, anneal_ground_truth_min, early_stop_level, \
+            epsilon_tolerance)
         cur_result = (was_confirmed, test_round, ground_truth_dev_prob)
         if test_round % 10 == 0:
             print("round " + str(test_round) + " result: " + str(cur_result), flush=True)
