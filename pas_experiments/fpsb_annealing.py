@@ -14,7 +14,7 @@ def get_def_payoff(def_strat, att_strat):
 
 def sample_mean_def_payoff_fpsb(def_strat, att_mixed_strat):
     result = 0.0
-    for att_strat, weight in att_mixed_strat:
+    for att_strat, weight in att_mixed_strat.items():
         result += weight * get_def_payoff(def_strat[0], att_strat)
     return result
 
