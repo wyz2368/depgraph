@@ -54,7 +54,7 @@ def find_params_simulated_annealing_fpsb(param_count, max_steps, max_temp,
         cur_temp = get_temp(time_step, max_steps, max_temp)
         cur_neighbor = [neighbor_truncated_gaussian(x, \
             neighbor_variance) for x in saved_params]
-        cur_neighbor = float(fmt.format(cur_neighbor))
+        cur_neighbor = [float(fmt.format(cur_neighbor[0]))]
         cur_mean_result = sample_function(cur_neighbor, att_mixed_strat)
         if best_value is None or cur_mean_result > best_value:
             best_params = cur_neighbor.copy()
