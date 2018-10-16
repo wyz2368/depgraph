@@ -16,7 +16,7 @@ def get_ground_truth_dev_prob_fpsb(max_steps, neighbor_variance, should_print, \
     print_freq = 1
     beneficial_count = 0
     count_so_far = 0
-    fmt = "{0:.2f}"
+    fmt = "{0:.4f}"
     while should_continue_anneal(count_so_far, beneficial_count, anneal_ground_truth_max, \
             anneal_ground_truth_min, early_stop_level, should_print):
         deviating_strat, _ = run_fpsb_annealing(max_steps, \
