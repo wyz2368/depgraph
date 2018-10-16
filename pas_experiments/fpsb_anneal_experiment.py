@@ -44,10 +44,10 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, \
         cur_step = 0
         was_confirmed = False
         deviation_sequence = []
+        make_game(OPPONENT_STRATS)
         while cur_step < max_steps:
             print("new round: test round " + str(test_round) + ", cur step: " + \
                 str(cur_step), flush=True)
-            make_game(OPPONENT_STRATS)
             do_gambit_analyze(run_name, test_round, cur_step)
             create_tsv(run_name, test_round, cur_step)
 
