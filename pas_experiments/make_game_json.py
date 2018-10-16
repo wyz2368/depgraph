@@ -1,5 +1,6 @@
 import random
 import json
+import os
 from fpsb_annealing import get_def_payoff
 
 def get_strats(strat_count):
@@ -22,6 +23,15 @@ def get_def_to_att_to_payoffs(strats):
 def print_json(my_dict):
     with open('game_fpsb.json', 'w') as outfile:
         json.dump(my_dict, outfile)
+
+    try:
+        os.remove("game_fpsb_gambit.nfg")
+    except OSError:
+        pass
+    try:
+        os.remove("gambit_fpsb_result_lcp_decode.txt")
+    except OSError:
+        pass
 
 def get_dict_result(strats):
     def_to_att_to_payoffs = get_def_to_att_to_payoffs(strats)
