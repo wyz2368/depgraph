@@ -28,6 +28,8 @@ def call_and_wait_with_timeout(command_str):
 
 def get_game_file_name(run_name, test_round, cur_step):
     if cur_step == 0:
+        if "fpsb" in run_name:
+            return "game_fpsb.json"
         return "game.json"
     return "game_" + run_name + "_r" + str(test_round) + "_s" + str(cur_step) + ".json"
 
@@ -46,18 +48,24 @@ def get_tsv_strat_name(run_name, test_round, cur_step, is_defender):
 
 def get_gambit_input_name(run_name, test_round, cur_step):
     if cur_step == 0:
+        if "fpsb" in run_name:
+            return "game_fpsb_gambit.nfg"
         return "game_gambit.nfg"
     return "game_" + run_name + "_r" + str(test_round) + "_s" + str(cur_step) + \
         "_gambit.nfg"
 
 def get_gambit_result_name(run_name, test_round, cur_step):
     if cur_step == 0:
+        if "fpsb" in run_name:
+            return "gambit_fpsb_result_lcp.txt"
         return "gambit_result_lcp.txt"
     return "gambit_result_" + run_name + "_r" + str(test_round) + "_s" + str(cur_step) + \
         "_lcp.txt"
 
 def get_decoded_result_name(run_name, test_round, cur_step):
     if cur_step == 0:
+        if "fpsb" in run_name:
+            return "gambit_fpsb_result_lcp_decode.txt"
         return "gambit_result_lcp_decode.txt"
     return "gambit_result_" + run_name + "_r" + str(test_round) + "_s" + str(cur_step) + \
         "_lcp_decode.txt"
