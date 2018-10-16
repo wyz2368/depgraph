@@ -23,7 +23,7 @@ def sample_mean_def_payoff_fpsb(def_strat, att_mixed_strat):
 def run_fpsb_annealing(max_steps, neighbor_variance, should_print, initial_params, \
                        att_mixed_strat):
     param_count = 1
-    max_temp = 15
+    max_temp = 1.0
     best_params, best_value = find_params_simulated_annealing_fpsb(param_count, max_steps, \
         max_temp, neighbor_variance, sample_mean_def_payoff_fpsb, \
         should_print, initial_params, att_mixed_strat)
