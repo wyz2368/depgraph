@@ -158,8 +158,8 @@ def main(max_p, error_tolerance, test_count, max_rounds, max_steps, \
     record_deviations(deviations_name, deviation_sequences)
 
 '''
-example: python3 fbsp_anneal_experiment.py
-or: stdbuf -i0 -o0 -e0 python3 fbsp_anneal_experiment.py > out_fpsb1.txt
+example: python3 fpsb_anneal_experiment.py
+or: stdbuf -i0 -o0 -e0 python3 fpsb_anneal_experiment.py > out_fpsb1.txt
 
 good debugging values:
 (0.2, 0.2, 2, 3, 3, 0.05, True, "fpsb1", 3, 10, 0.4, 0.01)
