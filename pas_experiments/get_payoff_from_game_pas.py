@@ -1,8 +1,7 @@
 import sys
 import json
 import os.path
-from utility import get_game_file_name
-from create_tsv_files_pas import get_tsv_strat_name
+from utility import get_game_file_name, get_tsv_strat_name
 
 def get_lines(file_name):
     lines = None
