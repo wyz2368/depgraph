@@ -2,15 +2,17 @@ import sys
 from fpsb_simulated_annealing import find_params_simulated_annealing_fpsb
 
 def get_def_payoff(def_strat, att_strat):
+    my_decimals = 5
     def_strat = float(def_strat)
     att_strat = float(att_strat)
     if def_strat == 0.0:
         return 0.0
     if att_strat == 0.0:
-        return (1 - def_strat) * 1.0 / 2
+        return round((1 - def_strat) * 1.0 / 2, my_decimals)
     if def_strat <= att_strat:
-        return ((1 - def_strat) * def_strat) * 1.0 / (3 * att_strat)
-    return ((1 - def_strat) * (3 * def_strat ** 2 - att_strat ** 2)) / (6.0 * def_strat ** 2)
+        return round(((1 - def_strat) * def_strat) * 1.0 / (3 * att_strat), my_decimals)
+    return round(((1 - def_strat) * (3 * def_strat ** 2 - att_strat ** 2)) / \
+        (6.0 * def_strat ** 2), my_decimals)
 
 def sample_mean_def_payoff_fpsb(def_strat, att_mixed_strat):
     result = 0.0
