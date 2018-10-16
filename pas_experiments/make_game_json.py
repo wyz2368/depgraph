@@ -35,16 +35,16 @@ def get_dict_result(strats):
     cur_id = 1
     for def_strat in strats:
         for att_strat in strats:
-            cur_profile = {"observations_count": 1}
+            cur_profile = {"observations_count": 1, "id": cur_id}
             symmetry_groups = []
             def_payoff, att_payoff = def_to_att_to_payoffs[def_strat][att_strat]
             symmetry_groups.append({"role": "attacker", "strategy": att_strat, "count": 1, \
-                "id": cur_id, "payoff": att_payoff})
+                "id": cur_id + 1, "payoff": att_payoff})
             symmetry_groups.append({"role": "defender", "strategy": def_strat, "count": 1, \
-                "id": cur_id + 1, "payoff": def_payoff})
+                "id": cur_id + 2, "payoff": def_payoff})
             cur_profile["symmetry_groups"] = symmetry_groups
             result["profiles"].append(cur_profile)
-            cur_id += 2
+            cur_id += 3
     return result
 
 def main(strat_count):
