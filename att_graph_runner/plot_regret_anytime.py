@@ -10,6 +10,9 @@ from get_both_payoffs_from_game import get_eq_from_file, get_json_data, \
     get_att_and_def_eq_payoffs, get_att_and_def_payoffs
 from union_games import get_attacker_networks, get_defender_networks
 
+plt.rcParams['pdf.fonttype'] = 42
+plt.rcParams['ps.fonttype'] = 42
+
 def get_all_eqs(env_short_name_tsv, is_defender):
     result = []
     while True:
@@ -25,7 +28,8 @@ def check_net_lists(def_nets, att_nets):
         raise ValueError("Wrong length: " + str(len(def_nets)) + ", " + str(len(att_nets)))
     for i in range(len(def_nets)):
         if def_nets[i] is None and att_nets[i] is None:
-            raise ValueError("Both cannot be None: " + str(i))
+            # raise ValueError("Both cannot be None: " + str(i))
+            pass
 
 def get_networks_by_round(game_data, is_defender, net_count):
     if is_defender:

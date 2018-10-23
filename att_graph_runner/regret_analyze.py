@@ -137,14 +137,15 @@ def analyze_eq(game_data, defender_mixed_strat, attacker_mixed_strat):
     analyze_means(run_names, run_to_def_regrets, run_to_att_regrets)
     analyze_means_nonzero(run_names, run_to_def_regrets, run_to_att_regrets)
     fmt = "{0:.3f}"
-    print("defender regrets Welch two-sided p-value: " + fmt.format(welch_t_test_regrets(\
-        run_names, run_to_def_regrets)))
-    print("attacker regrets Welch two-sided p-value: " + fmt.format(welch_t_test_regrets(\
-        run_names, run_to_att_regrets)))
-    print("defender regrets U-test two-sided p-value: " + fmt.format(\
-        mann_whitney_u_test_regrets(run_names, run_to_def_regrets)))
-    print("attacker regrets U-test two-sided p-value: " + fmt.format(\
-        mann_whitney_u_test_regrets(run_names, run_to_att_regrets)))
+    if len(run_names) == 2:
+        print("defender regrets Welch two-sided p-value: " + fmt.format(\
+            welch_t_test_regrets(run_names, run_to_def_regrets)))
+        print("attacker regrets Welch two-sided p-value: " + fmt.format(\
+            welch_t_test_regrets(run_names, run_to_att_regrets)))
+        print("defender regrets U-test two-sided p-value: " + fmt.format(\
+            mann_whitney_u_test_regrets(run_names, run_to_def_regrets)))
+        print("attacker regrets U-test two-sided p-value: " + fmt.format(\
+            mann_whitney_u_test_regrets(run_names, run_to_att_regrets)))
 
     run_to_def_ranks = get_run_to_ranks(run_to_def_regrets)
     run_to_att_ranks = get_run_to_ranks(run_to_att_regrets)
