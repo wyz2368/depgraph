@@ -37,6 +37,13 @@ def has_profile(game_data, attacker, defender):
             return True
     return False
 
+def remove_duplicates_keep_order(my_list):
+    result = []
+    for item in my_list:
+        if item not in result:
+            result.append(item)
+    return result
+
 '''
 union file format:
 "profiles": [{"observations_count": 10, "id": 1234, "symmetry_groups": []}]
@@ -50,11 +57,13 @@ def union_game_data_multiple(union_data_list):
     old_def_nets = def_nets_list[0]
     def_nets_list = [item for sublist in def_nets_list for item in sublist]
     def_nets_list = [item for item in def_nets_list if item not in old_def_nets]
+    def_nets_list = remove_duplicates_keep_order(def_nets_list)
 
     att_nets_list = [get_attacker_networks(union_data) for union_data in union_data_list]
     old_att_nets = att_nets_list[0]
     att_nets_list = [item for sublist in att_nets_list for item in sublist]
     att_nets_list = [item for item in att_nets_list if item not in old_att_nets]
+    att_nets_list = remove_duplicates_keep_order(att_nets_list)
 
     for def_net in def_nets_list:
         add_defender_strategy(result, def_net)
@@ -73,8 +82,6 @@ def union_game_data_multiple(union_data_list):
             if not has_profile(result, attacker, defender):
                 def_payoff = get_def_payoff(profile)
                 att_payoff = get_att_payoff(profile)
-                # cur_result = (defender, attacker, def_payoff, att_payoff)
-                # results_to_add.append(cur_result)
                 add_profile(result, defender, attacker, def_payoff, att_payoff, \
                     next_profile_id, next_symmetry_group_id, \
                     original_num_sims, original_num_sims)
