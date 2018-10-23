@@ -47,12 +47,14 @@ def union_game_data_multiple(union_data_list):
     result = copy.deepcopy(union_data_list[0])
 
     def_nets_list = [get_defender_networks(union_data) for union_data in union_data_list]
+    old_def_nets = def_nets_list[0]
     def_nets_list = [item for sublist in def_nets_list for item in sublist]
-    def_nets_list = [item for item in def_nets_list if item not in union_data_list[0]]
+    def_nets_list = [item for item in def_nets_list if item not in old_def_nets]
 
     att_nets_list = [get_attacker_networks(union_data) for union_data in union_data_list]
+    old_att_nets = att_nets_list[0]
     att_nets_list = [item for sublist in att_nets_list for item in sublist]
-    att_nets_list = [item for item in att_nets_list if item not in union_data_list[0]]
+    att_nets_list = [item for item in att_nets_list if item not in old_att_nets]
 
     for def_net in def_nets_list:
         add_defender_strategy(result, def_net)
@@ -62,7 +64,6 @@ def union_game_data_multiple(union_data_list):
     original_num_sims = get_original_num_sims(result)
     next_profile_id = get_max_profile_id(result) + 1
     next_symmetry_group_id = get_max_symmetry_group_id(result) + 1
-    results_to_add = []
     for i in range(1, len(union_data_list)):
         union_data = union_data_list[i]
         profiles = union_data["profiles"]
@@ -72,19 +73,13 @@ def union_game_data_multiple(union_data_list):
             if not has_profile(result, attacker, defender):
                 def_payoff = get_def_payoff(profile)
                 att_payoff = get_att_payoff(profile)
-                cur_result = (defender, attacker, def_payoff, att_payoff)
-                results_to_add.append(cur_result)
-
-    for result_to_add in results_to_add:
-        (def_strat, att_strat, def_payoff, att_payoff) = result_to_add
-        if def_strat in result and att_strat in result[def_strat]:
-            print("Danger: duplicate profile: " + def_strat + " " + att_strat)
-            sys.exit(1)
-        add_profile(result, def_strat, att_strat, def_payoff, att_payoff, \
+                # cur_result = (defender, attacker, def_payoff, att_payoff)
+                # results_to_add.append(cur_result)
+                add_profile(result, defender, attacker, def_payoff, att_payoff, \
                     next_profile_id, next_symmetry_group_id, \
                     original_num_sims, original_num_sims)
-        next_profile_id += 1
-        next_symmetry_group_id += 2
+                next_profile_id += 1
+                next_symmetry_group_id += 2
 
     network_source = "network_source"
     for i in range(1, len(union_data_list)):
