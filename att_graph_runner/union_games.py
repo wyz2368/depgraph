@@ -29,6 +29,12 @@ def get_attacker_heuristics(game_data):
 def get_defender_heuristics(game_data):
     return [x for x in get_defender_strats(game_data) if not is_network(x)]
 
+def check_network_existence(att_nets_a, def_nets_a, att_nets_b, def_nets_b):
+    all_nets = att_nets_a + def_nets_a + att_nets_b + def_nets_b
+    for net_name in all_nets:
+        if not os.path.isfile(net_name):
+            raise ValueError("Missing network file: " + str(net_name))
+
 def generate_new_payoffs(att_nets_a, def_nets_a, att_nets_b, def_nets_b, num_sims, \
     env_name_both, graph_name, old_game_file_a, old_game_file_b):
     result = {}
@@ -197,6 +203,8 @@ def main(old_game_file_a, old_game_file_b, runs_per_pair, env_name_both, graph_n
     def_nets_a = get_defender_networks(game_data_a)
     att_nets_b = get_attacker_networks(game_data_b)
     def_nets_b = get_defender_networks(game_data_b)
+
+    check_network_existence(att_nets_a, def_nets_a, att_nets_b, def_nets_b)
 
     new_payoffs_dict = generate_new_payoffs(att_nets_a, def_nets_a, att_nets_b, \
         def_nets_b, runs_per_pair, env_name_both, graph_name, old_game_file_a, \
