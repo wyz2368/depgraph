@@ -4,15 +4,24 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tick
 from pylab import savefig
-from plot_mean_payoffs import get_all_mean_gains_with_standard_errors
+from plot_mean_payoffs import get_all_mean_gains_with_standard_errors, \
+    get_termination_rounds
+
+plt.rcParams['pdf.fonttype'] = 42
+plt.rcParams['ps.fonttype'] = 42
 
 def get_env_short_name_tsv(env_short_name_payoffs):
     if env_short_name_payoffs in ["s29n1", "d30n1"]:
         return env_short_name_payoffs
     return env_short_name_payoffs + "_randNoAndB"
 
+def is_converged(env_short_name_payoffs, stopped_round):
+    if env_short_name_payoffs == "d30d1_mean_stderr":
+        return stopped_round in [22, 23]
+    return False
+
 def plot_gains_with_stderr(def_gains, att_gains, def_errs, att_errs, \
-    env_short_name_payoffs, should_use_fill):
+    env_short_name_payoffs, should_use_fill, stopped_rounds):
     fig, ax = plt.subplots()
     fig.set_size_inches(8, 5)
 
@@ -41,6 +50,13 @@ def plot_gains_with_stderr(def_gains, att_gains, def_errs, att_errs, \
         plt.errorbar(range(len(att_gains)), att_gains, yerr=att_errs, lw=my_lw, \
             linestyle='--', label='Att. gain', color='orange', \
             elinewidth=1)
+
+    for stopped_round in stopped_rounds:
+        if is_converged(env_short_name_payoffs, stopped_round):
+            plt.scatter(x=stopped_round, y=0, marker='*', s=200, zorder=3, \
+                color='green')
+        else:
+            plt.scatter(x=stopped_round, y=0, color='r', marker='x', s=120, zorder=3)
 
     ax.axhline(0, color='black', lw=1)
     ax.axvline(0, color='black', lw=1)
@@ -94,14 +110,17 @@ def main(game_number, env_short_name_payoffs_list):
     mean_att_gain, mean_def_gain, sem_att_gain, sem_def_gain = \
         get_all_mean_gains_with_standard_errors(game_number, env_short_name_payoffs_list, \
         env_short_name_tsv_list)
+    stopped_rounds = get_termination_rounds(game_number, env_short_name_payoffs_list, \
+        env_short_name_tsv_list)
     print(mean_att_gain)
     print(mean_def_gain)
     print(sem_att_gain)
     print(sem_def_gain)
+    print(stopped_rounds)
     # print(str(len(att_gains)) + "\t" + str(len(def_gains)))
     save_env_name = env_short_name_payoffs_list[0] + "_mean_stderr"
     plot_gains_with_stderr(mean_def_gain, mean_att_gain, sem_def_gain, sem_att_gain, \
-        save_env_name, True)
+        save_env_name, True, stopped_rounds)
 
 '''
 example: python3 plot_mean_gains_stderror.py 3014 d30d1 d30m1 d30n1 d30f1 d30f2

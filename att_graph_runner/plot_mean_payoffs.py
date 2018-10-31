@@ -52,6 +52,23 @@ def get_gain(net_payoff, eq_payoff):
         return 0
     return max(net_payoff - eq_payoff, 0)
 
+def get_termination_rounds(game_number, env_short_name_payoffs_list, \
+    env_short_name_tsv_list):
+    stopped_rounds = []
+    for i in range(len(env_short_name_payoffs_list)):
+        env_short_name_payoffs = env_short_name_payoffs_list[i]
+        env_short_name_tsv = env_short_name_tsv_list[i]
+        round_count = get_round_count(env_short_name_tsv)
+        att_eq_payoffs, def_eq_payoffs, att_net_payoffs, def_net_payoffs = \
+            get_all_payoffs(round_count, env_short_name_tsv, \
+            env_short_name_payoffs, game_number)
+        cur_att_gains = [get_gain(att_net_payoffs[j], att_eq_payoffs[j]) for j in \
+            range(len(att_eq_payoffs))]
+        cur_def_gains = [get_gain(def_net_payoffs[j], def_eq_payoffs[j]) for j in \
+            range(len(def_eq_payoffs))]
+        stopped_rounds.append(round_count - 1)
+    return stopped_rounds
+
 def get_all_mean_gains_with_standard_errors(game_number, env_short_name_payoffs_list, \
     env_short_name_tsv_list):
     all_att_gains = []
@@ -141,7 +158,7 @@ def main(game_number, env_short_name_payoffs_list):
     print(mean_def_net)
     save_env_name = env_short_name_payoffs_list[0] + "_mean"
     plot_payoffs(mean_def_eq, mean_def_net, mean_att_eq, mean_att_net, \
-        save_env_name)
+        save_env_name, True)
 
 '''
 example: python3 plot_mean_payoffs.py 3014 d30d1 d30m1
