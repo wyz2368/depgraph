@@ -16,8 +16,14 @@ def get_env_short_name_tsv(env_short_name_payoffs):
     return env_short_name_payoffs + "_randNoAndB"
 
 def is_converged(env_short_name_payoffs, stopped_round):
-    if env_short_name_payoffs == "d30d1_mean_stderr":
-        return stopped_round in [22, 23]
+    print(env_short_name_payoffs)
+    print(stopped_round)
+    if env_short_name_payoffs in ["d30d1_mean_stderr", "r30_mean_stderr"]:
+        return stopped_round in [20, 22, 23]
+    if env_short_name_payoffs in ["s29n1_mean_stderr"]:
+        return stopped_round in [32]
+    if env_short_name_payoffs in ["s29_mean_stderr"]:
+        return stopped_round in [32, 39]
     return False
 
 def plot_gains_with_stderr(def_gains, att_gains, def_errs, att_errs, \
