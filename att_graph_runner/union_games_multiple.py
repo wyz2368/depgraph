@@ -100,6 +100,9 @@ def main(result_game_file, union_game_file_list):
     print("union_game_file_list: " + str(union_game_file_list))
     print("result_game_file: " + result_game_file)
 
+    if len(union_game_file_list) != len(set(union_game_file_list)):
+        raise ValueError("Input list has duplicates: " + str(union_game_file_list))
+
     union_data_list = [get_json_data(x) for x in union_game_file_list]
     for union_data in union_data_list:
         if not is_game_data_valid(union_data):
