@@ -39,12 +39,20 @@ def generate_extension_payoffs(att_nets_a, def_nets_a, att_nets_b, def_nets_b, \
 
     count_to_generate = len(new_att_nets_a) * len(def_nets_b) \
         + len(new_def_nets_b) * len(att_nets_a) \
-        - len(new_def_nets_a) * len(new_att_nets_b) \
+        - len(new_att_nets_a) * len(new_def_nets_b) \
         + len(new_def_nets_a) * len(att_nets_b) \
         + len(new_att_nets_b) * len(def_nets_a) \
-        - len(new_att_nets_a) * len(new_def_nets_b)
+        - len(new_def_nets_a) * len(new_att_nets_b)
 
     print("Will generate: " + str(count_to_generate) + " pairs of payoffs.")
+    print("new_att_nets_a length: " + str(len(new_att_nets_a)))
+    print("new_att_nets_b length: " + str(len(new_att_nets_b)))
+    print("new_def_nets_a length: " + str(len(new_def_nets_a)))
+    print("new_def_nets_b length: " + str(len(new_def_nets_b)))
+    print("att_nets_a length: " + str(len(att_nets_a)))
+    print("att_nets_b length: " + str(len(att_nets_b)))
+    print("def_nets_a length: " + str(len(def_nets_a)))
+    print("def_nets_b length: " + str(len(def_nets_b)))
 
     cur_index = 0
     # runs for new attacker A, any defender B
