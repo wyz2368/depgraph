@@ -25,26 +25,31 @@ def generate_extension_payoffs(att_nets_a, def_nets_a, att_nets_b, def_nets_b, \
     result["graph_name"] = graph_name
     start_time = time.time()
 
-    atts_to_generate = []
-    defs_to_generate = []
-    union_old_att_strats = get_defender_strats(game_data_union_old)
-    union_old_def_strats = get_attacker_strats(game_data_union_old)
-    for att_net in att_nets_a + att_nets_b:
-        if att_net not in union_old_att_strats:
-            atts_to_generate.append(att_net)
-    for def_net in def_nets_a + def_nets_b:
-        if def_net not in union_old_def_strats:
-            defs_to_generate.append(def_net)
-    if not atts_to_generate or not defs_to_generate:
+
+    union_old_att_strats = get_attacker_strats(game_data_union_old)
+    union_old_def_strats = get_defender_strats(game_data_union_old)
+
+    new_att_nets_a = [x for x in att_nets_a if x not in union_old_att_strats]
+    new_def_nets_a = [x for x in def_nets_a if x not in union_old_def_strats]
+    new_att_nets_b = [x for x in att_nets_b if x not in union_old_att_strats]
+    new_def_nets_b = [x for x in def_nets_b if x not in union_old_def_strats]
+    if not new_att_nets_a and not new_def_nets_a and not new_att_nets_b and not \
+        new_def_nets_b:
         raise ValueError("All strategies already present.")
 
-    count_to_generate = len(atts_to_generate) * len(defs_to_generate)
+    count_to_generate = len(new_att_nets_a) * len(def_nets_b) \
+        + len(new_def_nets_b) * len(att_nets_a) \
+        - len(new_def_nets_a) * len(new_att_nets_b) \
+        + len(new_def_nets_a) * len(att_nets_b) \
+        + len(new_att_nets_b) * len(def_nets_a) \
+        - len(new_att_nets_a) * len(new_def_nets_b)
+
     print("Will generate: " + str(count_to_generate) + " pairs of payoffs.")
-    print("attacker nets: " + str(defs_to_generate))
 
     cur_index = 0
-    for att_net in atts_to_generate:
-        for def_net in defs_to_generate:
+    # runs for new attacker A, any defender B
+    for att_net in new_att_nets_a:
+        for def_net in def_nets_b:
             print("Payoffs " + str(cur_index) + " of " + str(count_to_generate) + ":", \
                 flush=True)
             cur_start_time = time.time()
@@ -58,6 +63,57 @@ def generate_extension_payoffs(att_nets_a, def_nets_a, att_nets_b, def_nets_b, \
             cur_index += 1
             cur_duration = time.time() - cur_start_time
             print("Seconds cur pair: " + str(int(cur_duration)), flush=True)
+    # runs for new defender B, old attacker A
+    for def_net in new_def_nets_b:
+        for att_net in att_nets_a:
+            if att_net not in new_att_nets_a:
+                print("Payoffs " + str(cur_index) + " of " + str(count_to_generate) + ":", \
+                    flush=True)
+                cur_start_time = time.time()
+                mean_rewards_tuple = get_payoffs_both( \
+                    env_name_both, num_sims, def_net, att_net, graph_name, \
+                    hybrid_get_net_scope(def_net), hybrid_get_net_scope(att_net))
+                print(str((def_net, att_net)) + "\n" + str(mean_rewards_tuple), flush=True)
+                if def_net not in result:
+                    result[def_net] = {}
+                result[def_net][att_net] = list(mean_rewards_tuple)
+                cur_index += 1
+                cur_duration = time.time() - cur_start_time
+                print("Seconds cur pair: " + str(int(cur_duration)), flush=True)
+    # runs for new attacker B, any defender A
+    for att_net in new_att_nets_b:
+        for def_net in def_nets_a:
+            print("Payoffs " + str(cur_index) + " of " + str(count_to_generate) + ":", \
+                flush=True)
+            cur_start_time = time.time()
+            mean_rewards_tuple = get_payoffs_both( \
+                env_name_both, num_sims, def_net, att_net, graph_name, \
+                hybrid_get_net_scope(def_net), hybrid_get_net_scope(att_net))
+            print(str((def_net, att_net)) + "\n" + str(mean_rewards_tuple), flush=True)
+            if def_net not in result:
+                result[def_net] = {}
+            result[def_net][att_net] = list(mean_rewards_tuple)
+            cur_index += 1
+            cur_duration = time.time() - cur_start_time
+            print("Seconds cur pair: " + str(int(cur_duration)), flush=True)
+    # runs for new defender A, old attacker B
+    for def_net in new_def_nets_a:
+        for att_net in att_nets_b:
+            if att_net not in new_att_nets_b:
+                print("Payoffs " + str(cur_index) + " of " + str(count_to_generate) + ":", \
+                    flush=True)
+                cur_start_time = time.time()
+                mean_rewards_tuple = get_payoffs_both( \
+                    env_name_both, num_sims, def_net, att_net, graph_name, \
+                    hybrid_get_net_scope(def_net), hybrid_get_net_scope(att_net))
+                print(str((def_net, att_net)) + "\n" + str(mean_rewards_tuple), flush=True)
+                if def_net not in result:
+                    result[def_net] = {}
+                result[def_net][att_net] = list(mean_rewards_tuple)
+                cur_index += 1
+                cur_duration = time.time() - cur_start_time
+                print("Seconds cur pair: " + str(int(cur_duration)), flush=True)
+
     duration = time.time() - start_time
     print("Minutes taken: " + str(duration // 60))
     return result
