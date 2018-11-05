@@ -169,8 +169,8 @@ def extend_game_data(game_data_a, game_data_b, att_nets_a, def_nets_a, att_nets_
     def_nets_b, game_data_union_old, att_heuristics, def_heuristics, new_payoffs_dict, \
     old_game_file_a, old_game_file_b):
     result = copy.deepcopy(game_data_union_old)
-    union_old_att_strats = get_defender_strats(game_data_union_old)
-    union_old_def_strats = get_attacker_strats(game_data_union_old)
+    union_old_att_strats = get_attacker_strats(game_data_union_old)
+    union_old_def_strats = get_defender_strats(game_data_union_old)
     for def_net in def_nets_a + def_nets_b:
         if def_net not in union_old_def_strats:
             add_defender_strategy(result, def_net)
