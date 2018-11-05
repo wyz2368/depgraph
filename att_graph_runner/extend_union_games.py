@@ -10,8 +10,7 @@ from generate_new_cols import print_json
 from add_new_data import add_defender_strategy, add_attacker_strategy, get_max_profile_id, \
     get_max_symmetry_group_id, get_original_num_sims, add_profile
 from union_games import is_game_data_valid, get_attacker_networks, get_defender_networks, \
-    get_attacker_heuristics, get_defender_heuristics, check_network_existence, \
-    get_results_to_add, get_payoffs
+    get_attacker_heuristics, get_defender_heuristics, check_network_existence, get_payoffs
 
 def generate_extension_payoffs(att_nets_a, def_nets_a, att_nets_b, def_nets_b, \
     game_data_union_old, num_sims, env_name_both, graph_name, old_game_file_a, \
@@ -126,26 +125,6 @@ def generate_extension_payoffs(att_nets_a, def_nets_a, att_nets_b, def_nets_b, \
     print("Minutes taken: " + str(duration // 60))
     return result
 
-def get_payoffs(game_data, defender, attacker):
-    '''
-    Returns True iff there is a payoff entry for the defender-attacker pair.
-    '''
-    for profile in game_data["profiles"]:
-        matches_def = False
-        matches_att = False
-        def_payoff = None
-        att_payoff = None
-        for group in profile["symmetry_groups"]:
-            if group["strategy"] == defender and group["role"] == "defender":
-                matches_def = True
-                def_payoff = group["payoff"]
-            if group["strategy"] == attacker and group["role"] == "attacker":
-                matches_att = True
-                att_payoff = group["payoff"]
-        if matches_def and matches_att:
-            return (def_payoff, att_payoff)
-    raise ValueError("Payoff not found: " + defender + "\t" + attacker)
-
 def get_game_b_results_to_add(game_data_b, att_nets_b, def_nets_b, att_heuristics, \
     def_heuristics):
     result = []
@@ -165,6 +144,21 @@ def get_game_b_results_to_add(game_data_b, att_nets_b, def_nets_b, att_heuristic
             result.append((def_net, att_strat, mean_def_reward, mean_att_reward))
     return result
 
+def get_extend_results_to_add(new_payoffs_dict, att_nets_a, def_nets_a, att_nets_b, \
+    def_nets_b, union_old_att_strats, union_old_def_strats):
+    result = []
+    for att_net in att_nets_a:
+        for def_net in def_nets_b:
+            if att_net not in union_old_att_strats or def_net not in union_old_def_strats:
+                (mean_def_reward, mean_att_reward) = new_payoffs_dict[def_net][att_net]
+                result.append((def_net, att_net, mean_def_reward, mean_att_reward))
+    for att_net in att_nets_b:
+        for def_net in def_nets_a:
+            if att_net not in union_old_att_strats or def_net not in union_old_def_strats:
+                (mean_def_reward, mean_att_reward) = new_payoffs_dict[def_net][att_net]
+                result.append((def_net, att_net, mean_def_reward, mean_att_reward))
+    return result
+
 def extend_game_data(game_data_a, game_data_b, att_nets_a, def_nets_a, att_nets_b, \
     def_nets_b, game_data_union_old, att_heuristics, def_heuristics, new_payoffs_dict, \
     old_game_file_a, old_game_file_b):
@@ -182,8 +176,8 @@ def extend_game_data(game_data_a, game_data_b, att_nets_a, def_nets_a, att_nets_
     new_num_sims = new_payoffs_dict["num_sims"]
     next_profile_id = get_max_profile_id(result) + 1
     next_symmetry_group_id = get_max_symmetry_group_id(result) + 1
-    results_to_add = get_results_to_add(new_payoffs_dict, att_nets_a, def_nets_a, \
-        att_nets_b, def_nets_b)
+    results_to_add = get_extend_results_to_add(new_payoffs_dict, att_nets_a, def_nets_a, \
+        att_nets_b, def_nets_b, union_old_att_strats, union_old_def_strats)
     for result_to_add in results_to_add:
         (def_strat, att_strat, def_payoff, att_payoff) = result_to_add
         if def_strat in result and att_strat in result[def_strat]:
