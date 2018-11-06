@@ -24,7 +24,6 @@ def generate_extension_payoffs(att_nets_a, def_nets_a, att_nets_b, def_nets_b, \
     result["graph_name"] = graph_name
     start_time = time.time()
 
-
     union_old_att_strats = get_attacker_strats(game_data_union_old)
     union_old_def_strats = get_defender_strats(game_data_union_old)
 
@@ -192,7 +191,7 @@ def extend_game_data(game_data_a, game_data_b, att_nets_a, def_nets_a, att_nets_
         if att_net not in get_attacker_networks(game_data_union_old):
             for def_heuristic in def_heuristics:
                 def_payoff, att_payoff = get_payoffs(game_data_a, def_heuristic, att_net)
-                add_profile(result, def_heuristic, att_strat, def_payoff, att_payoff, \
+                add_profile(result, def_heuristic, att_net, def_payoff, att_payoff, \
                     next_profile_id, next_symmetry_group_id, \
                     original_num_sims, new_num_sims)
                 next_profile_id += 1
@@ -201,7 +200,7 @@ def extend_game_data(game_data_a, game_data_b, att_nets_a, def_nets_a, att_nets_
         if att_net not in get_attacker_networks(game_data_union_old):
             for def_heuristic in def_heuristics:
                 def_payoff, att_payoff = get_payoffs(game_data_b, def_heuristic, att_net)
-                add_profile(result, def_heuristic, att_strat, def_payoff, att_payoff, \
+                add_profile(result, def_heuristic, att_net, def_payoff, att_payoff, \
                     next_profile_id, next_symmetry_group_id, \
                     original_num_sims, new_num_sims)
                 next_profile_id += 1
