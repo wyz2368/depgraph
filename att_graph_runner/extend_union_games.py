@@ -126,16 +126,26 @@ def get_game_b_results_to_add(game_data_b, att_nets_b, def_nets_b, att_heuristic
 def get_extend_results_to_add(new_payoffs_dict, att_nets_a, def_nets_a, att_nets_b, \
     def_nets_b, union_old_att_strats, union_old_def_strats):
     result = []
-    for att_net in att_nets_a:
-        for def_net in def_nets_b:
-            if att_net not in union_old_att_strats or def_net not in union_old_def_strats:
-                (mean_def_reward, mean_att_reward) = new_payoffs_dict[def_net][att_net]
-                result.append((def_net, att_net, mean_def_reward, mean_att_reward))
-    for att_net in att_nets_b:
-        for def_net in def_nets_a:
-            if att_net not in union_old_att_strats or def_net not in union_old_def_strats:
-                (mean_def_reward, mean_att_reward) = new_payoffs_dict[def_net][att_net]
-                result.append((def_net, att_net, mean_def_reward, mean_att_reward))
+
+    att_nets = att_nets_a + att_nets_b
+    def_nets = def_nets_a + def_nets_b
+    new_att_nets = [x for x in att_nets if x not in union_old_att_strats]
+    new_def_nets = [x for x in def_nets if x not in union_old_def_strats]
+    old_att_nets = [x for x in att_nets if x in union_old_att_strats]
+    old_def_nets = [x for x in def_nets if x in union_old_def_strats]
+
+    for att_net in new_att_nets:
+        for def_net in old_def_nets:
+            (mean_def_reward, mean_att_reward) = new_payoffs_dict[def_net][att_net]
+            result.append((def_net, att_net, mean_def_reward, mean_att_reward))
+    for att_net in old_att_nets:
+        for def_net in new_def_nets:
+            (mean_def_reward, mean_att_reward) = new_payoffs_dict[def_net][att_net]
+            result.append((def_net, att_net, mean_def_reward, mean_att_reward))
+    for att_net in new_att_nets:
+        for def_net in new_def_nets:
+            (mean_def_reward, mean_att_reward) = new_payoffs_dict[def_net][att_net]
+            result.append((def_net, att_net, mean_def_reward, mean_att_reward))
     return result
 
 def extend_game_data(game_data_a, game_data_b, att_nets_a, def_nets_a, att_nets_b, \

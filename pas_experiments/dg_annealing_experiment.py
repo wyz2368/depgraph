@@ -1,6 +1,7 @@
 import csv
 import time
 import os.path
+import sys
 from pas_experiments import get_n
 from gambit_analyze_pas import do_gambit_analyze
 from create_tsv_files_pas import create_tsv, get_tsv_strat_name
@@ -12,6 +13,9 @@ from add_new_data_pas import add_data
 from depgraph_connect import convert_params_from_0_1, get_def_name
 from utility import get_game_file_name, get_result_name, get_deviations_name
 from ground_truth_annealing import get_ground_truth_dev_prob
+
+MIN_PORT_NUM = 26433
+MAX_PORT_NUM = 26833
 
 def get_att_eq(run_name, test_round, cur_step):
     att_mixed_strat_name = get_tsv_strat_name(run_name, test_round, cur_step, False)
@@ -36,8 +40,8 @@ def record_result_tuples(result_name, result_tuples):
         for cur_tuple in result_tuples:
             csv_writer.writerow(cur_tuple)
 
-def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_per_param, \
-    neighbor_variance, should_print, run_name, samples_new_column, \
+def get_results(port_num, max_p, alpha_list, test_count, max_steps, max_samples, \
+    samples_per_param, neighbor_variance, should_print, run_name, samples_new_column, \
     anneal_ground_truth_max, anneal_ground_truth_min, early_stop_level, epsilon_tolerance):
     results = []
     deviation_sequences = []
@@ -131,8 +135,8 @@ def get_results(max_p, alpha_list, test_count, max_steps, max_samples, samples_p
         flush=True)
     return results, deviation_sequences
 
-def main(max_p, error_tolerance, test_count, max_rounds, max_steps, samples_per_param, \
-    neighbor_variance, should_print, run_name, samples_new_column, \
+def main(port_num, max_p, error_tolerance, test_count, max_rounds, max_steps, \
+    samples_per_param, neighbor_variance, should_print, run_name, samples_new_column, \
     anneal_ground_truth_max, anneal_ground_truth_min, early_stop_level, epsilon_tolerance):
     result_name = get_result_name(run_name)
     if os.path.exists(result_name):
@@ -144,6 +148,7 @@ def main(max_p, error_tolerance, test_count, max_rounds, max_steps, samples_per_
         raise ValueError("epsilon_tolerance must be >= 0.0: " + str(epsilon_tolerance))
 
     fmt = "{0:.6f}"
+    print("Using port: " + str(port_num))
     print("Will run dg_annealing_experiment.py:")
     print("max_p: " + fmt.format(max_p))
     print("error_tolerance: " + fmt.format(error_tolerance))
@@ -161,10 +166,10 @@ def main(max_p, error_tolerance, test_count, max_rounds, max_steps, samples_per_
 
     alpha_list = [error_tolerance * 1.0 / max_rounds] * max_rounds
     print("alpha_list: " + str(alpha_list), flush=True)
-    result_tuples, deviation_sequences = get_results(max_p, alpha_list, test_count, \
-        max_rounds, max_steps, samples_per_param, neighbor_variance, should_print, \
-        run_name, samples_new_column, anneal_ground_truth_max, anneal_ground_truth_min, \
-        early_stop_level, epsilon_tolerance)
+    result_tuples, deviation_sequences = get_results(port_num, max_p, alpha_list, \
+        test_count, max_rounds, max_steps, samples_per_param, neighbor_variance, \
+        should_print, run_name, samples_new_column, anneal_ground_truth_max, \
+        anneal_ground_truth_min, early_stop_level, epsilon_tolerance)
     record_result_tuples(result_name, result_tuples)
     record_deviations(deviations_name, deviation_sequences)
 
@@ -182,6 +187,11 @@ compromise final values:
 (0.05, 0.1, 1, 10, 5, 100, 0.03, True, dg14, 400, 100, 10, 0.1, 2.0)
 '''
 if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        raise ValueError("Must have 1 arg: port_num")
+    PORT_NUM = int(sys.argv[1])
+    if PORT_NUM < MIN_PORT_NUM or PORT_NUM > MAX_PORT_NUM:
+        raise ValueError("Invalid port number: " + str(PORT_NUM))
     MAX_P = 0.05
     ERROR_TOLERANCE = 0.1
     TEST_COUNT = 1
@@ -190,13 +200,13 @@ if __name__ == "__main__":
     SAMPLES_PER_PARAM = 100
     NEIGHBOR_VARIANCE = 0.03
     SHOULD_PRINT = True
-    RUN_NAME = "dg14"
+    RUN_NAME = "dg_" + str(PORT_NUM)
     SAMPLES_NEW_COLUMN = 400
     ANNEAL_GROUND_TRUTH_MAX = 100
     ANNEAL_GROUND_TRUTH_MIN = 10
     EARLY_STOP_LEVEL = MAX_P * 2
-    EPSILON_TOLERANCE = 2.0
-    main(MAX_P, ERROR_TOLERANCE, TEST_COUNT, MAX_STEPS, MAX_SAMPLES, SAMPLES_PER_PARAM, \
-        NEIGHBOR_VARIANCE, SHOULD_PRINT, RUN_NAME, SAMPLES_NEW_COLUMN, \
+    EPSILON_TOLERANCE = 1.3
+    main(PORT_NUM, MAX_P, ERROR_TOLERANCE, TEST_COUNT, MAX_STEPS, MAX_SAMPLES, \
+        SAMPLES_PER_PARAM, NEIGHBOR_VARIANCE, SHOULD_PRINT, RUN_NAME, SAMPLES_NEW_COLUMN, \
         ANNEAL_GROUND_TRUTH_MAX, ANNEAL_GROUND_TRUTH_MIN, EARLY_STOP_LEVEL, \
         EPSILON_TOLERANCE)
