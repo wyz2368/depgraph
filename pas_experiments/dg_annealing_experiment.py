@@ -75,7 +75,7 @@ def get_results(port_num, max_p, alpha_list, test_count, max_steps, max_samples,
                 # deviating_strat is in [0, 1]^3
                 deviating_strat, cur_best_value = run_depgraph_annealing(max_samples, \
                     samples_per_param, neighbor_variance, should_print, None, \
-                    att_mixed_strat)
+                    att_mixed_strat, port_num)
                 if should_print:
                     print("Finished annealing round " + str(cur_annealing_step) + " of " + \
                         str(cur_n), flush=True)
@@ -84,7 +84,7 @@ def get_results(port_num, max_p, alpha_list, test_count, max_steps, max_samples,
                     print("Estimated best value was: " + fmt.format(cur_best_value), \
                         flush=True)
                 def_payoff_cur = get_def_payoff(deviating_strat, run_name, test_round, \
-                    cur_step, samples_new_column, att_mixed_strat)
+                    cur_step, samples_new_column, att_mixed_strat, port_num)
                 if def_payoff_cur > def_payoff_old + epsilon_tolerance:
                     found_dev = True
                     deviation_sequence.append(deviating_strat)
@@ -98,7 +98,7 @@ def get_results(port_num, max_p, alpha_list, test_count, max_steps, max_samples,
                     if cur_step + 1 < max_steps:
                         def_name = convert_deviating_strat_to_def_name(deviating_strat)
                         gen_new_cols(def_name, run_name, test_round, cur_step, \
-                            samples_new_column)
+                            samples_new_column, port_num)
                         add_data(run_name, test_round, cur_step)
                     break
                 else:
@@ -121,7 +121,7 @@ def get_results(port_num, max_p, alpha_list, test_count, max_steps, max_samples,
         ground_truth_dev_prob = get_ground_truth_dev_prob(max_samples, samples_per_param, \
             neighbor_variance, should_print, None, att_mixed_strat, def_payoff_old, \
             anneal_ground_truth_max, anneal_ground_truth_min, early_stop_level, run_name, \
-            test_round, cur_step, epsilon_tolerance, samples_new_column)
+            test_round, cur_step, epsilon_tolerance, samples_new_column, port_num)
         cur_result = (was_confirmed, test_round, ground_truth_dev_prob)
         if test_round % 10 == 0:
             print("round " + str(test_round) + " result: " + str(cur_result), flush=True)

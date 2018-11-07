@@ -3,7 +3,11 @@ import time
 import random
 import sys
 from math import ceil, sqrt, isnan
-from py4j.java_gateway import JavaGateway
+from py4j.java_gateway import JavaGateway, GatewayParameters, CallbackServerParameters
+
+MIN_PORT = 26433
+MAX_PORT = 26833
+MY_PORT = None
 
 GATEWAY = None
 JAVA_GAME = None
@@ -13,7 +17,11 @@ ATTACKER_MIXED = {"VALUE_PROPAGATION:maxNumSelectCandidate_10.0_minNumSelectCand
     "2.0_numSelectCandidateRatio_0.5_qrParam_3.0_stdev_0.0": 1.0}
 GRAPH = "RandomGraph30N100E6T1_B.json"
 
-def setup_default():
+def setup_default(my_port):
+    global MY_PORT
+    if my_port < MIN_PORT or my_port > MAX_PORT or my_port % 2 == 0:
+        raise ValueError("Invalid port numnber: " + str(my_port))
+    MY_PORT = my_port
     def_strat = get_def_name([0.5, 0.5, 3.0])
     my_process = start_server(def_strat, ATTACKER_PURE, GRAPH)
     setup_gateway()
@@ -23,18 +31,32 @@ def setup_default():
     return my_process
 
 def start_server(def_strat, att_strat, graph_name):
-    cmd = "exec java -jar dg4jnonetcli/dg4jnonetcli.jar " + def_strat + " " + att_strat + \
-        " " + graph_name
-    my_process = subprocess.Popen(cmd, shell=True)
+    cmd_list = ["java", "-jar", "dg4jnonetcliport/dg4jnonetcliport.jar", \
+        att_strat, def_strat, graph_name, str(MY_PORT)]
+    my_process = subprocess.Popen(cmd_list, stdin=None, stdout=None, stderr=None, \
+        close_fds=True)
+
     sleep_sec = 5
     # wait for Java server to start
     time.sleep(sleep_sec)
     return my_process
 
+def setup_gateway():
+    global GATEWAY
+    GATEWAY = JavaGateway(python_proxy_port=MY_PORT,
+                          gateway_parameters=GatewayParameters(port=MY_PORT),
+                          callback_server_parameters=
+                          CallbackServerParameters(port=(MY_PORT + 1)))
+    global JAVA_GAME
+    JAVA_GAME = GATEWAY.entry_point.getGame()
+
 def close_gateway():
     GATEWAY.close()
     GATEWAY.close_callback_server()
     GATEWAY.shutdown()
+
+def get_port():
+    return MY_PORT
 
 def close_process(my_process):
     my_process.kill()
@@ -103,12 +125,6 @@ def get_mean_payoffs(def_strat, att_mixed_strat, run_count):
     def_std_error = sqrt(def_variance) / sqrt(run_count)
     att_std_error = sqrt(att_variance) / sqrt(run_count)
     return def_payoff, att_payoff, def_std_error, att_std_error
-
-def setup_gateway():
-    global GATEWAY
-    GATEWAY = JavaGateway()
-    global JAVA_GAME
-    JAVA_GAME = GATEWAY.entry_point.getGame()
 
 def convert_params_from_0_1(params_0_1):
     if len(params_0_1) != 3 or min(params_0_1) < 0 or max(params_0_1) > 1:

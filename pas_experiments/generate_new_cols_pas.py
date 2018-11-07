@@ -21,13 +21,13 @@ def print_json(file_name, json_obj):
     with open(file_name, 'w') as my_file:
         json.dump(json_obj, my_file)
 
-def get_result_dict(deviating_strat, samples_new_column, attacker_strats):
+def get_result_dict(deviating_strat, samples_new_column, attacker_strats, my_port):
     result = {}
     result[deviating_strat] = {}
     result["num_sims"] = samples_new_column
 
     start_time = time.time()
-    my_process = setup_default()
+    my_process = setup_default(my_port)
     for att_strat in attacker_strats:
         att_mixed_strat = {att_strat: 1.0}
         def_payoff, att_payoff, _, _ = get_mean_payoffs(deviating_strat, \
@@ -40,12 +40,14 @@ def get_result_dict(deviating_strat, samples_new_column, attacker_strats):
     print("Minutes used for generating column: " + str(int(duration // 60)))
     return result
 
-def gen_new_cols(deviating_strat, run_name, test_round, cur_step, samples_new_column):
+def gen_new_cols(deviating_strat, run_name, test_round, cur_step, samples_new_column, \
+    my_port):
     game_file_name = get_game_file_name(run_name, test_round, cur_step)
     game_json = get_json_data(game_file_name)
     attacker_strats = get_attacker_strats(game_json)
 
-    result_dict = get_result_dict(deviating_strat, samples_new_column, attacker_strats)
+    result_dict = get_result_dict(deviating_strat, samples_new_column, attacker_strats, \
+        my_port)
     out_file_name = get_new_payoff_file_name(run_name, test_round, cur_step)
     print_json(out_file_name, result_dict)
 
@@ -62,4 +64,6 @@ if __name__ == "__main__":
     TEST_ROUND = int(sys.argv[3])
     CUR_STEP = int(sys.argv[4])
     SAMPLES_NEW_COLUMN = int(sys.argv[5])
-    gen_new_cols(DEVIATING_STRAT, RUN_NAME, TEST_ROUND, CUR_STEP, SAMPLES_NEW_COLUMN)
+    MY_PORT = 26433
+    gen_new_cols(DEVIATING_STRAT, RUN_NAME, TEST_ROUND, CUR_STEP, SAMPLES_NEW_COLUMN, \
+        MY_PORT)

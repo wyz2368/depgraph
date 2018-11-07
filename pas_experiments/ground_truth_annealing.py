@@ -29,7 +29,7 @@ def get_ground_truth_dev_prob(max_steps, samples_per_param, neighbor_variance, \
                               def_payoff_old, anneal_ground_truth_max, \
                               anneal_ground_truth_min, early_stop_level, \
                               run_name, test_round, cur_step, epsilon_tolerance, \
-                              samples_check_result):
+                              samples_check_result, my_port):
     if anneal_ground_truth_max < anneal_ground_truth_min or \
         anneal_ground_truth_min < 1 or early_stop_level <= 0.0 or early_stop_level > 1.0 \
         or epsilon_tolerance < 0.0:
@@ -44,9 +44,9 @@ def get_ground_truth_dev_prob(max_steps, samples_per_param, neighbor_variance, \
     while should_continue_anneal(count_so_far, beneficial_count, anneal_ground_truth_max, \
             anneal_ground_truth_min, early_stop_level, should_print):
         deviating_strat, _ = run_depgraph_annealing(max_steps, samples_per_param, \
-            neighbor_variance, should_print, initial_params, att_mixed_strat)
+            neighbor_variance, should_print, initial_params, att_mixed_strat, my_port)
         def_payoff_cur = get_def_payoff(deviating_strat, run_name, test_round, \
-            cur_step, samples_check_result, att_mixed_strat)
+            cur_step, samples_check_result, att_mixed_strat, my_port)
         count_so_far += 1
         if should_print:
             print("Cur payoff " + fmt.format(def_payoff_cur) + ", vs. goal " + \

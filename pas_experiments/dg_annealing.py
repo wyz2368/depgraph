@@ -4,9 +4,16 @@ from depgraph_connect import setup_default, sample_mean_def_payoff, close_proces
     close_gateway, convert_params_from_0_1, get_def_name, convert_params_to_0_1, \
     ATTACKER_MIXED
 
+def check_port(my_port, my_process):
+    if my_process.get_port() != my_port:
+        raise ValueError("Wrong port: " + str(my_process.get_port()) + " vs. " + \
+            str(my_port))
+
 def run_depgraph_annealing(max_steps, samples_per_param, neighbor_variance, should_print, \
-                           initial_params_java, att_mixed_strat):
-    my_process = setup_default()
+                           initial_params_java, att_mixed_strat, my_port):
+    my_process = setup_default(my_port)
+    check_port(my_port, my_process)
+
     param_count = 3
     max_temp = 15
     if initial_params_java is not None:
@@ -20,11 +27,11 @@ def run_depgraph_annealing(max_steps, samples_per_param, neighbor_variance, shou
     close_process(my_process)
     return best_params, best_value
 
-def main(max_steps, samples_per_param, neighbor_variance, should_print):
+def main(max_steps, samples_per_param, neighbor_variance, should_print, my_port):
     # initial_params_java = None
     initial_params_java = [0.5, 0.5, 3.0]
     best_params, _ = run_depgraph_annealing(max_steps, samples_per_param, \
-        neighbor_variance, should_print, initial_params_java, ATTACKER_MIXED)
+        neighbor_variance, should_print, initial_params_java, ATTACKER_MIXED, my_port)
     best_params_java = convert_params_from_0_1(best_params)
     best_def_strat = get_def_name(best_params_java)
     print("Best def strat: " + best_def_strat)
@@ -47,4 +54,5 @@ if __name__ == "__main__":
     SAMPLES_PER_PARAM = int(sys.argv[2])
     NEIGHBOR_VARIANCE = float(sys.argv[3])
     SHOULD_PRINT = get_truth_value(sys.argv[4])
-    main(MAX_STEPS, SAMPLES_PER_PARAM, NEIGHBOR_VARIANCE, SHOULD_PRINT)
+    MY_PORT = 26433
+    main(MAX_STEPS, SAMPLES_PER_PARAM, NEIGHBOR_VARIANCE, SHOULD_PRINT, MY_PORT)
