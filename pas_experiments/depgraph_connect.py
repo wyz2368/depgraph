@@ -51,15 +51,24 @@ def setup_gateway():
     JAVA_GAME = GATEWAY.entry_point.getGame()
 
 def close_gateway():
+    global JAVA_GAME
+    JAVA_GAME = None
+
     GATEWAY.close()
     GATEWAY.close_callback_server()
     GATEWAY.shutdown()
 
-def get_port():
-    return MY_PORT
+    sleep_sec = 5
+    time.sleep(sleep_sec)
 
 def close_process(my_process):
     my_process.kill()
+
+    sleep_sec = 5
+    time.sleep(sleep_sec)
+
+def get_port():
+    return MY_PORT
 
 def count_dict(mixed_strat, run_count):
     result = {}
