@@ -15,7 +15,7 @@ def get_def_payoff(deviating_strat, run_name, test_round, cur_step, samples_new_
     att_mixed_strat = get_eq_from_file(att_mixed_strat_name)
 
     my_process = setup_default(my_port)
-    check_port(my_port, my_process)
+    check_port(my_port)
     def_payoff = sample_mean_def_payoff(deviating_strat, samples_new_column, att_mixed_strat)
     close_gateway()
     close_process(my_process)

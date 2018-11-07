@@ -2,17 +2,17 @@ import sys
 from simulated_annealing import find_params_simulated_annealing
 from depgraph_connect import setup_default, sample_mean_def_payoff, close_process, \
     close_gateway, convert_params_from_0_1, get_def_name, convert_params_to_0_1, \
-    ATTACKER_MIXED
+    ATTACKER_MIXED, get_port
 
-def check_port(my_port, my_process):
-    if my_process.get_port() != my_port:
-        raise ValueError("Wrong port: " + str(my_process.get_port()) + " vs. " + \
+def check_port(my_port):
+    if get_port() != my_port:
+        raise ValueError("Wrong port: " + str(get_port()) + " vs. " + \
             str(my_port))
 
 def run_depgraph_annealing(max_steps, samples_per_param, neighbor_variance, should_print, \
                            initial_params_java, att_mixed_strat, my_port):
     my_process = setup_default(my_port)
-    check_port(my_port, my_process)
+    check_port(my_port)
 
     param_count = 3
     max_temp = 15
