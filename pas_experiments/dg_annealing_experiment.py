@@ -174,8 +174,8 @@ def main(port_num, max_p, error_tolerance, test_count, max_rounds, max_steps, \
     record_deviations(deviations_name, deviation_sequences)
 
 '''
-example: python3 dg_annealing_experiment.py
-or: stdbuf -i0 -o0 -e0 python3 dg_annealing_experiment.py > out_dg1_b.txt
+example: python3 dg_annealing_experiment.py 26433
+or: stdbuf -i0 -o0 -e0 python3 dg_annealing_experiment.py 26433 > out_dg_26433.txt
 
 good debugging values:
 (0.2, 0.2, 2, 3, 3, 3, 0.05, True, "dg1", 3, 10, 10, 0.4, 0.1)
