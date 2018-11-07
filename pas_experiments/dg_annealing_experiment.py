@@ -2,7 +2,6 @@ import csv
 import time
 import os.path
 import sys
-from pas_experiments import get_n
 from gambit_analyze_pas import do_gambit_analyze
 from create_tsv_files_pas import create_tsv, get_tsv_strat_name
 from get_payoff_from_game_pas import get_def_payoff_eq, get_eq_from_file
@@ -11,7 +10,7 @@ from dg_annealing import run_depgraph_annealing
 from generate_new_cols_pas import gen_new_cols
 from add_new_data_pas import add_data
 from depgraph_connect import convert_params_from_0_1, get_def_name
-from utility import get_game_file_name, get_result_name, get_deviations_name
+from utility import get_game_file_name, get_result_name, get_deviations_name, get_n
 from ground_truth_annealing import get_ground_truth_dev_prob
 
 MIN_PORT_NUM = 26433

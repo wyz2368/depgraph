@@ -1,5 +1,24 @@
 import subprocess
 import time
+from statsmodels.stats.proportion import proportion_confint
+
+def p_max_clopper_pearson(x, n, error_prob_one_side):
+    ci = proportion_confint(x, n, alpha=(error_prob_one_side * 2), method='beta')
+    return ci[1]
+
+def get_n_recurse(max_p, error_prob_one_side, low_n, high_n):
+    if high_n is None:
+        if p_max_clopper_pearson(0, low_n * 2, error_prob_one_side) <= max_p:
+            return get_n_recurse(max_p, error_prob_one_side, low_n, low_n * 2)
+        return get_n_recurse(max_p, error_prob_one_side, low_n * 2, None)
+    if low_n + 1 >= high_n:
+        return high_n
+    if p_max_clopper_pearson(0, (low_n + high_n) // 2, error_prob_one_side) <= max_p:
+        return get_n_recurse(max_p, error_prob_one_side, low_n, (low_n + high_n) // 2)
+    return get_n_recurse(max_p, error_prob_one_side, (low_n + high_n) // 2, high_n)
+
+def get_n(max_p, error_prob_one_side):
+    return get_n_recurse(max_p, error_prob_one_side, 1, None)
 
 def print_to_file(lines, file_name):
     with open(file_name, 'w') as file:

@@ -3,7 +3,7 @@ import subprocess
 import time
 import random
 import matplotlib.pyplot as plt
-from statsmodels.stats.proportion import proportion_confint
+from utility import get_n
 
 def get_beneficial_prob(deviation):
     change_points = deviation[0]
@@ -15,24 +15,6 @@ def get_beneficial_prob(deviation):
 
 def get_random_strats(strat_count, digit_count):
     return sorted([round(random.random(), digit_count) for _ in range(strat_count)])
-
-def p_max_clopper_pearson(x, n, error_prob_one_side):
-    ci = proportion_confint(x, n, alpha=(error_prob_one_side * 2), method='beta')
-    return ci[1]
-
-def get_n_recurse(max_p, error_prob_one_side, low_n, high_n):
-    if high_n is None:
-        if p_max_clopper_pearson(0, low_n * 2, error_prob_one_side) <= max_p:
-            return get_n_recurse(max_p, error_prob_one_side, low_n, low_n * 2)
-        return get_n_recurse(max_p, error_prob_one_side, low_n * 2, None)
-    if low_n + 1 >= high_n:
-        return high_n
-    if p_max_clopper_pearson(0, (low_n + high_n) // 2, error_prob_one_side) <= max_p:
-        return get_n_recurse(max_p, error_prob_one_side, low_n, (low_n + high_n) // 2)
-    return get_n_recurse(max_p, error_prob_one_side, (low_n + high_n) // 2, high_n)
-
-def get_n(max_p, error_prob_one_side):
-    return get_n_recurse(max_p, error_prob_one_side, 1, None)
 
 def u1_expected(s1, s2):
     if s1 == 0:
