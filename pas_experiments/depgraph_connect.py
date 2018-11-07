@@ -32,7 +32,7 @@ def setup_default(my_port):
 
 def start_server(def_strat, att_strat, graph_name):
     cmd_list = ["java", "-jar", "dg4jnonetcliport/dg4jnonetcliport.jar", \
-        att_strat, def_strat, graph_name, str(MY_PORT)]
+        def_strat, att_strat, graph_name, str(MY_PORT)]
     my_process = subprocess.Popen(cmd_list, stdin=None, stdout=None, stderr=None, \
         close_fds=True)
 
