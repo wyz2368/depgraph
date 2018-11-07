@@ -1,0 +1,25 @@
+#!/bin/bash
+#PBS -S /bin/sh
+#PBS -A wellman_flux
+#PBS -q flux
+#PBS -l nodes=1:ppn=2,pmem=4000mb,walltime=72:00:00,qos=flux
+#PBS -N pas_test_first
+#PBS -W group_list=wellman
+#PBS -o /home/masondw/pas_experiments/pas_first_out
+#PBS -j oe
+#PBS -M masondw@umich.edu
+#PBS -V
+#PBS -m abe
+mkdir /tmp/${PBS_JOBID}
+mkdir /tmp/${PBS_JOBID}/pas_experiments
+cp -r /home/masondw/pas_experiments/dg4jnonetcliport /tmp/${PBS_JOBID}/pas_experiments
+cp -r /home/masondw/pas_experiments/graphs /tmp/${PBS_JOBID}/pas_experiments
+cp -r /home/masondw/pas_experiments/simspecs /tmp/${PBS_JOBID}/pas_experiments
+cp /home/masondw/pas_experiments/*.json /tmp/${PBS_JOBID}/pas_experiments
+cp /home/masondw/pas_experiments/*.py /tmp/${PBS_JOBID}/pas_experiments
+cd /tmp/${PBS_JOBID}/pas_experiments
+python3 dg_annealing_experiment.py 26433 > out_dg_26433.txt
+cp /tmp/${PBS_JOBID}/pas_experiments/out*.txt /home/masondw/pas_experiments
+cp /tmp/${PBS_JOBID}/pas_experiments/*_results.tsv /home/masondw/pas_experiments
+cp /tmp/${PBS_JOBID}/pas_experiments/*_deviations.tsv /home/masondw/pas_experiments
+rm -rf /tmp/${PBS_JOBID}
