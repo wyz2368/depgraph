@@ -42,11 +42,13 @@ The code was written by Thanh Nguyen with help from Mason Wright.
     * `pip3 install tensorflow==1.5` # to install
 * Python3, tested version 3.5.2
     * `python3 -V` # to check version
+    * ``
 * [Matplotlib](https://matplotlib.org/), tested version 2.2.2
     * `pip3 install matplotlib` # to install 
     * `python3; import matplotlb` # to check installation
 * Java 8, tested version 1.8.0_162
     * `java -version` # to check version
+    * `sudo apt-get install default-jdk` # to install Java on Unix
 * [cloudpickle](https://github.com/cloudpipe/cloudpickle)
     * `pip3 install cloudpickle` # to install
 * [OpenAI Gym](https://github.com/masonwright14/gym), downloaded from my own fork on GitHub and built from source
@@ -59,32 +61,6 @@ The code was written by Thanh Nguyen with help from Mason Wright.
         * must be installed under Python3, not Python2
         * may need to add to `PATH` in `.bash_profile`: `export PATH="/home/masondw/.local/bin:$PATH"`
     * `ga -h` # to check installation 
-
-## Installing Mason's fork of OpenAI Gym
-
-```
-cd ~/
-mkdir gym
-cd gym
-git clone https://github.com/masonwright14/gym.git
-cd gym
-pip3 install -e .[all]
-```
-
-* this will fail if Swig is not installed. in that case, do:
-    * `sudo apt-get install swig` # to install
-* this will fail if cmake is not installed. in that case, do:
-    * `brew install cmake` # to install if on Mac, with Homebrew
-
-To check installation of my fork of OpenAI Gym:
-
-```
-python3
-import gym
-env = gym.make('Hex9x9-v0')
-env.reset()
-env.render()
-```
 
 ## Installing Mason's fork of OpenAI Baselines
 
@@ -105,8 +81,44 @@ To check installation of my fork of OpenAI Baselines:
 
 ```
 cd ~/baselines/baselines/baselines/deepq/experiments
-python3 train_cartpole.py # won't work if don't have a display
+python3 train_cartpole.py
+python3 enjoy_cartpole.py # won't work if don't have a display
 ```
+
+## Installing Mason's fork of OpenAI Gym
+
+```
+cd ~/
+mkdir gym
+cd gym
+git clone https://github.com/masonwright14/gym.git
+cd gym
+pip3 install -e .[all]
+```
+
+* this will fail if Swig is not installed. in that case, do:
+    * `sudo apt-get install swig` # to install
+* this will fail if cmake is not installed. in that case, do:
+    * `brew install cmake` # to install if on Mac, with Homebrew
+    * `sudo apt-get install cmake` # to install on Unix
+* this may fail if zlib is not installed. in that case, do:
+    * `sudo apt-get install zlib1g-dev`
+* this may fail of OpenMPI is not installed. in that case, do:
+    * `sudo apt install libopenmpi-dev` 
+
+To check installation of my fork of OpenAI Gym:
+
+```
+python3
+import gym
+env = gym.make('Hex9x9-v0')
+env.reset()
+env.render()
+```
+
+* check may fail of OpenAI Baselines is not installed yet.
+* check may fail if there is a duplicate copy of OpenAI Gym in `~/.local/lib/python3.5/site-packages/`
+    * In case of duplicate copy in `~/.local`: `cd ~/.local/lib/python3.5/site-packages/`, then `mv gym gymtemp`
 
 ## Installing Gambit 15.1.1
 
