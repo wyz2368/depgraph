@@ -44,7 +44,7 @@ The code was written by Thanh Nguyen with help from Mason Wright.
     * `python3 -V` # to check version
 * [Matplotlib](https://matplotlib.org/), tested version 2.2.2
     * `pip3 install matplotlib` # to install 
-    * `python3; import matplotlb` # to check installation
+    * `python3; import matplotlib` # to check installation
 * [TensorFlow](https://www.tensorflow.org/), tested versions 1.4.1, 1.5.0, 1.7.0
     * `python3 -c 'import tensorflow as tf; print(tf.__version__)'` # to check version
     * `pip3 install tensorflow==1.5` # to install
@@ -53,8 +53,8 @@ The code was written by Thanh Nguyen with help from Mason Wright.
     * `sudo apt-get install default-jdk` # to install Java on Unix
 * [cloudpickle](https://github.com/cloudpipe/cloudpickle)
     * `pip3 install cloudpickle` # to install
-* [OpenAI Gym](https://github.com/masonwright14/gym), downloaded from my own fork on GitHub and built from source
 * [OpenAI Baselines](https://github.com/masonwright14/baselines), downloaded from my own fork on GitHub and built from source
+* [OpenAI Gym](https://github.com/masonwright14/gym), downloaded from my own fork on GitHub and built from source
 * [Py4J](https://www.py4j.org/)
     * `pip3 install py4j` # to install
 * [Gambit](http://www.gambit-project.org/), tested version 15.1.1; built from source
