@@ -239,3 +239,9 @@ Sometimes a run of `gambit-lcp` takes many hours to terminate, because it is
 trying to search exhaustively for Nash equilibria even though it has already found some.
 You can use `top` to watch out for this happening.
 If it does, you should use `kill -9 12345` to kill the `gambit-lcp` process by its `pid` number.
+
+Sometimes a server crashes due to a power outage, being physically moved, or other reasons.
+In these cases, any partially generated training results for the current round must be deleted
+before the run is restrated, including all `.pkl`, `attVMixed*.txt`, and `defVMixed*.txt` files from this round.
+Then the run can be restarted, with the current round number as the argument.
+
