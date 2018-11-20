@@ -47,13 +47,18 @@ The code was written by Thanh Nguyen with help from Mason Wright.
     * `python3; import matplotlb` # to check installation
 * Java 8, tested Java version 1.8.0_162
     * `java -version` # to check version
+* cloudpickle
+    * `pip3 install cloudpickle` # to install
 * OpenAI Gym, downloaded from my own fork on GitHub and built from source
 * OpenAI Baselines, downloaded from my own fork on GitHub and built from source
 * Py4J
     * `pip3 install py4j` # to install
-* cloudpickle
-    * `pip3 install cloudpickle` # to install
 * Gambit, tested version 15.1.1; built from source
+* GameAnalysis
+    * `pip3 install gameanalysis --user` # to install
+        * must be installed under Python3, not Python2
+        * may need to add to `PATH` in `.bash_profile`: `export PATH="/home/masondw/.local/bin:$PATH"`
+    * `ga -h` # to check installation 
 
 ## Installing Mason's fork of OpenAI Gym
 
