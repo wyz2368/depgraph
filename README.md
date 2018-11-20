@@ -37,15 +37,17 @@ The code was written by Thanh Nguyen with help from Mason Wright.
 
 ## Dependencies for deep RL
 
-* [TensorFlow](https://www.tensorflow.org/), tested versions 1.4.1, 1.5.0, 1.7.0
-    * `python3 -c 'import tensorflow as tf; print(tf.__version__)'` # to check version
-    * `pip3 install tensorflow==1.5` # to install
+* A package manager
+    * For [pip3](https://pip.pypa.io/en/stable/): `sudo apt install python3-pip`
+    * For [Homebrew](https://brew.sh/) on Mac: https://docs.brew.sh/Installation
 * [Python3](https://www.python.org/download/releases/3.0/), tested version 3.5.2
     * `python3 -V` # to check version
-    * ``
 * [Matplotlib](https://matplotlib.org/), tested version 2.2.2
     * `pip3 install matplotlib` # to install 
     * `python3; import matplotlb` # to check installation
+* [TensorFlow](https://www.tensorflow.org/), tested versions 1.4.1, 1.5.0, 1.7.0
+    * `python3 -c 'import tensorflow as tf; print(tf.__version__)'` # to check version
+    * `pip3 install tensorflow==1.5` # to install
 * [Java 8](https://www.oracle.com/technetwork/java/javase/overview/java8-2100321.html), tested version 1.8.0_162
     * `java -version` # to check version
     * `sudo apt-get install default-jdk` # to install Java on Unix
