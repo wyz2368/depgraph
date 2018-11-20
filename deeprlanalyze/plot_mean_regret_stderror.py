@@ -8,6 +8,9 @@ from plot_regret_anytime import get_all_eqs, get_all_def_eq_regrets, get_all_att
 from plot_mean_payoffs import get_means, get_standard_errors
 from get_both_payoffs_from_game import get_json_data
 
+plt.rcParams['pdf.fonttype'] = 42
+plt.rcParams['ps.fonttype'] = 42
+
 def get_env_short_name_tsv(env_short_name_payoffs):
     if env_short_name_payoffs in ["s29n1", "d30n1"]:
         return env_short_name_payoffs
@@ -61,7 +64,7 @@ def plot_regrets_with_stderr(def_regrets, att_regrets, def_errs, att_errs, \
     def_highs = [x + y for x, y in zip(def_regrets, def_errs)]
     att_highs = [x + y for x, y in zip(att_regrets, att_errs)]
     y_max = max(max(def_highs), max(att_highs))
-    ax.set_ylim(-3, y_max + 5)
+    ax.set_ylim(-1, y_max + 2)
     plt.tick_params(
         axis='x',          # changes apply to the x-axis
         which='both',      # both major and minor ticks are affected

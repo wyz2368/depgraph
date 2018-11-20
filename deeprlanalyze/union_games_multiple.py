@@ -1,7 +1,6 @@
 import sys
 import os.path
 import copy
-import time
 from get_both_payoffs_from_game import get_json_data
 from generate_new_cols import print_json
 from add_new_data import add_defender_strategy, add_attacker_strategy, get_max_profile_id, \
@@ -104,7 +103,6 @@ def main(result_game_file, union_game_file_list):
     if len(union_game_file_list) != len(set(union_game_file_list)):
         raise ValueError("Input list has duplicates: " + str(union_game_file_list))
 
-    start_time = time.time()
     union_data_list = [get_json_data(x) for x in union_game_file_list]
     for union_data in union_data_list:
         if not is_game_data_valid(union_data):
@@ -119,9 +117,6 @@ def main(result_game_file, union_game_file_list):
     new_game_dict = get_json_data(result_game_file)
     if not is_game_data_valid(new_game_dict):
         raise ValueError("Invalid result data")
-
-    seconds_duration = time.time() - start_time
-    print("Seconds taken: " + str(seconds_duration))
 
 '''
 example: python3 union_games_multiple.py game_comb_d30cd1_d30n1_d30f1.json \

@@ -18,8 +18,9 @@ def get_env_short_name_tsv(env_short_name_payoffs):
 def is_converged(env_short_name_payoffs, stopped_round):
     print(env_short_name_payoffs)
     print(stopped_round)
-    if env_short_name_payoffs in ["d30d1_mean_stderr", "r30_mean_stderr"]:
-        return stopped_round in [20, 22, 23]
+    if env_short_name_payoffs in ["d30d1_mean_stderr", "d30cm1_mean_stderr", \
+        "d30f1_mean_stderr", "d30f2_mean_stderr", "r30_mean_stderr"]:
+        return stopped_round in [20, 22, 23, 40, 41]
     if env_short_name_payoffs in ["s29n1_mean_stderr"]:
         return stopped_round in [32]
     if env_short_name_payoffs in ["s29_mean_stderr"]:

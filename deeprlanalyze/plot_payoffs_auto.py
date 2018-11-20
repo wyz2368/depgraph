@@ -7,6 +7,7 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tick
 from pylab import savefig
+from append_net_names import get_truth_value
 
 plt.rcParams['pdf.fonttype'] = 42
 plt.rcParams['ps.fonttype'] = 42
@@ -188,7 +189,6 @@ def get_net_name(cur_epoch, env_short_name_payoffs, is_defender):
 def get_payoff_net_vs_eq(cur_epoch, env_short_name_tsv, env_short_name_payoffs, \
     is_defender, game_number):
     net_name = get_net_name(cur_epoch + 1, env_short_name_payoffs, is_defender)
-    print(net_name)
     if net_name is None:
         return None
     game_file_name = get_game_name(game_number, env_short_name_payoffs, \
@@ -271,11 +271,16 @@ def get_cutoff_dev_payoffs(old_payoffs, dev_payoffs):
     return result
 
 def plot_payoffs(def_eq_payoffs, def_dev_payoffs, \
-    att_eq_payoffs, att_dev_payoffs, env_short_name_payoffs):
+    att_eq_payoffs, att_dev_payoffs, env_short_name_payoffs, is_converged):
     fig, ax = plt.subplots()
     fig.set_size_inches(8, 5)
 
     my_lw = 2
+    if is_converged:
+        if len(def_dev_payoffs) == len(def_eq_payoffs) - 1:
+            def_dev_payoffs.append(def_eq_payoffs[-1])
+        if len(att_dev_payoffs) == len(att_eq_payoffs) - 1:
+            att_dev_payoffs.append(att_eq_payoffs[-1])
     plt.plot(range(len(def_eq_payoffs)), def_eq_payoffs, lw=my_lw, label='Def. eq.')
     plt.plot(range(len(def_dev_payoffs)), def_dev_payoffs, linestyle='--', \
         lw=my_lw, label='Def. dev.')
@@ -288,11 +293,11 @@ def plot_payoffs(def_eq_payoffs, def_dev_payoffs, \
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
-    plt.ylabel('Mean Payoff', fontsize=16)
+    plt.ylabel('Expected payoff', fontsize=16)
     plt.xlabel('Training round', fontsize=16)
     ax.yaxis.set_ticks_position('left')
     ax.tick_params(labelsize=14)
-    tick_spacing = 1
+    tick_spacing = 5
     ax.xaxis.set_major_locator(tick.MultipleLocator(tick_spacing))
     ax.legend()
     plt.tick_params(
@@ -310,15 +315,11 @@ def plot_payoffs(def_eq_payoffs, def_dev_payoffs, \
     #plt.show()
     savefig(env_short_name_payoffs + "_payoffs_vs_round.pdf")
 
-def main(game_number, env_short_name_payoffs, env_short_name_tsv):
+def main(game_number, env_short_name_payoffs, env_short_name_tsv, is_converged):
     round_count = get_round_count(env_short_name_tsv)
     att_eq_payoffs, def_eq_payoffs, att_net_payoffs, def_net_payoffs = \
         get_all_payoffs(round_count, env_short_name_tsv, env_short_name_payoffs, \
             game_number)
-    print(att_eq_payoffs)
-    print(att_net_payoffs)
-    print(def_eq_payoffs)
-    print(def_net_payoffs)
     att_net_payoffs = get_cutoff_dev_payoffs(att_eq_payoffs, att_net_payoffs)
     def_net_payoffs = get_cutoff_dev_payoffs(def_eq_payoffs, def_net_payoffs)
     print(att_eq_payoffs)
@@ -326,16 +327,17 @@ def main(game_number, env_short_name_payoffs, env_short_name_tsv):
     print(def_eq_payoffs)
     print(def_net_payoffs)
     plot_payoffs(def_eq_payoffs, def_net_payoffs, \
-        att_eq_payoffs, att_net_payoffs, env_short_name_payoffs)
+        att_eq_payoffs, att_net_payoffs, env_short_name_payoffs, is_converged)
 
 '''
-example: python3 plot_payoffs_auto.py 3013 s29m1 s29m1_randNoAndB
+example: python3 plot_payoffs_auto.py 3013 s29m1 s29m1_randNoAndB True
 '''
 if __name__ == '__main__':
-    if len(sys.argv) != 4:
-        raise ValueError("Need 3 args: game_number, env_short_name_payoffs, " + \
-            "env_short_name_tsv")
+    if len(sys.argv) != 5:
+        raise ValueError("Need 4 args: game_number, env_short_name_payoffs, " + \
+            "env_short_name_tsv, is_converged")
     GAME_NUMBER = int(sys.argv[1])
     ENV_SHORT_NAME_PAYOFFS = sys.argv[2]
     ENV_SHORT_NAME_TSV = sys.argv[3]
-    main(GAME_NUMBER, ENV_SHORT_NAME_PAYOFFS, ENV_SHORT_NAME_TSV)
+    IS_CONVERGED = get_truth_value(sys.argv[4])
+    main(GAME_NUMBER, ENV_SHORT_NAME_PAYOFFS, ENV_SHORT_NAME_TSV, IS_CONVERGED)

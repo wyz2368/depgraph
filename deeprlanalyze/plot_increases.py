@@ -3,10 +3,11 @@ import numpy as np
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
-plt.rcParams['pdf.fonttype'] = 42
-plt.rcParams['ps.fonttype'] = 42
 from pylab import savefig
 from plot_strat_rounds import get_all_eq_from_files, get_round
+
+plt.rcParams['pdf.fonttype'] = 42
+plt.rcParams['ps.fonttype'] = 42
 
 def get_total_gain(prev_round_dict, cur_round_dict, cur_net_name):
     result = 0.0
@@ -33,6 +34,22 @@ def get_network_round_to_name(round_dict):
             result[net_round] = strat
     return result
 
+def get_all_support_sizes(round_dicts):
+    return [len(cur_dict) for cur_dict in round_dicts]
+
+def get_all_support_fractions(round_dicts, is_defender):
+    def_base = 42
+    att_base = 8
+    result = []
+    support_sizes = get_all_support_sizes(round_dicts)
+    for i in range(len(support_sizes)):
+        cur_size = support_sizes[i]
+        cur_denom = att_base + i
+        if is_defender:
+            cur_denom = def_base + i
+        result.append(cur_size * 1.0 / cur_denom)
+    return result
+
 def get_all_increases(round_dicts, is_missing_only):
     result = []
     for i in range(1, len(round_dicts)):
@@ -47,6 +64,9 @@ def get_all_increases(round_dicts, is_missing_only):
             total_gain = get_total_gain(prev_round_dict, cur_round_dict, cur_net_name)
         result.append(total_gain)
     return result
+
+def get_pearson_corr_vs_index(my_list):
+    return float(np.corrcoef(x=my_list, y=range(len(my_list)))[1,0])
 
 def plot_increases(def_increases, att_increases, env_short_name_payoffs):
     fig, ax = plt.subplots()
@@ -89,6 +109,7 @@ def main(env_short_name_payoffs, env_short_name_tsv):
     def_eqs, att_eqs = get_all_eq_from_files(env_short_name_tsv)
     def_increases = get_all_increases(def_eqs, False)
     att_increases = get_all_increases(att_eqs, False)
+    print("eq count: " + str(len(def_eqs)) + ", " + str(len(att_eqs)))
 
     print("def increases: " + str(def_increases))
     print("att increases: " + str(att_increases))
@@ -108,6 +129,19 @@ def main(env_short_name_payoffs, env_short_name_tsv):
     print("mean def increase missing only: " + fmt.format(mean_def_increase_missing_only))
     print("mean att increase missing only: " + fmt.format(mean_att_increase_missing_only))
 
+    def_support_sizes = get_all_support_sizes(def_eqs)
+    att_support_sizes = get_all_support_sizes(att_eqs)
+    def_support_fracs = get_all_support_fractions(def_eqs, True)
+    att_support_fracs = get_all_support_fractions(att_eqs, False)
+    print("mean def support size: " + fmt.format(np.mean(def_support_sizes)))
+    print("mean att support size: " + fmt.format(np.mean(att_support_sizes)))
+    print("mean def support frac: " + fmt.format(np.mean(def_support_fracs)))
+    print("mean att support frac: " + fmt.format(np.mean(att_support_fracs)))
+
+    corr_index_to_def_support = get_pearson_corr_vs_index(def_support_sizes)
+    corr_index_to_att_support = get_pearson_corr_vs_index(att_support_sizes)
+    print("corr. support to round def: " + fmt.format(corr_index_to_def_support))
+    print("corr. support to round att: " + fmt.format(corr_index_to_att_support))
 
 '''
 example: python3 plot_increases.py s29m1 s29m1_randNoAndB
