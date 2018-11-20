@@ -39,7 +39,9 @@ The code was written by Thanh Nguyen with help from Mason Wright.
 
 * A package manager
     * For [pip3](https://pip.pypa.io/en/stable/): `sudo apt install python3-pip`
+        * `pip3 -h` # to check install 
     * For [Homebrew](https://brew.sh/) on Mac: https://docs.brew.sh/Installation
+        * `brew -h` # to check install 
 * [Python3](https://www.python.org/download/releases/3.0/), tested version 3.5.2
     * `python3 -V` # to check version
 * [Matplotlib](https://matplotlib.org/), tested version 2.2.2
