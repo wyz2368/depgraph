@@ -73,7 +73,7 @@ cd baselines
 pip3 install -e .
 ```
 
-* this will fail if mpi is not installed. in that case, do:
+* this will fail if [mpi](https://www.mpich.org/) is not installed. in that case, do:
     * `brew install mpich` # to install if on Mac
     * `pip3 install mpi4py` # to install if don't have Homebrew
 
@@ -82,7 +82,7 @@ To check installation of my fork of OpenAI Baselines:
 ```
 cd ~/baselines/baselines/baselines/deepq/experiments
 python3 train_cartpole.py
-python3 enjoy_cartpole.py # won't work if don't have a display
+python3 enjoy_cartpole.py # won't work if don't have a display on this server
 ```
 
 ## Installing Mason's fork of OpenAI Gym
@@ -96,14 +96,14 @@ cd gym
 pip3 install -e .[all]
 ```
 
-* this will fail if Swig is not installed. in that case, do:
+* this will fail if [SWIG](http://www.swig.org/) is not installed. in that case, do:
     * `sudo apt-get install swig` # to install
-* this will fail if cmake is not installed. in that case, do:
+* this will fail if [CMake](https://cmake.org/) is not installed. in that case, do:
     * `brew install cmake` # to install if on Mac, with Homebrew
     * `sudo apt-get install cmake` # to install on Unix
-* this may fail if zlib is not installed. in that case, do:
+* this may fail if [zlib](https://zlib.net/) is not installed. in that case, do:
     * `sudo apt-get install zlib1g-dev`
-* this may fail of OpenMPI is not installed. in that case, do:
+* this may fail of [OpenMPI](https://www.open-mpi.org/) is not installed. in that case, do:
     * `sudo apt install libopenmpi-dev` 
 
 To check installation of my fork of OpenAI Gym:
@@ -133,7 +133,7 @@ make
 sudo make install
 ```
 
-* Compilation may fail with gcc-7 version.
+* Compilation may fail if gcc is version 7.
    * `gcc -v` # should return version 5 or 6
    * `g++ -v` # should return version 5 or 6
 
