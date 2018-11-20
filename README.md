@@ -37,6 +37,9 @@ The code was written by Thanh Nguyen with help from Mason Wright.
 
 ## Dependencies for deep RL
 
+* A screen manager, for running locally
+    * [tmux](https://github.com/tmux/tmux)
+    * [screen](https://en.wikipedia.org/wiki/GNU_Screen)
 * A package manager
     * For [pip3](https://pip.pypa.io/en/stable/): `sudo apt install python3-pip`
         * `pip3 -h` # to check install 
@@ -151,12 +154,14 @@ gambit-lcp -h
 
 ```
 cd ~/depgraph/depgraph/att_graph_runner
+tmux new -s mySession1
 stdbuf -i0 -o0 -e0 python3 -u master_dq_runner.py 3014 0 d30d1_randNoAndB \
     d30d1 DepgraphJava-v0 DepgraphJavaAtt-v0 DepgraphJavaEnvBoth-v0 \
     RandomGraph30N100E6T1_B.json DepgraphJavaEnvVsMixedDef-v0 \
     DepgraphJavaEnvVsMixedAtt-v0 400 dg_d30d1_dq_mlp_rand_epoch \
     dg_d30d1_dq_mlp_rand_epoch d30 1000000 700000 None 500 True True > \
     master_d30d1_agr_out1.txt
+Ctl-b d
 ```
 
 ### Notes
