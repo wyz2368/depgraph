@@ -32,3 +32,15 @@ The code was written by Thanh Nguyen with help from Mason Wright.
     * Into folder: depgraph -> Finish
 11. File -> Import -> General -> File System -> depgraph/testDirs
     * Into folder: depgraph/testDirs -> Finish
+
+# Deep RL code
+
+## Dependencies for deep RL
+
+* TensorFlow, tested versions 1.4.1, 1.5.0, 1.7.0
+    * python3 -c 'import tensorflow as tf; print(tf.__version__)' # to check version
+    * pip3 install tensorflow==1.5 # to install
+* Python3, tested version 3.5.2
+    * python3 -V # to check version
+* Matplotlib 2.2.2
+    * pip3 install matplotlib # to install 
