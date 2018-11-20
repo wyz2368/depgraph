@@ -207,3 +207,28 @@ Ctl-b d
 * `400000` is the number of fine-tuning steps for defender
 * `700000` is the number of pre-training steps for attacker
 * `400000` is the number of fine-tuning steps for attacker
+
+## Example run on Flux
+
+```
+ssh myUniqName@flux-login.arc-ts.umich.edu
+```
+
+You should have on Flux: `~/att_graph_runner/` from the `depgraph` repo, 
+and `~/pbs` from the `depgraph` repo, plus all dependencies installed, 
+including `~/gambit-15.1.1`, `~/baselines`, and `~/gym`.
+
+```
+cd pbs
+module load python-dev/3.5.2
+ga -h
+qsub agr_test_d30f1_cur.pbs
+qstat | grep myUniqName
+```
+
+### Notes
+* `module load python-dev/3.5.2` loads a full version of Python3 into your environment, with extra packages like numpy
+* `ga -h` load GameAnalysis into your environment
+* `qsub agr_test_d30f1_cur.pbs` submits the PBS script
+* `qstat | grep myUniqName` checks on your jobs
+* You can use `qdel 12345` to kill a job you submitted by number
