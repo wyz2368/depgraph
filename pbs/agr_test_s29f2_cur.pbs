@@ -2,7 +2,7 @@
 #PBS -S /bin/sh
 #PBS -A wellman_flux
 #PBS -q flux
-#PBS -l nodes=1:ppn=4,pmem=4000mb,walltime=42:00:00,qos=flux
+#PBS -l nodes=1:ppn=4,pmem=4000mb,walltime=50:00:00,qos=flux
 #PBS -N agr_test_s29f2_cur
 #PBS -W group_list=wellman
 #PBS -o /home/masondw/att_graph_runner/s29f2out
@@ -26,9 +26,9 @@ cp /home/masondw/att_graph_runner/*.py /tmp/${PBS_JOBID}/att_graph_runner
 cp -r /home/masondw/gym /tmp/${PBS_JOBID}
 cp -r /home/masondw/baselines /tmp/${PBS_JOBID}
 cd /tmp/${PBS_JOBID}/att_graph_runner
-python3 master_dq_runner.py 3013 5 s29f2_randNoAndB s29f2 DepgraphJava29N-v0 \
+python3 master_dq_runner.py 3013 17 s29f2_randNoAndB s29f2 DepgraphJava29N-v0 \
     DepgraphJavaEnvAtt29N-v0 DepgraphJavaEnvBoth29N-v0 SepLayerGraph0_noAnd_B.json \
     DepgraphJavaEnvVsMixedDef29N-v0 DepgraphJavaEnvVsMixedAtt29N-v0 400 \
-    dg_s29f2_dq_mlp_rand_epoch dg_s29f2_dq_mlp_rand_epoch s29 700000 700000 1 1000 True True
+    dg_s29f2_dq_mlp_rand_epoch dg_s29f2_dq_mlp_rand_epoch s29 700000 700000 1 1000 False False
 cp /tmp/${PBS_JOBID}/att_graph_runner/*s29f2* /home/masondw/att_graph_runner
 rm -rf /tmp/${PBS_JOBID}

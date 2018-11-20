@@ -2,8 +2,8 @@
 #PBS -S /bin/sh
 #PBS -A wellman_flux
 #PBS -q flux
-#PBS -l nodes=1:ppn=2,pmem=8000mb,walltime=100:00:00,qos=flux
-#PBS -N pas_test_first_26553
+#PBS -l nodes=1:ppn=1,pmem=8000mb,walltime=200:00:00,qos=flux
+#PBS -N pas_test_first_26689
 #PBS -W group_list=wellman
 #PBS -o /home/masondw/pas_experiments/pas_first_out
 #PBS -j oe
@@ -18,8 +18,7 @@ cp -r /home/masondw/pas_experiments/simspecs /tmp/${PBS_JOBID}/pas_experiments
 cp /home/masondw/pas_experiments/*.json /tmp/${PBS_JOBID}/pas_experiments
 cp /home/masondw/pas_experiments/*.py /tmp/${PBS_JOBID}/pas_experiments
 cd /tmp/${PBS_JOBID}/pas_experiments
-python3 dg_annealing_experiment.py 26553
-cp /tmp/${PBS_JOBID}/pas_experiments/out*.txt /home/masondw/pas_experiments
+python3 dg_annealing_experiment.py 26689
 cp /tmp/${PBS_JOBID}/pas_experiments/*_results.tsv /home/masondw/pas_experiments
-cp /tmp/${PBS_JOBID}/pas_experiments/*_deviations.tsv /home/masondw/pas_experiments
+cp /tmp/${PBS_JOBID}/pas_experiments/*_deviations.txt /home/masondw/pas_experiments
 rm -rf /tmp/${PBS_JOBID}
