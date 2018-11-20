@@ -232,3 +232,10 @@ qstat | grep myUniqName
 * `qsub agr_test_d30f1_cur.pbs` submits the PBS script
 * `qstat | grep myUniqName` checks on your jobs
 * You can use `qdel 12345` to kill a job you submitted by number
+
+## Things to watch out for
+
+Sometimes a run of `gambit-lcp` takes many hours to terminate, because it is 
+trying to search exhaustively for Nash equilibria even though it has already found some.
+You can use `top` to watch out for this happening.
+If it does, you should use `kill -9 12345` to kill the `gambit-lcp` process by name.
