@@ -238,4 +238,4 @@ qstat | grep myUniqName
 Sometimes a run of `gambit-lcp` takes many hours to terminate, because it is 
 trying to search exhaustively for Nash equilibria even though it has already found some.
 You can use `top` to watch out for this happening.
-If it does, you should use `kill -9 12345` to kill the `gambit-lcp` process by name.
+If it does, you should use `kill -9 12345` to kill the `gambit-lcp` process by its `pid` number.
