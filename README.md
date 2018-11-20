@@ -62,3 +62,14 @@ The code was written by Thanh Nguyen with help from Mason Wright.
 * JGraphX: https://github.com/jgraph/jgraphx
 * Json-Simple 3.0.2: https://cliftonlabs.github.io/json-simple/
 * Py4J 0.10.6: https://www.py4j.org/install.html
+
+# Deep RL code
+
+## Dependencies for deep RL
+* TensorFlow version 1.4.1, 1.5.0, or 1.7.0; others might work too
+    * pip3 install tensorflow==1.5 # to install
+    * python3 -c 'import tensorflow as tf; print(tf.__version__)' # to check version
+* Python3 version 3.5.2; others might work too
+    * python3 -V # to check version
+* Matplotlib 2.2.2; others might work too
+    * pip3 install matplotlib # to install
