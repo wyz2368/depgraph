@@ -44,3 +44,32 @@ The code was written by Thanh Nguyen with help from Mason Wright.
     * python3 -V # to check version
 * Matplotlib 2.2.2
     * pip3 install matplotlib # to install 
+* Java 8, tested Java version 1.8.0_162
+    * java -version # to check version
+* OpenAI Gym, downloaded from my own fork on GitHub and built from source
+
+## Installing my fork of OpenAI Gym
+
+```
+mkdir gym
+cd gym
+git clone https://github.com/masonwright14/gym.git
+cd gym
+pip3 install -e .[all]
+```
+
+* this will fail if Swig is not installed. in that case, do:
+    * sudo apt-get install swig
+* this will fail if cmake is not installed. in that case, do:
+    * brew install cmake # if on Mac, with Homebrew
+
+To check installation of my fork:
+
+```
+python3
+import gym
+env = gym.make('Hex9x9-v0')
+env.reset()
+env.render()
+```
+
