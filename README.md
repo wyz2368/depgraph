@@ -37,9 +37,14 @@ The code was written by Thanh Nguyen with help from Mason Wright.
 
 ## Dependencies for deep RL
 
+* A screen manager, for running locally
+    * [tmux](https://github.com/tmux/tmux)
+    * [screen](https://en.wikipedia.org/wiki/GNU_Screen)
 * A package manager
     * For [pip3](https://pip.pypa.io/en/stable/): `sudo apt install python3-pip`
+        * `pip3 -h` # to check install 
     * For [Homebrew](https://brew.sh/) on Mac: https://docs.brew.sh/Installation
+        * `brew -h` # to check install 
 * [Python3](https://www.python.org/download/releases/3.0/), tested version 3.5.2
     * `python3 -V` # to check version
 * [Matplotlib](https://matplotlib.org/), tested version 2.2.2
@@ -144,3 +149,61 @@ To test Gambit install:
 ```
 gambit-lcp -h
 ```
+
+## Example run of DO-EGTA experiment
+
+```
+cd ~/depgraph/depgraph/att_graph_runner
+tmux new -s mySession1
+stdbuf -i0 -o0 -e0 python3 -u master_dq_runner.py 3014 0 d30d1_randNoAndB \
+    d30d1 DepgraphJava-v0 DepgraphJavaAtt-v0 DepgraphJavaEnvBoth-v0 \
+    RandomGraph30N100E6T1_B.json DepgraphJavaEnvVsMixedDef-v0 \
+    DepgraphJavaEnvVsMixedAtt-v0 400 dg_d30d1_dq_mlp_rand_epoch \
+    dg_d30d1_dq_mlp_rand_epoch d30 1000000 700000 None 500 True True > \
+    master_d30d1_agr_out1.txt
+Ctl-b d
+```
+
+### Notes
+* `stdbuf -i0 o0 e0` turns off output string buffering
+* `3014` is the game number (taken from EGTA-Online output)
+* `0` is the initial round number (always starts at 0)
+* `d30d1_randNoAndB` is an arbitrary name to give to this run
+* `d30d1` is a shorter, arbitrary version of this run's name
+* `DepgraphJava-v0` is the OpenAI Gym environment name when defender network plays vs. pure strategy
+* `DepgraphJavaAtt-v0` is the OpenAI Gym environment name when attacker network plays vs. pure strategy
+* `DepgraphJavaEnvBoth-v0` is the OpenAI Gym environment name when both players are networks
+* `RandomGraph30N100E6T1_B.json` is the attack-graph file name
+* `DepgraphJavaEnvVsMixedDef-v0` is the OpenAI Gym environment name when attacker network plays vs. mixed strategy
+* `DepgraphJavaEnvVsMixedAtt-v0` is the OpenAI Gym environment name when defender network plays vs. mixed strategy
+* `400` is number of payoff samples to use to compute expected payoff, when checking if new network is a beneficial deviation
+* `dg_d30d1_dq_mlp_rand_epoch` is base name to use for saving network strategies for one agent
+* `dg_d30d1_dq_mlp_rand_epoch` is base name to use for saving network strategies for other agent
+* `d30` is a short name to use corresponding to strategy file names to record, like `defStratStrings_d30.txt`
+* `1000000` is how many steps to train for defender
+* `700000` is how many steps to train for attacker
+* `None` is the maximum number of rounds to train for before pausing, or `None`
+* `500` is number of payoff samples to use to compute expected payoff, to extend payoff table of empirical game with new strategy
+* `True` is whether to continue after the current round's training is complete
+* `True` is whether to continue after the current round's payoff table extension is complete
+
+## Example run of HADO-EGTA experiment
+
+```
+cd ~/depgraph/depgraph/att_graph_runner
+tmux new -s mySession2
+stdbuf -i0 -o0 -e0 python3 -u master_dq_runner_curve.py 3014 \
+    d30cm1_randNoAndB d30cm1 DepgraphJava-v0 DepgraphJavaAtt-v0 \
+    DepgraphJavaEnvBoth-v0 RandomGraph30N100E6T1_B.json \
+    DepgraphJavaEnvVsMixedDef-v0 DepgraphJavaEnvVsMixedAtt-v0 400 0.7 4 d30 \
+    1000000 400000 700000 400000 0 None 500 > master_d30cm1_agr_out1.txt
+Ctl-b d
+```
+
+### Notes
+* `0.7` is the discount factor for old opponent strategies
+* `4` is the number of interim strategies to record during fine-tuning and pre-training combined
+* `1000000` is the number of pre-training steps for defender
+* `400000` is the number of fine-tuning steps for defender
+* `700000` is the number of pre-training steps for attacker
+* `400000` is the number of fine-tuning steps for attacker
