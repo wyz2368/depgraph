@@ -44,9 +44,16 @@ The code was written by Thanh Nguyen with help from Mason Wright.
     * python3 -V # to check version
 * Matplotlib 2.2.2
     * pip3 install matplotlib # to install 
+    * python3; import matplotlb # to check installation
 * Java 8, tested Java version 1.8.0_162
     * java -version # to check version
 * OpenAI Gym, downloaded from my own fork on GitHub and built from source
+* OpenAI Baselines, downloaded from my own fork on GitHub and built from source
+* Py4J
+    * pip3 install py4j # to install
+* cloudpickle
+    * pip3 install cloudpickle # to install
+* Gambit, tested version 15.1.1; built from source
 
 ## Installing my fork of OpenAI Gym
 
@@ -63,7 +70,7 @@ pip3 install -e .[all]
 * this will fail if cmake is not installed. in that case, do:
     * brew install cmake # if on Mac, with Homebrew
 
-To check installation of my fork:
+To check installation of my fork of OpenAI Gym:
 
 ```
 python3
@@ -73,3 +80,46 @@ env.reset()
 env.render()
 ```
 
+## Installing my fork of OpenAI Baselines
+
+```
+mkdir baselines
+cd baselines
+git clone https://github.com/masonwright14/baselines.git
+cd baselines
+pip3 install -e .
+```
+
+* this will fail if mpi is not installed. in that case, do:
+    * brew install mpich # to install if on Mac
+    * pip3 install mpi4py # to install if don't have Homebrew
+
+To check installation of my fork of OpenAI Baselines:
+
+```
+cd ~/baselines/baselines/baselines/deepq/experiments
+python3 train_cartpole.py # won't work if don't have a display
+```
+
+## Installing Gambit 15.1.1
+
+Download: https://sourceforge.net/projects/gambit/files/gambit15/15.1.1
+
+Unzip the package as gambit-15.1.1
+
+```
+cd gambit-15.1.1
+./configure
+make
+sudo make install
+```
+
+* Compilation may fail with gcc-7 version.
+   * gcc -v # should return version 5 or 6
+   * g++ -v # should return version 5 or 6
+
+To test Gambit install:
+
+```
+gambit-lcp -h
+```
