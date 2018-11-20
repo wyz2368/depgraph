@@ -37,22 +37,24 @@ The code was written by Thanh Nguyen with help from Mason Wright.
 
 ## Dependencies for deep RL
 
-* TensorFlow, tested versions 1.4.1, 1.5.0, 1.7.0
-    * `python3 -c 'import tensorflow as tf; print(tf.__version__)'` # to check version
-    * `pip3 install tensorflow==1.5` # to install
-* Python3, tested version 3.5.2
+* A package manager
+    * For [pip3](https://pip.pypa.io/en/stable/): `sudo apt install python3-pip`
+    * For [Homebrew](https://brew.sh/) on Mac: https://docs.brew.sh/Installation
+* [Python3](https://www.python.org/download/releases/3.0/), tested version 3.5.2
     * `python3 -V` # to check version
-    * ``
 * [Matplotlib](https://matplotlib.org/), tested version 2.2.2
     * `pip3 install matplotlib` # to install 
-    * `python3; import matplotlb` # to check installation
-* Java 8, tested version 1.8.0_162
+    * `python3; import matplotlib` # to check installation
+* [TensorFlow](https://www.tensorflow.org/), tested versions 1.4.1, 1.5.0, 1.7.0
+    * `python3 -c 'import tensorflow as tf; print(tf.__version__)'` # to check version
+    * `pip3 install tensorflow==1.5` # to install
+* [Java 8](https://www.oracle.com/technetwork/java/javase/overview/java8-2100321.html), tested version 1.8.0_162
     * `java -version` # to check version
     * `sudo apt-get install default-jdk` # to install Java on Unix
 * [cloudpickle](https://github.com/cloudpipe/cloudpickle)
     * `pip3 install cloudpickle` # to install
-* [OpenAI Gym](https://github.com/masonwright14/gym), downloaded from my own fork on GitHub and built from source
 * [OpenAI Baselines](https://github.com/masonwright14/baselines), downloaded from my own fork on GitHub and built from source
+* [OpenAI Gym](https://github.com/masonwright14/gym), downloaded from my own fork on GitHub and built from source
 * [Py4J](https://www.py4j.org/)
     * `pip3 install py4j` # to install
 * [Gambit](http://www.gambit-project.org/), tested version 15.1.1; built from source
@@ -74,7 +76,7 @@ pip3 install -e .
 ```
 
 * this will fail if [mpi](https://www.mpich.org/) is not installed. in that case, do:
-    * `brew install mpich` # to install if on Mac
+    * `brew install mpich` # to install if on Mac with [Homebrew](https://brew.sh/)
     * `pip3 install mpi4py` # to install if don't have Homebrew
 
 To check installation of my fork of OpenAI Baselines:
