@@ -42,19 +42,19 @@ The code was written by Thanh Nguyen with help from Mason Wright.
     * `pip3 install tensorflow==1.5` # to install
 * Python3, tested version 3.5.2
     * `python3 -V` # to check version
-* Matplotlib, tested version 2.2.2
+* [Matplotlib](https://matplotlib.org/), tested version 2.2.2
     * `pip3 install matplotlib` # to install 
     * `python3; import matplotlb` # to check installation
 * Java 8, tested version 1.8.0_162
     * `java -version` # to check version
-* cloudpickle
+* [cloudpickle](https://github.com/cloudpipe/cloudpickle)
     * `pip3 install cloudpickle` # to install
-* OpenAI Gym, downloaded from my own fork on GitHub and built from source
-* OpenAI Baselines, downloaded from my own fork on GitHub and built from source
-* Py4J
+* [OpenAI Gym](https://github.com/masonwright14/gym), downloaded from my own fork on GitHub and built from source
+* [OpenAI Baselines](https://github.com/masonwright14/baselines), downloaded from my own fork on GitHub and built from source
+* [Py4J](https://www.py4j.org/)
     * `pip3 install py4j` # to install
-* Gambit, tested version 15.1.1; built from source
-* GameAnalysis
+* [Gambit](http://www.gambit-project.org/), tested version 15.1.1; built from source
+* [GameAnalysis](https://github.com/egtaonline/gameanalysis)
     * `pip3 install gameanalysis --user` # to install
         * must be installed under Python3, not Python2
         * may need to add to `PATH` in `.bash_profile`: `export PATH="/home/masondw/.local/bin:$PATH"`
