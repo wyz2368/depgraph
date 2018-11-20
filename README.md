@@ -63,6 +63,7 @@ The code was written by Thanh Nguyen with help from Mason Wright.
 ## Installing Mason's fork of OpenAI Gym
 
 ```
+cd ~/
 mkdir gym
 cd gym
 git clone https://github.com/masonwright14/gym.git
@@ -88,6 +89,7 @@ env.render()
 ## Installing Mason's fork of OpenAI Baselines
 
 ```
+cd ~/
 mkdir baselines
 cd baselines
 git clone https://github.com/masonwright14/baselines.git
@@ -110,10 +112,10 @@ python3 train_cartpole.py # won't work if don't have a display
 
 Download: https://sourceforge.net/projects/gambit/files/gambit15/15.1.1
 
-Unzip the package as gambit-15.1.1
+Unzip the package as `~/gambit-15.1.1`
 
 ```
-cd gambit-15.1.1
+cd ~/gambit-15.1.1
 ./configure
 make
 sudo make install
