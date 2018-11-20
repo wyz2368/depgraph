@@ -38,24 +38,24 @@ The code was written by Thanh Nguyen with help from Mason Wright.
 ## Dependencies for deep RL
 
 * TensorFlow, tested versions 1.4.1, 1.5.0, 1.7.0
-    * python3 -c 'import tensorflow as tf; print(tf.__version__)' # to check version
-    * pip3 install tensorflow==1.5 # to install
+    * `python3 -c 'import tensorflow as tf; print(tf.__version__)'` # to check version
+    * `pip3 install tensorflow==1.5` # to install
 * Python3, tested version 3.5.2
-    * python3 -V # to check version
+    * `python3 -V` # to check version
 * Matplotlib 2.2.2
-    * pip3 install matplotlib # to install 
-    * python3; import matplotlb # to check installation
+    * `pip3 install matplotlib` # to install 
+    * `python3; import matplotlb` # to check installation
 * Java 8, tested Java version 1.8.0_162
-    * java -version # to check version
+    * `java -version` # to check version
 * OpenAI Gym, downloaded from my own fork on GitHub and built from source
 * OpenAI Baselines, downloaded from my own fork on GitHub and built from source
 * Py4J
-    * pip3 install py4j # to install
+    * `pip3 install py4j` # to install
 * cloudpickle
-    * pip3 install cloudpickle # to install
+    * `pip3 install cloudpickle` # to install
 * Gambit, tested version 15.1.1; built from source
 
-## Installing my fork of OpenAI Gym
+## Installing Mason's fork of OpenAI Gym
 
 ```
 mkdir gym
@@ -66,9 +66,9 @@ pip3 install -e .[all]
 ```
 
 * this will fail if Swig is not installed. in that case, do:
-    * sudo apt-get install swig
+    * `sudo apt-get install swig` # to install
 * this will fail if cmake is not installed. in that case, do:
-    * brew install cmake # if on Mac, with Homebrew
+    * `brew install cmake` # to install if on Mac, with Homebrew
 
 To check installation of my fork of OpenAI Gym:
 
@@ -80,7 +80,7 @@ env.reset()
 env.render()
 ```
 
-## Installing my fork of OpenAI Baselines
+## Installing Mason's fork of OpenAI Baselines
 
 ```
 mkdir baselines
@@ -91,8 +91,8 @@ pip3 install -e .
 ```
 
 * this will fail if mpi is not installed. in that case, do:
-    * brew install mpich # to install if on Mac
-    * pip3 install mpi4py # to install if don't have Homebrew
+    * `brew install mpich` # to install if on Mac
+    * `pip3 install mpi4py` # to install if don't have Homebrew
 
 To check installation of my fork of OpenAI Baselines:
 
