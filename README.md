@@ -186,3 +186,24 @@ Ctl-b d
 * `500` is number of payoff samples to use to compute expected payoff, to extend payoff table of empirical game with new strategy
 * `True` is whether to continue after the current round's training is complete
 * `True` is whether to continue after the current round's payoff table extension is complete
+
+## Example run of HADO-EGTA experiment
+
+```
+cd ~/depgraph/depgraph/att_graph_runner
+tmux new -s mySession2
+stdbuf -i0 -o0 -e0 python3 -u master_dq_runner_curve.py 3014 \
+    d30cm1_randNoAndB d30cm1 DepgraphJava-v0 DepgraphJavaAtt-v0 \
+    DepgraphJavaEnvBoth-v0 RandomGraph30N100E6T1_B.json \
+    DepgraphJavaEnvVsMixedDef-v0 DepgraphJavaEnvVsMixedAtt-v0 400 0.7 4 d30 \
+    1000000 400000 700000 400000 0 None 500 > master_d30cm1_agr_out1.txt
+Ctl-b d
+```
+
+### Notes
+* `0.7` is the discount factor for old opponent strategies
+* `4` is the number of interim strategies to record during fine-tuning and pre-training combined
+* `1000000` is the number of pre-training steps for defender
+* `400000` is the number of fine-tuning steps for defender
+* `700000` is the number of pre-training steps for attacker
+* `400000` is the number of fine-tuning steps for attacker
