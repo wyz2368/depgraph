@@ -146,3 +146,38 @@ To test Gambit install:
 ```
 gambit-lcp -h
 ```
+
+## Example run of DO-EGTA experiment
+
+```
+cd ~/depgraph/depgraph/att_graph_runner
+stdbuf -i0 -o0 -e0 python3 -u master_dq_runner.py 3014 0 d30d1_randNoAndB \
+    d30d1 DepgraphJava-v0 DepgraphJavaAtt-v0 DepgraphJavaEnvBoth-v0 \
+    RandomGraph30N100E6T1_B.json DepgraphJavaEnvVsMixedDef-v0 \
+    DepgraphJavaEnvVsMixedAtt-v0 400 dg_d30d1_dq_mlp_rand_epoch \
+    dg_d30d1_dq_mlp_rand_epoch d30 1000000 700000 None 500 True True > \
+    master_d30d1_agr_out1.txt
+```
+
+### Notes
+* `stdbuf -i0 o0 e0` turns off output string buffering
+* `3014` is the game number (taken from EGTA-Online output)
+* `0` is the initial round number (always starts at 0)
+* `d30d1_randNoAndB` is an arbitrary name to give to this run
+* `d30d1` is a shorter, arbitrary version of this run's name
+* `DepgraphJava-v0` is the OpenAI Gym environment name when defender network plays vs. pure strategy
+* `DepgraphJavaAtt-v0` is the OpenAI Gym environment name when attacker network plays vs. pure strategy
+* `DepgraphJavaEnvBoth-v0` is the OpenAI Gym environment name when both players are networks
+* `RandomGraph30N100E6T1_B.json` is the attack-graph file name
+* `DepgraphJavaEnvVsMixedDef-v0` is the OpenAI Gym environment name when attacker network plays vs. mixed strategy
+* `DepgraphJavaEnvVsMixedAtt-v0` is the OpenAI Gym environment name when defender network plays vs. mixed strategy
+* `400` is number of payoff samples to use to compute expected payoff, when checking if new network is a beneficial deviation
+* `dg_d30d1_dq_mlp_rand_epoch` is base name to use for saving network strategies for one agent
+* `dg_d30d1_dq_mlp_rand_epoch` is base name to use for saving network strategies for other agent
+* `d30` is a short name to use corresponding to strategy file names to record, like `defStratStrings_d30.txt`
+* `1000000` is how many steps to train for defender
+* `700000` is how many steps to train for attacker
+* `None` is the maximum number of rounds to train for before pausing, or `None`
+* `500` is number of payoff samples to use to compute expected payoff, to extend payoff table of empirical game with new strategy
+* `True` is whether to continue after the current round's training is complete
+* `True` is whether to continue after the current round's payoff table extension is complete
