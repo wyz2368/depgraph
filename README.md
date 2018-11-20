@@ -42,10 +42,10 @@ The code was written by Thanh Nguyen with help from Mason Wright.
     * `pip3 install tensorflow==1.5` # to install
 * Python3, tested version 3.5.2
     * `python3 -V` # to check version
-* Matplotlib 2.2.2
+* Matplotlib, tested version 2.2.2
     * `pip3 install matplotlib` # to install 
     * `python3; import matplotlb` # to check installation
-* Java 8, tested Java version 1.8.0_162
+* Java 8, tested version 1.8.0_162
     * `java -version` # to check version
 * cloudpickle
     * `pip3 install cloudpickle` # to install
