@@ -134,8 +134,8 @@ sudo make install
 ```
 
 * Compilation may fail with gcc-7 version.
-   * gcc -v # should return version 5 or 6
-   * g++ -v # should return version 5 or 6
+   * `gcc -v` # should return version 5 or 6
+   * `g++ -v` # should return version 5 or 6
 
 To test Gambit install:
 
