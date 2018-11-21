@@ -277,9 +277,9 @@ If you must recompile the JAR files instead of using the ones provided in `/att_
 
 First, you must build the Eclipse project, as described above.
 
-To recompile `dg4jattcli`, first run the file `src/rldepgraph/DepgraphPy4JAttGreedyConfigCLI` in Eclipse.
-Then right-click it > Export > Runnable Jar file.
-Set Export destination to `dg4jattcli.jar`, and select "Copy required libraries . . ."> OK.
+To recompile `dg4jattcli.jar`, first run the file `src/rldepgraph/DepgraphPy4JAttGreedyConfigCLI.java` in Eclipse.
+Then right-click it this file > Export > Runnable Jar file.
+Set Export destination to `dg4jattcli.jar`, and select "Copy required libraries . . ." > OK.
 You can now replace the old JAR file with your new one.
 
 The process is similar for the other JAR files included.
