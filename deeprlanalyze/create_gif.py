@@ -56,7 +56,7 @@ def make_gif(status_file_name, game_index):
     imageio.mimsave(output_name, images, duration=duration_per_frame)
 
 def main():
-    status_file_name = "out_events_def17_att17_s29.json"
+    status_file_name = "test_game_result.json"
     game_index = 1
     make_gif(status_file_name, game_index)
 

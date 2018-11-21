@@ -144,7 +144,7 @@ def run_make_all_graphs(status_file_name, game_index):
     make_all_game_graphs(status_data, json_data, graph_name, game_index)
 
 def main():
-    status_file_name = "out_events_def17_att17_s29.json"
+    status_file_name = "test_game_result.json"
     game_index = 1
     # time_step = 5
     # run_make_graph(status_file_name, game_index, time_step)
