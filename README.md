@@ -372,4 +372,10 @@ Now edit `vis_net_plus.py` to set the input file name to `test_game_result.json`
 
 Call `python3 vis_net_plus.py`. The output will be a file like `out_*.gv.pdf` for each time step of one game result.
 
-These outputs can be edited together into a GIF: TODO
+These outputs can be edited together into a GIF.
+The GIF generation code depends on [Wand](http://docs.wand-py.org/en/0.4.5/). To install, you can use:
+
+```
+apt-get install libmagickwand-dev
+pip install Wand
+```
