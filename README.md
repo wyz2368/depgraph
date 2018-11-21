@@ -377,5 +377,5 @@ The GIF generation code depends on [Wand](http://docs.wand-py.org/en/0.4.5/). To
 
 ```
 apt-get install libmagickwand-dev
-pip install Wand
+sudo -H pip3 install --user Wand
 ```
