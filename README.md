@@ -37,9 +37,9 @@ The code was written by Thanh Nguyen with help from Mason Wright.
 
 ## Dependencies for deep RL
 
+* Deep RL code has been tested only on Linux servers, running CentOS or Ubuntu. Analysis code has been mostly used on Mac OS, with some Ubuntu.
 * A screen manager, for running locally
-    * [tmux](https://github.com/tmux/tmux)
-    * [screen](https://en.wikipedia.org/wiki/GNU_Screen)
+    * [tmux](https://github.com/tmux/tmux) or [screen](https://en.wikipedia.org/wiki/GNU_Screen)
 * A package manager
     * For [pip3](https://pip.pypa.io/en/stable/): `sudo apt install python3-pip`
         * `pip3 -h` # to check install 
@@ -341,3 +341,18 @@ python3 regret_analyze.py game_comb_d30_cd1_cm35_n1_f1_2f25.json > \
 
 Note: `regret_analyze.py` must be called after `runs_analyze.py`, because it depends on
 the Gambit result being generated already.
+
+## How to merge two games into one JSON file
+
+TODO
+
+## How to analyze the regret of each game's strategies in a merged game file
+
+TODO
+
+## How to generate JSON output of a run and visualize game play
+
+The data visualization code depends on [Graphviz](http://www.graphviz.org/). It can be
+installed via `pip3 install graphviz`.
+
+TODO
