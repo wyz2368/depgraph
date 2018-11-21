@@ -270,3 +270,16 @@ substituting your environment name (`d30` or `s29`):
 cd ~/att_graph_runner
 python3 unlock_all.py d30
 ```
+
+## How to recompile the [JAR](https://en.wikipedia.org/wiki/JAR_(file_format)) files
+
+If you must recompile the JAR files instead of using the ones provided in `/att_graph_runner/` subfolders, here is how.
+
+First, you must build the Eclipse project, as described above.
+
+To recompile `dg4jattcli`, first run the file `src/rldepgraph/DepgraphPy4JAttGreedyConfigCLI` in Eclipse.
+Then right-click it > Export > Runnable Jar file.
+Set Export destination to `dg4jattcli.jar`, and select "Copy required libraries . . ."> OK.
+You can now replace the old JAR file with your new one.
+
+The process is similar for the other JAR files included.
