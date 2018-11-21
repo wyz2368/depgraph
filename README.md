@@ -187,6 +187,20 @@ Ctl-b d
 * `True` is whether to continue after the current round's training is complete
 * `True` is whether to continue after the current round's payoff table extension is complete
 
+The above call works for game r30, but for game s29, several coupled changes to the method call must be made, as below.
+
+```
+cd ~/depgraph/depgraph/att_graph_runner
+tmux new -s mySession1b
+stdbuf -i0 -o0 -e0 python3 -u master_dq_runner.py 3013 0 s29m1_randNoAndB \
+    s29m1 DepgraphJava29N-v0 DepgraphJavaEnvAtt29N-v0 DepgraphJavaEnvBoth29N-v0 \
+    SepLayerGraph0_noAnd_B.json DepgraphJavaEnvVsMixedDef29N-v0 \
+    DepgraphJavaEnvVsMixedAtt29N-v0 400 dg_s29m1_dq_mlp_rand_epoch \
+    dg_s29m1_dq_mlp_rand_epoch s29 700000 700000 None 500 True True > \
+    master_s29m1_agr_out1.txt
+Ctl-b d
+```
+
 ## Example run of HADO-EGTA experiment
 
 ```
