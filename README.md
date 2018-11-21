@@ -355,4 +355,21 @@ TODO
 The data visualization code depends on [Graphviz](http://www.graphviz.org/). It can be
 installed via `pip3 install graphviz`.
 
-TODO
+You can compile `src/DepgraphPy4JGreedyConfigNeitherNetworkCLIJson.java` or just 
+run the JAR file in `dg4jnonetclijson/dg4jnonetclijson.jar`, to generate the JSON file
+with a representation of the game's results.
+
+```
+java -jar dg4jnonetclijson.jar \
+    vsRANDOM_WALK:logisParam_3.0_bThres_0.01_qrParam_3.0_numRWSample_30_isRandomized_1.0 \
+    VALUE_PROPAGATION:maxNumSelectCandidate_10.0_minNumSelectCandidate_2.0_numSelectCandidateRatio_0.5_qrParam_3.0_stdev_0.0 \
+    RandomGraph30N100E6T1_B.json test_game_result.json 3
+```
+
+To visualize the results, copy your JSON output `test_game_result.json` (our your name) to `deeprlanalyze/`.
+
+Now edit `vis_net_plus.py` to set the input file name to `test_game_result.json` (TODO: take as argument instead).
+
+Call `python3 vis_net_plus.py`. The output will be a file like `out_*.gv.pdf` for each time step of one game result.
+
+These outputs can be edited together into a GIF: TODO
