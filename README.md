@@ -304,3 +304,40 @@ First, you should gather the output data files into the expected folders, for da
 * All `*.json` and `*_lcp_decode.txt` files FROM COMBINING GAME FILES ONLY should be copied to `deeprlanalyze/combined_outputs/`
 * All `attNetStrings_*` and `defNetStrings_*` files should be copied to `deeprlanalyze/net_strings2/`
 * All `attVMixed*` and `defVMixed*` files should be copied to `deeprlanalyze/learning_curves2/`
+
+### Example visualization calls
+
+```
+python3 plot_mean_gains_stderror.py 3014 d30d1 d30m1
+
+python3 plot_mean_regret_stderror.py game_3014_23.json game_3014_22_d30f1.json \
+        d30n1 d30f1
+
+python3 plot_payoffs_auto.py 3014 d30cd1 d30cd1_randNoAndB True
+
+python3 plot_mean_payoffs.py 3014 d30cd1 d30cm1
+
+python3 plot_gains_auto.py 3014 d30cd1 d30cd1_randNoAndB
+
+python3 plot_mean_gains.py 3014 d30cd1 d30cm1
+
+python3 plot_curves.py d30cd1 4
+
+python3 heatmap.py d30cd1 d30cd1_randNoAndB
+
+python3 plot_learning_curves.py 3014 d30cd1 d30cd1_randNoAndB
+
+python3 merged_learning_curves.py 3014 d30cd1 d30cd1_randNoAndB
+
+python3 analyze_learning.py s29m1
+
+python3 analyze_retrain.py s29cs1 4
+
+python3 runs_analyze.py game_comb_d30_cd1_cm35_n1_f1_2f25.json
+
+python3 regret_analyze.py game_comb_d30_cd1_cm35_n1_f1_2f25.json > \
+    out_regret_analyze_d30.txt
+```
+
+Note: `regret_analyze.py` must be called after `runs_analyze.py`, because it depends on
+the Gambit result being generated already.
