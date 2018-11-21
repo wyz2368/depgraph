@@ -208,7 +208,7 @@ Ctl-b d
 * `700000` is the number of pre-training steps for attacker
 * `400000` is the number of fine-tuning steps for attacker
 
-## Example run on Flux
+## Example run on [Flux](https://arc-ts.umich.edu/flux-user-guide/)
 
 ```
 ssh myUniqName@flux-login.arc-ts.umich.edu
