@@ -372,4 +372,30 @@ Now edit `vis_net_plus.py` to set the input file name to `test_game_result.json`
 
 Call `python3 vis_net_plus.py`. The output will be a file like `out_*.gv.pdf` for each time step of one game result.
 
-These outputs can be edited together into a GIF: TODO
+These outputs can be edited together into a GIF.
+The GIF generation code depends on [Wand](http://docs.wand-py.org/en/0.4.5/). To install, you can use:
+
+```
+apt-get install libmagickwand-dev
+sudo -H pip install --user Wand
+```
+
+GIF generation also depends on [imageio](https://pypi.org/project/imageio/).
+To install, you can use `pip install imageio`.
+This depends on [ImageMagick](https://www.imagemagick.org/script/index.php).
+You can install that using `brew install freetype imagemagick` on Mac.
+It also needs [magickwand](https://pypi.org/project/magickwand/), installed via `sudo -H pip install --user magickwand`.
+
+You may need this bug fix:
+```
+brew install imagemagick@6
+ln -s /usr/local/Cellar/imagemagick@6/6.9.10-14/lib/libMagickWand-6.Q16.dylib /usr/local/lib/libMagickWand.dylib
+```
+if you get error "Import Error: MagickWand shared library not found". See also: [here](https://github.com/ImageMagick/ImageMagick/issues/953).
+
+Make sure the appropriate file name has been set in `vis_net_plus.py` and `create_gif.py`. (TODO: take file name as argument.)
+```
+python3 vis_net_plus.py
+mv *.pdf graph_figures/
+python create_gif.py
+```
