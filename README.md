@@ -384,3 +384,11 @@ GIF generation also depends on [imageio](https://pypi.org/project/imageio/).
 To install, you can use `pip install imageio`.
 This depends on [ImageMagick](https://www.imagemagick.org/script/index.php).
 You can install that using `brew install freetype imagemagick` on Mac.
+It also needs [magickwand](https://pypi.org/project/magickwand/), installed via `sudo -H pip install --user magickwand`.
+
+You may need this bug fix:
+```
+brew install imagemagick@6
+ln -s /usr/local/Cellar/imagemagick@6/6.9.10-14/lib/libMagickWand-6.Q16.dylib /usr/local/lib/libMagickWand.dylib
+```
+if you get error "Import Error: MagickWand shared library not found". See also: [here](https://github.com/ImageMagick/ImageMagick/issues/953)
