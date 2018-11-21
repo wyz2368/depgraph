@@ -280,6 +280,16 @@ First, you must build the Eclipse project, as described above.
 To recompile `dg4jattcli.jar`, first run the file `src/rldepgraph/DepgraphPy4JAttGreedyConfigCLI.java` in Eclipse.
 Then right-click it this file > Export > Runnable Jar file.
 Set Export destination to `dg4jattcli.jar`, and select "Copy required libraries . . ." > OK.
-You can now replace the old JAR file with your new one.
+You can now replace the old JAR file in `att_graph_runner/dg4jattcli/` with your new one.
 
 The process is similar for the other JAR files included.
+
+To recompile `dg4jdefcli.jar`, follow the steps for `src/rldepgraph/DepgraphPy4JGreedyConfigCLI.java`.
+
+To recompile `dg4jnonetcli.jar`, follow the steps for `src/rldepgraph/DepgraphPy4JGreedyConfigNeitherNetworkCLI.java`.
+
+To recompile `depgraphpy4jdefvsnetorheuristic.jar`, follow the steps for `src/rldepgraph/DepgraphPy4JDefVsNetOrHeuristic.java`.
+
+To recompile `depgraphpy4jattvsnetorheuristic.jar`, follow the steps for `src/rldepgraph/DepgraphPy4JAttVsNetOrHeuristic.java`.
+
+To recompile `depgraphpy4jconfigboth.jar`, follow the steps for `src/rldepgraph/DepgraphPy4JGreedyConfigBoth.java`.
