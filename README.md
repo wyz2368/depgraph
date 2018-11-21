@@ -37,9 +37,9 @@ The code was written by Thanh Nguyen with help from Mason Wright.
 
 ## Dependencies for deep RL
 
+* Deep RL code has been tested only on Linux servers, running CentOS or Ubuntu. Analysis code has been mostly used on Mac OS, with some Ubuntu.
 * A screen manager, for running locally
-    * [tmux](https://github.com/tmux/tmux)
-    * [screen](https://en.wikipedia.org/wiki/GNU_Screen)
+    * [tmux](https://github.com/tmux/tmux) or [screen](https://en.wikipedia.org/wiki/GNU_Screen)
 * A package manager
     * For [pip3](https://pip.pypa.io/en/stable/): `sudo apt install python3-pip`
         * `pip3 -h` # to check install 
@@ -187,6 +187,23 @@ Ctl-b d
 * `True` is whether to continue after the current round's training is complete
 * `True` is whether to continue after the current round's payoff table extension is complete
 
+The above call works for game r30, but for game s29, several coupled changes to the method call must be made, as below.
+
+```
+cd ~/depgraph/depgraph/att_graph_runner
+tmux new -s mySession1b
+stdbuf -i0 -o0 -e0 python3 -u master_dq_runner.py 3013 0 s29m1_randNoAndB \
+    s29m1 DepgraphJava29N-v0 DepgraphJavaEnvAtt29N-v0 DepgraphJavaEnvBoth29N-v0 \
+    SepLayerGraph0_noAnd_B.json DepgraphJavaEnvVsMixedDef29N-v0 \
+    DepgraphJavaEnvVsMixedAtt29N-v0 400 dg_s29m1_dq_mlp_rand_epoch \
+    dg_s29m1_dq_mlp_rand_epoch s29 700000 700000 None 500 True True > \
+    master_s29m1_agr_out1.txt
+Ctl-b d
+```
+
+The key points are that game s29 uses a different graph file and different
+OpenAI Gym environments.
+
 ## Example run of HADO-EGTA experiment
 
 ```
@@ -208,7 +225,7 @@ Ctl-b d
 * `700000` is the number of pre-training steps for attacker
 * `400000` is the number of fine-tuning steps for attacker
 
-## Example run on Flux
+## Example run on [Flux](https://arc-ts.umich.edu/flux-user-guide/)
 
 ```
 ssh myUniqName@flux-login.arc-ts.umich.edu
@@ -227,8 +244,8 @@ qstat | grep myUniqName
 ```
 
 ### Notes
-* `module load python-dev/3.5.2` loads a full version of Python3 into your environment, with extra packages like numpy
-* `ga -h` load GameAnalysis into your environment
+* `module load python-dev/3.5.2` loads a full version of Python3 into your environment, with extra packages like [NumPy](http://www.numpy.org/)
+* `ga -h` loads GameAnalysis into your environment
 * `qsub agr_test_d30f1_cur.pbs` submits the PBS script
 * `qstat | grep myUniqName` checks on your jobs
 * You can use `qdel 12345` to kill a job you submitted by number
@@ -245,3 +262,97 @@ In these cases, any partially generated training results for the current round m
 before the run is restrated, including all `.pkl`, `attVMixed*.txt`, and `defVMixed*.txt` files from this round.
 Then the run can be restarted, with the current round number as the argument.
 
+So that multiple Java attack-graph game servers can run on the same server, a primitive locking
+system is used, which is mainly located in Mason's branch of OpenAI Gym, at `gym/gym/envs/board_game`.
+Sometimes you may get an error message "lock is being held". To fix this, do the following,
+substituting your environment name (`d30` or `s29`):
+```
+cd ~/att_graph_runner
+python3 unlock_all.py d30
+```
+
+## How to recompile the [JAR](https://en.wikipedia.org/wiki/JAR_(file_format)) files
+
+If you must recompile the JAR files instead of using the ones provided in `/att_graph_runner/` subfolders, here is how.
+
+First, you must build the Eclipse project, as described above.
+
+To recompile `dg4jattcli.jar`, first run the file `src/rldepgraph/DepgraphPy4JAttGreedyConfigCLI.java` in Eclipse.
+Then right-click it this file > Export > Runnable Jar file.
+Set Export destination to `dg4jattcli.jar`, and select "Copy required libraries . . ." > OK.
+You can now replace the old JAR file in `att_graph_runner/dg4jattcli/` with your new one.
+
+The process is similar for the other JAR files included.
+
+To recompile `dg4jdefcli.jar`, follow the steps for `src/rldepgraph/DepgraphPy4JGreedyConfigCLI.java`.
+
+To recompile `dg4jnonetcli.jar`, follow the steps for `src/rldepgraph/DepgraphPy4JGreedyConfigNeitherNetworkCLI.java`.
+
+To recompile `depgraphpy4jdefvsnetorheuristic.jar`, follow the steps for `src/rldepgraph/DepgraphPy4JDefVsNetOrHeuristic.java`.
+
+To recompile `depgraphpy4jattvsnetorheuristic.jar`, follow the steps for `src/rldepgraph/DepgraphPy4JAttVsNetOrHeuristic.java`.
+
+To recompile `depgraphpy4jconfigboth.jar`, follow the steps for `src/rldepgraph/DepgraphPy4JGreedyConfigBoth.java`.
+
+## How to visualize results
+
+First, you should gather the output data files into the expected folders, for data visualization code in `deeprlanalyze/`.
+
+* All `*.pkl` files should be copied to `deeprlanalyze/pkl_files/`
+* All `*.tsv` files should be copied to `deeprlanalyze/eqs2/`
+* All `*_vsEq.txt` and `_vsRetrain.txt` files should be copied to `deeprlanalyze/for_plot_curve/` (HADO-EGTA runs only)
+* All `*.json` and `*_lcp_decode.txt` files FROM COMBINING GAME FILES ONLY should be copied to `deeprlanalyze/combined_outputs/`
+* All `attNetStrings_*` and `defNetStrings_*` files should be copied to `deeprlanalyze/net_strings2/`
+* All `attVMixed*` and `defVMixed*` files should be copied to `deeprlanalyze/learning_curves2/`
+
+### Example visualization calls
+
+```
+python3 plot_mean_gains_stderror.py 3014 d30d1 d30m1
+
+python3 plot_mean_regret_stderror.py game_3014_23.json game_3014_22_d30f1.json \
+        d30n1 d30f1
+
+python3 plot_payoffs_auto.py 3014 d30cd1 d30cd1_randNoAndB True
+
+python3 plot_mean_payoffs.py 3014 d30cd1 d30cm1
+
+python3 plot_gains_auto.py 3014 d30cd1 d30cd1_randNoAndB
+
+python3 plot_mean_gains.py 3014 d30cd1 d30cm1
+
+python3 plot_curves.py d30cd1 4
+
+python3 heatmap.py d30cd1 d30cd1_randNoAndB
+
+python3 plot_learning_curves.py 3014 d30cd1 d30cd1_randNoAndB
+
+python3 merged_learning_curves.py 3014 d30cd1 d30cd1_randNoAndB
+
+python3 analyze_learning.py s29m1
+
+python3 analyze_retrain.py s29cs1 4
+
+python3 runs_analyze.py game_comb_d30_cd1_cm35_n1_f1_2f25.json
+
+python3 regret_analyze.py game_comb_d30_cd1_cm35_n1_f1_2f25.json > \
+    out_regret_analyze_d30.txt
+```
+
+Note: `regret_analyze.py` must be called after `runs_analyze.py`, because it depends on
+the Gambit result being generated already.
+
+## How to merge two games into one JSON file
+
+TODO
+
+## How to analyze the regret of each game's strategies in a merged game file
+
+TODO
+
+## How to generate JSON output of a run and visualize game play
+
+The data visualization code depends on [Graphviz](http://www.graphviz.org/). It can be
+installed via `pip3 install graphviz`.
+
+TODO
