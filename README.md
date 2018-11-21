@@ -381,6 +381,6 @@ sudo -H pip install --user Wand
 ```
 
 GIF generation also depends on [imageio](https://pypi.org/project/imageio/).
-To install, you can use `pip3 install imageio`.
+To install, you can use `pip install imageio`.
 This depends on [ImageMagick](https://www.imagemagick.org/script/index.php).
 You can install that using `brew install freetype imagemagick` on Mac.
