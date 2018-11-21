@@ -366,4 +366,10 @@ java -jar dg4jnonetclijson.jar \
     RandomGraph30N100E6T1_B.json test_game_result.json 3
 ```
 
-TODO
+To visualize the results, copy your JSON output `test_game_result.json` (our your name) to `deeprlanalyze/`.
+
+Now edit `vis_net_plus.py` to set the input file name to `test_game_result.json` (TODO: take as argument instead).
+
+Call `python3 vis_net_plus.py`. The output will be a file like `out_*.gv.pdf` for each time step of one game result.
+
+These outputs can be edited together into a GIF: TODO
