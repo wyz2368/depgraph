@@ -201,6 +201,9 @@ stdbuf -i0 -o0 -e0 python3 -u master_dq_runner.py 3013 0 s29m1_randNoAndB \
 Ctl-b d
 ```
 
+The key points are that game s29 uses a different graph file and different
+OpenAI Gym environments.
+
 ## Example run of HADO-EGTA experiment
 
 ```
