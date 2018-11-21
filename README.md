@@ -245,3 +245,11 @@ In these cases, any partially generated training results for the current round m
 before the run is restrated, including all `.pkl`, `attVMixed*.txt`, and `defVMixed*.txt` files from this round.
 Then the run can be restarted, with the current round number as the argument.
 
+So that multiple Java attack-graph game servers can run on the same server, a primitive locking
+system is used, which is mainly located in Mason's branch of OpenAI Gym, at `gym/gym/envs/board_game`.
+Sometimes you may get an error message "lock is being held". To fix this, do the following,
+substituting your environment name (`d30` or `s29`):
+```
+cd ~/att_graph_runner
+python3 unlock_all.py d30
+```
