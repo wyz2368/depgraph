@@ -227,8 +227,8 @@ qstat | grep myUniqName
 ```
 
 ### Notes
-* `module load python-dev/3.5.2` loads a full version of Python3 into your environment, with extra packages like numpy
-* `ga -h` load GameAnalysis into your environment
+* `module load python-dev/3.5.2` loads a full version of Python3 into your environment, with extra packages like [NumPy](http://www.numpy.org/)
+* `ga -h` loads GameAnalysis into your environment
 * `qsub agr_test_d30f1_cur.pbs` submits the PBS script
 * `qstat | grep myUniqName` checks on your jobs
 * You can use `qdel 12345` to kill a job you submitted by number
