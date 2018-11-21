@@ -293,3 +293,14 @@ To recompile `depgraphpy4jdefvsnetorheuristic.jar`, follow the steps for `src/rl
 To recompile `depgraphpy4jattvsnetorheuristic.jar`, follow the steps for `src/rldepgraph/DepgraphPy4JAttVsNetOrHeuristic.java`.
 
 To recompile `depgraphpy4jconfigboth.jar`, follow the steps for `src/rldepgraph/DepgraphPy4JGreedyConfigBoth.java`.
+
+## How to visualize results
+
+First, you should gather the output data files into the expected folders, for data visualization code in `deeprlanalyze/`.
+
+* All `*.pkl` files should be copied to `deeprlanalyze/pkl_files/`
+* All `*.tsv` files should be copied to `deeprlanalyze/eqs2/`
+* All `*_vsEq.txt` and `_vsRetrain.txt` files should be copied to `deeprlanalyze/for_plot_curve/` (HADO-EGTA runs only)
+* All `*.json` and `*_lcp_decode.txt` files FROM COMBINING GAME FILES ONLY should be copied to `deeprlanalyze/combined_outputs/`
+* All `attNetStrings_*` and `defNetStrings_*` files should be copied to `deeprlanalyze/net_strings2/`
+* All `attVMixed*` and `defVMixed*` files should be copied to `deeprlanalyze/learning_curves2/`
