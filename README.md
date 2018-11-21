@@ -391,4 +391,11 @@ You may need this bug fix:
 brew install imagemagick@6
 ln -s /usr/local/Cellar/imagemagick@6/6.9.10-14/lib/libMagickWand-6.Q16.dylib /usr/local/lib/libMagickWand.dylib
 ```
-if you get error "Import Error: MagickWand shared library not found". See also: [here](https://github.com/ImageMagick/ImageMagick/issues/953)
+if you get error "Import Error: MagickWand shared library not found". See also: [here](https://github.com/ImageMagick/ImageMagick/issues/953).
+
+Make sure the appropriate file name has been set in `vis_net_plus.py` and `create_gif.py`. (TODO: take file name as argument.)
+```
+python3 vis_net_plus.py
+mv *.pdf graph_figures/
+python create_gif.py
+```
