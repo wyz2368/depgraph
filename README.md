@@ -377,5 +377,10 @@ The GIF generation code depends on [Wand](http://docs.wand-py.org/en/0.4.5/). To
 
 ```
 apt-get install libmagickwand-dev
-sudo -H pip3 install --user Wand
+sudo -H pip install --user Wand
 ```
+
+GIF generation also depends on [imageio](https://pypi.org/project/imageio/).
+To install, you can use `pip3 install imageio`.
+This depends on [ImageMagick](https://www.imagemagick.org/script/index.php).
+You can install that using `brew install freetype imagemagick` on Mac.
