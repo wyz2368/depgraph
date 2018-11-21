@@ -399,3 +399,10 @@ python3 vis_net_plus.py
 mv *.pdf graph_figures/
 python create_gif.py
 ```
+
+To compress the GIF into an MP4 file, there is a dependency on [ffmpy](https://pypi.org/project/ffmpy/).
+It can be installed via `pip3 install ffmpy`.
+```
+python3 compress_gif.py
+```
+
