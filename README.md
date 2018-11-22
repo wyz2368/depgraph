@@ -387,7 +387,19 @@ Notes
 
 ## How to analyze the regret of each game's strategies in a merged game file
 
-TODO
+First, use `runs_analyze.py` to solve for Nash equilibria of the combined game.
+
+```
+python3 runs_analyze.py game_comb_d30_cd1_n1_f1.json
+```
+
+Next, use `regret_analyze.py` to evaluate the regret of each run's network strategies
+relative to the equilibria of the combined game.
+
+```
+python3 regret_analyze.py game_comb_d30_cd1_n1_f1.json > \
+    out_regret_analyze_d30_completed_only.txt
+```
 
 ## How to generate JSON output of a run and visualize game play
 
