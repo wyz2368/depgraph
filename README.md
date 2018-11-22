@@ -342,9 +342,28 @@ python3 regret_analyze.py game_comb_d30_cd1_cm35_n1_f1_2f25.json > \
 Note: `regret_analyze.py` must be called after `runs_analyze.py`, because it depends on
 the Gambit result being generated already.
 
-## How to merge two games into one JSON file
+## How to merge two runs' JSON game payoff files into one JSON game payoff file
 
-TODO
+This method takes the JSON game payoff file for two runs, each with its own
+set of attacker and defender network strategies, and generates a new game JSON file
+including all the payoffs from both inputs, as well as all payoffs between one
+network strategy from each input game, which must be newly generated.
+
+```
+stdbuf -i0 -o0 -e0  python3 union_games.py game_3013_29_s29f1.json game_3013_37_s29m1.json \
+   30 DepgraphJavaEnvBoth29N-v0 SepLayerGraph0_noAnd_B.json \
+   payoffs_s29f1_s29m1_30_f29_m37.json game_comb_s29f1_s29m1_30_f29_m37.json \
+   > test_union_30_s29f1_s29m1_f29_m37.txt
+```
+
+Notes
+* `game_3013_29_s29f1.json` and `game_3013_37_s29m1.json` are the input game payoff JSON files
+* `30` is the number of samples per pair of strategies to take
+* `DepgraphJavaEnvBoth29N-v0` is the OpenAI Gym environment name where both strategies are networks
+* `SepLayerGraph0_noAnd_B.json` is the graph file name
+* `payoffs_s29f1_s29m1_30_f29_m37.json` is an output file name with just the new payoff data
+* `game_comb_s29f1_s29m1_30_f29_m37.json` is the combined game payoff JSON file
+* `test_union_30_s29f1_s29m1_f29_m37.txt` is just a text file for monitoring output
 
 ## How to analyze the regret of each game's strategies in a merged game file
 
