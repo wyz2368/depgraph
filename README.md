@@ -365,6 +365,26 @@ Notes
 * `game_comb_s29f1_s29m1_30_f29_m37.json` is the combined game payoff JSON file
 * `test_union_30_s29f1_s29m1_f29_m37.txt` is just a text file for monitoring output
 
+## How to combine 3 or more runs' game payoff JSON files into one combined game payoff JSON file
+
+First, you must take all pairs (N-choose-2 of them) of runs, and use `union_games.py` to
+generate a game payoff JSON file for each pair, which will include the payoff between
+any pair of network strategies from those runs.
+
+Next, use `union_games_multiple.py` to combine all the game-pair payoff JSON files into one.
+
+```
+python3 union_games_multiple.py game_comb_d30_cd1_n1_f1.json \
+   game_comb_d30cd1_d30f1_100.json game_comb_d30cd1_d30n1_200.json \
+   game_comb_d30n1_d30f1_100.json  \
+   > test_combine_d30_completed_only.txt
+```
+
+Notes
+* `game_comb_d30_cd1_n1_f1.json` is the name of the combined game payoff JSON file to generate
+* `game_comb_d30cd1_d30f1_100.json`, `game_comb_d30cd1_d30n1_200.json`, and `game_comb_d30n1_d30f1_100.json` are the input game-pair payoff JSON files
+* `test_combine_d30_completed_only.txt` is just a text file for recording the script's progress
+
 ## How to analyze the regret of each game's strategies in a merged game file
 
 TODO
