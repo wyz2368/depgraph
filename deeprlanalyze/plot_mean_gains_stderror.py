@@ -83,6 +83,7 @@ def plot_gains_with_stderr(def_gains, att_gains, def_errs, att_errs, \
     att_highs = [x + y for x, y in zip(att_gains, att_errs)]
     y_max = max(max(def_highs), max(att_highs))
     ax.set_ylim(-10, y_max + 10)
+    ax.set_xlim(-1, len(def_gains))
     plt.tick_params(
         axis='x',          # changes apply to the x-axis
         which='both',      # both major and minor ticks are affected

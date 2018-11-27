@@ -65,6 +65,7 @@ def plot_regrets_with_stderr(def_regrets, att_regrets, def_errs, att_errs, \
     att_highs = [x + y for x, y in zip(att_regrets, att_errs)]
     y_max = max(max(def_highs), max(att_highs))
     ax.set_ylim(-1, y_max + 2)
+    ax.set_xlim(-1, len(def_regrets))
     plt.tick_params(
         axis='x',          # changes apply to the x-axis
         which='both',      # both major and minor ticks are affected
