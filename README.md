@@ -342,13 +342,64 @@ python3 regret_analyze.py game_comb_d30_cd1_cm35_n1_f1_2f25.json > \
 Note: `regret_analyze.py` must be called after `runs_analyze.py`, because it depends on
 the Gambit result being generated already.
 
-## How to merge two games into one JSON file
+## How to merge two runs' JSON game payoff files into one JSON game payoff file
 
-TODO
+This method takes the JSON game payoff file for two runs, each with its own
+set of attacker and defender network strategies, and generates a new game JSON file
+including all the payoffs from both inputs, as well as all payoffs between one
+network strategy from each input game, which must be newly generated.
+
+```
+stdbuf -i0 -o0 -e0  python3 union_games.py game_3013_29_s29f1.json game_3013_37_s29m1.json \
+   30 DepgraphJavaEnvBoth29N-v0 SepLayerGraph0_noAnd_B.json \
+   payoffs_s29f1_s29m1_30_f29_m37.json game_comb_s29f1_s29m1_30_f29_m37.json \
+   > test_union_30_s29f1_s29m1_f29_m37.txt
+```
+
+Notes
+* `game_3013_29_s29f1.json` and `game_3013_37_s29m1.json` are the input game payoff JSON files
+* `30` is the number of samples per pair of strategies to take
+* `DepgraphJavaEnvBoth29N-v0` is the OpenAI Gym environment name where both strategies are networks
+* `SepLayerGraph0_noAnd_B.json` is the graph file name
+* `payoffs_s29f1_s29m1_30_f29_m37.json` is an output file name with just the new payoff data
+* `game_comb_s29f1_s29m1_30_f29_m37.json` is the combined game payoff JSON file
+* `test_union_30_s29f1_s29m1_f29_m37.txt` is just a text file for monitoring output
+
+## How to combine 3 or more runs' game payoff JSON files into one combined game payoff JSON file
+
+First, you must take all pairs (N-choose-2 of them) of runs, and use `union_games.py` to
+generate a game payoff JSON file for each pair, which will include the payoff between
+any pair of network strategies from those runs.
+
+Next, use `union_games_multiple.py` to combine all the game-pair payoff JSON files into one.
+
+```
+python3 union_games_multiple.py game_comb_d30_cd1_n1_f1.json \
+   game_comb_d30cd1_d30f1_100.json game_comb_d30cd1_d30n1_200.json \
+   game_comb_d30n1_d30f1_100.json  \
+   > test_combine_d30_completed_only.txt
+```
+
+Notes
+* `game_comb_d30_cd1_n1_f1.json` is the name of the combined game payoff JSON file to generate
+* `game_comb_d30cd1_d30f1_100.json`, `game_comb_d30cd1_d30n1_200.json`, and `game_comb_d30n1_d30f1_100.json` are the input game-pair payoff JSON files
+* `test_combine_d30_completed_only.txt` is just a text file for recording the script's progress
 
 ## How to analyze the regret of each game's strategies in a merged game file
 
-TODO
+First, use `runs_analyze.py` to solve for Nash equilibria of the combined game.
+
+```
+python3 runs_analyze.py game_comb_d30_cd1_n1_f1.json
+```
+
+Next, use `regret_analyze.py` to evaluate the regret of each run's network strategies
+relative to the equilibria of the combined game.
+
+```
+python3 regret_analyze.py game_comb_d30_cd1_n1_f1.json > \
+    out_regret_analyze_d30_completed_only.txt
+```
 
 ## How to generate JSON output of a run and visualize game play
 
@@ -399,3 +450,10 @@ python3 vis_net_plus.py
 mv *.pdf graph_figures/
 python create_gif.py
 ```
+
+To compress the GIF into an MP4 file, there is a dependency on [ffmpy](https://pypi.org/project/ffmpy/).
+It can be installed via `pip3 install ffmpy`.
+```
+python3 compress_gif.py
+```
+
