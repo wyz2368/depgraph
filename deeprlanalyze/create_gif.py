@@ -52,7 +52,7 @@ def make_gif(status_file_name, game_index):
             convert_image(pdf_name)
         images.append(imageio.imread(image_name))
     output_name = "out_" + short_graph_name + "_g" + str(game_index) + "_all.gif"
-    duration_per_frame = 0.5
+    duration_per_frame = 1.5
     imageio.mimsave(output_name, images, duration=duration_per_frame)
 
 def main():

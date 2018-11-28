@@ -54,8 +54,8 @@ def plot_heatmap_both(do_round_fractions, hado_round_fractions, is_defender, is_
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
-    plt.ylabel('Training round', fontsize=16)
-    plt.xlabel('Network weight', fontsize=16)
+    plt.ylabel('Equilibrium round', fontsize=16)
+    plt.xlabel('DQN index', fontsize=16)
     plt.title("DO-EGTA", fontsize=20)
 
     # my_title = "Random 30-node graph"
@@ -110,8 +110,8 @@ def plot_heatmap_both(do_round_fractions, hado_round_fractions, is_defender, is_
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
-    plt.ylabel('Training round', fontsize=16)
-    plt.xlabel('Network weight', fontsize=16)
+    plt.ylabel('Equilibrium round', fontsize=16)
+    plt.xlabel('DQN index', fontsize=16)
     plt.title("HADO-EGTA", fontsize=20)
 
     # my_title = "Random 30-node graph"

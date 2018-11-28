@@ -54,8 +54,8 @@ def plot_heatmap(round_fractions, is_defender, env_short_name_payoffs):
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
-    plt.ylabel('Training round', fontsize=16)
-    plt.xlabel('Network weight', fontsize=16)
+    plt.ylabel('Equilibrium round', fontsize=16)
+    plt.xlabel('DQN index', fontsize=16)
 
     # my_title = "Random 30-node graph"
     # if "s29" in env_short_name_payoffs:

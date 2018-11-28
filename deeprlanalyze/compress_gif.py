@@ -10,7 +10,8 @@ def compress_gif(gif_name):
     ff_command.run()
 
 def main():
-    gif_name = "out_RandomGraph30N100E6T1_B_g1_all.gif"
+    # gif_name = "out_RandomGraph30N100E6T1_B_g1_all.gif"
+    gif_name = "out_SepLayerGraph0_noAnd_B_g1_all.gif"
     compress_gif(gif_name)
 
 if __name__ == "__main__":
