@@ -6,14 +6,14 @@ from fpsb_annealing import sample_mean_def_payoff_fpsb, get_def_payoff
 from fpsb_anneal_experiment import record_result_tuples
 
 def get_att_eq(cur_round):
-    prefix = "psb4_r" + str(cur_round) + "_s"
+    prefix = "fpsb4_r" + str(cur_round) + "_s"
     suffix = "_att.tsv"
     att_mixed_strat_name = get_max_file(prefix, suffix)
     att_mixed_strat = get_eq_from_file(att_mixed_strat_name)
     return att_mixed_strat
 
 def get_def_eq(cur_round):
-    prefix = "psb4_r" + str(cur_round) + "_s"
+    prefix = "fpsb4_r" + str(cur_round) + "_s"
     suffix = "_def.tsv"
     def_mixed_strat_name = get_max_file(prefix, suffix)
     def_mixed_strat = get_eq_from_file(def_mixed_strat_name)
