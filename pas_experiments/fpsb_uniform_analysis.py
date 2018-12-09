@@ -44,12 +44,12 @@ def get_uniform_random_dev_prob(att_mixed_strat, def_payoff_old, deviation_attem
             beneficial_count += 1
     return beneficial_count * 1.0 / deviation_attempts
 
-def get_uniform_rand_ground_truth(cur_round, deviation_attempts, cur_def_payoff):
+def get_uniform_rand_ground_truth(cur_round, deviation_attempts, epsilon_tolerance):
     cur_def_eq = get_def_eq(cur_round)
     cur_att_eq = get_att_eq(cur_round)
     cur_def_payoff = sample_mean_def_mixed_payoff_fpsb(cur_def_eq, cur_att_eq)
-    return get_uniform_random_dev_prob(cur_att_eq, cur_def_eq, cur_def_payoff, \
-        deviation_attempts)
+    return get_uniform_random_dev_prob(cur_att_eq, cur_def_payoff, deviation_attempts, \
+        epsilon_tolerance)
 
 def main(max_rounds, deviation_attempts, epsilon_tolerance):
     print("max_rounds: " + str(max_rounds) + ", deviation_attempts: " + \
