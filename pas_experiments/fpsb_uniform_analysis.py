@@ -1,4 +1,5 @@
 from os import listdir
+import time
 from analyze_new_file import get_results
 from get_payoff_from_game_pas import get_eq_from_file
 from fpsb_annealing import sample_mean_def_payoff_fpsb, get_def_payoff
@@ -54,6 +55,7 @@ def main(max_rounds, deviation_attempts, epsilon_tolerance):
     print("max_rounds: " + str(max_rounds) + ", deviation_attempts: " + \
         str(deviation_attempts) + ", epsilon_tolerance: " + str(epsilon_tolerance))
 
+    start_time = time.time()
     results = get_results("fpsb4_results.tsv")
     is_accepted_list = [x[0] for x in results]
     simulated_anneal_ground_truth_est_list = [x[1] for x in results]
@@ -66,6 +68,8 @@ def main(max_rounds, deviation_attempts, epsilon_tolerance):
     result_tuples = zip(is_accepted_list, simulated_anneal_ground_truth_est_list, \
         uniform_rand_ground_truth_est_list)
     record_result_tuples("fpsb4_uniform_results.tsv", result_tuples)
+    duration = time.time() - start_time
+    print("Minutes taken overall: " + str(int(duration // 60)))
 
 if __name__ == "__main__":
     MAX_ROUNDS = 400
