@@ -37,7 +37,7 @@ def get_uniform_random_dev_prob(att_mixed_strat, def_payoff_old, deviation_attem
     epsilon_tolerance):
     beneficial_count = 0
     for def_index in range(deviation_attempts):
-        deviating_strat = def_index * 1.0 / deviation_attempts
+        deviating_strat = [def_index * 1.0 / deviation_attempts]
         def_payoff_cur = sample_mean_def_payoff_fpsb(deviating_strat, \
             att_mixed_strat)
         if def_payoff_cur > def_payoff_old + epsilon_tolerance:
