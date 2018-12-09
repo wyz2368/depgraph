@@ -2,7 +2,7 @@ from os import listdir
 import time
 from analyze_new_file import get_results
 from get_payoff_from_game_pas import get_eq_from_file
-from fpsb_annealing import sample_mean_def_payoff_fpsb, get_def_payoff
+from fpsb_annealing import sample_mean_def_payoff_fpsb, sample_mean_def_mixed_payoff_fpsb
 from fpsb_anneal_experiment import record_result_tuples
 
 def get_att_eq(cur_round):
@@ -45,9 +45,9 @@ def get_uniform_random_dev_prob(att_mixed_strat, def_payoff_old, deviation_attem
     return beneficial_count * 1.0 / deviation_attempts
 
 def get_uniform_rand_ground_truth(cur_round, deviation_attempts, cur_def_payoff):
-    cur_att_eq = get_att_eq(cur_round)
     cur_def_eq = get_def_eq(cur_round)
-    cur_def_payoff = get_def_payoff(cur_att_eq, cur_def_eq)
+    cur_att_eq = get_att_eq(cur_round)
+    cur_def_payoff = sample_mean_def_mixed_payoff_fpsb(cur_def_eq, cur_att_eq)
     return get_uniform_random_dev_prob(cur_att_eq, cur_def_eq, cur_def_payoff, \
         deviation_attempts)
 

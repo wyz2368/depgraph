@@ -20,6 +20,13 @@ def sample_mean_def_payoff_fpsb(def_strat, att_mixed_strat):
         result += weight * get_def_payoff(def_strat[0], att_strat)
     return result
 
+def sample_mean_def_mixed_payoff_fpsb(def_mixed_strat, att_mixed_strat):
+    result = 0.0
+    for def_strat, def_weight in def_mixed_strat.items():
+        for att_strat, att_weight in att_mixed_strat.items():
+            result += def_weight * att_weight * get_def_payoff(def_strat, att_strat)
+    return result
+
 def run_fpsb_annealing(max_steps, neighbor_variance, should_print, initial_params, \
                        att_mixed_strat):
     param_count = 1
