@@ -20,11 +20,11 @@ def is_converged(env_short_name_payoffs, stopped_round):
     print(stopped_round)
     if env_short_name_payoffs in ["d30d1_mean_stderr", "d30cm1_mean_stderr", \
         "d30f1_mean_stderr", "d30f2_mean_stderr", "r30_mean_stderr"]:
-        return stopped_round in [20, 22, 23, 40, 41]
+        return stopped_round in [20, 22, 23, 40, 41, 70]
     if env_short_name_payoffs in ["s29n1_mean_stderr"]:
         return stopped_round in [32]
     if env_short_name_payoffs in ["s29_mean_stderr"]:
-        return stopped_round in [32, 39]
+        return stopped_round in [32, 39, 70]
     return False
 
 def plot_gains_with_stderr(def_gains, att_gains, def_errs, att_errs, \
