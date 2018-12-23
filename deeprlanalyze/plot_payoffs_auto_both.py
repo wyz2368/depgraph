@@ -40,6 +40,16 @@ def plot_payoffs_both(do_def_eq_payoffs, do_def_dev_payoffs, \
     plt.plot(range(len(do_att_dev_payoffs)), do_att_dev_payoffs, linestyle='--', \
         lw=my_lw, label='Att. dev.')
 
+    for i in range(min(len(do_def_eq_payoffs), len(do_def_dev_payoffs))):
+        if do_def_eq_payoffs[i] == do_def_dev_payoffs[i]:
+            plt.scatter(i, do_def_eq_payoffs[i], marker='o', s=64, facecolors='none', \
+                edgecolors='black', zorder=3, linewidth=2)
+
+    for i in range(min(len(do_att_eq_payoffs), len(do_att_dev_payoffs))):
+        if do_att_eq_payoffs[i] == do_att_dev_payoffs[i]:
+            plt.scatter(i, do_att_eq_payoffs[i], marker='o', s=64, facecolors='none', \
+                edgecolors='black', zorder=3, linewidth=2)
+
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
@@ -76,6 +86,16 @@ def plot_payoffs_both(do_def_eq_payoffs, do_def_dev_payoffs, \
         label='Att. eq.')
     plt.plot(range(len(hado_att_dev_payoffs)), hado_att_dev_payoffs, linestyle='--', \
         lw=my_lw, label='Att. dev.')
+
+    for i in range(min(len(hado_def_eq_payoffs), len(hado_def_dev_payoffs))):
+        if hado_def_eq_payoffs[i] == hado_def_dev_payoffs[i]:
+            plt.scatter(i, hado_def_eq_payoffs[i], marker='o', s=64, facecolors='none', \
+                edgecolors='black', zorder=3, linewidth=2)
+
+    for i in range(min(len(hado_att_eq_payoffs), len(hado_att_dev_payoffs))):
+        if hado_att_eq_payoffs[i] == hado_att_dev_payoffs[i]:
+            plt.scatter(i, hado_att_eq_payoffs[i], marker='o', s=64, facecolors='none', \
+                edgecolors='black', zorder=3, linewidth=2)
 
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)

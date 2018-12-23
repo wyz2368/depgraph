@@ -289,6 +289,16 @@ def plot_payoffs(def_eq_payoffs, def_dev_payoffs, \
     plt.plot(range(len(att_dev_payoffs)), att_dev_payoffs, linestyle='--', \
         lw=my_lw, label='Att. dev.')
 
+    for i in range(min(len(def_eq_payoffs), len(def_dev_payoffs))):
+        if def_eq_payoffs[i] == def_dev_payoffs[i]:
+            plt.scatter(i, def_eq_payoffs[i], marker='o', s=64, facecolors='none', \
+                edgecolors='black', zorder=3, linewidth=2)
+
+    for i in range(min(len(att_eq_payoffs), len(att_dev_payoffs))):
+        if att_eq_payoffs[i] == att_dev_payoffs[i]:
+            plt.scatter(i, att_eq_payoffs[i], marker='o', s=64, facecolors='none', \
+                edgecolors='black', zorder=3, linewidth=2)
+
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
