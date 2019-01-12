@@ -2,6 +2,7 @@ import sys
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
+import matplotlib.ticker as tick
 from pylab import savefig
 from plot_payoffs_auto import get_round_count, get_all_payoffs
 from plot_learning_curves import get_learning_curves
@@ -11,7 +12,7 @@ plt.rcParams['ps.fonttype'] = 42
 
 def plot_curves_merged(learning_curves, eq_payoffs, is_defender, \
     env_short_name_payoffs):
-    fig, ax = plt.subplots()
+    fig, (ax, ax_right) = plt.subplots(1, 2, gridspec_kw={'width_ratios':[20, 1]})
     fig.set_size_inches(6, 4)
 
     my_cmap = 'gnuplot'
@@ -21,6 +22,14 @@ def plot_curves_merged(learning_curves, eq_payoffs, is_defender, \
         frac = i * 1.0 / (len(learning_curves) - 1)
         rgba = cmap(frac)
         colors.append(rgba)
+
+    norm = matplotlib.colors.Normalize(vmin=0, vmax=1)
+    cbar = matplotlib.colorbar.ColorbarBase(ax_right, cmap=cmap,
+                                            norm=norm,
+                                            orientation='vertical',
+                                            ticks=[0, 0.5, 1])
+    cbar.set_label('Round', fontsize=16)
+    cbar.ax.set_yticklabels(["0", "10", "20"], fontsize=14)
 
     for i in range(len(learning_curves)):
         episodes = learning_curves[i][0]
@@ -54,8 +63,12 @@ def plot_curves_merged(learning_curves, eq_payoffs, is_defender, \
     ax.spines['bottom'].set_visible(False)
     ax.set_ylim((y_min - 5, y_max + 5))
     ax.tick_params(labelsize=14)
-    plt.xlabel("Training episode", fontsize=16)
-    plt.ylabel("Payoff gain", fontsize=16)
+    ax.set_xlabel("Training episode", fontsize=16)
+    ax.set_ylabel("Payoff gain", fontsize=16)
+
+    tick_spacing = 10000
+    ax.xaxis.set_major_locator(tick.MultipleLocator(tick_spacing))
+
     # my_title = "Random 30-node graph"
     # if "s29" in env_short_name_payoffs:
     #     my_title = "Separate layers 29-node graph"
