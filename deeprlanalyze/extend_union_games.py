@@ -3,7 +3,7 @@ import os.path
 import copy
 import time
 from get_both_payoffs_from_game import get_json_data
-from check_game_data import get_attacker_strats, get_defender_strats
+from check_game_data import get_attacker_strats, get_defender_strats, are_payoffs_found
 from eval_mixed_strats import hybrid_get_net_scope, is_network
 from cli_enjoy_dg_two_sided import get_payoffs_both
 from generate_new_cols import print_json
@@ -203,6 +203,15 @@ def extend_game_data(game_data_a, game_data_b, att_nets_a, def_nets_a, att_nets_
                     original_num_sims, new_num_sims)
                 next_profile_id += 1
                 next_symmetry_group_id += 2
+            for att_net in att_nets_b:
+                # kludge
+                if not are_payoffs_found(result, def_net, att_net):
+                    def_payoff, att_payoff = get_payoffs(game_data_b, def_net, att_net)
+                    add_profile(result, def_net, att_net, def_payoff, att_payoff, \
+                        next_profile_id, next_symmetry_group_id, \
+                        original_num_sims, new_num_sims)
+                    next_profile_id += 1
+                    next_symmetry_group_id += 2
 
     network_source = "network_source"
     result[network_source] = {}
@@ -227,12 +236,14 @@ def main(old_game_file_a, old_game_file_b, old_union_game_file, runs_per_pair, \
     game_data_a = get_json_data(old_game_file_a)
     game_data_b = get_json_data(old_game_file_b)
     game_data_union_old = get_json_data(old_union_game_file)
+
     if not is_game_data_valid(game_data_a) or not is_game_data_valid(game_data_b) or \
         not is_game_data_valid(game_data_union_old):
         raise ValueError("Invalid game data")
 
     if os.path.isfile(result_payoffs_file):
         raise ValueError("File already exists: " + result_payoffs_file)
+
     if os.path.isfile(result_game_file):
         raise ValueError("File already exists: " + result_game_file)
 
